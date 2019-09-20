@@ -55,7 +55,7 @@ if($header->codigoguia){
   // die(json_encode(array("success" => true), 128));
 
 }else{
-  $insertCabecera = "insert into guia_sin_oc(codigoproveedor, codacceso, codigopersonal, sucursal, numero_guia, codigoref2, estado) values ($header->codigoproveedor, $header->codigoacceso , $header->codigopersonal, $header->sucursal, '$header->numeroguia', '$header->codigoreferencia2', $header->estado)";
+  $insertCabecera = "insert into guia_sin_oc(codigoproveedor, codacceso, codigopersonal, sucursal, numero_guia, codigoref2, estado) values ($header->codigoproveedor, $header->codigoacceso , $header->codigopersonal, $header->codsucursal, '$header->numeroguia', '$header->codigoreferencia2', $header->estado)";
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
@@ -64,6 +64,18 @@ if($header->codigoguia){
   foreach($detalleArray as $detalle){
     $insertDetalle = "insert into detalle_guia_sin_oc(codigo_guia_sin_oc, codigoprod, cantidad, unidad_medida, cantidad_aux) values ($lastId, $detalle->codigoprod,$detalle->cantidad, '$detalle->unidad_medida', $detalle->cantidad_aux)";
     $queryDetalle = mysql_query($insertDetalle, $Ventas) or die(mysql_error());
+    
+
+    $querylastsaldo = "select saldo from kardex_alm where codsucursal = $header->codsucursal and codigoprod = $detalle->codigoprod order by fecha desc limit 1";
+    $lastSaldo = mysql_query($querylastsaldo, $Ventas) or die(mysql_error());
+    if($lastSaldo){
+      $lastSaldo = (int) mysql_fetch_assoc($lastSaldo)["saldo"] + $detalle->cantidad;
+    }else{
+      $lastSaldo = $detalle->cantidad;
+    }
+    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo) values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad, $lastSaldo, $header->codsucursal, 'soc')";
+    $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
+
   }
 
   die(json_encode(array("success" => true), 128));

@@ -491,11 +491,12 @@ include("Fragmentos/abrirpopupcentro.php");
 				igv: 0,
 				montofact: 0,
 				estadofact: 1,
-				sucursal: getSelector("#sucursal").value,
+				codsucursal: <?= $_SESSION['cod_sucursal'] ?>,
 				numeroguia: getSelector("#numeroguia").value,
 				codigoreferencia2: getSelector("#codigoreferencia2").value,
 				estado: 1
 			}
+			console.log(data)
 			getSelectorAll(".producto").forEach(item => {
 				console.log(item.querySelector(".unidad_medida").value)
 				data.detalle.push({
