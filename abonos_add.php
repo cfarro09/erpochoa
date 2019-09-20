@@ -1,4 +1,7 @@
-<?php $total=0; $totalc=0; $numeroc=NULL;
+<?php
+//GOROD PAGAME ES UNA PRUEBA DE JALAR CAMBIOS
+
+ $total=0; $totalc=0; $numeroc=NULL;
 date_default_timezone_set('America/Lima');
 if (!function_exists("GetSQLValueString")) {
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 

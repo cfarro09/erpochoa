@@ -331,7 +331,7 @@ mysql_free_result($Listado);
 								<td>${new Date(item.fecha).toLocaleDateString()}</td>
 								<td>${item.detalle}</td>
 								<td>${item.numero}</td>
-								<td>${item.cantidad ? item.cantidad : ""}</td>
+								<td>${item.cantidad == 0 ? item.cantidad : ""}</td>
 								<td></td>
 								<td>${item.saldo}</td>
 							</tr>
