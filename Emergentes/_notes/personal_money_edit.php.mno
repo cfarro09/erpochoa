@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Personal" value="name:codigosueldo;datatype:int,name:codigopersonal;datatype:int,name:sueldomensual;datatype:real,name:fecha_pago;datatype:date,name:Personal;datatype:string" />
+</info>

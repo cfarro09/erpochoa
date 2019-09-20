@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Conf_Sis" value="name:codconf;datatype:int,name:nombresistema;datatype:string,name:logo;datatype:string,name:favicon;datatype:string,name:footer;datatype:string" />
+</info>

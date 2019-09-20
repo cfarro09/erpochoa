@@ -1,0 +1,2 @@
+[21-Feb-2017 02:05:30 UTC] PHP Fatal error:  Class 'PEAR' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Net/Socket.php on line 35
+[21-Feb-2017 02:05:31 UTC] PHP Deprecated:  Assigning the return value of new by reference is deprecated in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Net/SMTP.php on line 127

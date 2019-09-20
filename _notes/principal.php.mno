@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Contador_Clientes" value="name:ContadorCliente;datatype:int" />
+	<infoitem key="UD_ContadorProveedor" value="name:ContadorProveedor;datatype:int" />
+	<infoitem key="UD_ContadorVentas" value="name:ContadorVentas;datatype:int" />
+</info>

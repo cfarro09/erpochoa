@@ -1,0 +1,1 @@
+[21-Feb-2017 02:04:01 UTC] PHP Warning:  imagecopyresampled() expects parameter 5 to be long, string given in /home/compraenunclic/public_html/ventas/assets/global/plugins/jcrop/demos/crop.php on line 21

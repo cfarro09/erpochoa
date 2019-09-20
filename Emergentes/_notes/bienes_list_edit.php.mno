@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_TipoMovimiento" value="name:codigotipomov;datatype:int,name:nombre_tipomov;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Personal" value="name:codigopersonal;datatype:int,name:Personal;datatype:string" />
+	<infoitem key="UD_Categoria" value="name:codigocat;datatype:int,name:nombre;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Marca" value="name:codigomarca;datatype:int,name:nombre;datatype:string,name:img;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Presentacion" value="name:codigopresent;datatype:int,name:nombre_presentacion;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Colores" value="name:codigocolor;datatype:int,name:nombre_color;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Oficina" value="name:codigooficina;datatype:int,name:nombre_oficina;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_SubCategoria" value="name:codigosubcat;datatype:int,name:codigocat;datatype:int,name:nombre;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Editar_Bien" value="name:codigoinventario;datatype:int,name:codigo;datatype:string,name:nombre_bien;datatype:string,name:serie;datatype:string,name:descripcion_bien;datatype:blob,name:fecha_adquisicion;datatype:date,name:numero_factura;datatype:string,name:fecha_incorporacion;datatype:date,name:precio_compra;datatype:int,name:codigomarca;datatype:int,name:codigocat;datatype:int,name:codigosubcat;datatype:int,name:codigocolor;datatype:int,name:codigopresent;datatype:int,name:estado;datatype:int" />
+	<infoitem key="UD_Editar_Movimientos" value="name:codigo_hmib;datatype:int,name:codigo;datatype:string,name:codigotipomov;datatype:int,name:fecha_mov;datatype:date,name:codacceso;datatype:int,name:codigooficina;datatype:int,name:codigopersonal;datatype:int,name:estado;datatype:int" />
+	<infoitem key="UD_Editar_Movimiento" value="name:codigo_hmib;datatype:int,name:codigo;datatype:string,name:codigotipomov;datatype:int,name:fecha_mov;datatype:date,name:codacceso;datatype:int,name:codigooficina;datatype:int,name:codigopersonal;datatype:int,name:estado;datatype:int" />
+</info>

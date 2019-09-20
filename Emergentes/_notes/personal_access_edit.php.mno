@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Personal" value="name:codacceso;datatype:int,name:usuario;datatype:string,name:paterno;datatype:string,name:materno;datatype:string,name:nombre;datatype:string,name:clave;datatype:string,name:nivel;datatype:string" />
+</info>

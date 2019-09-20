@@ -1,0 +1,3 @@
+[21-Feb-2017 02:04:44 UTC] PHP Deprecated:  Assigning the return value of new by reference is deprecated in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Mail.php on line 134
+[21-Feb-2017 02:04:44 UTC] PHP Deprecated:  Assigning the return value of new by reference is deprecated in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/PEAR.php on line 557
+[21-Feb-2017 02:04:44 UTC] PHP Deprecated:  Assigning the return value of new by reference is deprecated in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/PEAR.php on line 560

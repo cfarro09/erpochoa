@@ -1,0 +1,5 @@
+[21-Feb-2017 02:06:15 UTC] PHP Fatal error:  Class 'Auth_SASL_Common' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Auth/SASL/Plain.php on line 49
+[21-Feb-2017 02:06:15 UTC] PHP Fatal error:  Class 'Auth_SASL_Common' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Auth/SASL/CramMD5.php on line 49
+[21-Feb-2017 02:06:15 UTC] PHP Fatal error:  Class 'Auth_SASL_Common' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Auth/SASL/Anonymous.php on line 49
+[21-Feb-2017 02:06:15 UTC] PHP Fatal error:  Class 'Auth_SASL_Common' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Auth/SASL/DigestMD5.php on line 49
+[21-Feb-2017 02:06:15 UTC] PHP Fatal error:  Class 'Auth_SASL_Common' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Auth/SASL/Login.php on line 52

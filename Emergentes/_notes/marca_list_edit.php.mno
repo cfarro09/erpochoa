@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Agregar" value="name:codigomarca;datatype:int,name:nombre;datatype:string,name:img;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Editar" value="name:codigomarca;datatype:int,name:nombre;datatype:string,name:img;datatype:string,name:estado;datatype:int" />
+</info>

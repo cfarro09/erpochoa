@@ -1,0 +1,8 @@
+<products>
+  <product name="Transaction Engine" version="1.0.1" />
+  <product name="Form Validation" version="1.0.1" />
+  <product name="Send Email" version="1.0.1" />
+  <product name="User Login" version="1.0.1" />
+  <product name="Form Controls" version="1.0.1" />
+  <product name="Query Builder (QuB)" version="1.0.1" />
+</products>

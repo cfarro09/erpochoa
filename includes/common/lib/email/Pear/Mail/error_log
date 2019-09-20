@@ -1,0 +1,5 @@
+[21-Feb-2017 02:05:29 UTC] PHP Deprecated:  Assigning the return value of new by reference is deprecated in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Mail/smtp.php on line 189
+[21-Feb-2017 02:05:29 UTC] PHP Fatal error:  Class 'Mail' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Mail/smtp.php on line 26
+[21-Feb-2017 02:05:30 UTC] PHP Fatal error:  Class 'Mail' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Mail/mail.php on line 26
+[21-Feb-2017 02:05:30 UTC] PHP Fatal error:  Class 'Mail' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Mail/sendmail.php on line 25
+[21-Feb-2017 02:05:30 UTC] PHP Fatal error:  Class 'Mail' not found in /home/compraenunclic/public_html/ventas/includes/common/lib/email/Pear/Mail/null.php on line 28

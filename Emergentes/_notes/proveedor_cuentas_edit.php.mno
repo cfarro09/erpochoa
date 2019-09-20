@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Proveedor" value="name:codprovcue;datatype:int,name:codigobanco;datatype:int,name:titular;datatype:string,name:numero_cuenta;datatype:string,name:tipo_cuenta;datatype:string,name:estado_cuenta;datatype:int,name:ruc;datatype:string,name:razonsocial;datatype:string" />
+	<infoitem key="UD_Banco" value="name:codigobanco;datatype:int,name:nombre_banco;datatype:string,name:estado;datatype:int" />
+</info>

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Configuracion" value="name:codconf;datatype:int,name:nombresistema;datatype:string,name:logo;datatype:string,name:favicon;datatype:string,name:footer;datatype:string" />
+	<infoitem key="UD_Empresa" value="name:codigo_empre;datatype:int,name:ruc_empre;datatype:string,name:nombre_empre;datatype:string,name:detalle_empresa;datatype:blob,name:detalle_sucursal;datatype:blob" />
+	<infoitem key="UD_Factura" value="name:codigoventas;datatype:int,name:codigoventa;datatype:string,name:tipocomprobante;datatype:string,name:codigobanco;datatype:int,name:numerotarjeta;datatype:string,name:codigocomprobante;datatype:int,name:tipo_pago;datatype:string,name:codigoclientej;datatype:int,name:subtotal;datatype:real,name:igv;datatype:real,name:total;datatype:real,name:fecha_emision;datatype:date,name:hora_emision;datatype:time,name:codigoclientej;datatype:int,name:ClienteJuridico;datatype:string,name:codigoclientej;datatype:int,name:ruc;datatype:string,name:Personal;datatype:string" />
+	<infoitem key="UD_Listado_Productos" value="name:codigodetalleproducto;datatype:int,name:codigo;datatype:string,name:codigoprod;datatype:int,name:cantidad;datatype:int,name:pventa;datatype:real,name:concatenacion;datatype:string,name:codcomprobante;datatype:string,name:Producto;datatype:string,name:Marca;datatype:string,name:Presentacion;datatype:string,name:Color;datatype:string" />
+</info>

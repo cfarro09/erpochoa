@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Profesion" value="name:codigoprofesion;datatype:int,name:profesion;datatype:string" />
+	<infoitem key="UD_Personal" value="name:codigopersonal;datatype:int,name:Personal;datatype:string" />
+</info>

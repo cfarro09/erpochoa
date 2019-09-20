@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Servicios" value="name:codigosv;datatype:int,name:nombre;datatype:string,name:tipo;datatype:int,name:monto;datatype:int,name:observacion;datatype:blob,name:estado;datatype:int" />
+	<infoitem key="UD_Servicio_Recepcion" value="name:codigosao;datatype:int,name:codigosv;datatype:int,name:estado_servicio;datatype:string" />
+</info>

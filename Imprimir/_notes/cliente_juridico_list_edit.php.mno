@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Editar" value="name:codigoclientej;datatype:int,name:ruc;datatype:string,name:razonsocial;datatype:string,name:fax;datatype:int,name:telefono;datatype:string,name:celular;datatype:string,name:contacto;datatype:string,name:email;datatype:string,name:fecha_ingreso;datatype:timestamp,name:estado;datatype:int" />
+</info>

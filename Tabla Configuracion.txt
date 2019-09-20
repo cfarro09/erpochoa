@@ -1,0 +1,16 @@
+campos:
+nombre del sistema
+favicon
+
+
+nombre de la empresa
+logo empresa
+imagen portada
+pais empresa
+ciudad empresa
+direccion
+email
+telefonos
+
+
+footer

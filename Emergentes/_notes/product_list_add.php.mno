@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Categoria" value="name:codigocat;datatype:int,name:nombre;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Categorias" value="name:codigocat;datatype:int,name:nombre;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_SubCategorias" value="name:codigosubcat;datatype:int,name:codigocat;datatype:int,name:nombre;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Marca" value="name:codigomarca;datatype:int,name:nombre;datatype:string,name:img;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Presentacion" value="name:codigopresent;datatype:int,name:nombre_presentacion;datatype:string,name:estado;datatype:int" />
+	<infoitem key="UD_Colores" value="name:codigocolor;datatype:int,name:nombre_color;datatype:string,name:estado;datatype:int" />
+</info>

@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Editar" value="name:codigoclienten;datatype:int,name:cedula;datatype:string,name:nombre;datatype:string,name:paterno;datatype:string,name:materno;datatype:string,name:ciudad;datatype:string,name:celular;datatype:string,name:telefono;datatype:string,name:direccion;datatype:string,name:email;datatype:string,name:sexo;datatype:string,name:fecha_ingreso;datatype:timestamp,name:estado;datatype:int" />
+</info>

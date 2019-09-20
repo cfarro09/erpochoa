@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Actualiza" value="name:codigosv;datatype:int,name:nombre;datatype:string,name:tipo;datatype:int,name:monto;datatype:real,name:observacion;datatype:string,name:estado;datatype:int" />
+</info>

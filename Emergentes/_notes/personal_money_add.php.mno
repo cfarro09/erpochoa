@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Personal" value="name:codigopersonal;datatype:int,name:Personal;datatype:string" />
+	<infoitem key="UD_Cargos" value="name:codcar;datatype:int,name:nombre_cargo;datatype:string" />
+</info>
