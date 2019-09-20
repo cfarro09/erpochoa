@@ -1,6 +1,6 @@
 <?php
 $con_base=mysql_connect("localhost","root","");
-$base="ventas";
+$base="ochoa_050919";
 $tablas=mysql_query("show tables from $base;",$con_base);
 $texto.="create database if not exists $base;\n";
 $texto.="use $base;\n";

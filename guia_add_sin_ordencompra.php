@@ -515,6 +515,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				.catch(error => console.error("error: ", error))
 				.then(res => {
 					if (res.success) {
+						location.reload()
 						alert("registro completo!")
 						getSelector("#form-generate-compra").reset();
 						getSelector("#detalleFormProducto").innerHTML = ""
