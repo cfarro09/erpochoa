@@ -543,6 +543,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						alert("registro completo!")
 						getSelector("#form-generate-compra").reset();
 						getSelector("#detalleFormProducto").innerHTML = ""
+						location.reload()
 					}
 				});
 

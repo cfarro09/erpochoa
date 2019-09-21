@@ -379,7 +379,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="auto_guia_sin_oc.php" class="nav-link font-blue-ebonyclay">
+                                    <a href="auto_guia_sin_oc_sinboton.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Guia sin OC</span>
                                         <span class="selected"></span>

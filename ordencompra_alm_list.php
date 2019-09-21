@@ -193,7 +193,18 @@ $totalRows_Listado = mysql_num_rows($Listado);
 							<div class="row" style="margin-top:20px">
 								<div class="col-xs-12 col-md-12">
 									<div class="row">
-										<div class="col-md-6">
+										<div class="col-md-3">
+											<div class="form-group">
+												<label for="field-1" class="control-label">Tipo Doc</label>
+												<select class="form-control" id="tipodocalmacen">
+													<option value="guia">Guia</option>
+													<option value="factura">Factura</option>
+													<option value="boleta">Boleta</option>
+													<option value="otros">Otros</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-3">
 											<div class="form-group">
 												<label for="field-1" class="control-label">Numero Guia</label>
 												<input type="text" required class="form-control" name="numero-guia" id="numero-guia">
@@ -440,6 +451,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 		e.preventDefault();
 		const data = {
 			header: {
+				tipodocalmacen: $("#tipodocalmacen").val(),
 				codigoordcomp: $("#codigoordcomp").val(),
 				numeroguia: $("#numero-guia").val(),
 				codigoacceso: <?= $_SESSION['kt_login_id'] ?>,

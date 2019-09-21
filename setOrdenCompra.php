@@ -56,14 +56,14 @@ if($header->codigoguia){
       $lastSaldo = $detalle->cantidad_kardex;
     }
 
-    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo) values ($detalle->codigoprod, $detalle->codigo_guiaoc, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, $lastSaldo, $header->codsucursal, 'oc')";
+    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo) values ($detalle->codigoprod, $header->codigoguia, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, $lastSaldo, $header->codsucursal, 'oc')";
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
   }
 
   die(json_encode(array("success" => true), 128));
 
 }else{
-   $insertCabecera = "insert into ordencompra_guia(codigoordcomp, codigoacceso, numeroguia, estado, observacion) values ($header->codigoordcomp, $header->codigoacceso , '$header->numeroguia', $header->estado, '$header->observacion')";
+   $insertCabecera = "insert into ordencompra_guia(codigoordcomp, codigoacceso, numeroguia, estado, observacion, tipodocalmacen) values ($header->codigoordcomp, $header->codigoacceso , '$header->numeroguia', $header->estado, '$header->observacion', '$header->tipodocalmacen')";
    $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
@@ -81,7 +81,7 @@ if($header->codigoguia){
       $lastSaldo = $detalle->cantidad_kardex;
     }
 
-    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo) values ($detalle->codigoprod, $detalle->codigo_guiaoc, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, $lastSaldo, $header->codsucursal, 'oc')";
+    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, $lastSaldo, $header->codsucursal, 'oc', '$header->tipodocalmacen')";
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
 
 

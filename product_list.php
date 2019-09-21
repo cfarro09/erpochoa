@@ -202,7 +202,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			</tbody>
 		</table>
 		<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog" role="document" >
+			<div class="modal-dialog" role="document" style="width: 700px">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
 						<h5 class="modal-title" id="moperation-title">Almacen Kardex</h5>
@@ -250,7 +250,7 @@ include("Fragmentos/abrirpopupcentro.php");
 												<table class="table table-striped table-bordered table-hover" id="">
 													<thead>
 														<tr>
-															<th colspan="3" id="headerKardex"></th>
+															<th colspan="4" id="headerKardex"></th>
 															<th style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
@@ -258,6 +258,7 @@ include("Fragmentos/abrirpopupcentro.php");
 														<tr>
 															<th>FECHA</th>
 															<th>DETALLE</th>
+															<th>TIPO</th>
 															<th>N° COMP/GUIA</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
@@ -324,23 +325,27 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td></td>
 					<td></td>
 					<td></td>
+					<td></td>	
 					<td>0</td>
 					</tr>
 					`
 					console.log(res)
 					let i = 0;
 					res.forEach(item => {
-						debugger
-						getSelector("#detalleKardexAlmProd").innerHTML += `
-						<tr>
-						<td>${new Date(item.fecha).toLocaleDateString()}</td>
-						<td>${item.detalle}</td>
-						<td>${item.numero}</td>
-						<td>${item.cantidad == 0 ? item.cantidad : ""}</td>
-						<td></td>
-						<td>${item.saldo}</td>
-						</tr>
-						`;
+						if(item.cantidad != "0"){
+							getSelector("#detalleKardexAlmProd").innerHTML += `
+							<tr>
+							<td>${new Date(item.fecha).toLocaleDateString()}</td>
+							<td>${item.detalle}</td>
+							<td>${item.tipodocumento}</td>
+							<td>${item.numero}</td>
+							<td>${item.cantidad}</td>
+							<td></td>
+							<td>${item.saldo}</td>
+							</tr>
+							`;
+						}
+						
 					});
 
 				}

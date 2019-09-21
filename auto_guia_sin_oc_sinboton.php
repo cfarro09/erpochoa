@@ -97,7 +97,7 @@ include("Fragmentos/menu.php");
 
   </div>
 <?php } // Show if recordset empty?>
-<a href="guia_add_sin_ordencompra.php" class="btn btn-success" style="margin-bottom: 20px">Entrada Mercaderia S/OC</a>
+<a href="guia_add_sin_ordencompra.php" class="btn btn-success" style="margin-bottom: 20px; display: none">Entrada Mercaderia S/OC</a>
 <?php if ($totalRows_Listado > 0) { // Show if recordset not empty?>
   <table class="table table-striped table-bordered table-hover" id="sample_1">
     <thead>
@@ -190,7 +190,7 @@ include("Fragmentos/menu.php");
               </div>
             </div>
           </div>
-          <div class="modal-footer" id="manageButtons" style="display: none">
+          <div class="modal-footer" id="manageButtons">
             <button type="button" name="aceptar" id="aceptarModalOrdenCompra" class="btn btn-primary">Aceptar</button>
             <button type="button" class="btn btn-primary" id="rechazarModalOrdenCompra">Rechazar</button>
 
@@ -244,7 +244,11 @@ include("Fragmentos/menu.php");
         $("#mruc").text(res.header.ruc)
         $("#msucursal").text(res.header.nombre_sucursal + " " + (res.header.direccionOrden ? " :"+ res.header.direccionOrden : ""))
 
-        
+        if (e.target.dataset.estado == "2") {
+          document.querySelector("#manageButtons").style.display = "none"
+        } else {
+          document.querySelector("#manageButtons").style.display = ""
+        }
         document.querySelector("#detalleTableOrden1").innerHTML = ""
         res.detalle.forEach(r => {
           i++
