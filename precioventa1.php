@@ -60,8 +60,7 @@ include("Fragmentos/abrirpopupcentro.php");
 //________________________________________________________________________________________________________________
 ?>
 
-<h2>Data de Costeo</h2>
-
+<h2>PRECIO VENTA</h2>
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
 	<div class="alert alert-danger">
@@ -97,7 +96,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td class="total"><?= $row_Listado['total'] ?></td>
 					<td class="fecha"><?= $row_Listado['fecha'] ?></td>
 					<td class="nombre_sucursal"><?= $row_Listado['nombre_sucursal'] ?></td>
-					<td><a href="#" onclick="managecompra(this)" data-set="<?= $row_Listado['totalv'] == 0 ? "asignar" : "ver" ?>" ><?= $row_Listado['totalv'] == 0 ? "Asignar" : "ver" ?></a></td>
+					<td><a href="#" onclick="managecompra(this)" data-totalv="<?= $row_Listado['totalv'] ?>" data-set="<?= $row_Listado['totalv'] == 0 ? "asignar" : "ver" ?>" ><?= $row_Listado['totalv'] == 0 ? "Asignar" : "ver" ?></a></td>
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 
@@ -107,7 +106,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<div class="modal-dialog" role="document">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
-						<h5 class="modal-title" id="moperation-title">Asignar precio venta</h5>
+						<h2 class="modal-title" id="moperation-title">Asignar precio venta</h2>
 					</div>
 					<div class="modal-body">
 						<form id="saveOrdenCompra">
@@ -122,12 +121,41 @@ include("Fragmentos/abrirpopupcentro.php");
 								TOTAL COMPRA: <span id="mtotal"></span> <BR>
 								SUCURSAL: <span id="mnombre_sucursal"></span> <BR>
 								FECHA DE EMISION: : <span id="mfecha"></span> <br>
-								GENERADA POR: : <span id="musuario"></span> <br>
+								GENERADA POR: : <span id="musuario"></span> <br><br>
+
+								<label class="" for="check_transporte">¿Incluye transporte?</label>
+								<input type="checkbox" class="" id="check_transporte">
+								
+								<div class="row" style="display: none" id="container_transporte">
+									<div class="col-sm-3">
+										<label class="control-label" for="tipocomprobante">Tipo Comprobante</label>
+										<select class="form-control select2-allow-clear" name="tipocomprobante" id="tipocomprobante">
+											<option value="">Select</option>
+											<option value="factura">Factura</option>
+											<option value="boleta">Boleta</option>
+											<option value="notaventa">Nota venta</option>
+											<option value="recibo">Recibo</option>
+											<option value="otros">Otros</option>
+										</select>
+									</div>
+									<div class="col-sm-3">
+										<label class="control-label" for="numerocomprobante">Nro Comprobante</label>
+										<input class="form-control" name="" id="numerocomprobante">
+									</div>
+									<div class="col-sm-3">
+										<label class="control-label" for="empresatransporte">Empresa Transporte</label>
+										<input class="form-control" name="" id="empresatransporte">
+									</div>
+									<div class="col-sm-3">
+										<label class="control-label" for="precio_transporte">Precio Transporte</label>
+										<input class="form-control" type="number" name="" id="precio_transporte">
+									</div>
+								</div>
 
 								<input type="hidden" id="codigocompras" name="">
 								<div class="row" style="margin-top:20px">
 									<div class="col-xs-12 col-md-12">
-										
+
 										<table class="table">
 											<thead>
 												<th>Nº</th>
@@ -146,7 +174,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							</div>
 							<button type="button" id="btn-finalice" style="display: none"
 							class="btn btn-primary">Finalizar</button>
-							<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
+							<button type="submit" id="btn_save_precioventa1" class="btn btn-success">Guardar</button>
 							<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
 						</form>
 					</div>
@@ -165,9 +193,10 @@ include("Fragmentos/abrirpopupcentro.php");
 	?>
 	<script type="text/javascript">
 
-		document.querySelectorAll(".setStatus").forEach(item => {
+		getSelectorAll(".setStatus").forEach(item => {
 			item.addEventListener("click", (e) => {
-				fetch(`editarEstadoOrdenCompra.php?codigo=${document.querySelector("#codigoOrdenCompra").value}&estado=${e.target.dataset.estado}`)
+				// getSelector("#check_logistica_edificaciones").checked
+				fetch(`editarEstadoOrdenCompra.php?codigo=${getSelector("#codigoOrdenCompra").value}&estado=${e.target.dataset.estado}`)
 				.then(res => res.json())
 				.catch(error => console.error("error: ", error))
 				.then(res => {
@@ -177,6 +206,10 @@ include("Fragmentos/abrirpopupcentro.php");
 			})
 		});
 		function managecompra(e){
+			getSelector("#check_transporte").checked = false;
+			getSelector("#check_transporte").parentElement.classList.remove("checked")
+			getSelector("#container_transporte").style.display = "none";
+			
 			$('#mnumerofactura').text(e.parentElement.parentElement.querySelector(".numerofactura").textContent)
 			$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
 			$('#mrazonsocial').text(e.parentElement.parentElement.querySelector(".razonsocial").textContent)
@@ -185,7 +218,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			$('#mfecha').text(e.parentElement.parentElement.querySelector(".fecha").textContent)
 			$('#musuario').text(e.parentElement.parentElement.querySelector(".usuario").textContent)
 			const codigocompras =  parseInt(e.parentElement.parentElement.querySelector(".codigocompras").textContent)
-			
+			const set = e.dataset.set != "asignar" ? "readonly":"";
 			$("#codigocompras").val(codigocompras);
 			getSelector("#detalleComprax").innerHTML = ""
 
@@ -203,7 +236,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td>${ix.nombre}</td>
 					<td>${ix.pcompra}</td>
 					<td>
-					<input data-pcompra="${ix.pcompra}"  onfocusout="validatewithpcompra(this)" data-cantidad="${ix.cantidad}" data-codigodetalleproducto="${ix.codigodetalleproducto}" required data-toggle="tooltip" oninput="validatepventa(this)" data-placement="bottom" title="${ix.precio_venta}" type="number" class="prventax1 form-control">
+					<input data-pcompra="${ix.pcompra}"  onfocusout="validatewithpcompra(this)" data-cantidad="${ix.cantidad}" data-codigodetalleproducto="${ix.codigodetalleproducto}" required data-toggle="tooltip" oninput="validatepventa(this)" data-placement="bottom" title="${ix.precio_venta}" type="number" class="prventax1 form-control" ${set} value="${parseFloat(ix.pventa) == 0 ? "" : parseFloat(ix.pventa)}">
 					</td>
 					<td class="importex">0</td>
 					</tr>
@@ -215,8 +248,15 @@ include("Fragmentos/abrirpopupcentro.php");
 				})
 
 			});
-			
+
 			$("#mSetPrecioVenta").modal();
+			if(set == "readonly"){
+				getSelector("#btn_save_precioventa1").style.display = "none"
+
+			}else{
+				getSelector("#btn_save_precioventa1").style.display = ""
+			}
+
 		}
 		function validatewithpcompra(e){
 			if(parseFloat(e.value) < parseFloat(e.dataset.pcompra)){
@@ -238,6 +278,22 @@ include("Fragmentos/abrirpopupcentro.php");
 		}
 		getSelector("#saveOrdenCompra").addEventListener("submit", e => {
 			e.preventDefault();
+			let transporte = "";
+			if(getSelector("#check_transporte").checked){
+				if($("#tipocomprobante").val() == "" || $("#numerocomprobante").val() == "" || $("#empresatransporte").val() == "" || $("#precio_transporte").val() == "" ){
+					alert("Complete los datos de transporte")
+					return
+				}else{
+					const tdd={
+						tipocomprobante: $("#tipocomprobante").val(),
+						numerocomprobante: $("#numerocomprobante").val(),
+						empresatransporte: $("#empresatransporte").val(),
+						precio_transporte: $("#precio_transporte").val()
+					}
+					transporte = JSON.stringify(tdd);
+				}
+			}
+			console.log(transporte)
 			const codigocompras = $("#codigocompras").val();
 			let total = 0;
 			const detalle = [];
@@ -248,11 +304,11 @@ include("Fragmentos/abrirpopupcentro.php");
 					pventa: ee.value
 				})
 			})
-			
 
 			total = total.toFixed(4)
 			var formData = new FormData();
 			formData.append("detalle", JSON.stringify(detalle))
+			formData.append("transporte", transporte)
 			formData.append("codigocompras", codigocompras)
 			formData.append("ventatotal", total)
 
@@ -265,7 +321,15 @@ include("Fragmentos/abrirpopupcentro.php");
 					alert("registro completo!")
 					location.reload()
 				}
-
 			});
 		})
+		getSelector("#check_transporte").addEventListener("click", e => {
+			console.log(e.target.checked)
+			if(e.target.checked){
+				getSelector("#container_transporte").style.display = "";
+			}else{
+				getSelector("#container_transporte").style.display = "none";
+			}
+		})
+		
 	</script>
