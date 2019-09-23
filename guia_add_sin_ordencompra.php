@@ -63,10 +63,10 @@ if ((isset($_POST["MM_EliminarVenta"])) && ($_POST["MM_EliminarVenta"] == "Elimi
 if ((isset($_POST["MM_GuardarVenta"])) && ($_POST["MM_GuardarVenta"] == "GuardarVenta")) {  
 	if($_POST['codigoproveedor']==NULL){
 		?>
-<script type="text/javascript">
-	alert("INGRESE CODIGO DE PROVEEDOR, NUMERO DE FACTURA Y SUCURSAL, O PRECIO DE COMPRA O VENTA ESTA EN CERO");
-</script>
-<?php 
+		<script type="text/javascript">
+			alert("INGRESE CODIGO DE PROVEEDOR, NUMERO DE FACTURA Y SUCURSAL, O PRECIO DE COMPRA O VENTA ESTA EN CERO");
+		</script>
+		<?php 
 	}
 	else {
 		$insertSQL = sprintf("insert into ordencompra values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
@@ -92,11 +92,11 @@ if ((isset($_POST["MM_GuardarVenta"])) && ($_POST["MM_GuardarVenta"] == "Guardar
 		$Result1 = mysql_query($insertSQL, $Ventas) or die(mysql_error());
 
 		?>
-<script type="text/javascript">
-	window.location = "product_list.php";
-</script>
+		<script type="text/javascript">
+			window.location = "product_list.php";
+		</script>
 
-<?php } 
+	<?php } 
 }
 
 
@@ -233,7 +233,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	<div class="row">
 		<div class="col-sm-12 text-center">
 			<button class="btn btn-success" type="submit" id="generateCompra"
-				style="margin-top:10px;margin-bottom: 10px; font-size: 20px">ENTRADA DE MERCADERIA</button>
+			style="margin-top:10px;margin-bottom: 10px; font-size: 20px">ENTRADA DE MERCADERIA</button>
 		</div>
 	</div>
 	<div class="row">
@@ -242,9 +242,9 @@ include("Fragmentos/abrirpopupcentro.php");
 				<div class="form-group">
 					<label for="field-1" class="control-label">Proveedor</label>
 					<select name="proveedor" id="proveedor" required class="form-control select2 tooltips" id="single"
-						data-placement="top" data-original-title="Seleccionar proveedor">
-						<option value=""></option>
-						<?php do {  ?>
+					data-placement="top" data-original-title="Seleccionar proveedor">
+					<option value=""></option>
+					<?php do {  ?>
 						<option value="<?php echo $row_Clientes['codigoclienten']?>">
 							<?php echo $row_Clientes['ClienteNatural']?>
 						</option>
@@ -256,53 +256,64 @@ include("Fragmentos/abrirpopupcentro.php");
 						$row_Clientes = mysql_fetch_assoc($Clientes);
 					}
 					?>
-					</select>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<label for="field-1" class="control-label">Sucursal</label>
-					<input type="hidden" name="sucursal" id="sucursal" value="<?=  $_SESSION['cod_sucursal'] ?>">
-					<select name="sucursal" id="sucursal" disabled required
-						class="sucursal form-control select2 tooltips" data-placement="top"
-						data-original-title="Seleccionar sucursal">
-						<?php do {  ?>
-						<option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?>
-							value="<?php echo $row_sucursales['cod_sucursal']?>">
-							<?php echo $row_sucursales['nombre_sucursal']?>
-						</option>
-						<?php
-				} while ($row_sucursales = mysql_fetch_assoc($sucursales));
-				$rows = mysql_num_rows($sucursales);
-				if($rows > 0) {
-					mysql_data_seek($sucursales, 0);
-					$row_sucursales = mysql_fetch_assoc($sucursales);
-				}
-				?>
-					</select>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<label for="field-1" class="control-label">Numero Guia</label>
-					<input type="text" class="form-control" required="" id="numeroguia" name="numeroguia">
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<label for="field-1" class="control-label">Documento de Referencia</label>
-					<input type="text" class="form-control" id="codigoreferencia2" name="codigoreferencia2">
-				</div>
+				</select>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-sm-12">
-			<label class="" style="font-weight: bold">Seleccione un producto</label>
-			<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
-				<option value="" <?php if (!(strcmp("", "compras_add.php"))) {echo "selected=\"selected\"";} ?>>
+		<div class="col-md-6">
+			<div class="form-group">
+				<label for="field-1" class="control-label">Sucursal</label>
+				<input type="hidden" name="sucursal" id="sucursal" value="<?=  $_SESSION['cod_sucursal'] ?>">
+				<select name="sucursal" id="sucursal" disabled required
+				class="sucursal form-control select2 tooltips" data-placement="top"
+				data-original-title="Seleccionar sucursal">
+				<?php do {  ?>
+					<option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?>
+					value="<?php echo $row_sucursales['cod_sucursal']?>">
+					<?php echo $row_sucursales['nombre_sucursal']?>
 				</option>
 				<?php
+			} while ($row_sucursales = mysql_fetch_assoc($sucursales));
+			$rows = mysql_num_rows($sucursales);
+			if($rows > 0) {
+				mysql_data_seek($sucursales, 0);
+				$row_sucursales = mysql_fetch_assoc($sucursales);
+			}
+			?>
+		</select>
+	</div>
+</div>
+<div class="col-md-3">
+	<div class="form-group">
+		<label for="field-1" class="control-label">Tipo Doc</label>
+		<select class="form-control" id="tipodocsinoc">
+			<option value="guia">Guia</option>
+			<option value="factura">Factura</option>
+			<option value="boleta">Boleta</option>
+			<option value="otros">Otros</option>
+		</select>
+	</div>
+</div>
+<div class="col-md-3">
+	<div class="form-group">
+		<label for="field-1" class="control-label">Numero Guia</label>
+		<input type="text" class="form-control" required="" id="numeroguia" name="numeroguia">
+	</div>
+</div>
+<div class="col-md-6">
+	<div class="form-group">
+		<label for="field-1" class="control-label">Documento de Referencia</label>
+		<input type="text" class="form-control" id="codigoreferencia2" name="codigoreferencia2">
+	</div>
+</div>
+</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<label class="" style="font-weight: bold">Seleccione un producto</label>
+		<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
+			<option value="" <?php if (!(strcmp("", "compras_add.php"))) {echo "selected=\"selected\"";} ?>>
+			</option>
+			<?php
 			do {  
 				?>
 				<option value="<?php echo $row_Productos['codigoprod']?>"
@@ -315,7 +326,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<?php echo "$/.". $row_Productos['precio_venta']; ?> -
 					<?php echo $row_Productos['minicodigo']; ?> -
 					(<?php echo "Stock ".$row_Productos['stock']; ?>)</option>
-				<?php
+					<?php
 				} while ($row_Productos = mysql_fetch_assoc($Productos));
 				$rows = mysql_num_rows($Productos);
 				if($rows > 0) {
@@ -388,13 +399,13 @@ include("Fragmentos/abrirpopupcentro.php");
 
 <?php 
 //___________________________________________________________________________________________________________________
-	include("Fragmentos/footer.php");
-	include("Fragmentos/pie.php");
+include("Fragmentos/footer.php");
+include("Fragmentos/pie.php");
 
 
-	mysql_free_result($Clientes);
-	mysql_free_result($Detalle_Compras);
-	?>
+mysql_free_result($Clientes);
+mysql_free_result($Detalle_Compras);
+?>
 
 <script type="text/javascript">
 	$(".sucursalXX").on("change", function () {
@@ -410,11 +421,11 @@ include("Fragmentos/abrirpopupcentro.php");
 	$("#form-setSucursal").on("submit", function (e) {
 		e.preventDefault();
 		fetch(`setDireccion.php?name=${document.querySelector("#sucursalinput").value}&estado=999`)
-			.then(res => res.json())
-			.catch(error => console.error("error: ", error))
-			.then(res => {
-				location.reload();
-			});
+		.then(res => res.json())
+		.catch(error => console.error("error: ", error))
+		.then(res => {
+			location.reload();
+		});
 	})
 	function changeunidadmedida(e) {
 		if (e.value == "kilo" || e.value == "tonelada") {
@@ -433,27 +444,27 @@ include("Fragmentos/abrirpopupcentro.php");
 			const option = this.options[this.selectedIndex]
 			const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
 			$("#detalleFormProducto").append(`
-					<tr class="producto">
-					<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
-					<td class="indexproducto">${cantrows}</td>
-					<td style="width: 80px"><input type="number" required oninput="nonegative(this)" class="cantidad form-control" value="1" ></td>
-					<td class="nombre">${option.dataset.nombre}</td>
-					<td class="marca">${option.dataset.marca}</td>
-					<td style="width: 100px">
-					<select class="form-control unidad_medida" onchange="changeunidadmedida(this)" name="unidad_medida" required>
-					<option value="unidad">unidad</option>
-					<option value="kilo">kilo</option>
-					<option value="tonelada">tonelada</option>
-					</select>
-					</td>
-					<td class="td-cantidad_aux" style="display: none; width: 80px">
-						<input type="number" oninput="nonegative(this)" class="cantidad_aux form-control" >
-					</td>
-					<td>
-					<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm tooltips" data-placement="top"  data-original-title="Eliminar Producto"><i class="glyphicon glyphicon-trash"></i></button>
-					</td>
-					</tr>
-					`)
+				<tr class="producto">
+				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
+				<td class="indexproducto">${cantrows}</td>
+				<td style="width: 80px"><input type="number" required oninput="nonegative(this)" class="cantidad form-control" value="1" ></td>
+				<td class="nombre">${option.dataset.nombre}</td>
+				<td class="marca">${option.dataset.marca}</td>
+				<td style="width: 100px">
+				<select class="form-control unidad_medida" onchange="changeunidadmedida(this)" name="unidad_medida" required>
+				<option value="unidad">unidad</option>
+				<option value="kilo">kilo</option>
+				<option value="tonelada">tonelada</option>
+				</select>
+				</td>
+				<td class="td-cantidad_aux" style="display: none; width: 80px">
+				<input type="number" oninput="nonegative(this)" class="cantidad_aux form-control" >
+				</td>
+				<td>
+				<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm tooltips" data-placement="top"  data-original-title="Eliminar Producto"><i class="glyphicon glyphicon-trash"></i></button>
+				</td>
+				</tr>
+				`)
 		}
 
 	});
@@ -482,6 +493,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				detalle: []
 			}
 			data.header = {
+				tipodoc: $("#tipodocsinoc").val(),
 				codigoguia: 0,
 				codigo: "<?= $_GET['codigo'] ?>",
 				codigoproveedor: getSelector("#proveedor").value,
@@ -511,16 +523,16 @@ include("Fragmentos/abrirpopupcentro.php");
 			formData.append("json", JSON.stringify(data))
 
 			fetch(`setGuiaSinOc.php`, { method: 'POST', body: formData })
-				.then(res => res.json())
-				.catch(error => console.error("error: ", error))
-				.then(res => {
-					if (res.success) {
-						location.reload()
-						alert("registro completo!")
-						getSelector("#form-generate-compra").reset();
-						getSelector("#detalleFormProducto").innerHTML = ""
-					}
-				});
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				if (res.success) {
+					location.reload()
+					alert("registro completo!")
+					getSelector("#form-generate-compra").reset();
+					getSelector("#detalleFormProducto").innerHTML = ""
+				}
+			});
 
 		}
 	})

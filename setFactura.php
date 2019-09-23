@@ -56,7 +56,7 @@ if($header->codigocompras){
   // die(json_encode(array("success" => true), 128));
 
 }else{
-  $insertCabecera = "insert into compras(tipomoneda, tipo_comprobante, codigoproveedor, numerofactura, codacceso, codigopersonal, subtotal, igv, total, estadofact, totalv, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, tipocambio) values ('$header->moneda', '$header->tipocomprobante', $header->codigoproveedor, '$header->nrocomprobante', $header->codacceso, $header->codigopersonal, $header->subtotal, $header->igv, $header->total, $header->estadofact, $header->totalv, $header->codsucursal, $header->codigo_orden_compra, $header->codigo_guia_sin_oc, $header->tipocambio)";
+  $insertCabecera = "insert into compras(tipomoneda, tipo_comprobante, codigoproveedor, numerofactura, codacceso, codigopersonal, subtotal, igv, total, estadofact, totalv, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, tipocambio, descuento) values ('$header->moneda', '$header->tipocomprobante', $header->codigoproveedor, '$header->nrocomprobante', $header->codacceso, $header->codigopersonal, $header->subtotal, $header->igv, $header->total, $header->estadofact, $header->totalv, $header->codsucursal, $header->codigo_orden_compra, $header->codigo_guia_sin_oc, $header->tipocambio, $header->descuento)";
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
@@ -78,9 +78,9 @@ if($header->codigocompras){
 
     if($row_Listado1){
       $newcantidad = $row_Listado1['cantidad'] + $detalle->cantidad;
-      $xx = "insert into kardex_contable(codigoprod, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($detalle->codigoprod, $lastId, '$header->nrocomprobante', 'Compras', $detalle->cantidad, $detalle->totalcompras, $newcantidad, $header->codsucursal)";
+      $xx = "insert into kardex_contable(codigoprod, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, tipocomprobante) values ($detalle->codigoprod, $lastId, '$header->nrocomprobante', 'Compras', $detalle->cantidad, $detalle->totalcompras, $newcantidad, $header->codsucursal, '$header->tipocomprobante')";
     }else{
-      $xx = "insert into kardex_contable(codigoprod, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($detalle->codigoprod, $lastId, '$header->nrocomprobante', 'Compras', $detalle->cantidad, $detalle->totalcompras, $detalle->cantidad, $header->codsucursal)";
+      $xx = "insert into kardex_contable(codigoprod, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, tipocomprobante) values ($detalle->codigoprod, $lastId, '$header->nrocomprobante', 'Compras', $detalle->cantidad, $detalle->totalcompras, $detalle->cantidad, $header->codsucursal, '$header->tipocomprobante')";
     }
     $queryDetalle = mysql_query($xx, $Ventas) or die(mysql_error());
   }

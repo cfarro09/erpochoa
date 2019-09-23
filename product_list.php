@@ -134,6 +134,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					$row_sucursales = mysql_fetch_assoc($sucursales);
 				}
 				?>
+				<th  class="none"> TOTAL PRODUCTOS</th>
 				<th  class="none"> CATEGORIA </th>
 				<th  class="none"> PRESENTACION </th>
 				<th  class="none"> COLOR </th>
@@ -157,8 +158,10 @@ include("Fragmentos/abrirpopupcentro.php");
 					$query_filtro_by_sucursal = "SELECT s.nombre_sucursal, s.cod_sucursal,  IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo, k.codigoprod, k.fecha from sucursal s left join kardex_alm k on k.codsucursal = s.cod_sucursal and k.fecha = ( SELECT MAX(fecha) FROM kardex_alm t2 WHERE k.codigoprod = t2.codigoprod and t2.codsucursal = s.cod_sucursal) and k.codigoprod =  $sux where s.cod_sucursal != 10 order by cod_sucursal asc";
 					$auxx1 = mysql_query($query_filtro_by_sucursal, $Ventas) or die(mysql_error());
 					$row_aux = mysql_fetch_assoc($auxx1);
-					do {  ?>
-						<th  class="none"> <?= $row_aux['saldo'] ?></th>
+					$total = 0 ;
+					do { ?>
+						<?php $total = $total + (int) $row_aux['saldo'];?>
+						<th  class="none"> <?= $row_aux['saldo']; ?></th>
 						<?php 
 					} while ($row_aux = mysql_fetch_assoc($auxx1));
 					
@@ -167,8 +170,8 @@ include("Fragmentos/abrirpopupcentro.php");
 						mysql_data_seek($auxx1, 0);
 						$row_aux = mysql_fetch_assoc($auxx1);
 					}
-
 					?>
+					<td> <?= $total;?></td>
 
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
 

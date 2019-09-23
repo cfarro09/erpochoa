@@ -55,7 +55,7 @@ if($header->codigoguia){
   // die(json_encode(array("success" => true), 128));
 
 }else{
-  $insertCabecera = "insert into guia_sin_oc(codigoproveedor, codacceso, codigopersonal, sucursal, numero_guia, codigoref2, estado) values ($header->codigoproveedor, $header->codigoacceso , $header->codigopersonal, $header->codsucursal, '$header->numeroguia', '$header->codigoreferencia2', $header->estado)";
+  $insertCabecera = "insert into guia_sin_oc(codigoproveedor, codacceso, codigopersonal, sucursal, numero_guia, codigoref2, estado, tipodoc) values ($header->codigoproveedor, $header->codigoacceso , $header->codigopersonal, $header->codsucursal, '$header->numeroguia', '$header->codigoreferencia2', $header->estado, '$header->tipodoc')";
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());

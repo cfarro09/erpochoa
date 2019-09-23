@@ -215,8 +215,8 @@ include("Fragmentos/abrirpopupcentro.php");
 
 											PROVEEDOR: <span id="mproveedor"></span> <BR>
 											SUCURSAL: <span id="msucursal"></span> <BR>
-											FECHA DE EMISION: : <span id="mfechaemision"></span> <br>
-											VALOR TOTAL: : <span id="mvalortotal"></span><BR>
+											FECHA DE EMISION : <span id="mfechaemision"></span> <br>
+											VALOR TOTAL: <span id="mvalortotal"></span><BR>
 											CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
 											CODIGO REF2: : <span id="mcodref2"></span> <br>
 											GENERADA POR: : <span id="mgeneradapor"></span> <br>
@@ -281,7 +281,7 @@ include("Fragmentos/abrirpopupcentro.php");
 														</div>
 														PROVEEDOR: <span id="mproveedor1"></span> <BR>
 														SUCURSAL: <span id="msucursal1"></span> <BR>
-														DOC REF 1 : <span id="mcodref11"></span> <br>
+														DOC ALMACEN : <span id="mcodref11"></span> <br>
 														DOC REF 2: : <span id="mcodref21"></span> <br>
 														GENERADA POR: : <span id="mgeneradapor1"></span> <br>
 														RUC : <span id="mruc1"></span>
@@ -403,12 +403,17 @@ include("Fragmentos/abrirpopupcentro.php");
 																		style="font-weight: bold; font-size: 25px">0.0</span>
 																	</div>
 																</div>
-																<div class="col-md-4">
+																<div class="col-md-2">
 																	<div class="form-group">
-																		<label for="field-1" class="control-label">Tipo de
-																		Comprobante</label>
+																		<label for="field-1" class="control-label">Descuento</label>
+																		<input type="number" class="form-control" oninput="changedescuento(this)" step="any" id="descuento" name="">
+																	</div>
+																</div>
+																<div class="col-md-3">
+																	<div class="form-group">
+																		<label for="field-1" class="control-label">Tipo Comp</label>
 																		<select class="form-control select2-allow-clear"
-																		name="tipocomprobante" id="tipocomprobante">
+																		name="tipocomprobantefactura" id="tipocomprobantefactura">
 																		<option value="factura">Factura</option>
 																		<option value="boleta">Boleta</option>
 																		<option value="notaventa">Nota venta</option>
@@ -417,7 +422,7 @@ include("Fragmentos/abrirpopupcentro.php");
 																	</select>
 																</div>
 															</div>
-															<div class="col-md-4">
+															<div class="col-md-3">
 																<div class="form-group">
 																	<label for="field-1" class="control-label">Nro Comprobante</label>
 																	<input type="text" required class="form-control"
@@ -770,7 +775,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							$("#mproveedor1").text(res.header.razonsocial)
 							$("#mfechaemision1").text(res.header.fecha_emision)
 							$("#mvalortotal1").text(res.header.montofact)
-							$("#mcodref11").text(res.header.codigoref1)
+							$("#mcodref11").text(res.header.numero_guia)
 							$("#mcodref21").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
 							$("#mgeneradapor1").text(res.header.usuario)
 							$("#mruc1").text(res.header.ruc)
@@ -813,11 +818,31 @@ include("Fragmentos/abrirpopupcentro.php");
 
 					})
 				});
+				function changedescuento(e){
+					if(e.value < 0){
+						e.value = 0; 
+						return;
+					}
+					const descuento = $("#descuento").val() ? $("#descuento").val() : 0
+
+					let total = 0;
+					let subtotal = 0;
+					document.querySelectorAll(".importe").forEach(item => {
+						if (item.value) {
+							total += item.value * 1.18;
+							subtotal +=  parseFloat(item.value);
+						}
+					});
+					$("#importe-total").text((total*(100 - descuento) / 100).toFixed(4))
+					$("#subtotal-facturacion").text((subtotal*(100 - descuento) / 100).toFixed(4))
+					$("#igv-facturacion").text((subtotal*0.18*(100 - descuento) / 100).toFixed(4))
+				}
 				function changeimporte(e) {	
 					if(e.value < 0){
 						e.value = 0; 
 						return;
 					}
+					const descuento = $("#descuento").val() ? $("#descuento").val() : 0
 					const aa = e.parentElement.parentElement
 					const ss =  e.value / parseInt(aa.querySelector(".cantidad").textContent)
 					
@@ -832,7 +857,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						}
 					});
 					$("#importe-total").text(total.toFixed(4))
-					$("#subtotal-facturacion").text(subtotal.toFixed(4))
+					$("#subtotal-facturacion").text(subtotal.toFixed(4)*(100 - descuento) / 100)
 					$("#igv-facturacion").text((subtotal*0.18).toFixed(4))
 
 				}
@@ -841,6 +866,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						e.value = 0; 
 						return;
 					}
+					const descuento = $("#descuento").val() ? $("#descuento").val() : 0
 					const aa = e.parentElement.parentElement
 					const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
 
@@ -855,7 +881,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							}
 						});
 						$("#importe-total").text(total.toFixed(4))
-						$("#subtotal-facturacion").text(subtotal.toFixed(4))
+						$("#subtotal-facturacion").text(subtotal.toFixed(4)*(100 - descuento) / 100)
 						$("#igv-facturacion").text((subtotal*0.18).toFixed(4))
 
 					}
@@ -889,7 +915,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					if(getSelector("#check_estibador").checked){
 						if($("#tipocomprobanteestibador").val() && $("#numerocomprobanteestibador").val() && $("#empresaestibador").val() && $("#precio_estibador").val()){
 							data.gastos.push(`insert into GastosCompras (tipocomprobante, nrocomprobante, empresa, precio, idcompras, tipo) values ('${$("#tipocomprobanteestibador").val()}', '${$("#numerocomprobanteestibador").val()}', '${$("#empresaestibador").val()}', 
-								 ${parseFloat($("#precio_estibador").val())}, ##IDCOMPRAS##, 'estibador')`);
+								${parseFloat($("#precio_estibador").val())}, ##IDCOMPRAS##, 'estibador')`);
 						}else{
 							alert("debe llenar todos los datos de transporte");
 							return;
@@ -899,7 +925,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					if(getSelector("#check_otros").checked){
 						if($("#tipocomprobanteotros").val() && $("#numerocomprobanteotros").val() && $("#empresaotros").val() && $("#preciootros").val()){
 							data.gastos.push(`insert into GastosCompras (tipocomprobante, nrocomprobante, empresa, precio, idcompras, tipo) values ('${$("#tipocomprobanteotros").val()}', '${$("#numerocomprobanteotros").val()}', '${$("#empresaotros").val()}', 
-								 ${parseFloat($("#preciootros").val())}, ##IDCOMPRAS##, 'otros')`);
+								${parseFloat($("#preciootros").val())}, ##IDCOMPRAS##, 'otros')`);
 						}else{
 							alert("debe llenar todos los datos de transporte");
 							return;
@@ -909,7 +935,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 					data.header = {
 						codigocompras: 0,
-						tipocomprobante: getSelector("#tipocomprobante").value,
+						tipocomprobante: getSelector("#tipocomprobantefactura").value,
 						nrocomprobante: getSelector("#nrocomprobante").value,
 						moneda: getSelector("#moneda").value,
 						codigoproveedor: getSelector("#codigoproveedor").value,
@@ -920,6 +946,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						total: getSelector("#importe-total").textContent,
 						estadofact: 1,
 						totalv: sumaventa,
+						descuento: getSelector("#descuento").val() ? getSelector("#descuento").val() : 0,
 						codsucursal: getSelector("#codigosucursal").value,
 						codigo_orden_compra: getSelector("#codigo_orden_compra").value,
 						codigo_guia_sin_oc: getSelector("#codigo_guia_sin_oc").value,
@@ -957,23 +984,21 @@ include("Fragmentos/abrirpopupcentro.php");
 						}
 					});
 				})
-				function validatePventa(e) {
-					const pcompra = parseFloat(e.closest("tr").querySelector(".precio-compra").value);
-					if (pcompra > e.value) {
-						e.value = ""
-					}
-				}
-				function selectmoneda(e){
-					if(e.value == "dolares"){
-						getSelector(".container_moneda").classList.remove("col-md-4");
-						getSelector(".container_moneda").classList.add("col-md-2");
-						
-						getSelector(".container_cambio").style.display = "";
-					}else{
-						getSelector(".container_moneda").classList.add("col-md-4");
-						getSelector(".container_moneda").classList.remove("col-md-2");
-						
-						getSelector(".container_cambio").style.display = "";
-					}
-				}
-			</script>
+function validatePventa(e) {
+	const pcompra = parseFloat(e.closest("tr").querySelector(".precio-compra").value);
+	if (pcompra > e.value) {
+		e.value = ""
+	}
+}
+function selectmoneda(e){
+	if(e.value == "dolares"){
+		getSelector(".container_moneda").classList.remove("col-md-4");
+		getSelector(".container_moneda").classList.add("col-md-2");
+		getSelector(".container_cambio").style.display = "";
+	}else{
+		getSelector(".container_moneda").classList.add("col-md-4");
+		getSelector(".container_moneda").classList.remove("col-md-2");
+		getSelector(".container_cambio").style.display = "none";
+	}
+}
+</script>
