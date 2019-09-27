@@ -544,6 +544,9 @@ include("Fragmentos/abrirpopupcentro.php");
 								i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit*i.value).toFixed(4)
 							});
 
+						}else{
+							i.parentElement.parentElement.querySelector(".importeindividualpro").value = 0
+							i.parentElement.parentElement.querySelector(".importetotalpro").value = 0
 						}
 					}
 				}
