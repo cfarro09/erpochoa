@@ -472,7 +472,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 											<div class="col-sm-3">
 												<label class="control-label" for="preciopro">Precio</label>
-												<input class="form-control" type="number" name="" id="preciopro">
+												<input class="form-control" oninput="changepeso(this)" type="number" name="" id="preciopro">
 											</div>
 										</div>
 									</div>
