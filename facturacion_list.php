@@ -491,6 +491,7 @@ include("Fragmentos/abrirpopupcentro.php");
 											</tbody>
 										</table>
 									</div>
+									<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
 								</div>
 							</div>
 						</div>
