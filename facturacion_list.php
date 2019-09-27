@@ -445,11 +445,14 @@ include("Fragmentos/abrirpopupcentro.php");
 										<div class="row" style="margin-top: 10px">
 											<div class="col-sm-3">
 												<label class="control-label" for="monedapro">Moneda</label>
-												<select class="form-control " name="moneda" id="moneda">
-													<option value="">Select</option>
-													<option value="factura">S/</option>
-													<option value="boleta">$</option>
+												<select class="form-control" name="monedapro" id="monedapro" onchange="changemonedapro(this)">
+													<option value="soles">S/</option>
+													<option value="dolares">$</option>
 												</select>
+											</div>
+											<div class="col-sm-3" id="containerTipoCambio" style="display: none">
+												<label class="control-label" for="monedapro">Tipo Cambio</label>
+												<input type="number" class="form-control" step="any" name="tipocambiopro" id="tipocambiopro">
 											</div>
 											<div class="col-sm-3">
 												<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
@@ -505,6 +508,15 @@ include("Fragmentos/abrirpopupcentro.php");
 			?>
 			<script type="text/javascript">
 				let arrayDetalle;
+
+				function changemonedapro(e){
+					if(e.value == "dolares"){
+						containerTipoCambio.style.display = ""
+					}else{
+						containerTipoCambio.style.display = "none"
+					}
+				}
+				
 				getSelector("#prorrateo").addEventListener("click", e => {
 					let nro  = 0;
 					arrayDetalle.detalle.forEach(r => {
