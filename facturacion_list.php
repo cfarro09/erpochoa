@@ -545,9 +545,17 @@ include("Fragmentos/abrirpopupcentro.php");
 							});
 
 						}else{
+							getSelectorAll(".pesoitempro").forEach(i => {
 							i.parentElement.parentElement.querySelector(".importeindividualpro").value = 0
 							i.parentElement.parentElement.querySelector(".importetotalpro").value = 0
+						})
 						}
+					}else{
+						getSelectorAll(".pesoitempro").forEach(i => {
+							i.parentElement.parentElement.querySelector(".importeindividualpro").value = 0
+							i.parentElement.parentElement.querySelector(".importetotalpro").value = 0
+						})
+
 					}
 				}
 				getSelector("#check_transporte").addEventListener("click", e => {
