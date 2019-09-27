@@ -263,6 +263,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							</div>
 						</div>
 					</div>
+					
 					<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
 						<div class="modal-dialog" role="document" style="width: 700px">
 							<div class="modal-content m-auto">
@@ -296,28 +297,11 @@ include("Fragmentos/abrirpopupcentro.php");
 														<input type="checkbox" class="" id="check_transporte">
 
 														<div class="row" style="display: none" id="container_transporte">
-															<div class="col-sm-3">
-																<label class="control-label" for="tipocomprobante">Tipo Comprobante</label>
-																<select class="form-control select2-allow-clear" name="tipocomprobante" id="tipocomprobante">
-																	<option value="">Select</option>
-																	<option value="factura">Factura</option>
-																	<option value="boleta">Boleta</option>
-																	<option value="notaventa">Nota venta</option>
-																	<option value="recibo">Recibo</option>
-																	<option value="otros">Otros</option>
-																</select>
+															<div class="col-sm-6 text-center">
+																<button type="button" class="btn btn-success" id="prorrateo">PRORRATEO</button>
 															</div>
-															<div class="col-sm-3">
-																<label class="control-label" for="numerocomprobante">Nro Comprobante</label>
-																<input class="form-control" name="" id="numerocomprobante">
-															</div>
-															<div class="col-sm-3">
-																<label class="control-label" for="empresatransporte">Empresa Transporte</label>
-																<input class="form-control" name="" id="empresatransporte">
-															</div>
-															<div class="col-sm-3">
-																<label class="control-label" for="precio_transporte">Precio Transporte</label>
-																<input class="form-control" type="number" name="" id="precio_transporte">
+															<div class="col-sm-6 text-center">
+																<button type="button" class="btn btn-success" id="participacion">PARTICIPACION EN COMPRAS</button>
 															</div>
 														</div>
 													</div>
@@ -343,8 +327,7 @@ include("Fragmentos/abrirpopupcentro.php");
 																<input class="form-control" name="" id="numerocomprobanteestibador">
 															</div>
 															<div class="col-sm-3">
-																<label class="control-label" for="empresaestibador">Empresa</label>
-																<input class="form-control" name="" id="empresaestibador">
+																
 															</div>
 															<div class="col-sm-3">
 																<label class="control-label" for="precio_estibador">Precio</label>
@@ -352,38 +335,6 @@ include("Fragmentos/abrirpopupcentro.php");
 															</div>
 														</div>
 													</div>
-
-													<div style="margin-top: 10px"	>
-														<label class="" for="check_otros">¿Otros?</label>
-														<input type="checkbox" class="" id="check_otros">
-
-														<div class="row" style="display: none" id="container_otros">
-															<div class="col-sm-3">
-																<label class="control-label" for="tipocomprobanteotros">Tipo Comprobante</label>
-																<select class="form-control select2-allow-clear" name="tipocomprobanteotros" id="tipocomprobanteotros">
-																	<option value="">Select</option>
-																	<option value="factura">Factura</option>
-																	<option value="boleta">Boleta</option>
-																	<option value="notaventa">Nota venta</option>
-																	<option value="recibo">Recibo</option>
-																	<option value="otros">Otros</option>
-																</select>
-															</div>
-															<div class="col-sm-3">
-																<label class="control-label" for="numerocomprobanteotros">Nro Comprobante</label>
-																<input class="form-control" name="" id="numerocomprobanteotros">
-															</div>
-															<div class="col-sm-3">
-																<label class="control-label" for="empresaotros">Empresa</label>
-																<input class="form-control" name="" id="empresaotros">
-															</div>
-															<div class="col-sm-3">
-																<label class="control-label" for="preciootros">Precio</label>
-																<input class="form-control" type="number" name="" id="preciootros">
-															</div>
-														</div>
-													</div>
-
 													<div class="row" style="margin-top: 20px">
 														<div class="col-xs-12 col-md-12">
 															<div class="row">
@@ -469,6 +420,79 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 					</div>
 				</div>
+				<div class="modal fade" id="mProrrateo" role="dialog" data-backdrop="static" data-keyboard="false">
+					<div class="modal-dialog" role="document" style="width: 700px">
+						<div class="modal-content m-auto">
+							<div class="modal-header">
+								<h2 class="modal-title" id="moperation-title">PRORRATEO POR PESO</h2>
+							</div>
+							<div class="modal-body">
+								<div class="container-fluid">
+									<div class="row">
+										<div class="row">
+											<div class="col-sm-6">
+											<label for="field-1" class="control-label">Nro RUC</label>
+											<input type="text" required class="form-control"
+											name="nrorucpro" id="nrorucpro">
+										</div>
+										<div class="col-sm-6">
+											<label for="field-1" class="control-label">Proveedor</label>
+											<input type="text" required class="form-control"
+											name="proveedorpro" id="proveedorpro">
+										</div>
+										</div>
+										
+										<div class="row" style="margin-top: 10px">
+											<div class="col-sm-3">
+												<label class="control-label" for="monedapro">Moneda</label>
+												<select class="form-control " name="moneda" id="moneda">
+													<option value="">Select</option>
+													<option value="factura">S/</option>
+													<option value="boleta">$</option>
+												</select>
+											</div>
+											<div class="col-sm-3">
+												<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
+												<select class="form-control select2-allow-clear" name="tipocomprobantepro" id="tipocomprobantepro">
+													<option value="">Select</option>
+													<option value="factura">Factura</option>
+													<option value="boleta">Boleta</option>
+													<option value="notaventa">Nota venta</option>
+													<option value="recibo">Recibo</option>
+													<option value="otros">Otros</option>
+												</select>
+											</div>
+											<div class="col-sm-3">
+												<label class="control-label" for="nrocomprobantepro">Nro Comprobante</label>
+												<input class="form-control" name="" id="nrocomprobantepro">
+											</div>
+
+											<div class="col-sm-3">
+												<label class="control-label" for="preciopro">Precio</label>
+												<input class="form-control" type="number" name="" id="preciopro">
+											</div>
+										</div>
+									</div>
+									<div class="row" style="margin-top:20px">
+										<table class="table">
+											<thead>
+												<th>Nº</th>
+												<th>Cantidad</th>
+												<th>Producto</th>
+												<th>Marca</th>
+												<th width="120px">Peso</th>
+												<th width="60px">Imp Ind</th>
+												<th width="60px">Importe</th>
+											</thead>
+											<tbody id="detalleProrrateo">
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			<?php } // Show if recordset not empty ?>
 
 			<?php 
@@ -480,7 +504,49 @@ include("Fragmentos/abrirpopupcentro.php");
 			mysql_free_result($Listado);
 			?>
 			<script type="text/javascript">
-				
+				let arrayDetalle;
+				getSelector("#prorrateo").addEventListener("click", e => {
+					let nro  = 0;
+					arrayDetalle.detalle.forEach(r => {
+						nro++;
+						$("#detalleProrrateo").append(`
+							<tr>
+							<td>${nro}</td>
+							<td class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
+							<td class="nombre_producto" >${r.nombre_producto}</td>
+							<td class="marca" >${r.marca}</td>
+							<td><input type="number" class="form-control pesoitempro" oninput="changepeso(this)"></td>
+							<td><input readonly type="number" class="form-control importeindividualpro"></td>
+							<td><input readonly type="number" class="form-control importetotalpro"></td>
+							</tr>`)
+					});
+					$("#mProrrateo").modal();
+				})
+				function changepeso(e){
+					if (e.value < 0){
+						e.value = 0;
+						return;
+					}
+					let proccesspeso = true;
+					if($("#preciopro").val()){
+						let suma = 0;
+						getSelectorAll(".pesoitempro").forEach(i => {
+							suma += parseInt(i.value)
+							if(i.value == 0 || i.value == ""){
+								proccesspeso = false;
+							}
+						});
+						if(proccesspeso){
+							const unit = $("#preciopro").val() / suma;
+							getSelectorAll(".pesoitempro").forEach(i => {
+								const cantidad = parseInt(i.parentElement.parentElement.querySelector(".cant_recibida").textContent)
+								i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit*i.value/cantidad).toFixed(4)
+								i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit*i.value).toFixed(4)
+							});
+
+						}
+					}
+				}
 				getSelector("#check_transporte").addEventListener("click", e => {
 					console.log(e.target.checked)
 					if(e.target.checked){
@@ -489,14 +555,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						getSelector("#container_transporte").style.display = "none";
 					}
 				})
-				getSelector("#check_otros").addEventListener("click", e => {
-					console.log(e.target.checked)
-					if(e.target.checked){
-						getSelector("#container_otros").style.display = "";
-					}else{
-						getSelector("#container_otros").style.display = "none";
-					}
-				})
+				
 				getSelector("#check_estibador").addEventListener("click", e => {
 					console.log(e.target.checked)
 					if(e.target.checked){
@@ -743,8 +802,6 @@ include("Fragmentos/abrirpopupcentro.php");
 					});
 				})
 				document.querySelectorAll(".aux_compras").forEach(item => {
-
-
 					item.addEventListener("click", e => {
 
 						getSelector("#check_transporte").checked = false;
@@ -754,10 +811,6 @@ include("Fragmentos/abrirpopupcentro.php");
 						getSelector("#check_estibador").checked = false;
 						getSelector("#check_estibador").parentElement.classList.remove("checked")
 						getSelector("#container_estibador").style.display = "none";
-
-						getSelector("#check_otros").checked = false;
-						getSelector("#check_otros").parentElement.classList.remove("checked")
-						getSelector("#container_otros").style.display = "none";
 
 
 						if (item.dataset.type == "ordencompra") {
@@ -772,6 +825,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						.then(res => res.json())
 						.catch(error => console.error("error: ", error))
 						.then(res => {
+							arrayDetalle = res;
 							$("#mproveedor1").text(res.header.razonsocial)
 							$("#mfechaemision1").text(res.header.fecha_emision)
 							$("#mvalortotal1").text(res.header.montofact)
@@ -922,16 +976,6 @@ include("Fragmentos/abrirpopupcentro.php");
 						}
 					}
 					
-					if(getSelector("#check_otros").checked){
-						if($("#tipocomprobanteotros").val() && $("#numerocomprobanteotros").val() && $("#empresaotros").val() && $("#preciootros").val()){
-							data.gastos.push(`insert into GastosCompras (tipocomprobante, nrocomprobante, empresa, precio, idcompras, tipo) values ('${$("#tipocomprobanteotros").val()}', '${$("#numerocomprobanteotros").val()}', '${$("#empresaotros").val()}', 
-								${parseFloat($("#preciootros").val())}, ##IDCOMPRAS##, 'otros')`);
-						}else{
-							alert("debe llenar todos los datos de transporte");
-							return;
-						}
-					}
-					
 
 					data.header = {
 						codigocompras: 0,
@@ -984,21 +1028,21 @@ include("Fragmentos/abrirpopupcentro.php");
 						}
 					});
 				})
-function validatePventa(e) {
-	const pcompra = parseFloat(e.closest("tr").querySelector(".precio-compra").value);
-	if (pcompra > e.value) {
-		e.value = ""
-	}
-}
-function selectmoneda(e){
-	if(e.value == "dolares"){
-		getSelector(".container_moneda").classList.remove("col-md-4");
-		getSelector(".container_moneda").classList.add("col-md-2");
-		getSelector(".container_cambio").style.display = "";
-	}else{
-		getSelector(".container_moneda").classList.add("col-md-4");
-		getSelector(".container_moneda").classList.remove("col-md-2");
-		getSelector(".container_cambio").style.display = "none";
-	}
-}
-</script>
+				function validatePventa(e) {
+					const pcompra = parseFloat(e.closest("tr").querySelector(".precio-compra").value);
+					if (pcompra > e.value) {
+						e.value = ""
+					}
+				}
+				function selectmoneda(e){
+					if(e.value == "dolares"){
+						getSelector(".container_moneda").classList.remove("col-md-4");
+						getSelector(".container_moneda").classList.add("col-md-2");
+						getSelector(".container_cambio").style.display = "";
+					}else{
+						getSelector(".container_moneda").classList.add("col-md-4");
+						getSelector(".container_moneda").classList.remove("col-md-2");
+						getSelector(".container_cambio").style.display = "none";
+					}
+				}
+			</script>
