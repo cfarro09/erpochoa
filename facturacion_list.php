@@ -520,6 +520,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				
 				getSelector("#prorrateo").addEventListener("click", e => {
 					let nro  = 0;
+					detalleProrrateo.innerHTML = ""
 					arrayDetalle.detalle.forEach(r => {
 						nro++;
 						$("#detalleProrrateo").append(`
