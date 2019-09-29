@@ -265,10 +265,10 @@ include("Fragmentos/abrirpopupcentro.php");
 					</div>
 					
 					<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-						<div class="modal-dialog" role="document" style="width: 700px">
+						<div class="modal-dialog" role="document" style="width: 800px">
 							<div class="modal-content m-auto">
 								<div class="modal-header">
-									<h2 class="modal-title" id="moperation-title">Facturar Orden de compra</h2>
+									<h2 class="modal-title" id="">Facturar Orden de compra</h2>
 								</div>
 								<div class="modal-body">
 									<form id="saveFacturar">
@@ -298,10 +298,10 @@ include("Fragmentos/abrirpopupcentro.php");
 
 														<div class="row" style="display: none" id="container_transporte">
 															<div class="col-sm-6 text-center">
-																<button type="button" class="btn btn-success" id="prorrateo">PRORRATEO</button>
+																<button type="button" class="btn btn-success" data-type="prorrateo" onclick="setExtra(this)" >PRORRATEO</button>
 															</div>
 															<div class="col-sm-6 text-center">
-																<button type="button" class="btn btn-success" id="participacion">PARTICIPACION EN COMPRAS</button>
+																<button type="button" class="btn btn-success" data-type="participacion" onclick="setExtra(this)" id="participacion">PARTICIPACION EN COMPRAS</button>
 															</div>
 														</div>
 													</div>
@@ -406,6 +406,9 @@ include("Fragmentos/abrirpopupcentro.php");
 														<th>Marca</th>
 														<th width="120px">Valor Compra</th>
 														<th width="120px">Importe</th>
+														<th width="60px">Transporte</th>
+														<th width="60px">Estibador</th>
+														<th width="60px">Total</th>
 													</thead>
 													<tbody id="detalleFacturar-list">
 													</tbody>
@@ -424,9 +427,10 @@ include("Fragmentos/abrirpopupcentro.php");
 					<div class="modal-dialog" role="document" style="width: 700px">
 						<div class="modal-content m-auto">
 							<div class="modal-header">
-								<h2 class="modal-title" id="moperation-title">PRORRATEO POR PESO</h2>
+								<h2 class="modal-title" id="title_extra">PRORRATEO POR PESO</h2>
 							</div>
 							<div class="modal-body">
+								<form id="formExtra">
 								<div class="container-fluid">
 									<div class="row">
 										<div class="row">
@@ -483,7 +487,7 @@ include("Fragmentos/abrirpopupcentro.php");
 												<th>Cantidad</th>
 												<th>Producto</th>
 												<th>Marca</th>
-												<th width="120px">Peso</th>
+												<th id="varTypeExtra" width="120px">Peso</th>
 												<th width="60px">Imp Ind</th>
 												<th width="60px">Importe</th>
 											</thead>
@@ -491,8 +495,10 @@ include("Fragmentos/abrirpopupcentro.php");
 											</tbody>
 										</table>
 									</div>
+									<button class="btn btn-primary" type="submit">Guardar</button>
 									<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
 								</div>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -517,8 +523,26 @@ include("Fragmentos/abrirpopupcentro.php");
 						containerTipoCambio.style.display = "none"
 					}
 				}
-				
-				getSelector("#prorrateo").addEventListener("click", e => {
+				formExtra.addEventListener("submit", e => {
+					e.preventdefault();
+					if(getSelector(".importeindividualpro").value && getSelector(".importeindividualpro").value != 0){
+						getSelectorAll(".importetotalpro").forEach(i => {
+							getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
+							
+						});
+						$("#mProrrateo").modal("hide");
+					}else{
+						alert("debe ingresar todos los campos")
+					}
+				})
+				function setExtra(e){
+					if(e.dataset.type == "prorrateo"){
+						title_extra.textContent = "PRORRATEO POR PESO";
+						varTypeExtra.textContent = "Peso"
+					}else{
+						varTypeExtra.textContent = "Valor Compra"
+						title_extra.textContent = "PARTICIPACION POR COMPRAS"
+					}
 					let nro  = 0;
 					detalleProrrateo.innerHTML = ""
 					arrayDetalle.detalle.forEach(r => {
@@ -529,13 +553,13 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
 							<td class="nombre_producto" >${r.nombre_producto}</td>
 							<td class="marca" >${r.marca}</td>
-							<td><input type="number" class="form-control pesoitempro" oninput="changepeso(this)"></td>
+							<td><input type="number" required class="form-control pesoitempro" oninput="changepeso(this)"></td>
 							<td><input readonly type="number" class="form-control importeindividualpro"></td>
-							<td><input readonly type="number" class="form-control importetotalpro"></td>
+							<td><input readonly data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
 							</tr>`)
 					});
 					$("#mProrrateo").modal();
-				})
+				}
 				function changepeso(e){
 					if (e.value < 0){
 						e.value = 0;
@@ -880,6 +904,9 @@ include("Fragmentos/abrirpopupcentro.php");
 									<td ><input data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
 
 									<td class="" ><input  step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
+									<td><input id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
+									<td><input class="form-control estibador_costeo" readonly></td>
+									<td><input class="form-control total_costeo" readonly></td>
 									</tr>`);
 
 
