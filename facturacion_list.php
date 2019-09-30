@@ -524,7 +524,8 @@ include("Fragmentos/abrirpopupcentro.php");
 					}
 				}
 				formExtra.addEventListener("submit", e => {
-					e.preventdefault();
+					debugger
+					e.preventDefault()
 					if(getSelector(".importeindividualpro").value && getSelector(".importeindividualpro").value != 0){
 						getSelectorAll(".importetotalpro").forEach(i => {
 							getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
