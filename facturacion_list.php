@@ -1088,6 +1088,9 @@ mysql_free_result($Listado);
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
 
 		aa.querySelector(".total_costeo").value = ss * (100 -(parseInt(aa.querySelector(".descuento").value)))/100
+		
+		aa.querySelector(".importe").value = parseFloat(ss).toFixed(4)
+		
 		if (aux) {
 			actualizarSubtotal()
 		}
