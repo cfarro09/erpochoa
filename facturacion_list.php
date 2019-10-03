@@ -378,8 +378,8 @@ include("Fragmentos/abrirpopupcentro.php");
 												<div class="col-md-2">
 													<div class="form-group">
 														<label for="field-1" class="control-label">Descuento</label>
-														<input type="number" class="form-control"
-														 readonly step="any" id="descuento"
+														<input type="number" class="form-control" oninput="changedescuentogeneral(this)"
+														step="any" id="descuento"
 														name="">
 													</div>
 												</div>
@@ -546,12 +546,25 @@ mysql_free_result($Listado);
 ?>
 <script type="text/javascript">
 	let arrayDetalle;
+	let subtotalGLOBAL = 0;
 
 	function changemonedapro(e) {
 		if (e.value == "dolares") {
 			containerTipoCambio.style.display = ""
 		} else {
 			containerTipoCambio.style.display = "none"
+		}
+	}
+	function changedescuentogeneral(e){
+		if (e.value < 0) {
+			e.value = 0;
+			return;
+		}
+		const subtotal = subtotalGLOBAL;
+		if(subtotal > 0){
+			getSelector("#subtotal-facturacion").textContent = subtotal - e.value
+			getSelector("#igv-facturacion").textContent = ((subtotal - e.value)*0.18).toFixed(4)
+			getSelector("#importe-total").textContent = ((subtotal - e.value)*1.18).toFixed(4)
 		}
 	}
 	formExtra.addEventListener("submit", e => {
@@ -898,7 +911,7 @@ mysql_free_result($Listado);
 	})
 	document.querySelectorAll(".aux_compras").forEach(item => {
 		item.addEventListener("click", e => {
-
+			subtotalGLOBAL = 0;
 			getSelector("#check_transporte").checked = false;
 			getSelector("#check_transporte").parentElement.classList.remove("checked")
 			getSelector("#container_transporte").style.display = "none";
@@ -985,17 +998,7 @@ mysql_free_result($Listado);
 		const totalcosteo = importe*(100-parseInt(e.value))/100
 		e.parentElement.parentElement.querySelector(".total_costeo").value = totalcosteo
 
-		let total = 0;
-		let subtotal = 0;
-		document.querySelectorAll(".total_costeo").forEach(item => {
-			if (item.value) {
-				total += item.value * 1.18;
-				subtotal += parseFloat(item.value);
-			}
-		});
-		$("#importe-total").text((total).toFixed(4))
-		$("#subtotal-facturacion").text((subtotal).toFixed(4))
-		$("#igv-facturacion").text((subtotal * 0.18).toFixed(4))
+		actualizarSubtotal();
 	}
 	function changeimporte(e) {
 		if (e.value < 0) {
@@ -1015,7 +1018,6 @@ mysql_free_result($Listado);
 			}
 		});
 		if (allpreciocompra) {
-			debugger
 			btn_prorrateo.disabled = false
 			btn_participacion.disabled = false
 			precio_estibador.removeAttribute("readonly")
@@ -1024,15 +1026,20 @@ mysql_free_result($Listado);
 			btn_participacion.disabled = true
 			precio_estibador.setAttribute("readonly", true)
 		}
+		actualizarSubtotal();
+	}
+	function actualizarSubtotal(){
+		debugger
 		let total = 0;
 		let subtotal = 0;
 		document.querySelectorAll(".total_costeo").forEach(item => {
 			if (item.value) {
-				total += item.value * 1.18;
 				subtotal += parseFloat(item.value);
 			}
 		});
-		$("#importe-total").text(total.toFixed(4))
+		subtotal -= descuento.value ? parseFloat(descuento.value) : 0;
+		subtotalGLOBAL = subtotal;
+		$("#importe-total").text((subtotal*1.18).toFixed(4))
 		$("#subtotal-facturacion").text(subtotal.toFixed(4))
 		$("#igv-facturacion").text((subtotal * 0.18).toFixed(4))
 	}
@@ -1043,7 +1050,7 @@ mysql_free_result($Listado);
 		});
 		
 		getSelectorAll(".precio-compra").forEach(i => {
-			i.closest("tr").querySelector(".estibador_costeo").value = e.value*i.value/total
+			i.closest("tr").querySelector(".estibador_costeo").value = (e.value*i.value/total).toFixed(4)
 		});
 	}
 	function changepreciocompra(e, aux = true) {
@@ -1058,7 +1065,6 @@ mysql_free_result($Listado);
 			}
 		});
 		if (allpreciocompra) {
-			debugger
 			btn_prorrateo.disabled = false
 			btn_participacion.disabled = false
 			precio_estibador.removeAttribute('readonly');
@@ -1082,21 +1088,8 @@ mysql_free_result($Listado);
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
 
 		aa.querySelector(".total_costeo").value = ss * (100 -(parseInt(aa.querySelector(".descuento").value)))/100
-		debugger
 		if (aux) {
-			aa.querySelector(".importe").value = parseFloat(ss).toFixed(4)
-			let total = 0;
-			let subtotal = 0;
-			document.querySelectorAll(".total_costeo").forEach(item => {
-				if (item.value) {
-					total += item.value * 1.18;
-					subtotal += parseFloat(item.value);
-				}
-			});
-			$("#importe-total").text(total.toFixed(4))
-			$("#subtotal-facturacion").text(subtotal.toFixed(4) * (100 - descuento) / 100)
-			$("#igv-facturacion").text((subtotal * 0.18).toFixed(4))
-
+			actualizarSubtotal()
 		}
 
 		document.querySelector(".tooltip-inner").textContent = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
@@ -1127,8 +1120,10 @@ mysql_free_result($Listado);
 		}
 		if (getSelector("#check_estibador").checked) {
 			if ($("#tipocomprobanteestibador").val() && $("#numerocomprobanteestibador").val() && $("#empresaestibador").val() && $("#precio_estibador").val()) {
+
 				data.gastos.push(`insert into GastosCompras (tipocomprobante, nrocomprobante, empresa, precio, idcompras, tipo) values ('${$("#tipocomprobanteestibador").val()}', '${$("#numerocomprobanteestibador").val()}', '${$("#empresaestibador").val()}', 
 					${parseFloat($("#precio_estibador").val())}, ##IDCOMPRAS##, 'estibador')`);
+
 			} else {
 				alert("debe llenar todos los datos de transporte");
 				return;
