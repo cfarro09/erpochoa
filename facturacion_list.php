@@ -292,90 +292,11 @@ include("Fragmentos/abrirpopupcentro.php");
 								<input type="hidden" id="codigo_orden_compra">
 								<input type="hidden" id="codigo_guia_sin_oc">
 
-								<div style="margin-top: 10px">
-									<label class="" for="check_transporte">¿Incluye transporte?</label>
-									<input type="checkbox" class="" id="check_transporte">
-
-									<div class="row" style="display: none" id="container_transporte">
-										<div class="col-sm-6 text-center">
-											<button type="button" disabled class="btn btn-success" data-type="prorrateo"
-												id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO</button>
-										</div>
-										<div class="col-sm-6 text-center">
-											<button type="button" disabled class="btn btn-success"
-												data-type="participacion" id="btn_participacion"
-												onclick="setExtra(this)" id="participacion">PARTICIPACION EN
-												COMPRAS</button>
-										</div>
-									</div>
-								</div>
-
-								<div style="margin-top: 10px">
-									<label class="" for="check_estibador">¿Incluye Estibador?</label>
-									<input type="checkbox" class="" id="check_estibador">
-
-									<div class="row" style="display: none" id="container_estibador">
-										<div class="col-sm-6">
-											<label class="control-label" for="rucestibador">RUC</label>
-											<input class="form-control" name="" id="rucestibador">
-										</div>
-										<div class="col-sm-6">
-											<label class="control-label" for="proveedorestibador">Proveedor</label>
-											<input class="form-control" name="" id="proveedorestibador">
-										</div>
-										<div class="col-sm-3">
-											<label class="control-label" for="tipocomprobanteestibador">Tipo
-												Comprobante</label>
-											<select class="form-control select2-allow-clear"
-												name="tipocomprobanteestibador" id="tipocomprobanteestibador">
-												<option value="">Select</option>
-												<option value="factura">Factura</option>
-												<option value="boleta">Boleta</option>
-												<option value="notaventa">Nota venta</option>
-												<option value="recibo">Recibo</option>
-												<option value="otros">Otros</option>
-											</select>
-										</div>
-										<div class="col-sm-3">
-											<label class="control-label" for="numerocomprobanteestibador">Nro
-												Comprobante</label>
-											<input class="form-control" name="" id="numerocomprobanteestibador">
-										</div>
-										<div class="col-sm-3">
-											<label class="control-label" for="monedaestibador">Moneda</label>
-											<select class="form-control" onchange="selectmoneda(this)"
-												id="monedaestibador" name="monedaestibador" required>
-												<option value="soles">S/</option>
-												<option value="dolares">$</option>
-											</select>
-										</div>
-										<div class="col-sm-3">
-											<label class="control-label" for="precio_estibador">Precio</label>
-											<input class="form-control" oninput="changeprecioestibador(this)" readonly
-												type="number" name="" id="precio_estibador">
-										</div>
-									</div>
-								</div>
+								
 								<div class="row" style="margin-top: 20px">
 									<div class="col-xs-12 col-md-12">
 										<div class="row">
-											<div class="col-md-12">
-												<div class="form-group text-center">
-													<span class="" style="font-weight: bold; font-size: 25px">SubT:
-													</span>
-													<span class="" id="subtotal-facturacion"
-														style="font-weight: bold; font-size: 25px; margin-right: 15px">0.0</span>
-													<span class="" style="font-weight: bold; font-size: 25px">IGV:
-													</span>
-													<span class="" id="igv-facturacion"
-														style="font-weight: bold; font-size: 25px; margin-right: 15px">
-														0.0</span>
-													<span class="" style="font-weight: bold; font-size: 25px">Total:
-													</span>
-													<span class="" id="importe-total"
-														style="font-weight: bold; font-size: 25px">0.0</span>
-												</div>
-											</div>
+											
 											<div class="col-md-2">
 												<div class="form-group">
 													<label for="field-1" class="control-label">Descuento</label>
@@ -440,6 +361,87 @@ include("Fragmentos/abrirpopupcentro.php");
 									<tbody id="detalleFacturar-list">
 									</tbody>
 								</table>
+								<div class="col-md-12">
+									<div class="form-group text-center">
+										<span class="" style="font-weight: bold; font-size: 25px">SubT:
+										</span>
+										<span class="" id="subtotal-facturacion"
+											style="font-weight: bold; font-size: 25px; margin-right: 15px">0.0</span>
+										<span class="" style="font-weight: bold; font-size: 25px">IGV:
+										</span>
+										<span class="" id="igv-facturacion"
+											style="font-weight: bold; font-size: 25px; margin-right: 15px">
+											0.0</span>
+										<span class="" style="font-weight: bold; font-size: 25px">Total:
+										</span>
+										<span class="" id="importe-total"
+											style="font-weight: bold; font-size: 25px">0.0</span>
+									</div>
+								</div>
+								<div style="margin-top: 10px">
+									<label class="" for="check_transporte">¿Incluye transporte?</label>
+									<input type="checkbox" class="" id="check_transporte">
+
+									<div class="row" style="display: none" id="container_transporte">
+										<div class="col-sm-6 text-center">
+											<button type="button" disabled class="btn btn-success" data-type="prorrateo"
+												id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO</button>
+										</div>
+										<div class="col-sm-6 text-center">
+											<button type="button" disabled class="btn btn-success"
+												data-type="participacion" id="btn_participacion"
+												onclick="setExtra(this)" id="participacion">PARTICIPACION EN
+												COMPRAS</button>
+										</div>
+									</div>
+								</div>
+
+								<div style="margin-top: 10px">
+									<label class="" for="check_estibador">¿Incluye Estibador?</label>
+									<input type="checkbox" class="" id="check_estibador">
+
+									<div class="row" style="display: none" id="container_estibador">
+										<div class="col-sm-6">
+											<label class="control-label" for="rucestibador">RUC</label>
+											<input class="form-control" name="" id="rucestibador">
+										</div>
+										<div class="col-sm-6">
+											<label class="control-label" for="proveedorestibador">Proveedor</label>
+											<input class="form-control" name="" id="proveedorestibador">
+										</div>
+										<div class="col-sm-3">
+											<label class="control-label" for="tipocomprobanteestibador">Tipo
+												Comprobante</label>
+											<select class="form-control select2-allow-clear"
+												name="tipocomprobanteestibador" id="tipocomprobanteestibador">
+												<option value="">Select</option>
+												<option value="factura">Factura</option>
+												<option value="boleta">Boleta</option>
+												<option value="notaventa">Nota venta</option>
+												<option value="recibo">Recibo</option>
+												<option value="otros">Otros</option>
+											</select>
+										</div>
+										<div class="col-sm-3">
+											<label class="control-label" for="numerocomprobanteestibador">Nro
+												Comprobante</label>
+											<input class="form-control" name="" id="numerocomprobanteestibador">
+										</div>
+										<div class="col-sm-3">
+											<label class="control-label" for="monedaestibador">Moneda</label>
+											<select class="form-control" onchange="selectmoneda(this)"
+												id="monedaestibador" name="monedaestibador" required>
+												<option value="soles">S/</option>
+												<option value="dolares">$</option>
+											</select>
+										</div>
+										<div class="col-sm-3">
+											<label class="control-label" for="precio_estibador">Precio</label>
+											<input class="form-control" oninput="changeprecioestibador(this)" readonly
+												type="number" name="" id="precio_estibador">
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
