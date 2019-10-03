@@ -265,7 +265,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					</div>
 
 					<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-						<div class="modal-dialog" role="document" style="width: 800px">
+						<div class="modal-dialog" role="document" style="width: 900px">
 							<div class="modal-content m-auto">
 								<div class="modal-header">
 									<h2 class="modal-title" id="">Facturar Orden de compra</h2>
@@ -379,7 +379,7 @@ include("Fragmentos/abrirpopupcentro.php");
 													<div class="form-group">
 														<label for="field-1" class="control-label">Descuento</label>
 														<input type="number" class="form-control"
-														oninput="changedescuento(this)" step="any" id="descuento"
+														 readonly step="any" id="descuento"
 														name="">
 													</div>
 												</div>
@@ -429,6 +429,7 @@ include("Fragmentos/abrirpopupcentro.php");
 									<th>Cantidad</th>
 									<th>Producto</th>
 									<th>Marca</th>
+									<th width="120px">Desc.</th>
 									<th width="120px">Valor Compra</th>
 									<th width="120px">Importe</th>
 									<th width="60px">Transporte</th>
@@ -946,6 +947,7 @@ mysql_free_result($Listado);
 						<td class="cantidad">${r.cantidad}</td>
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
+						<td><input type="number" oninput="changedescuento(this)" value="0" class="form-control descuento"></td>
 						<td ><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
 
 						<td class="" ><input  step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
@@ -975,45 +977,63 @@ mysql_free_result($Listado);
 		})
 	});
 	function changedescuento(e) {
-		if (e.value < 0) {
+		if (e.value < 0 || e.value == "") {
 			e.value = 0;
 			return;
 		}
-		const descuento = $("#descuento").val() ? $("#descuento").val() : 0
+		const importe = parseFloat(e.parentElement.parentElement.querySelector(".importe").value);
+		const totalcosteo = importe*(100-parseInt(e.value))/100
+		e.parentElement.parentElement.querySelector(".total_costeo").value = totalcosteo
 
 		let total = 0;
 		let subtotal = 0;
-		document.querySelectorAll(".importe").forEach(item => {
+		document.querySelectorAll(".total_costeo").forEach(item => {
 			if (item.value) {
 				total += item.value * 1.18;
 				subtotal += parseFloat(item.value);
 			}
 		});
-		$("#importe-total").text((total * (100 - descuento) / 100).toFixed(4))
-		$("#subtotal-facturacion").text((subtotal * (100 - descuento) / 100).toFixed(4))
-		$("#igv-facturacion").text((subtotal * 0.18 * (100 - descuento) / 100).toFixed(4))
+		$("#importe-total").text((total).toFixed(4))
+		$("#subtotal-facturacion").text((subtotal).toFixed(4))
+		$("#igv-facturacion").text((subtotal * 0.18).toFixed(4))
 	}
 	function changeimporte(e) {
 		if (e.value < 0) {
 			e.value = 0;
 			return;
 		}
-		const descuento = $("#descuento").val() ? $("#descuento").val() : 0
 		const aa = e.parentElement.parentElement
 		const ss = e.value / parseInt(aa.querySelector(".cantidad").textContent)
+		aa.querySelector(".total_costeo").value = parseFloat(e.value)* (100 - parseInt(aa.querySelector(".descuento").value))/100
 
 		aa.querySelector(".precio-compra").value = parseFloat(ss).toFixed(4)
 
+		let allpreciocompra = true;
+		getSelectorAll(".precio-compra").forEach(e => {
+			if (e.value == "" || parseInt(e.value) == 0) {
+				allpreciocompra = false;
+			}
+		});
+		if (allpreciocompra) {
+			debugger
+			btn_prorrateo.disabled = false
+			btn_participacion.disabled = false
+			precio_estibador.removeAttribute("readonly")
+		}else{
+			btn_prorrateo.disabled = true
+			btn_participacion.disabled = true
+			precio_estibador.setAttribute("readonly", true)
+		}
 		let total = 0;
 		let subtotal = 0;
-		document.querySelectorAll(".importe").forEach(item => {
+		document.querySelectorAll(".total_costeo").forEach(item => {
 			if (item.value) {
 				total += item.value * 1.18;
 				subtotal += parseFloat(item.value);
 			}
 		});
 		$("#importe-total").text(total.toFixed(4))
-		$("#subtotal-facturacion").text(subtotal.toFixed(4) * (100 - descuento) / 100)
+		$("#subtotal-facturacion").text(subtotal.toFixed(4))
 		$("#igv-facturacion").text((subtotal * 0.18).toFixed(4))
 	}
 	function changeprecioestibador(e){
@@ -1037,8 +1057,8 @@ mysql_free_result($Listado);
 				allpreciocompra = false;
 			}
 		});
-		console.log(allpreciocompra)
 		if (allpreciocompra) {
+			debugger
 			btn_prorrateo.disabled = false
 			btn_participacion.disabled = false
 			precio_estibador.removeAttribute('readonly');
@@ -1061,11 +1081,13 @@ mysql_free_result($Listado);
 		const aa = e.parentElement.parentElement
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
 
+		aa.querySelector(".total_costeo").value = ss * (100 -(parseInt(aa.querySelector(".descuento").value)))/100
+		debugger
 		if (aux) {
 			aa.querySelector(".importe").value = parseFloat(ss).toFixed(4)
 			let total = 0;
 			let subtotal = 0;
-			document.querySelectorAll(".importe").forEach(item => {
+			document.querySelectorAll(".total_costeo").forEach(item => {
 				if (item.value) {
 					total += item.value * 1.18;
 					subtotal += parseFloat(item.value);
