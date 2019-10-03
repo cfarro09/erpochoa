@@ -572,9 +572,15 @@ mysql_free_result($Listado);
 		e.preventDefault()
 		if (getSelector(".importeindividualpro").value && getSelector(".importeindividualpro").value != 0) {
 			getSelectorAll(".importetotalpro").forEach(i => {
+
+				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value = parseFloat(getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value) + parseFloat(i.value )
+
+
 				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
 
 			});
+
+			actualizarSubtotal()
 			$("#mProrrateo").modal("hide");
 		} else {
 			alert("debe ingresar todos los campos")
