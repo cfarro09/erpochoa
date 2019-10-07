@@ -254,10 +254,13 @@ include("Fragmentos/abrirpopupcentro.php");
 							</div>
 						</div>
 					</div>
-					<button type="button" id="btn-finalice" style="display: none"
-						class="btn btn-primary">Finalizar</button>
-					<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
-					<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
+					<div class="modal-footer">
+						<button type="button" id="btn-finalice" style="display: none"
+							class="btn btn-primary">Finalizar</button>
+						<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
+						<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
+					</div>
+
 				</form>
 			</div>
 		</div>
@@ -292,11 +295,11 @@ include("Fragmentos/abrirpopupcentro.php");
 								<input type="hidden" id="codigo_orden_compra">
 								<input type="hidden" id="codigo_guia_sin_oc">
 
-								
+
 								<div class="row" style="margin-top: 20px">
 									<div class="col-xs-12 col-md-12">
 										<div class="row">
-											
+
 											<div class="col-md-2">
 												<div class="form-group">
 													<label for="field-1" class="control-label">Descuento</label>
@@ -445,8 +448,10 @@ include("Fragmentos/abrirpopupcentro.php");
 							</div>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-success">Guardar</button>
-					<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">Guardar</button>
+						<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -563,6 +568,12 @@ mysql_free_result($Listado);
 			e.value = 0;
 			return;
 		}
+		const tr = getSelector(".descuento").closest("tr");
+		getSelectorAll(".descuento").forEach(i => {
+			const porcentajedescuesto = 100 - parseFloat(i.value);
+			tr.querySelector(".total_costeo").value = parseFloat(tr.querySelector(".importe").value) * 100 /porcentajedescuesto
+		})
+		actualizarSubtotal();
 		const subtotal = subtotalGLOBAL;
 		if (subtotal > 0) {
 			getSelector("#subtotal-facturacion").textContent = subtotal - e.value
@@ -575,8 +586,7 @@ mysql_free_result($Listado);
 		if (getSelector(".importeindividualpro").value && getSelector(".importeindividualpro").value != 0) {
 			getSelectorAll(".importetotalpro").forEach(i => {
 
-				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value = parseFloat(getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value) + parseFloat(i.value )
-
+				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value = parseFloat(getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value) + parseFloat(i.value)
 
 				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
 
@@ -1003,6 +1013,7 @@ mysql_free_result($Listado);
 			e.value = 0;
 			return;
 		}
+		descuento.value = 0
 		const importe = parseFloat(e.parentElement.parentElement.querySelector(".importe").value);
 		const totalcosteo = importe * (100 - parseInt(e.value)) / 100
 		e.parentElement.parentElement.querySelector(".total_costeo").value = totalcosteo
@@ -1038,7 +1049,6 @@ mysql_free_result($Listado);
 		actualizarSubtotal();
 	}
 	function actualizarSubtotal() {
-		let total = 0;
 		let subtotal = 0;
 		document.querySelectorAll(".total_costeo").forEach(item => {
 			if (item.value) {
@@ -1058,7 +1068,7 @@ mysql_free_result($Listado);
 		});
 
 		getSelectorAll(".precio-compra").forEach(i => {
-			i.closest("tr").querySelector(".total_costeo").value = parseFloat(i.closest("tr").querySelector(".total_costeo").value) +  e.value * i.value / total
+			i.closest("tr").querySelector(".total_costeo").value = parseFloat(i.closest("tr").querySelector(".total_costeo").value) + e.value * i.value / total
 
 			i.closest("tr").querySelector(".estibador_costeo").value = (e.value * i.value / total).toFixed(4)
 		});
