@@ -571,7 +571,8 @@ mysql_free_result($Listado);
 		const tr = getSelector(".descuento").closest("tr");
 		getSelectorAll(".descuento").forEach(i => {
 			const porcentajedescuesto = 100 - parseFloat(i.value);
-			tr.querySelector(".total_costeo").value = parseFloat(tr.querySelector(".importe").value) * 100 /porcentajedescuesto
+			tr.querySelector(".total_costeo").value = parseFloat(tr.querySelector(".importe").value) * 100 /porcentajedescuesto;
+			i.value = 0
 		})
 		actualizarSubtotal();
 		const subtotal = subtotalGLOBAL;
@@ -1055,7 +1056,7 @@ mysql_free_result($Listado);
 				subtotal += parseFloat(item.value);
 			}
 		});
-		subtotal -= descuento.value ? parseFloat(descuento.value) : 0;
+		// subtotal -= descuento.value ? parseFloat(descuento.value) : 0;
 		subtotalGLOBAL = subtotal;
 		$("#importe-total").text((subtotal * 1.18).toFixed(4))
 		$("#subtotal-facturacion").text(subtotal.toFixed(4))
