@@ -99,31 +99,31 @@ include("Fragmentos/abrirpopupcentro.php");
 
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
-<div class="alert alert-danger">
-	<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
+	<div class="alert alert-danger">
+		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
 
 
-</div>
+	</div>
 <?php } // Show if recordset empty ?>
 <?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
-<table class="table table-bordered table-hover" id="sample_1">
-	<thead>
-		<tr>
-			<th> N&deg; </th>
-			<th> CODIGO</th>
-			<th class="none">Total </th>
-			<th class="none">SUBTOTAL</th>
-			<th class="none"> IVA </th>
-			<th> PROVEEDOR </th>
-			<th> FECHA </th>
-			<th> VER </th>
-			<th>TIPO</th>
-			<th> IMPRIMIR </th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php do { ?>
-		<?php 
+	<table class="table table-bordered table-hover" id="sample_1">
+		<thead>
+			<tr>
+				<th> N&deg; </th>
+				<th> CODIGO</th>
+				<th class="none">Total </th>
+				<th class="none">SUBTOTAL</th>
+				<th class="none"> IVA </th>
+				<th> PROVEEDOR </th>
+				<th> FECHA </th>
+				<th> VER </th>
+				<th>TIPO</th>
+				<th> IMPRIMIR </th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php do { ?>
+				<?php 
 				$color = "#bde8dc";
 
 				if(isset($row_Listado['subtotal']) && $row_Listado['subtotal'] ){
@@ -131,291 +131,294 @@ include("Fragmentos/abrirpopupcentro.php");
 					$row_Listado['subtotal'] = 0;
 				}
 				?>
-		<tr style="background-color: #26c281">
-			<td> <?php echo $i; ?> </td>
-			<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
-					data-toggle="modal">
-					<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
-			</td>
+				<tr style="background-color: #26c281">
+					<td> <?php echo $i; ?> </td>
+					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+						data-toggle="modal">
+						<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
+					</td>
 
-			<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
-			<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
-			<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
-			</td>
-			<td> <?php echo $row_Listado['razonsocial']; ?></td>
-			<td> <?php echo $row_Listado['fecha_emision']; ?></td>
-			<?php if($row_Listado['subtotal']): ?>
-			<td><a href="#" data-estado="<?= $row_Listado['estado'] ?>" data-codigo="<?= $row_Listado['codigo'] ?>"
-					class="verOrden">Ver</a>
-			</td>
-			<?php else: ?>
-			<td><a href="#" class="aux_compras" data-type="ordencompra"
-					data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
-			<?php endif ?>
-			<td>
-				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-					href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
-					target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
-			</td>
-			<td>Orden Compra</td>
-			</td>
-		</tr>
-		<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+					<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
+					<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
+					<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
+				</td>
+				<td> <?php echo $row_Listado['razonsocial']; ?></td>
+				<td> <?php echo $row_Listado['fecha_emision']; ?></td>
+				<?php if($row_Listado['subtotal']): ?>
+					<td><a href="#" data-estado="<?= $row_Listado['estado'] ?>" data-codigo="<?= $row_Listado['codigo'] ?>"
+						class="verOrden">Ver</a>
+					</td>
+					<?php else: ?>
+						<td><a href="#" class="aux_compras" data-type="ordencompra"
+							data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
+						<?php endif ?>
+						<td>
+							<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+							href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
+							target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+						</td>
+						<td>Orden Compra</td>
+					</td>
+				</tr>
+				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 
-		<?php if($totalRows_listaguiasinoc > 0): do { ?>
-		<?php 
+				<?php if($totalRows_listaguiasinoc > 0): do { ?>
+					<?php 
 
 					if(isset($row_listaguiasinoc['subtotal']) && $row_listaguiasinoc['subtotal'] ){
 					}else{
 						$row_listaguiasinoc['subtotal'] = 0;
 					}
 					?>
-		<tr style="background-color: #b8cbec">
-			<td> <?php echo $i; ?> </td>
-			<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
-					data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
-			<td><?php  echo "&#36; ".number_format($row_listaguiasinoc['subtotal'],2); ?> </td>
-			<td> <?php echo "&#36; ".number_format($row_listaguiasinoc['subtotal']/1.18,2); ?></td>
-			<td> <?php echo "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/1.18,2)),2); ?>
-			</td>
-			<td> <?php echo $row_listaguiasinoc['razonsocial']; ?></td>
-			<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
-			<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
-			<td>
-				<a href="#" data-estado="<?= $row_listaguiasinoc['estado'] ?>"
-					data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" class="verOrdenSinOc">Ver</a>
-			</td>
-			<?php else: ?>
-			<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
-					data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>">Facturar</a></td>
-			<?php endif ?>
-			<td>
-				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-					href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
-					target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
-			</td>
-			<td>Guia sin OC</td>
-			</td>
-		</tr>
-		<?php $i++;} while ($row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc)); endif; ?>
-	</tbody>
-</table>
-<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content m-auto">
-			<div class="modal-header">
-				<h5 class="modal-title" id="moperation-title"></h5>
-			</div>
-			<div class="modal-body">
-				<form id="saveOrdenCompra">
-					<input type="hidden" id="codigoOrdenCompra">
-					<input type="hidden" id="codigoordcomp">
-					<input type="hidden" id="codigoguia" value="">
-					<div class="container-fluid">
-
-						PROVEEDOR: <span id="mproveedor"></span> <BR>
-						SUCURSAL: <span id="msucursal"></span> <BR>
-						FECHA DE EMISION : <span id="mfechaemision"></span> <br>
-						VALOR TOTAL: <span id="mvalortotal"></span><BR>
-						CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
-						CODIGO REF2: : <span id="mcodref2"></span> <br>
-						GENERADA POR: : <span id="mgeneradapor"></span> <br>
-						RUC : <span id="mruc"></span>
-
-						<div class="row" style="margin-top:20px">
-							<div class="col-xs-12 col-md-12">
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label for="field-1" class="control-label">Numero Guia</label>
-											<input type="text" readonly class="form-control" name="numero-guia"
-												id="numero-guia">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label for="field-1" class="control-label">Observacion</label>
-											<input type="text" readonly class="form-control" name="observacion"
-												id="observacion">
-										</div>
-									</div>
+					<tr style="background-color: #b8cbec">
+						<td> <?php echo $i; ?> </td>
+						<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+							data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
+							<td><?php  echo "&#36; ".number_format($row_listaguiasinoc['subtotal'],2); ?> </td>
+							<td> <?php echo "&#36; ".number_format($row_listaguiasinoc['subtotal']/1.18,2); ?></td>
+							<td> <?php echo "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/1.18,2)),2); ?>
+						</td>
+						<td> <?php echo $row_listaguiasinoc['razonsocial']; ?></td>
+						<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
+						<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
+							<td>
+								<a href="#" data-estado="<?= $row_listaguiasinoc['estado'] ?>"
+									data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" class="verOrdenSinOc">Ver</a>
+								</td>
+								<?php else: ?>
+									<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
+										data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>">Facturar</a></td>
+									<?php endif ?>
+									<td>
+										<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+										href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
+										target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+									</td>
+									<td>Guia sin OC</td>
+								</td>
+							</tr>
+							<?php $i++;} while ($row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc)); endif; ?>
+						</tbody>
+					</table>
+					<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content m-auto">
+								<div class="modal-header">
+									<h5 class="modal-title" id="moperation-title"></h5>
 								</div>
-								<table class="table">
-									<thead>
-										<th>Nº</th>
-										<th>Cantidad Solicitada</th>
-										<th>Producto</th>
-										<th id="th-saldo" style="display: none">Saldo</th>
-										<th>Cantidad Recibida</th>
-									</thead>
-									<tbody id="detalleTableOrden-facturacion-list">
-									</tbody>
-								</table>
+								<div class="modal-body">
+									<form id="saveOrdenCompra">
+										<input type="hidden" id="codigoOrdenCompra">
+										<input type="hidden" id="codigoordcomp">
+										<input type="hidden" id="codigoguia" value="">
+										<div class="container-fluid">
+
+											PROVEEDOR: <span id="mproveedor"></span> <BR>
+											SUCURSAL: <span id="msucursal"></span> <BR>
+											FECHA DE EMISION : <span id="mfechaemision"></span> <br>
+											VALOR TOTAL: <span id="mvalortotal"></span><BR>
+											CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
+											CODIGO REF2: : <span id="mcodref2"></span> <br>
+											GENERADA POR: : <span id="mgeneradapor"></span> <br>
+											RUC : <span id="mruc"></span>
+
+											<div class="row" style="margin-top:20px">
+												<div class="col-xs-12 col-md-12">
+													<div class="row">
+														<div class="col-md-6">
+															<div class="form-group">
+																<label for="field-1" class="control-label">Numero Guia</label>
+																<input type="text" readonly class="form-control" name="numero-guia"
+																id="numero-guia">
+															</div>
+														</div>
+														<div class="col-md-6">
+															<div class="form-group">
+																<label for="field-1" class="control-label">Observacion</label>
+																<input type="text" readonly class="form-control" name="observacion"
+																id="observacion">
+															</div>
+														</div>
+													</div>
+													<table class="table">
+														<thead>
+															<th>Nº</th>
+															<th>Cantidad Solicitada</th>
+															<th>Producto</th>
+															<th id="th-saldo" style="display: none">Saldo</th>
+															<th>Cantidad Recibida</th>
+														</thead>
+														<tbody id="detalleTableOrden-facturacion-list">
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" id="btn-finalice" style="display: none"
+											class="btn btn-primary">Finalizar</button>
+											<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
+											<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
+										</div>
+
+									</form>
+								</div>
 							</div>
 						</div>
 					</div>
-					<div class="modal-footer">
-						<button type="button" id="btn-finalice" style="display: none"
-							class="btn btn-primary">Finalizar</button>
-						<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
-						<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
-					</div>
 
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-	<div class="modal-dialog" role="document" style="width: 900px">
-		<div class="modal-content m-auto">
-			<div class="modal-header">
-				<h2 class="modal-title" id="">Facturar Orden de compra</h2>
-			</div>
-			<div class="modal-body">
-				<form id="saveFacturar">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-xs-12 col-md-12">
-								<b>
-									<div style="text-align: right">
-										FECHA DE EMISION: : <span id="mfechaemision1"></span> <br>
-										VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
-									</div>
-									PROVEEDOR: <span id="mproveedor1"></span> <BR>
-									SUCURSAL: <span id="msucursal1"></span> <BR>
-									DOC ALMACEN : <span id="mcodref11"></span> <br>
-									DOC REF 2: : <span id="mcodref21"></span> <br>
-									GENERADA POR: : <span id="mgeneradapor1"></span> <br>
-									RUC : <span id="mruc1"></span>
-								</b>
-								<input type="hidden" id="codigoproveedor">
-								<input type="hidden" id="codigosucursal">
-								<input type="hidden" id="codigo_orden_compra">
-								<input type="hidden" id="codigo_guia_sin_oc">
+					<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
+						<div class="modal-dialog" role="document" style="width: 1100px">
+							<div class="modal-content m-auto">
+								<div class="modal-header">
+									<h2 class="modal-title" id="">Facturar Orden de compra</h2>
+								</div>
+								<div class="modal-body">
+									<form id="saveFacturar">
+										<div class="container-fluid">
+											<div class="row">
+												<div class="col-xs-12 col-md-12">
+													<b>
+														<div style="text-align: right">
+															FECHA DE EMISION: : <span id="mfechaemision1"></span> <br>
+															VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
+														</div>
+														PROVEEDOR: <span id="mproveedor1"></span> <BR>
+														SUCURSAL: <span id="msucursal1"></span> <BR>
+														DOC ALMACEN : <span id="mcodref11"></span> <br>
+														DOC REF 2: : <span id="mcodref21"></span> <br>
+														GENERADA POR: : <span id="mgeneradapor1"></span> <br>
+														RUC : <span id="mruc1"></span>
+													</b>
+													<input type="hidden" id="codigoproveedor">
+													<input type="hidden" id="codigosucursal">
+													<input type="hidden" id="codigo_orden_compra">
+													<input type="hidden" id="codigo_guia_sin_oc">
 
 
-								<div class="row" style="margin-top: 20px">
-									<div class="col-xs-12 col-md-12">
-										<div class="row">
+													<div class="row" style="margin-top: 20px">
+														<div class="col-xs-12 col-md-12">
+															<div class="row">
 
-											<div class="col-md-2">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Descuento</label>
-													<input type="number" class="form-control"
-														oninput="changedescuentogeneral(this)" step="any" id="descuento"
-														name="">
+																<div class="col-md-2">
+																	<div class="form-group">
+																		<label for="field-1" class="control-label">Descuento</label>
+																		<input type="number" class="form-control"
+																		oninput="changedescuentogeneral(this)" step="any" id="descuento"
+																		name="">
+																	</div>
+																</div>
+																<div class="col-md-3">
+																	<div class="form-group">
+																		<label for="field-1" class="control-label">Tipo Comp</label>
+																		<select class="form-control select2-allow-clear"
+																		name="tipocomprobantefactura" id="tipocomprobantefactura">
+																		<option value="factura">Factura</option>
+																		<option value="boleta">Boleta</option>
+																		<option value="notaventa">Nota venta</option>
+																		<option value="recibo">Recibo</option>
+																		<option value="otros">Otros</option>
+																	</select>
+																</div>
+															</div>
+															<div class="col-md-3">
+																<div class="form-group">
+																	<label for="field-1" class="control-label">Nro Comprobante</label>
+																	<input type="text" required class="form-control"
+																	name="nrocomprobante" id="nrocomprobante">
+																</div>
+															</div>
+															<div class="col-md-4 container_moneda">
+																<div class="form-group">
+																	<label for="field-1" class="control-label">Moneda</label>
+																	<select class="form-control" onchange="selectmoneda(this)"
+																	id="moneda" name="moneda" required>
+																	<option value="soles">S/</option>
+																	<option value="dolares">$</option>
+																</select>
+															</div>
+														</div>
+														<div class="col-md-2 container_cambio" style="display: none">
+															<div class="form-group">
+																<label for="field-1" class="control-label">Cambio</label>
+																<input type="number" step="any" class="form-control" id="tipocambio"
+																name="">
+															</div>
+														</div>
+													</div>
 												</div>
 											</div>
-											<div class="col-md-3">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Tipo Comp</label>
-													<select class="form-control select2-allow-clear"
-														name="tipocomprobantefactura" id="tipocomprobantefactura">
-														<option value="factura">Factura</option>
-														<option value="boleta">Boleta</option>
-														<option value="notaventa">Nota venta</option>
-														<option value="recibo">Recibo</option>
-														<option value="otros">Otros</option>
-													</select>
-												</div>
-											</div>
-											<div class="col-md-3">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Nro Comprobante</label>
-													<input type="text" required class="form-control"
-														name="nrocomprobante" id="nrocomprobante">
-												</div>
-											</div>
-											<div class="col-md-4 container_moneda">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Moneda</label>
-													<select class="form-control" onchange="selectmoneda(this)"
-														id="moneda" name="moneda" required>
-														<option value="soles">S/</option>
-														<option value="dolares">$</option>
-													</select>
-												</div>
-											</div>
-											<div class="col-md-2 container_cambio" style="display: none">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Cambio</label>
-													<input type="number" step="any" class="form-control" id="tipocambio"
-														name="">
-												</div>
+											<table class="table">
+												<thead>
+													<th>Nº</th>
+													<th>Cantidad</th>
+													<th>Producto</th>
+													<th>Marca</th>
+													<th width="120px">Desc.</th>
+													<th width="120px">Valor Compra</th>
+													<th width="120px">Importe</th>
+													<th width="60px">Transporte</th>
+													<th width="60px">Estibador</th>
+													<th width="60px">Nota Debito</th>
+													<th width="60px">Nota Credito</th>
+													<th width="60px">Total</th>
+													<th width="60px">T. Unidad</th>
+												</thead>
+												<tbody id="detalleFacturar-list">
+												</tbody>
+											</table>
+											<div class="col-md-12">
+												<div class="form-group text-center">
+													<span class="" style="font-weight: bold; font-size: 25px">SubT:
+													</span>
+													<span class="" id="subtotal-facturacion"
+													style="font-weight: bold; font-size: 25px; margin-right: 15px">0.0</span>
+													<span class="" style="font-weight: bold; font-size: 25px">IGV:
+													</span>
+													<span class="" id="igv-facturacion"
+													style="font-weight: bold; font-size: 25px; margin-right: 15px">
+												0.0</span>
+												<span class="" style="font-weight: bold; font-size: 25px">Total:
+												</span>
+												<span class="" id="importe-total"
+												style="font-weight: bold; font-size: 25px">0.0</span>
 											</div>
 										</div>
-									</div>
-								</div>
-								<table class="table">
-									<thead>
-										<th>Nº</th>
-										<th>Cantidad</th>
-										<th>Producto</th>
-										<th>Marca</th>
-										<th width="120px">Desc.</th>
-										<th width="120px">Valor Compra</th>
-										<th width="120px">Importe</th>
-										<th width="60px">Transporte</th>
-										<th width="60px">Estibador</th>
-										<th width="60px">Total</th>
-									</thead>
-									<tbody id="detalleFacturar-list">
-									</tbody>
-								</table>
-								<div class="col-md-12">
-									<div class="form-group text-center">
-										<span class="" style="font-weight: bold; font-size: 25px">SubT:
-										</span>
-										<span class="" id="subtotal-facturacion"
-											style="font-weight: bold; font-size: 25px; margin-right: 15px">0.0</span>
-										<span class="" style="font-weight: bold; font-size: 25px">IGV:
-										</span>
-										<span class="" id="igv-facturacion"
-											style="font-weight: bold; font-size: 25px; margin-right: 15px">
-											0.0</span>
-										<span class="" style="font-weight: bold; font-size: 25px">Total:
-										</span>
-										<span class="" id="importe-total"
-											style="font-weight: bold; font-size: 25px">0.0</span>
-									</div>
-								</div>
-								<div style="margin-top: 10px">
-									<label class="" for="check_transporte">¿Incluye transporte?</label>
-									<input type="checkbox" class="" id="check_transporte">
+										<div style="margin-top: 10px">
+											<label class="" for="check_transporte">¿Incluye transporte?</label>
+											<input type="checkbox" class="" id="check_transporte">
 
-									<div class="row" style="display: none" id="container_transporte">
-										<div class="col-sm-6 text-center">
-											<button type="button" disabled class="btn btn-success" data-type="prorrateo"
-												id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO</button>
-										</div>
-										<div class="col-sm-6 text-center">
-											<button type="button" disabled class="btn btn-success"
-												data-type="participacion" id="btn_participacion"
-												onclick="setExtra(this)" id="participacion">PARTICIPACION EN
+											<div class="row" style="display: none" id="container_transporte">
+												<div class="col-sm-6 text-center">
+													<button type="button" disabled class="btn btn-success" data-type="prorrateo"
+													id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO</button>
+												</div>
+												<div class="col-sm-6 text-center">
+													<button type="button" disabled class="btn btn-success"
+													data-type="participacion" id="btn_participacion"
+													onclick="setExtra(this)" id="participacion">PARTICIPACION EN
 												COMPRAS</button>
+											</div>
 										</div>
 									</div>
-								</div>
 
-								<div style="margin-top: 10px">
-									<label class="" for="check_estibador">¿Incluye Estibador?</label>
-									<input type="checkbox" class="" id="check_estibador">
+									<div style="margin-top: 10px">
+										<label class="" for="check_estibador">¿Incluye Estibador?</label>
+										<input type="checkbox" class="" id="check_estibador">
 
-									<div class="row" style="display: none" id="container_estibador">
-										<div class="col-sm-6">
-											<label class="control-label" for="rucestibador">RUC</label>
-											<input class="form-control" name="" id="rucestibador">
-										</div>
-										<div class="col-sm-6">
-											<label class="control-label" for="proveedorestibador">Proveedor</label>
-											<input class="form-control" name="" id="proveedorestibador">
-										</div>
-										<div class="col-sm-3">
-											<label class="control-label" for="tipocomprobanteestibador">Tipo
+										<div class="row" style="display: none" id="container_estibador">
+											<div class="col-sm-6">
+												<label class="control-label" for="rucestibador">RUC</label>
+												<input class="form-control" name="" id="rucestibador">
+											</div>
+											<div class="col-sm-6">
+												<label class="control-label" for="proveedorestibador">Proveedor</label>
+												<input class="form-control" name="" id="proveedorestibador">
+											</div>
+											<div class="col-sm-3">
+												<label class="control-label" for="tipocomprobanteestibador">Tipo
 												Comprobante</label>
-											<select class="form-control select2-allow-clear"
+												<select class="form-control select2-allow-clear"
 												name="tipocomprobanteestibador" id="tipocomprobanteestibador">
 												<option value="">Select</option>
 												<option value="factura">Factura</option>
@@ -427,35 +430,137 @@ include("Fragmentos/abrirpopupcentro.php");
 										</div>
 										<div class="col-sm-3">
 											<label class="control-label" for="numerocomprobanteestibador">Nro
-												Comprobante</label>
+											Comprobante</label>
 											<input class="form-control" name="" id="numerocomprobanteestibador">
 										</div>
 										<div class="col-sm-3">
 											<label class="control-label" for="monedaestibador">Moneda</label>
 											<select class="form-control" onchange="selectmoneda(this)"
-												id="monedaestibador" name="monedaestibador" required>
-												<option value="soles">S/</option>
-												<option value="dolares">$</option>
-											</select>
-										</div>
-										<div class="col-sm-3">
-											<label class="control-label" for="precio_estibador">Precio</label>
-											<input class="form-control" oninput="changeprecioestibador(this)" readonly
-												type="number" name="" id="precio_estibador">
-										</div>
+											id="monedaestibador" name="monedaestibador" required>
+											<option value="soles">S/</option>
+											<option value="dolares">$</option>
+										</select>
+									</div>
+									<div class="col-sm-3">
+										<label class="control-label" for="precio_estibador">Precio</label>
+										<input class="form-control" data-type="estibador_costeo" oninput="changeprecioestibador(this)" readonly
+										type="number" name="" id="precio_estibador">
 									</div>
 								</div>
 							</div>
+
+
+							<div style="margin-top: 10px">
+								<label class="" for="check_notadebito">¿Incluye Nota Debito?</label>
+								<input type="checkbox" class="" id="check_notadebito">
+
+								<div class="row" style="display: none" id="container_notadebito">
+									<div class="col-sm-6">
+										<label class="control-label" for="rucnotadebito">RUC</label>
+										<input class="form-control" name="" id="rucnotadebito">
+									</div>
+									<div class="col-sm-6">
+										<label class="control-label" for="proveedornotadebito">Proveedor</label>
+										<input class="form-control" name="" id="proveedornotadebito">
+									</div>
+									<div class="col-sm-3">
+										<label class="control-label" for="tipocomprobantenotadebito">Tipo
+										Comprobante</label>
+										<select class="form-control select2-allow-clear"
+										name="tipocomprobantenotadebito" id="tipocomprobantenotadebito">
+										<option value="">Select</option>
+										<option value="factura">Factura</option>
+										<option value="boleta">Boleta</option>
+										<option value="notaventa">Nota venta</option>
+										<option value="recibo">Recibo</option>
+										<option value="otros">Otros</option>
+									</select>
+								</div>
+								<div class="col-sm-3">
+									<label class="control-label" for="numerocomprobantenotadebito">Nro
+									Comprobante</label>
+									<input class="form-control" name="" id="numerocomprobantenotadebito">
+								</div>
+								<div class="col-sm-3">
+									<label class="control-label" for="monedanotadebito">Moneda</label>
+									<select class="form-control" onchange="selectmoneda(this)"
+									id="monedanotadebito" name="monedanotadebito" required>
+									<option value="soles">S/</option>
+									<option value="dolares">$</option>
+								</select>
+							</div>
+							<div class="col-sm-3">
+								<label class="control-label" for="precio_notadebito">Precio</label>
+								<input class="form-control" data-type="notadebito" oninput="changeprecioestibador(this)" readonly
+								type="number" name="" id="precio_notadebito">
+							</div>
 						</div>
 					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Guardar</button>
-						<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
+
+
+					<div style="margin-top: 10px">
+						<label class="" for="check_notacredito">Nota credito?</label>
+						<input type="checkbox" class="" id="check_notacredito">
+
+						<div class="row" style="display: none" id="container_notacredito">
+							<div class="col-sm-6">
+								<label class="control-label" for="rucnotacredito">RUC</label>
+								<input class="form-control" name="" id="rucnotacredito">
+							</div>
+							<div class="col-sm-6">
+								<label class="control-label" for="proveedornotacredito">Proveedor</label>
+								<input class="form-control" name="" id="proveedornotacredito">
+							</div>
+							<div class="col-sm-3">
+								<label class="control-label" for="tipocomprobantenotacredito">Tipo
+								Comprobante</label>
+								<select class="form-control select2-allow-clear"
+								name="tipocomprobantenotacredito" id="tipocomprobantenotacredito">
+								<option value="">Select</option>
+								<option value="factura">Factura</option>
+								<option value="boleta">Boleta</option>
+								<option value="notaventa">Nota venta</option>
+								<option value="recibo">Recibo</option>
+								<option value="otros">Otros</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<label class="control-label" for="numerocomprobantenotacredito">Nro
+							Comprobante</label>
+							<input class="form-control" name="" id="numerocomprobantenotacredito">
+						</div>
+						<div class="col-sm-3">
+							<label class="control-label" for="monedanotacredito">Moneda</label>
+							<select class="form-control" onchange="selectmoneda(this)"
+							id="monedanotacredito" name="monedanotacredito" required>
+							<option value="soles">S/</option>
+							<option value="dolares">$</option>
+						</select>
 					</div>
-				</form>
+					<div class="col-sm-3">
+						<label class="control-label" for="precio_notacredito">Precio</label>
+						<input class="form-control" data-type="notacredito" oninput="changeprecioestibador(this)" readonly
+						type="number" name="" id="precio_notacredito">
+					</div>
+				</div>
 			</div>
+
+
+
+
+
+
 		</div>
 	</div>
+</div>
+<div class="modal-footer">
+	<button type="submit" class="btn btn-success">Guardar</button>
+	<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
+</div>
+</form>
+</div>
+</div>
+</div>
 </div>
 <div class="modal fade" id="mProrrateo" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-dialog" role="document" style="width: 700px">
@@ -475,7 +580,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<div class="col-sm-6">
 									<label for="field-1" class="control-label">Proveedor</label>
 									<input type="text" required class="form-control" name="proveedorpro"
-										id="proveedorpro">
+									id="proveedorpro">
 								</div>
 							</div>
 
@@ -483,64 +588,64 @@ include("Fragmentos/abrirpopupcentro.php");
 								<div class="col-sm-3">
 									<label class="control-label" for="monedapro">Moneda</label>
 									<select class="form-control" name="monedapro" id="monedapro"
-										onchange="changemonedapro(this)">
-										<option value="soles">S/</option>
-										<option value="dolares">$</option>
-									</select>
-								</div>
-								<div class="col-sm-3" id="containerTipoCambio" style="display: none">
-									<label class="control-label" for="monedapro">Tipo Cambio</label>
-									<input type="number" class="form-control" step="any" name="tipocambiopro"
-										id="tipocambiopro">
-								</div>
-								<div class="col-sm-3">
-									<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
-									<select class="form-control select2-allow-clear" name="tipocomprobantepro"
-										id="tipocomprobantepro">
-										<option value="">Select</option>
-										<option value="factura">Guia</option>
-										<option value="factura">Factura</option>
-										<option value="boleta">Boleta</option>
-										<option value="notaventa">Nota venta</option>
-										<option value="recibo">Recibo</option>
-										<option value="otros">Otros</option>
-									</select>
-								</div>
-								<div class="col-sm-3">
-									<label class="control-label" for="nrocomprobantepro">Nro Comprobante</label>
-									<input class="form-control" name="" id="nrocomprobantepro">
-								</div>
-
-								<div class="col-sm-3">
-									<label class="control-label" for="preciopro">Precio</label>
-									<input class="form-control" oninput="changepeso(this)" type="number" name=""
-										id="preciopro">
-								</div>
+									onchange="changemonedapro(this)">
+									<option value="soles">S/</option>
+									<option value="dolares">$</option>
+								</select>
 							</div>
+							<div class="col-sm-3" id="containerTipoCambio" style="display: none">
+								<label class="control-label" for="monedapro">Tipo Cambio</label>
+								<input type="number" class="form-control" step="any" name="tipocambiopro"
+								id="tipocambiopro">
+							</div>
+							<div class="col-sm-3">
+								<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
+								<select class="form-control select2-allow-clear" name="tipocomprobantepro"
+								id="tipocomprobantepro">
+								<option value="">Select</option>
+								<option value="factura">Guia</option>
+								<option value="factura">Factura</option>
+								<option value="boleta">Boleta</option>
+								<option value="notaventa">Nota venta</option>
+								<option value="recibo">Recibo</option>
+								<option value="otros">Otros</option>
+							</select>
 						</div>
-						<div class="row" style="margin-top:20px">
-							<table class="table">
-								<thead>
-									<th>Nº</th>
-									<th>Cantidad</th>
-									<th>Producto</th>
-									<th>Marca</th>
-									<th id="varTypeExtra" width="120px">Peso</th>
-									<th width="60px">Imp Ind</th>
-									<th width="60px">Importe</th>
-								</thead>
-								<tbody id="detalleProrrateo">
-								</tbody>
-							</table>
+						<div class="col-sm-3">
+							<label class="control-label" for="nrocomprobantepro">Nro Comprobante</label>
+							<input class="form-control" name="" id="nrocomprobantepro">
 						</div>
-						<button class="btn btn-primary" type="submit">Guardar</button>
-						<button type="button" data-dismiss="modal" aria-label="Close"
-							class="btn btn-danger">Cerrar</button>
+
+						<div class="col-sm-3">
+							<label class="control-label" for="preciopro">Precio</label>
+							<input class="form-control" oninput="changepeso(this)" type="number" name=""
+							id="preciopro">
+						</div>
 					</div>
-				</form>
+				</div>
+				<div class="row" style="margin-top:20px">
+					<table class="table">
+						<thead>
+							<th>Nº</th>
+							<th>Cantidad</th>
+							<th>Producto</th>
+							<th>Marca</th>
+							<th id="varTypeExtra" width="120px">Peso</th>
+							<th width="60px">Imp Ind</th>
+							<th width="60px">Importe</th>
+						</thead>
+						<tbody id="detalleProrrateo">
+						</tbody>
+					</table>
+				</div>
+				<button class="btn btn-primary" type="submit">Guardar</button>
+				<button type="button" data-dismiss="modal" aria-label="Close"
+				class="btn btn-danger">Cerrar</button>
 			</div>
-		</div>
+		</form>
 	</div>
+</div>
+</div>
 </div>
 <?php } // Show if recordset not empty ?>
 
@@ -692,15 +797,33 @@ mysql_free_result($Listado);
 			getSelector("#container_estibador").style.display = "none";
 		}
 	})
+
+	getSelector("#check_notadebito").addEventListener("click", e => {
+		console.log(e.target.checked)
+		if (e.target.checked) {
+			getSelector("#container_notadebito").style.display = "";
+		} else {
+			getSelector("#container_notadebito").style.display = "none";
+		}
+	})
+
+	getSelector("#check_notacredito").addEventListener("click", e => {
+		console.log(e.target.checked)
+		if (e.target.checked) {
+			getSelector("#container_notacredito").style.display = "";
+		} else {
+			getSelector("#container_notacredito").style.display = "none";
+		}
+	})
 	document.querySelectorAll(".setStatus").forEach(item => {
 		item.addEventListener("click", (e) => {
 			fetch(`editarEstadoOrdenCompra.php?codigo=${document.querySelector("#codigoOrdenCompra").value}&estado=${e.target.dataset.estado}`)
-				.then(res => res.json())
-				.catch(error => console.error("error: ", error))
-				.then(res => {
-					alert("Se ace´tó la orden de compra!")
-					$("#mOrdenCompra").modal("hide");
-				});
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				alert("Se ace´tó la orden de compra!")
+				$("#mOrdenCompra").modal("hide");
+			});
 		})
 	});
 
@@ -714,45 +837,45 @@ mysql_free_result($Listado);
 
 			document.querySelector("#codigoOrdenCompra").value = e.target.dataset.codigo
 			fetch(`getDetalleOrdenCompraGuia.php?codigo=${e.target.dataset.codigo}`)
-				.then(res => res.json())
-				.catch(error => console.error("error: ", error))
-				.then(res => {
-					document.querySelector("#codigoordcomp").value = res.header.codigoordcomp
-					$("#mproveedor").text(res.header.razonsocial)
-					$("#mfechaemision").text(res.header.fecha_emision)
-					$("#mvalortotal").text(res.header.montofact)
-					$("#msucursal").text(res.header.nombre_sucursal)
-					$("#mcodref1").text(res.header.codigoref1)
-					$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
-					$("#mgeneradapor").text(res.header.usuario)
-					$("#mruc").text(res.header.ruc)
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				document.querySelector("#codigoordcomp").value = res.header.codigoordcomp
+				$("#mproveedor").text(res.header.razonsocial)
+				$("#mfechaemision").text(res.header.fecha_emision)
+				$("#mvalortotal").text(res.header.montofact)
+				$("#msucursal").text(res.header.nombre_sucursal)
+				$("#mcodref1").text(res.header.codigoref1)
+				$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
+				$("#mgeneradapor").text(res.header.usuario)
+				$("#mruc").text(res.header.ruc)
 
-					$("#observacion").val(res.header.observacion)
-					$("#numero-guia").val(res.header.numero_guia)
-					$("#codigoguia").val(res.header.codigoguia)
+				$("#observacion").val(res.header.observacion)
+				$("#numero-guia").val(res.header.numero_guia)
+				$("#codigoguia").val(res.header.codigoguia)
 
-					if (res.header.numero_guia) {
-						document.querySelector("#th-saldo").style.display = ""
-						if (res.header.estadoguia == 2 || res.header.estadoguia == 3) {
-							document.querySelector("#btn-finalice").style.display = "none"
-							document.querySelector("#btn-guardarGuia-facturacion").style.display = "none"
-						}
-					} else {
+				if (res.header.numero_guia) {
+					document.querySelector("#th-saldo").style.display = ""
+					if (res.header.estadoguia == 2 || res.header.estadoguia == 3) {
 						document.querySelector("#btn-finalice").style.display = "none"
-						document.querySelector("#th-saldo").style.display = "none"
+						document.querySelector("#btn-guardarGuia-facturacion").style.display = "none"
 					}
-					document.querySelector("#detalleTableOrden-facturacion-list").innerHTML = ""
-					res.detalle.forEach(r => {
-						i++
-						let tdExtra = "";
-						let validateCant = 0;
-						if (res.header.numero_guia) {
-							tdExtra = `<td class="cant-extra">${parseInt(r.cantidad) - parseInt(r.cant_recibida)}</td>`
-							validateCant = parseInt(r.cantidad) - parseInt(r.cant_recibida)
-						} else {
-							validateCant = r.cantidad
-						}
-						$("#detalleTableOrden-facturacion-list").append(`
+				} else {
+					document.querySelector("#btn-finalice").style.display = "none"
+					document.querySelector("#th-saldo").style.display = "none"
+				}
+				document.querySelector("#detalleTableOrden-facturacion-list").innerHTML = ""
+				res.detalle.forEach(r => {
+					i++
+					let tdExtra = "";
+					let validateCant = 0;
+					if (res.header.numero_guia) {
+						tdExtra = `<td class="cant-extra">${parseInt(r.cantidad) - parseInt(r.cant_recibida)}</td>`
+						validateCant = parseInt(r.cantidad) - parseInt(r.cant_recibida)
+					} else {
+						validateCant = r.cantidad
+					}
+					$("#detalleTableOrden-facturacion-list").append(`
 						<tr>
 						<td class="codigo" data-codigo_guiaoc="${r.codigo_guiaoc}" data-codigo="${r.codigo}">${i}</td>
 						<td  class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
@@ -760,8 +883,8 @@ mysql_free_result($Listado);
 						${tdExtra}
 						<td style="width: 30px"><input required type="number" oninput="validateCantidad(this)" class="form-control cant-arrived" autocomplete="off" value="${r.cant_recibida}" data-cantidad="${validateCant}" readonly></td>
 						</tr>`)
-					});
 				});
+			});
 			$("#mOrdenCompra").modal();
 		})
 	});
@@ -773,45 +896,45 @@ mysql_free_result($Listado);
 
 			document.querySelector("#codigoOrdenCompra").value = e.target.dataset.codigo
 			fetch(`getDetalleGuiaSinOc.php?codigo=${e.target.dataset.codigo}`)
-				.then(res => res.json())
-				.catch(error => console.error("error: ", error))
-				.then(res => {
-					document.querySelector("#codigoordcomp").value = res.header.codigoordcomp
-					$("#mproveedor").text(res.header.razonsocial)
-					$("#mfechaemision").text(res.header.fecha_emision)
-					$("#mvalortotal").text(res.header.montofact)
-					$("#mcodref1").text(res.header.numero_guia)
-					$("#msucursal").text(res.header.nombre_sucursal)
-					$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
-					$("#mgeneradapor").text(res.header.usuario)
-					$("#mruc").text(res.header.ruc)
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				document.querySelector("#codigoordcomp").value = res.header.codigoordcomp
+				$("#mproveedor").text(res.header.razonsocial)
+				$("#mfechaemision").text(res.header.fecha_emision)
+				$("#mvalortotal").text(res.header.montofact)
+				$("#mcodref1").text(res.header.numero_guia)
+				$("#msucursal").text(res.header.nombre_sucursal)
+				$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
+				$("#mgeneradapor").text(res.header.usuario)
+				$("#mruc").text(res.header.ruc)
 
-					$("#observacion").val(res.header.observacion)
-					$("#numero-guia").val(res.header.numero_guia)
-					$("#codigoguia").val(res.header.codigoguia)
+				$("#observacion").val(res.header.observacion)
+				$("#numero-guia").val(res.header.numero_guia)
+				$("#codigoguia").val(res.header.codigoguia)
 
-					if (res.header.numero_guia) {
-						document.querySelector("#th-saldo").style.display = ""
-						if (res.header.estadoguia == 2 || res.header.estadoguia == 3) {
-							document.querySelector("#btn-finalice").style.display = "none"
-							document.querySelector("#btn-guardarGuia-facturacion").style.display = "none"
-						}
-					} else {
+				if (res.header.numero_guia) {
+					document.querySelector("#th-saldo").style.display = ""
+					if (res.header.estadoguia == 2 || res.header.estadoguia == 3) {
 						document.querySelector("#btn-finalice").style.display = "none"
-						document.querySelector("#th-saldo").style.display = "none"
+						document.querySelector("#btn-guardarGuia-facturacion").style.display = "none"
 					}
-					document.querySelector("#detalleTableOrden-facturacion-list").innerHTML = ""
-					res.detalle.forEach(r => {
-						i++
-						let tdExtra = "";
-						let validateCant = 0;
-						if (res.header.numero_guia) {
-							tdExtra = `<td class="cant-extra">${parseInt(r.cantidad) - parseInt(r.cant_recibida)}</td>`
-							validateCant = parseInt(r.cantidad) - parseInt(r.cant_recibida)
-						} else {
-							validateCant = r.cantidad
-						}
-						$("#detalleTableOrden-facturacion-list").append(`
+				} else {
+					document.querySelector("#btn-finalice").style.display = "none"
+					document.querySelector("#th-saldo").style.display = "none"
+				}
+				document.querySelector("#detalleTableOrden-facturacion-list").innerHTML = ""
+				res.detalle.forEach(r => {
+					i++
+					let tdExtra = "";
+					let validateCant = 0;
+					if (res.header.numero_guia) {
+						tdExtra = `<td class="cant-extra">${parseInt(r.cantidad) - parseInt(r.cant_recibida)}</td>`
+						validateCant = parseInt(r.cantidad) - parseInt(r.cant_recibida)
+					} else {
+						validateCant = r.cantidad
+					}
+					$("#detalleTableOrden-facturacion-list").append(`
 						<tr>
 						<td class="codigo" data-codigo_guiaoc="${r.codigo_guiaoc}" data-codigo="${r.codigo}">${i}</td>
 						<td  class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
@@ -819,8 +942,8 @@ mysql_free_result($Listado);
 						${tdExtra}
 						<td style="width: 30px"><input readonly type="number" oninput="validateCantidad(this)" value="${r.cantidad}" class="form-control cant-arrived" autocomplete="off"  data-cantidad="${validateCant}"></td>
 						</tr>`)
-					});
 				});
+			});
 			$("#mOrdenCompra").modal();
 		})
 	});
@@ -867,15 +990,15 @@ mysql_free_result($Listado);
 		formData.append("json", JSON.stringify(data))
 
 		fetch(`setOrdenCompra.php`, { method: 'POST', body: formData })
-			.then(res => res.json())
-			.catch(error => console.error("error: ", error))
-			.then(res => {
-				$("#mOrdenCompra").modal("hide");
-				if (res.success) {
-					alert("registro completo!")
-				}
+		.then(res => res.json())
+		.catch(error => console.error("error: ", error))
+		.then(res => {
+			$("#mOrdenCompra").modal("hide");
+			if (res.success) {
+				alert("registro completo!")
+			}
 
-			});
+		});
 
 	})
 	document.querySelector("#saveOrdenCompra").addEventListener("submit", (e) => {
@@ -919,15 +1042,15 @@ mysql_free_result($Listado);
 		formData.append("json", JSON.stringify(data))
 
 		fetch(`setOrdenCompra.php`, { method: 'POST', body: formData })
-			.then(res => res.json())
-			.catch(error => console.error("error: ", error))
-			.then(res => {
-				$("#mOrdenCompra").modal("hide");
-				if (res.success) {
-					alert("registro completo!")
-				}
+		.then(res => res.json())
+		.catch(error => console.error("error: ", error))
+		.then(res => {
+			$("#mOrdenCompra").modal("hide");
+			if (res.success) {
+				alert("registro completo!")
+			}
 
-			});
+		});
 	})
 	document.querySelectorAll(".aux_compras").forEach(item => {
 		item.addEventListener("click", e => {
@@ -940,6 +1063,14 @@ mysql_free_result($Listado);
 			getSelector("#check_estibador").parentElement.classList.remove("checked")
 			getSelector("#container_estibador").style.display = "none";
 
+			getSelector("#check_notadebito").checked = false;
+			getSelector("#check_notadebito").parentElement.classList.remove("checked")
+			getSelector("#container_notadebito").style.display = "none";
+
+			getSelector("#check_notacredito").checked = false;
+			getSelector("#check_notacredito").parentElement.classList.remove("checked")
+			getSelector("#container_notacredito").style.display = "none";
+
 
 			if (item.dataset.type == "ordencompra") {
 				url = `getDetalleOrdenCompraGuia.php?codigo=${e.target.dataset.codigo}`;
@@ -950,31 +1081,31 @@ mysql_free_result($Listado);
 			e.preventDefault();
 			var i = 0;
 			fetch(url)
-				.then(res => res.json())
-				.catch(error => console.error("error: ", error))
-				.then(res => {
-					arrayDetalle = res;
-					$("#mproveedor1").text(res.header.razonsocial)
-					$("#mfechaemision1").text(res.header.fecha_emision)
-					$("#mvalortotal1").text(res.header.montofact)
-					$("#mcodref11").text(res.header.numero_guia)
-					$("#mcodref21").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
-					$("#mgeneradapor1").text(res.header.usuario)
-					$("#mruc1").text(res.header.ruc)
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				arrayDetalle = res;
+				$("#mproveedor1").text(res.header.razonsocial)
+				$("#mfechaemision1").text(res.header.fecha_emision)
+				$("#mvalortotal1").text(res.header.montofact)
+				$("#mcodref11").text(res.header.numero_guia)
+				$("#mcodref21").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
+				$("#mgeneradapor1").text(res.header.usuario)
+				$("#mruc1").text(res.header.ruc)
 
-					$("#codigo_orden_compra").val(res.header.codigoguia ? res.header.codigoguia : 0)
-					$("#codigo_guia_sin_oc").val(res.header.codigo_guia_sin_oc ? res.header.codigo_guia_sin_oc : 0)
+				$("#codigo_orden_compra").val(res.header.codigoguia ? res.header.codigoguia : 0)
+				$("#codigo_guia_sin_oc").val(res.header.codigo_guia_sin_oc ? res.header.codigo_guia_sin_oc : 0)
 
-					$("#codigoproveedor").val(res.header.codigoproveedor)
-					$("#codigosucursal").val(res.header.sucursal)
-					$("#msucursal1").text(res.header.nombre_sucursal)
+				$("#codigoproveedor").val(res.header.codigoproveedor)
+				$("#codigosucursal").val(res.header.sucursal)
+				$("#msucursal1").text(res.header.nombre_sucursal)
 
 
-					i = 0;
-					document.querySelector("#detalleFacturar-list").innerHTML = ""
-					res.detalle.forEach(r => {
-						i++
-						$("#detalleFacturar-list").append(`
+				i = 0;
+				document.querySelector("#detalleFacturar-list").innerHTML = ""
+				res.detalle.forEach(r => {
+					i++
+					$("#detalleFacturar-list").append(`
 						<tr>
 						<td data-codigo="${r.codigoprod}" class="codigoprod">${i}</td>
 						<td class="cantidad">${r.cantidad}</td>
@@ -986,20 +1117,21 @@ mysql_free_result($Listado);
 						<td class="" ><input  step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
 						<td><input id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
 						<td><input class="form-control estibador_costeo" readonly></td>
+						<td><input class="form-control notadebito" readonly></td>
+						<td><input class="form-control notacredito" readonly></td>
 						<td><input class="form-control total_costeo" readonly></td>
+						<td><input class="form-control totalunidadcosteo" readonly></td>
 						</tr>`);
-
-
-						let suma = 0;
-						getSelectorAll(".importe").forEach(item => {
-							if (item.textContent)
-								suma += parseFloat(item.value)
-						})
-						document.querySelector("#importe-total").textContent = suma * 1.18
-					});
-					$('[data-toggle="tooltip"]').tooltip()
-					$('.tooltips').tooltip();
+					let suma = 0;
+					getSelectorAll(".importe").forEach(item => {
+						if (item.textContent)
+							suma += parseFloat(item.value)
+					})
+					document.querySelector("#importe-total").textContent = suma * 1.18
 				});
+				$('[data-toggle="tooltip"]').tooltip()
+				$('.tooltips').tooltip();
+			});
 			getSelector("#subtotal-facturacion").textContent = "0"
 			getSelector("#igv-facturacion").textContent = "0"
 			getSelector("#importe-total").textContent = "0"
@@ -1042,10 +1174,14 @@ mysql_free_result($Listado);
 			btn_prorrateo.disabled = false
 			btn_participacion.disabled = false
 			precio_estibador.removeAttribute("readonly")
+			precio_notadebito.removeAttribute("readonly")
+			precio_notacredito.removeAttribute("readonly")
 		} else {
 			btn_prorrateo.disabled = true
 			btn_participacion.disabled = true
 			precio_estibador.setAttribute("readonly", true)
+			precio_notadebito.setAttribute("readonly", true)
+			precio_notacredito.setAttribute("readonly", true)
 		}
 		actualizarSubtotal();
 	}
@@ -1054,9 +1190,9 @@ mysql_free_result($Listado);
 		document.querySelectorAll(".total_costeo").forEach(item => {
 			if (item.value) {
 				subtotal += parseFloat(item.value);
+				item.closest('tr').querySelector(".totalunidadcosteo").value = parseFloat(item.value) / parseInt(item.closest('tr').querySelector(".cantidad").textContent)
 			}
 		});
-		// subtotal -= descuento.value ? parseFloat(descuento.value) : 0;
 		subtotalGLOBAL = subtotal;
 		$("#importe-total").text((subtotal * 1.18).toFixed(4))
 		$("#subtotal-facturacion").text(subtotal.toFixed(4))
@@ -1069,9 +1205,16 @@ mysql_free_result($Listado);
 		});
 
 		getSelectorAll(".precio-compra").forEach(i => {
-			i.closest("tr").querySelector(".total_costeo").value = parseFloat(i.closest("tr").querySelector(".total_costeo").value) + e.value * i.value / total
+			const tr = i.closest("tr");
+			tr.querySelector(`.${e.dataset.type}`).value = e.value * i.value / total
+			let totalx = 0
+			totalx += parseFloat(tr.querySelector(".importe").value ? tr.querySelector(".importe").value : 0);
+			totalx += parseFloat(tr.querySelector(".transporte_costeo").value ? tr.querySelector(".transporte_costeo").value : 0);
+			totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
+			totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
+			totalx += parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
 
-			i.closest("tr").querySelector(".estibador_costeo").value = (e.value * i.value / total).toFixed(4)
+			i.closest("tr").querySelector(".total_costeo").value = totalx
 		});
 		actualizarSubtotal()
 	}
@@ -1090,6 +1233,8 @@ mysql_free_result($Listado);
 			btn_prorrateo.disabled = false
 			btn_participacion.disabled = false
 			precio_estibador.removeAttribute('readonly');
+			precio_notadebito.removeAttribute("readonly")
+			precio_notacredito.removeAttribute("readonly")
 			if (precio_estibador.value != "" && precio_estibador.value != "0") {
 				let total = 0;
 				getSelectorAll(".precio-compra").forEach(i => {
@@ -1103,7 +1248,8 @@ mysql_free_result($Listado);
 			btn_prorrateo.disabled = true
 			btn_participacion.disabled = true
 			precio_estibador.setAttribute("readonly", true)
-
+			precio_notadebito.setAttribute("readonly", true)
+			precio_notacredito.setAttribute("readonly", true)
 		}
 		const descuento = $("#descuento").val() ? $("#descuento").val() : 0
 		const aa = e.parentElement.parentElement
@@ -1198,14 +1344,14 @@ mysql_free_result($Listado);
 		var formData = new FormData();
 		formData.append("json", JSON.stringify(data))
 		fetch(`setFactura.php`, { method: 'POST', body: formData })
-			.then(res => res.json())
-			.catch(error => console.error("error: ", error))
-			.then(res => {
-				if (res.success) {
-					alert("registro completo!")
-					location.reload()
-				}
-			});
+		.then(res => res.json())
+		.catch(error => console.error("error: ", error))
+		.then(res => {
+			if (res.success) {
+				alert("registro completo!")
+				location.reload()
+			}
+		});
 	})
 	function validatePventa(e) {
 		const pcompra = parseFloat(e.closest("tr").querySelector(".precio-compra").value);
