@@ -1175,25 +1175,8 @@ mysql_free_result($Listado);
 
 		aa.querySelector(".precio-compra").value = parseFloat(ss).toFixed(4)
 
-		let allpreciocompra = true;
-		getSelectorAll(".precio-compra").forEach(e => {
-			if (e.value == "" || parseInt(e.value) == 0) {
-				allpreciocompra = false;
-			}
-		});
-		if (allpreciocompra) {
-			btn_prorrateo.disabled = false
-			btn_participacion.disabled = false
-			precio_estibador.removeAttribute("readonly")
-			precio_notadebito.removeAttribute("readonly")
-			precio_notacredito.removeAttribute("readonly")
-		} else {
-			btn_prorrateo.disabled = true
-			btn_participacion.disabled = true
-			precio_estibador.setAttribute("readonly", true)
-			precio_notadebito.setAttribute("readonly", true)
-			precio_notacredito.setAttribute("readonly", true)
-		}
+		updateColumns();
+		
 		actualizarSubtotal();
 	}
 	function actualizarSubtotal() {
@@ -1222,11 +1205,7 @@ mysql_free_result($Listado);
 		});
 		actualizarSubtotal()
 	}
-	function changepreciocompra(e, aux = true) {
-		if (e.value < 0) {
-			e.value = 0;
-			return;
-		}
+	function updateColumns(){
 		let allpreciocompra = true;
 		getSelectorAll(".precio-compra").forEach(e => {
 			if (e.value == "" || parseInt(e.value) == 0) {
@@ -1239,15 +1218,15 @@ mysql_free_result($Listado);
 			precio_estibador.removeAttribute('readonly');
 			precio_notadebito.removeAttribute("readonly")
 			precio_notacredito.removeAttribute("readonly")
-			if (precio_estibador.value != "" && precio_estibador.value != "0") {
-				let total = 0;
-				getSelectorAll(".precio-compra").forEach(i => {
-					total += parseInt(i.value)
-				});
-				getSelectorAll(".precio-compra").forEach(i => {
-					i.closest("tr").querySelector(".estibador_costeo").value = e.value * i.value / total
-				});
-			}
+			let total = 0;
+			getSelectorAll(".precio-compra").forEach(i => {
+				total += parseInt(i.value)
+			});
+			getSelectorAll(".precio-compra").forEach(i => {
+				i.closest("tr").querySelector(".estibador_costeo").value = parseFloat(precio_estibador.value ? precio_estibador.value : 0) * i.value / total
+				i.closest("tr").querySelector(".notadebito").value = parseFloat(precio_notadebito.value ? precio_notadebito.value : 0) * i.value / total
+				i.closest("tr").querySelector(".notacredito").value = parseFloat(precio_notacredito.value ? precio_notacredito.value : 0) * i.value / total
+			});
 		} else {
 			btn_prorrateo.disabled = true
 			btn_participacion.disabled = true
@@ -1255,6 +1234,14 @@ mysql_free_result($Listado);
 			precio_notadebito.setAttribute("readonly", true)
 			precio_notacredito.setAttribute("readonly", true)
 		}
+	}
+	function changepreciocompra(e, aux = true) {
+		if (e.value < 0) {
+			e.value = 0;
+			return;
+		}
+		updateColumns();
+
 		const descuento = $("#descuento").val() ? $("#descuento").val() : 0
 		const aa = e.parentElement.parentElement
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
