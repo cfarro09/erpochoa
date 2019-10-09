@@ -762,8 +762,8 @@ mysql_free_result($Listado);
 				const unit = $("#preciopro").val() / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
 					const cantidad = parseFloat(i.parentElement.parentElement.querySelector(".cant_recibida").textContent)
-					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value / cantidad).toFixed(4)
-					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value).toFixed(4)
+					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value ).toFixed(4)
+					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value * cantidad).toFixed(4)
 				});
 
 			} else {
