@@ -753,7 +753,7 @@ mysql_free_result($Listado);
 		if ($("#preciopro").val()) {
 			let suma = 0;
 			getSelectorAll(".pesoitempro").forEach(i => {
-				suma += parseFloat(i.value)
+				suma += parseFloat(i.value) * parseInt(i.closest("tr").querySelector(".cant_recibida").textContent)
 				if (i.value == 0 || i.value == "") {
 					proccesspeso = false;
 				}
