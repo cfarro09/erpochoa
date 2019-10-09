@@ -669,22 +669,21 @@ mysql_free_result($Listado);
 		}
 	}
 	function changedescuentogeneral(e) {
-		if (e.value < 0) {
+		if (e.value < 0 || e.value == "") {
 			e.value = 0;
-			return;
 		}
 		const tr = getSelector(".descuento").closest("tr");
 		getSelectorAll(".descuento").forEach(i => {
-			const porcentajedescuesto = 100 - parseFloat(i.value);
-			tr.querySelector(".total_costeo").value = parseFloat(tr.querySelector(".importe").value) * 100 /porcentajedescuesto;
 			i.value = 0
+			const tr = i.closest("tr");
+			tr.querySelector(".total_costeo").value = calculartotalcosteo(tr);
 		})
 		actualizarSubtotal();
 		const subtotal = subtotalGLOBAL;
 		if (subtotal > 0) {
-			getSelector("#subtotal-facturacion").textContent = subtotal - e.value
-			getSelector("#igv-facturacion").textContent = ((subtotal - e.value) * 0.18).toFixed(4)
-			getSelector("#importe-total").textContent = ((subtotal - e.value) * 1.18).toFixed(4)
+			getSelector("#subtotal-facturacion").textContent = subtotal - subtotal*parseFloat(e.value)/100
+			getSelector("#igv-facturacion").textContent = ((subtotal - subtotal*parseFloat(e.value)/100) * 0.18).toFixed(4)
+			getSelector("#importe-total").textContent = ((subtotal - subtotal*parseFloat(e.value)/100) * 1.18).toFixed(4)
 		}
 	}
 	formExtra.addEventListener("submit", e => {
@@ -1147,11 +1146,22 @@ mysql_free_result($Listado);
 			return;
 		}
 		descuento.value = 0
-		const importe = parseFloat(e.parentElement.parentElement.querySelector(".importe").value);
-		const totalcosteo = importe * (100 - parseInt(e.value)) / 100
-		e.parentElement.parentElement.querySelector(".total_costeo").value = totalcosteo
+		const tr = e.parentElement.parentElement;
+		
+		e.parentElement.parentElement.querySelector(".total_costeo").value = calculartotalcosteo(tr)
 
 		actualizarSubtotal();
+	}
+	function calculartotalcosteo(tr){
+		let totalx = 0
+		totalx += parseFloat(tr.querySelector(".importe").value ? tr.querySelector(".importe").value : 0);
+		totalx += parseFloat(tr.querySelector(".transporte_costeo").value ? tr.querySelector(".transporte_costeo").value : 0);
+		totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
+		totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
+		totalx += parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
+		debugger
+		totalx -= tr.querySelector(".descuento").value ?  totalx*(parseFloat(tr.querySelector(".descuento").value))/100 : 0;
+		return totalx;
 	}
 	function changeimporte(e) {
 		if (e.value < 0) {
@@ -1207,14 +1217,7 @@ mysql_free_result($Listado);
 		getSelectorAll(".precio-compra").forEach(i => {
 			const tr = i.closest("tr");
 			tr.querySelector(`.${e.dataset.type}`).value = e.value * i.value / total
-			let totalx = 0
-			totalx += parseFloat(tr.querySelector(".importe").value ? tr.querySelector(".importe").value : 0);
-			totalx += parseFloat(tr.querySelector(".transporte_costeo").value ? tr.querySelector(".transporte_costeo").value : 0);
-			totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
-			totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
-			totalx += parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
-
-			i.closest("tr").querySelector(".total_costeo").value = totalx
+			i.closest("tr").querySelector(".total_costeo").value = calculartotalcosteo(tr)	
 		});
 		actualizarSubtotal()
 	}
