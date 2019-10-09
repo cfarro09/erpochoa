@@ -744,6 +744,7 @@ mysql_free_result($Listado);
 		$("#mProrrateo").modal();
 	}
 	function changepeso(e) {
+		debugger
 		if (e.value < 0) {
 			e.value = 0;
 			return;
@@ -752,7 +753,7 @@ mysql_free_result($Listado);
 		if ($("#preciopro").val()) {
 			let suma = 0;
 			getSelectorAll(".pesoitempro").forEach(i => {
-				suma += parseInt(i.value)
+				suma += parseFloat(i.value)
 				if (i.value == 0 || i.value == "") {
 					proccesspeso = false;
 				}
@@ -760,7 +761,7 @@ mysql_free_result($Listado);
 			if (proccesspeso) {
 				const unit = $("#preciopro").val() / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
-					const cantidad = parseInt(i.parentElement.parentElement.querySelector(".cant_recibida").textContent)
+					const cantidad = parseFloat(i.parentElement.parentElement.querySelector(".cant_recibida").textContent)
 					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value / cantidad).toFixed(4)
 					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value).toFixed(4)
 				});
