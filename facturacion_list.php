@@ -1195,12 +1195,12 @@ mysql_free_result($Listado);
 	function changeprecioestibador(e) {
 		let total = 0;
 		getSelectorAll(".precio-compra").forEach(i => {
-			total += parseFloat(i.value) * parseInt(i.closest("tr").querySelector(".cant_recibida").textConte)
+			total += parseFloat(i.value) * parseInt(i.closest("tr").querySelector(".cantidad").textContent)
 		});
 
 		getSelectorAll(".precio-compra").forEach(i => {
 			const tr = i.closest("tr");
-			tr.querySelector(`.${e.dataset.type}`).value = e.value *parseInt(i.closest("tr").querySelector(".cant_recibida").textConte) * i.value / total
+			tr.querySelector(`.${e.dataset.type}`).value = e.value *parseInt(i.closest("tr").querySelector(".cantidad").textContent) * i.value / total
 			i.closest("tr").querySelector(".total_costeo").value = calculartotalcosteo(tr)	
 		});
 		actualizarSubtotal()
