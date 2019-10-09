@@ -1171,7 +1171,7 @@ mysql_free_result($Listado);
 		}
 		const aa = e.parentElement.parentElement
 		const ss = e.value / parseInt(aa.querySelector(".cantidad").textContent)
-		aa.querySelector(".total_costeo").value = parseFloat(e.value) * (100 - parseInt(aa.querySelector(".descuento").value)) / 100
+		aa.querySelector(".total_costeo").value = parseFloat(e.value) * (100 - parseFloat(aa.querySelector(".descuento").value)) / 100
 
 		aa.querySelector(".precio-compra").value = parseFloat(ss).toFixed(4)
 
@@ -1195,7 +1195,7 @@ mysql_free_result($Listado);
 	function changeprecioestibador(e) {
 		let total = 0;
 		getSelectorAll(".precio-compra").forEach(i => {
-			total += parseInt(i.value)
+			total += parseFloat(i.value)
 		});
 
 		getSelectorAll(".precio-compra").forEach(i => {
@@ -1220,7 +1220,7 @@ mysql_free_result($Listado);
 			precio_notacredito.removeAttribute("readonly")
 			let total = 0;
 			getSelectorAll(".precio-compra").forEach(i => {
-				total += parseInt(i.value)
+				total += parseFloat(i.value)
 			});
 			getSelectorAll(".precio-compra").forEach(i => {
 				i.closest("tr").querySelector(".estibador_costeo").value = parseFloat(precio_estibador.value ? precio_estibador.value : 0) * i.value / total
@@ -1246,7 +1246,7 @@ mysql_free_result($Listado);
 		const aa = e.parentElement.parentElement
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
 
-		aa.querySelector(".total_costeo").value = ss * (100 - (parseInt(aa.querySelector(".descuento").value))) / 100
+		aa.querySelector(".total_costeo").value = ss * (100 - (parseFloat(aa.querySelector(".descuento").value))) / 100
 
 		aa.querySelector(".importe").value = parseFloat(ss).toFixed(4)
 
