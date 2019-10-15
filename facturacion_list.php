@@ -258,7 +258,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		</div>
 
 		<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog" role="document" style="width: 1100px">
+			<div class="modal-dialog" role="document" style="width: 1300px">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
 						<h2 class="modal-title" id="">Facturar Orden de compra</h2>
@@ -340,15 +340,17 @@ include("Fragmentos/abrirpopupcentro.php");
 												<th>Cantidad</th>
 												<th>Producto</th>
 												<th>Marca</th>
-												<th width="120px">Desc.</th>
+												<th width="120px">Desc %</th>
 												<th width="120px">Valor Compra</th>
+												<th width="120px">V. Compra 2</th>
+												<th width="120px">IGV</th>
 												<th width="120px">Importe</th>
-												<th width="60px">Transporte</th>
-												<th width="60px">Estibador</th>
-												<th width="60px">Nota Debito</th>
-												<th width="60px">Nota Credito</th>
-												<th width="60px">Total</th>
-												<th width="60px">T. Unidad</th>
+												<th width="60px" class="costeochecked" style="display: none">Transporte</th>
+												<th width="60px" class="costeochecked" style="display: none">Estibador</th>
+												<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
+												<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
+												<th width="60px" class="costeochecked" style="display: none">Total</th>
+												<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
 											</thead>
 											<tbody id="detalleFacturar-list">
 											</tbody>
@@ -368,6 +370,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								</div>
 							</div>
 							<div class="modal-footer">
+								<label for="showcosteo">Mostrar costeo</label>
+								<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
 								<button class="btn btn-success" type="button" onclick="showopciones()">Opciones</button>
 								<button type="submit" class="btn btn-success">Guardar</button>
 								<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
@@ -626,7 +630,18 @@ include("Fragmentos/abrirpopupcentro.php");
 	<script type="text/javascript">
 		let arrayDetalle;
 		let subtotalGLOBAL = 0;
-
+		function checkcosteo(e){
+			if(e.checked){
+				getSelectorAll(".costeochecked").forEach(e => {
+					e.style.display = ""
+				})
+			}else{
+				getSelectorAll(".costeochecked").forEach(e => {
+					e.style.display = "none"
+				})
+			}
+			console.log(e.checked)
+		}
 		function showopciones(){
 			$("#mopcionesextras").modal();
 		}
@@ -642,6 +657,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				e.value = 0;
 			}
 			const tr = getSelector(".descuento").closest("tr");
+
 			getSelectorAll(".descuento").forEach(i => {
 				i.value = 0
 				const tr = i.closest("tr");
@@ -1082,14 +1098,16 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td >${r.marca}</td>
 							<td><input type="number" oninput="changedescuento(this)" value="0" class="form-control descuento"></td>
 							<td ><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
-
+							<td><input type="text" readonly class="form-control valorcompra2"></td>
+							<td><input type="text" readonly class="form-control igvrow"></td>
 							<td class="" ><input  step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
-							<td><input id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
-							<td><input class="form-control estibador_costeo" readonly></td>
-							<td><input class="form-control notadebito" readonly></td>
-							<td><input class="form-control notacredito" readonly></td>
-							<td><input class="form-control total_costeo" readonly></td>
-							<td><input class="form-control totalunidadcosteo" readonly></td>
+
+							<td style="display: none" class="costeochecked"><input id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
+							<td style="display: none" class="costeochecked"><input class="form-control estibador_costeo" readonly></td>
+							<td style="display: none" class="costeochecked"><input class="form-control notadebito" readonly></td>
+							<td style="display: none" class="costeochecked"><input class="form-control notacredito" readonly></td>
+							<td style="display: none" class="costeochecked"><input class="form-control total_costeo" readonly></td>
+							<td style="display: none" class="costeochecked"><input class="form-control totalunidadcosteo" readonly></td>
 							</tr>`);
 						let suma = 0;
 						getSelectorAll(".importe").forEach(item => {
@@ -1109,7 +1127,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				$("#mFacturaCompra").modal();
 
 			})
-		});
+});
 function changedescuento(e) {
 	if (e.value < 0 || e.value == "") {
 		e.value = 0;
@@ -1117,7 +1135,8 @@ function changedescuento(e) {
 	}
 	descuento.value = 0
 	const tr = e.parentElement.parentElement;
-
+	tr.querySelector(".valorcompra2").value = (parseFloat(tr.querySelector(".precio-compra").value)*(100-parseFloat(e.value))/100).toFixed(4);
+	tr.querySelector(".igvrow").value = (parseFloat(tr.querySelector(".valorcompra2").value)*.18).toFixed(4)
 	e.parentElement.parentElement.querySelector(".total_costeo").value = calculartotalcosteo(tr)
 
 	actualizarSubtotal();
@@ -1140,6 +1159,10 @@ function changeimporte(e) {
 	}
 	const aa = e.parentElement.parentElement
 	const ss = e.value / parseInt(aa.querySelector(".cantidad").textContent)
+
+	aa.querySelector(".valorcompra2").value = (parseFloat(ss) * (100 - (parseFloat(aa.querySelector(".descuento").value))) / 100).toFixed(2)
+	aa.querySelector(".igvrow").value = (parseFloat(aa.querySelector(".valorcompra2").value)*.18).toFixed(4)
+
 	aa.querySelector(".total_costeo").value = parseFloat(e.value) * (100 - parseFloat(aa.querySelector(".descuento").value)) / 100
 
 	aa.querySelector(".precio-compra").value = parseFloat(ss).toFixed(4)
@@ -1214,7 +1237,8 @@ function changepreciocompra(e, aux = true) {
 	const descuento = $("#descuento").val() ? $("#descuento").val() : 0
 	const aa = e.parentElement.parentElement
 	const ss = parseInt(aa.querySelector(".cantidad").textContent) * e.value
-
+	aa.querySelector(".valorcompra2").value = (parseFloat(e.value) * (100 - (parseFloat(aa.querySelector(".descuento").value))) / 100).toFixed(2)
+	aa.querySelector(".igvrow").value = (parseFloat(e.value) * .18 *(100 - (parseFloat(aa.querySelector(".descuento").value))) / 100).toFixed(2)
 	aa.querySelector(".total_costeo").value = ss * (100 - (parseFloat(aa.querySelector(".descuento").value))) / 100
 
 	aa.querySelector(".importe").value = parseFloat(ss).toFixed(4)
