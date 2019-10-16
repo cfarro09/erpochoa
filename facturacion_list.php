@@ -340,13 +340,13 @@ include("Fragmentos/abrirpopupcentro.php");
 												<th>Cantidad</th>
 												<th>Producto</th>
 												<th>Marca</th>
-												<th width="120px">Desc %</th>
-												<th width="120px">VCU</th>
-												<th width="120px">VCI</th>
-												<th width="120px">DSCTO</th>
+												<th class="costeosinchecked" width="120px">Desc %</th>
+												<th class="costeosinchecked" width="120px">VCU</th>
+												<th class="costeosinchecked" width="120px">VCI</th>
+												<th class="costeosinchecked" width="120px">DSCTO</th>
 												<th width="120px">VCF</th>
-												<th width="120px">IGV</th>
-												<th width="120px">Total</th>
+												<th class="costeosinchecked" width="120px">IGV</th>
+												<th class="costeosinchecked" width="120px">Total</th>
 												<th width="60px" class="costeochecked" style="display: none">Transporte</th>
 												<th width="60px" class="costeochecked" style="display: none">Estibador</th>
 												<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
@@ -637,9 +637,15 @@ include("Fragmentos/abrirpopupcentro.php");
 				getSelectorAll(".costeochecked").forEach(e => {
 					e.style.display = ""
 				})
+				getSelectorAll(".costeosinchecked").forEach(e => {
+					e.style.display = "none"
+				})
 			}else{
 				getSelectorAll(".costeochecked").forEach(e => {
 					e.style.display = "none"
+				})
+				getSelectorAll(".costeosinchecked").forEach(e => {
+					e.style.display = ""
 				})
 			}
 			console.log(e.checked)
@@ -1098,16 +1104,16 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td class="cantidad">${r.cantidad}</td>
 							<td>${r.nombre_producto}</td>
 							<td >${r.marca}</td>
-							<td><input type="number" oninput="changedescuento(this)" value="0" class="form-control descuento"></td>
-							<td ><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
+							<td class="costeosinchecked"><input type="number" oninput="changedescuento(this)" value="0" class="form-control descuento"></td>
+							<td class="costeosinchecked"><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
 							
-							<td class="" ><input readonly step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
+							<td class="costeosinchecked"><input readonly step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
 							
-							<td><input type="text" readonly class="form-control descuentocantidad"></td>
+							<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
 							<td><input type="text" readonly class="form-control vcf"></td>
 
-							<td><input type="text" readonly class="form-control igvrow"></td>
-							<td><input type="text" readonly class="form-control valorcompra2"></td>
+							<td class="costeosinchecked"><input type="text" readonly class="form-control igvrow"></td>
+							<td class="costeosinchecked"><input type="text" readonly class="form-control valorcompra2"></td>
 
 							<td style="display: none" class="costeochecked"><input id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
 							<td style="display: none" class="costeochecked"><input class="form-control estibador_costeo" readonly></td>
@@ -1247,6 +1253,7 @@ function changepreciocompra(e, aux = true) {
 	const descuento = parseFloat(aa.querySelector(".descuento").value)
 	
 	calcularDatos(aa, ss, descuento)
+
 	if (aux) {
 		actualizarSubtotal()
 	}
@@ -1257,13 +1264,11 @@ function changepreciocompra(e, aux = true) {
 }
 function calcularDatos(tr, importe, descuento){
 	tr.querySelector(".total_costeo").value = importe * (100 - descuento) / 100
-
 	tr.querySelector(".importe").value = (importe).toFixed(4)
 	tr.querySelector(".descuentocantidad").value = (parseFloat(importe)*descuento/100).toFixed(4)
 	tr.querySelector(".vcf").value = (importe*(100-descuento)/100).toFixed(4)
 	tr.querySelector(".valorcompra2").value = (importe*1.18*(100-descuento)/100).toFixed(4)
 	tr.querySelector(".igvrow").value = (importe*0.18*(100-descuento)/100).toFixed(4)
-
 }
 document.querySelector("#saveFacturar").addEventListener("submit", e => {
 	e.preventDefault();
