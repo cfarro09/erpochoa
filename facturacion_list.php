@@ -341,10 +341,10 @@ include("Fragmentos/abrirpopupcentro.php");
 													</select>
 												</div>
 											</div>
-											<div class="col-md-2 container_cambio" style="display: none">
+											<div class="col-md-2 container_cambio" id="container_cambio" style="display: none">
 												<div class="form-group">
 													<label for="field-1" class="control-label">Cambio</label>
-													<input type="number" step="any" class="form-control" id="tipocambio"
+													<input type="number" step="any" class="form-control" id="tipocambio" oninput="changecambiodolar(this)"
 														name="">
 												</div>
 											</div>
@@ -357,13 +357,13 @@ include("Fragmentos/abrirpopupcentro.php");
 										<th>Cantidad</th>
 										<th>Producto</th>
 										<th>Marca</th>
-										<th class="costeosinchecked width="120px">Desc %</th>
-										<th class="costeosinchecked width="120px">VCU</th>
-										<th class="costeosinchecked width="120px">VCI</th>
+										<th class="costeosinchecked width=" 120px">Desc %</th>
+										<th class="costeosinchecked width=" 120px">VCU</th>
+										<th class="costeosinchecked width=" 120px">VCI</th>
 										<th class="costeosinchecked" width="120px">DSCTO</th>
 										<th width="120px">VCF</th>
-										<th class="costeosinchecked width="120px">IGV</th>
-										<th class="costeosinchecked width="120px">Total</th>
+										<th class="costeosinchecked width=" 120px">IGV</th>
+										<th class="costeosinchecked width=" 120px">Total</th>
 										<th width="60px" class="costeochecked" style="display: none">Transporte</th>
 										<th width="60px" class="costeochecked" style="display: none">Estibador</th>
 										<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
@@ -374,7 +374,7 @@ include("Fragmentos/abrirpopupcentro.php");
 									<tbody id="detalleFacturar-list">
 									</tbody>
 								</table>
-								
+
 							</div>
 						</div>
 					</div>
@@ -655,6 +655,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	?>
 <script type="text/javascript">
 	let arrayDetalle;
+	let monedadolar = false;
 	let subtotalGLOBAL = 0;
 	function checkcosteo(e) {
 		if (e.checked) {
@@ -664,7 +665,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			getSelectorAll(".costeosinchecked").forEach(e => {
 				e.style.display = "none"
 			})
-			
+
 		} else {
 			getSelectorAll(".costeochecked").forEach(e => {
 				e.style.display = "none"
@@ -1160,7 +1161,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
-								<td class="costeosinchecked">TOTAL</td>
+								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
 								<td><input type="text" readonly class="form-control sumavcf"></td>
 								<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrow"></td>
 								<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2"></td>
@@ -1173,15 +1174,48 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeo" readonly></td>
 								<td style="display: none" class="costeochecked"><input class="form-control sumatotalunidadcosteo" readonly></td>
 							</tr>`);
+					$("#detalleFacturar-list").append(`
+							<tr id="rowfacturadolar">
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td class="costeosinchecked"></td>
+								<td class="costeosinchecked"></td>
+								<td class="costeosinchecked"></td>
+								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
+								<td><input type="text" readonly class="form-control sumavcfdolar"></td>
+								<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrowdolar"></td>
+								<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2dolar"></td>
+
+								<td style="display: none" class="costeochecked"><input class="form-control transporte_costeo" readonly></td>
+
+								<td style="display: none" class="costeochecked"><input class="form-control sumaestibador_costeodolar" readonly></td>
+								<td style="display: none" class="costeochecked"><input class="form-control sumanotadebitodolar" readonly></td>
+								<td style="display: none" class="costeochecked"><input class="form-control sumanotacreditodolar" readonly></td>
+								<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" readonly></td>
+								<td style="display: none" class="costeochecked"><input class="form-control sumatotalunidadcosteodolar" readonly></td>
+							</tr>`);
+					rowfacturadolar.style.display = "none"
 					$('[data-toggle="tooltip"]').tooltip()
 					$('.tooltips').tooltip();
 				});
 			btn_prorrateo.disabled = true
 			btn_participacion.disabled = true
+			container_cambio.style.display = "none"
+			monedadolar = false;
+			tipocambio.value = 0
 			$("#mFacturaCompra").modal();
 
 		})
 	});
+	function changecambiodolar(e){
+		if (e.value < 0 || e.value == "") {
+			e.value = 0;
+			return;
+		}
+		calcularTotales();
+	}
 	function changedescuento(e) {
 		if (e.value < 0 || e.value == "") {
 			e.value = 0;
@@ -1216,7 +1250,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		// const ss = e.value / parseInt(aa.querySelector(".cantidad").textContent)
 		const descuento = parseFloat(aa.querySelector(".descuento").value)
 
-		calcularFila(aa, parseFloat(e.value), descuento)
+		calcularFila(aa)
 
 		updateColumns();
 
@@ -1235,6 +1269,11 @@ include("Fragmentos/abrirpopupcentro.php");
 		getSelector(".sumavcf").value = sumavcf.toFixed(4)
 		getSelector(".sumaigvrow").value = sumaigvrow.toFixed(4)
 		getSelector(".sumavalorcompra2").value = sumavalorcompra2.toFixed(4)
+		if(tipocambio){
+			getSelector(".sumavcfdolar").value = (sumavcf*parseFloat(tipocambio.value)).toFixed(4)
+			getSelector(".sumaigvrowdolar").value = (sumaigvrow*parseFloat(tipocambio.value)).toFixed(4)
+			getSelector(".sumavalorcompra2dolar").value = (sumavalorcompra2*parseFloat(tipocambio.value)).toFixed(4)
+		}
 	}
 	function changeprecioestibador(e) {
 		let total = 0;
@@ -1291,23 +1330,23 @@ include("Fragmentos/abrirpopupcentro.php");
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * parseFloat(e.value)
 		const descuento = parseFloat(aa.querySelector(".descuento").value)
 
-		calcularFila(aa)
-		
+		calcularFila(aa, true)
+		calcularTotales();
 		document.querySelector(".tooltip-inner").textContent = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
 		e.dataset.originalTitle = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
 
 	}
-	function calcularFila(tr, desc = false) {
+	function calcularFila(tr, preciocompra = false) {
 		debugger
 		let importe = parseFloat(tr.querySelector(".importe").value)
-		if(!importe){
-			importe = parseFloat(tr.querySelector(".precio-compra").value)*parseInt(tr.querySelector(".cantidad").textContent)
-		}else{
+		if (preciocompra) {
+			importe = parseFloat(tr.querySelector(".precio-compra").value) * parseInt(tr.querySelector(".cantidad").textContent)
+		} else {
 			tr.querySelector(".precio-compra").value = (importe / parseInt(tr.querySelector(".cantidad").textContent)).toFixed(4)
 		}
 		const descuento = parseFloat(tr.querySelector(".descuento").value);
 		tr.querySelector(".total_costeo").value = importe * (100 - descuento) / 100
-		
+
 		tr.querySelector(".importe").value = (importe).toFixed(4)
 		tr.querySelector(".descuentocantidad").value = (parseFloat(importe) * descuento / 100).toFixed(4)
 		tr.querySelector(".vcf").value = (importe * (100 - descuento) / 100).toFixed(4)
@@ -1409,13 +1448,13 @@ include("Fragmentos/abrirpopupcentro.php");
 	}
 	function selectmoneda(e) {
 		if (e.value == "dolares") {
-			getSelector(".container_moneda").classList.remove("col-md-4");
-			getSelector(".container_moneda").classList.add("col-md-2");
+			rowfacturadolar.style.display = ""
 			getSelector(".container_cambio").style.display = "";
+			monedadolar = true;
 		} else {
-			getSelector(".container_moneda").classList.add("col-md-4");
-			getSelector(".container_moneda").classList.remove("col-md-2");
+			rowfacturadolar.style.display = "none"
 			getSelector(".container_cambio").style.display = "none";
+			monedadolar = false
 		}
 	}
 </script>
