@@ -297,7 +297,7 @@ include("Fragmentos/abrirpopupcentro.php");
 										<div class="row">
 											<div class="col-md-2">
 												<div class="form-group">
-													<label for="field-1" class="control-label">Fecha Fac.</label>
+													<label for="field-1" class="control-label">Fecha Emision</label>
 													<input type="text" required name="facturafechaemision"
 														autocomplete="off" id="facturafechaemision"
 														class="form-control form-control-inline input-medium date-picker"
@@ -306,7 +306,7 @@ include("Fragmentos/abrirpopupcentro.php");
 											</div>
 											<div class="col-md-2">
 												<div class="form-group">
-													<label for="field-1" class="control-label">Descuento</label>
+													<label for="field-1" class="control-label">Descuento General</label>
 													<input type="number" class="form-control"
 														oninput="changedescuentogeneral(this)" step="any" id="descuento"
 														name="">
@@ -357,7 +357,7 @@ include("Fragmentos/abrirpopupcentro.php");
 										<th>Cantidad</th>
 										<th>Producto</th>
 										<th>Marca</th>
-										<th class="costeosinchecked width=" 120px">Desc %</th>
+										<th class="costeosinchecked width=" 120px">Desc x Item</th>
 										<th class="costeosinchecked width=" 120px">VCU</th>
 										<th class="costeosinchecked width=" 120px">VCI</th>
 										<th class="costeosinchecked" width="120px">DSCTO</th>
@@ -395,28 +395,27 @@ include("Fragmentos/abrirpopupcentro.php");
 	<div class="modal-dialog" role="document" style="width: 700px">
 		<div class="modal-content m-auto">
 			<div class="modal-header">
-				<h2 class="modal-title" id="title_extra">PRORRATEO POR PESO</h2>
+				<h2 class="modal-title" id="">PRORRATEO POR PESO</h2>
 			</div>
 			<div class="modal-body">
 				<div style="margin-top: 10px">
-					<label class="" for="check_transporte">¿Incluye transporte?</label>
+					<label class="" for="check_transporte">transporte?</label>
 					<input type="checkbox" class="" id="check_transporte">
 
 					<div class="row" style="display: none" id="container_transporte">
 						<div class="col-sm-6 text-center">
 							<button type="button" disabled class="btn btn-success" data-type="prorrateo"
-								id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO</button>
+								id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO X PESO</button>
 						</div>
 						<div class="col-sm-6 text-center">
 							<button type="button" disabled class="btn btn-success" data-type="participacion"
-								id="btn_participacion" onclick="setExtra(this)" id="participacion">PARTICIPACION EN
-								COMPRAS</button>
+								id="btn_participacion" onclick="setExtra(this)" id="participacion">PRORRATEO POR COMPRA</button>
 						</div>
 					</div>
 				</div>
 
 				<div style="margin-top: 10px">
-					<label class="" for="check_estibador">¿Incluye Estibador?</label>
+					<label class="" for="check_estibador">Estibador?</label>
 					<input type="checkbox" class="" id="check_estibador">
 
 					<div class="row" style="display: none" id="container_estibador">
@@ -454,7 +453,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							</select>
 						</div>
 						<div class="col-sm-3">
-							<label class="control-label" for="precio_estibador">Precio</label>
+							<label class="control-label" for="precio_estibador">Valor de Compra</label>
 							<input class="form-control" data-type="estibador_costeo"
 								oninput="changeprecioestibador(this)" readonly type="number" name=""
 								id="precio_estibador">
@@ -462,7 +461,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					</div>
 				</div>
 				<div style="margin-top: 10px">
-					<label class="" for="check_notadebito">¿Incluye Nota Debito?</label>
+					<label class="" for="check_notadebito">Nota Debito?</label>
 					<input type="checkbox" class="" id="check_notadebito">
 
 					<div class="row" style="display: none" id="container_notadebito">
@@ -721,7 +720,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	function setExtra(e) {
 		let nro = 0;
 		if (e.dataset.type == "prorrateo") {
-			title_extra.textContent = "PRORRATEO POR PESO";
+			title_extra.textContent = "Resgistro Complementario de Compra - Transporte";
 			varTypeExtra.textContent = "Peso"
 			detalleProrrateo.innerHTML = ""
 			arrayDetalle.detalle.forEach(r => {
@@ -759,7 +758,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		$("#mProrrateo").modal();
 	}
 	function changepeso(e) {
-		debugger
+		
 		if (e.value < 0) {
 			e.value = 0;
 			return;
@@ -1224,7 +1223,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		const descuento = parseFloat(e.value);
 
 		const aa = e.parentElement.parentElement;
-		debugger
+		
 		const ss = parseFloat(aa.querySelector(".importe").value)
 
 		calcularFila(aa)
@@ -1237,7 +1236,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
 		totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
 		totalx += parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
-		debugger
+		
 		totalx -= tr.querySelector(".descuento").value ? totalx * (parseFloat(tr.querySelector(".descuento").value)) / 100 : 0;
 		return totalx;
 	}
@@ -1252,9 +1251,9 @@ include("Fragmentos/abrirpopupcentro.php");
 
 		calcularFila(aa)
 
-		updateColumns();
 
 		calcularTotales();
+		updateColumns();
 	}
 	function calcularTotales() {
 		let sumavcf = 0
@@ -1291,7 +1290,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	function updateColumns() {
 		let allpreciocompra = true;
 		getSelectorAll(".precio-compra").forEach(e => {
-			if (e.value == "" || parseInt(e.value) == 0) {
+			if (e.value == "" || parseFloat(e.value) == 0) {
 				allpreciocompra = false;
 			}
 		});
@@ -1323,8 +1322,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			e.value = 0;
 			return;
 		}
-		debugger
-		updateColumns();
+		
 
 		const aa = e.parentElement.parentElement
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * parseFloat(e.value)
@@ -1334,10 +1332,11 @@ include("Fragmentos/abrirpopupcentro.php");
 		calcularTotales();
 		document.querySelector(".tooltip-inner").textContent = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
 		e.dataset.originalTitle = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
+		updateColumns();
 
 	}
 	function calcularFila(tr, preciocompra = false) {
-		debugger
+		
 		let importe = parseFloat(tr.querySelector(".importe").value)
 		if (preciocompra) {
 			importe = parseFloat(tr.querySelector(".precio-compra").value) * parseInt(tr.querySelector(".cantidad").textContent)
@@ -1347,11 +1346,11 @@ include("Fragmentos/abrirpopupcentro.php");
 		const descuento = parseFloat(tr.querySelector(".descuento").value);
 		tr.querySelector(".total_costeo").value = importe * (100 - descuento) / 100
 
-		tr.querySelector(".importe").value = (importe).toFixed(4)
-		tr.querySelector(".descuentocantidad").value = (parseFloat(importe) * descuento / 100).toFixed(4)
-		tr.querySelector(".vcf").value = (importe * (100 - descuento) / 100).toFixed(4)
-		tr.querySelector(".valorcompra2").value = (importe * 1.18 * (100 - descuento) / 100).toFixed(4)
-		tr.querySelector(".igvrow").value = (importe * 0.18 * (100 - descuento) / 100).toFixed(4)
+		tr.querySelector(".importe").value = (importe).toFixed(2)
+		tr.querySelector(".descuentocantidad").value = (parseFloat(importe) * descuento / 100).toFixed(2)
+		tr.querySelector(".vcf").value = (importe * (100 - descuento) / 100).toFixed(2)
+		tr.querySelector(".valorcompra2").value = (importe * 1.18 * (100 - descuento) / 100).toFixed(2)
+		tr.querySelector(".igvrow").value = (importe * 0.18 * (100 - descuento) / 100).toFixed(2)
 
 	}
 	document.querySelector("#saveFacturar").addEventListener("submit", e => {
