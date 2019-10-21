@@ -1160,7 +1160,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
-								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
+								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
 								<td><input type="text" readonly class="form-control sumavcf"></td>
 								<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrow"></td>
 								<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2"></td>
@@ -1182,7 +1182,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
-								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
+								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
 								<td><input type="text" readonly class="form-control sumavcfdolar"></td>
 								<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrowdolar"></td>
 								<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2dolar"></td>
@@ -1220,6 +1220,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			e.value = 0;
 			return;
 		}
+		getSelector("#descuento").value = 0;
 		const descuento = parseFloat(e.value);
 
 		const aa = e.parentElement.parentElement;
