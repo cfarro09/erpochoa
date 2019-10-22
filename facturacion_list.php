@@ -395,7 +395,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	<div class="modal-dialog" role="document" style="width: 700px">
 		<div class="modal-content m-auto">
 			<div class="modal-header">
-				<h2 class="modal-title" id="">PRORRATEO POR PESO</h2>
+				<h2 class="modal-title" id="">Opciones extras</h2>
 			</div>
 			<div class="modal-body">
 				<div style="margin-top: 10px">
@@ -446,7 +446,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="monedaestibador">Moneda</label>
-							<select class="form-control" onchange="selectmoneda(this)" id="monedaestibador"
+							<select class="form-control" id="monedaestibador"
 								name="monedaestibador" required>
 								<option value="soles">S/</option>
 								<option value="dolares">$</option>
@@ -491,7 +491,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="monedanotadebito">Moneda</label>
-							<select class="form-control" onchange="selectmoneda(this)" id="monedanotadebito"
+							<select class="form-control" id="monedanotadebito"
 								name="monedanotadebito" required>
 								<option value="soles">S/</option>
 								<option value="dolares">$</option>
@@ -537,7 +537,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="monedanotacredito">Moneda</label>
-							<select class="form-control" onchange="selectmoneda(this)" id="monedanotacredito"
+							<select class="form-control" id="monedanotacredito"
 								name="monedanotacredito" required>
 								<option value="soles">S/</option>
 								<option value="dolares">$</option>
@@ -1239,7 +1239,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		totalx += parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
 		
 		totalx -= tr.querySelector(".descuento").value ? totalx * (parseFloat(tr.querySelector(".descuento").value)) / 100 : 0;
-		return totalx;
+		return parseFloat(totalx).toFixed(4);
 	}
 	function changeimporte(e) {
 		if (e.value < 0) {
@@ -1283,10 +1283,21 @@ include("Fragmentos/abrirpopupcentro.php");
 
 		getSelectorAll(".precio-compra").forEach(i => {
 			const tr = i.closest("tr");
-			tr.querySelector(`.${e.dataset.type}`).value = e.value * parseInt(i.closest("tr").querySelector(".cantidad").textContent) * i.value / total
-			i.closest("tr").querySelector(".total_costeo").value = calculartotalcosteo(tr)
+			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * parseInt(tr.querySelector(".cantidad").textContent) * i.value / total).toFixed(2)
+			tr.querySelector(".total_costeo").value = calculartotalcosteo(tr)
 		});
-		calcularTotales()
+		getSelector(`.suma${e.dataset.type}`).value = parseFloat(e.value).toFixed(2)
+		let sumatotalcosteo = 0;
+		let sumaunidadtotal = 0;
+		getSelectorAll(".total_costeo").forEach(ix => {
+			sumatotalcosteo += parseFloat(ix.value);
+			const totalunidad = parseFloat(ix.value) / parseInt(ix.closest("tr").querySelector(".cantidad").textContent)
+			sumaunidadtotal += totalunidad
+			ix.closest("tr").querySelector(".totalunidadcosteo").value = totalunidad.toFixed(4)
+		});
+		getSelector(".sumatotal_costeo").value = parseFloat(sumatotalcosteo).toFixed(4)
+		getSelector(".sumatotalunidadcosteo").value = parseFloat(sumaunidadtotal).toFixed(4)
+		// calcularTotales()
 	}
 	function updateColumns() {
 		let allpreciocompra = true;
