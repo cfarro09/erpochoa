@@ -315,7 +315,7 @@ include("Fragmentos/abrirpopupcentro.php");
 											<div class="col-md-2">
 												<div class="form-group">
 													<label for="field-1" class="control-label">Tipo Comp</label>
-													<select class="form-control select2-allow-clear"
+													<select class="form-control"
 														name="tipocomprobantefactura" id="tipocomprobantefactura">
 														<option value="factura">Factura</option>
 														<option value="boleta">Boleta</option>
@@ -429,7 +429,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="tipocomprobanteestibador">Tipo Comprobante</label>
-							<select class="form-control select2-allow-clear" name="tipocomprobanteestibador"
+							<select class="form-control" name="tipocomprobanteestibador"
 								id="tipocomprobanteestibador">
 								<option value="">Select</option>
 								<option value="factura">Factura</option>
@@ -475,7 +475,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="tipocomprobantenotadebito">Tipo Comprobante</label>
-							<select class="form-control select2-allow-clear" name="tipocomprobantenotadebito"
+							<select class="form-control" name="tipocomprobantenotadebito"
 								id="tipocomprobantenotadebito">
 								<option value="">Select</option>
 								<option value="factura">Factura</option>
@@ -521,7 +521,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="tipocomprobantenotacredito">Tipo Comprobante</label>
-							<select class="form-control select2-allow-clear" name="tipocomprobantenotacredito"
+							<select class="form-control" name="tipocomprobantenotacredito"
 								id="tipocomprobantenotacredito">
 								<option value="">Select</option>
 								<option value="factura">Factura</option>
@@ -595,7 +595,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								</div>
 								<div class="col-sm-3">
 									<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
-									<select class="form-control select2-allow-clear" name="tipocomprobantepro"
+									<select class="form-control " name="tipocomprobantepro"
 										id="tipocomprobantepro">
 										<option value="">Select</option>
 										<option value="factura">Guia</option>
@@ -655,6 +655,7 @@ include("Fragmentos/abrirpopupcentro.php");
 <script type="text/javascript">
 	let arrayDetalle;
 	let monedadolar = false;
+	let typetransporte = "";
 	let subtotalGLOBAL = 0;
 	function checkcosteo(e) {
 		if (e.checked) {
@@ -720,6 +721,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	function setExtra(e) {
 		let nro = 0;
 		if (e.dataset.type == "prorrateo") {
+			typetransporte = "porpeso";
 			title_extra.textContent = "Resgistro Complementario de Compra - Transporte";
 			varTypeExtra.textContent = "Peso"
 			detalleProrrateo.innerHTML = ""
@@ -737,6 +739,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						</tr>`)
 			});
 		} else {
+			typetransporte = "porparticipacion";
 			varTypeExtra.textContent = "Valor Compra"
 			title_extra.textContent = "PARTICIPACION POR COMPRAS"
 			detalleProrrateo.innerHTML = ""
@@ -1380,31 +1383,64 @@ include("Fragmentos/abrirpopupcentro.php");
 		let sumaventa = 0;
 
 		if (getSelector("#check_transporte").checked) {
-			if ($("#tipocomprobante").val() && $("#numerocomprobante").val() && $("#empresatransporte").val() && $("#precio_transporte").val()) {
-				data.gastos.push(`insert into GastosCompras (tipocomprobante, nrocomprobante, empresa, precio, idcompras, tipo) values ('${$("#tipocomprobante").val()}', '${$("#numerocomprobante").val()}', '${$("#empresatransporte").val()}', ${parseFloat($("#precio_transporte").val())}, ##IDCOMPRAS##, 'transporte')`);
+			if(!nrorucpro.value || !proveedorpro.value || !tipocomprobantepro.value || !nrocomprobantepro.value || !preciopro.value){
+				const query = 
+				`insert into transporte_compra 
+					(tipo_transporte, tipocomprobante, numerocomprobante, ructransporte, moneda, tipocambio, preciotransp_soles, preciotransp_dolar, codigocompras) 
+				values 
+					('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${nrorucpro.value}', ${monedapro.value}, 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
+					gastos.push(query)
 			} else {
 				alert("debe llenar todos los datos de transporte");
 				return;
 			}
 		}
 		if (getSelector("#check_estibador").checked) {
-			if ($("#tipocomprobanteestibador").val() && $("#numerocomprobanteestibador").val() && $("#empresaestibador").val() && $("#precio_estibador").val()) {
-
-				data.gastos.push(`insert into GastosCompras (tipocomprobante, nrocomprobante, empresa, precio, idcompras, tipo) values ('${$("#tipocomprobanteestibador").val()}', '${$("#numerocomprobanteestibador").val()}', '${$("#empresaestibador").val()}', 
-				${parseFloat($("#precio_estibador").val())}, ##IDCOMPRAS##, 'estibador')`);
-
+			if(!rucestibador.value || !proveedorestibador.value || !tipocomprobanteestibador.value || !numerocomprobanteestibador.value || !precio_estibador.value){
+				const query = 
+				`insert into estibador_compra 
+					(tipocomprobante, numerocomprobante, rucestibador, moneda, tipocambio, precioestibador_soles, precioestibador_dolar, codigocompras) 
+				values 
+					('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${nrorucpro.value}', ${monedaestibador.value}, 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`
+				gastos.push(query)
 			} else {
-				alert("debe llenar todos los datos de transporte");
+				alert("debe llenar todos los datos de estibador");
 				return;
 			}
 		}
-
+		if (getSelector("#check_notadebito").checked) {
+			if(!rucnotadebito.value || !proveedornotadebito.value || !tipocomprobantenotadebito.value || !numerocomprobantenotadebito.value || !precio_notadebito.value){
+				const query = 
+				`insert into notadebito_compra 
+					(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
+				values 
+					('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${nrorucpro.value}', ${monedanotadebito.value}, 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`
+				gastos.push(query)
+			} else {
+				alert("debe llenar todos los datos de estibador");
+				return;
+			}
+		}
+		if (getSelector("#check_notadebito").checked) {
+			if(!rucnotacredito.value || !proveedornotacredito.value || !tipocomprobantenotacredito.value || !numerocomprobantenotacredito.value || !precio_notacredito.value){
+				const query = 
+				`insert into notacredito_compra 
+					(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
+				values 
+					('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${nrorucpro.value}', ${monedanotacredito.value}, 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`
+				gastos.push(query)
+			} else {
+				alert("debe llenar todos los datos de estibador");
+				return;
+			}
+		}
+		
 
 		data.header = {
 			codigocompras: 0,
+			tipomoneda: getSelector("#moneda").value,
 			tipocomprobante: getSelector("#tipocomprobantefactura").value,
 			nrocomprobante: getSelector("#nrocomprobante").value,
-			moneda: getSelector("#moneda").value,
 			codigoproveedor: getSelector("#codigoproveedor").value,
 			codacceso: <?= $_SESSION['kt_login_id'] ?>,
 			codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
