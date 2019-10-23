@@ -56,7 +56,7 @@ if($h->codigocompras){
   // die(json_encode(array("success" => true), 128));
 
 }else{
-  $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, ruc_proveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras)";
+  $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras)";
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
@@ -69,20 +69,20 @@ if($h->codigocompras){
   }
 
   foreach($detalleArray as $d){
-    $insertDetalle = "insert into detalle_compras(codigoprod, cantidad, descuento, vcu, vci, descmonto, vcf, igv, totalcompra, peso, preciotransporte, precioestibador, notadebito, precionotacredito, totalconadicionales, totalunidad) values ($d->codigoprod,$d->cantidad,$d->descuento,$d->vcu,$d->vci,$d->descmonto,$d->vcf,$d->igv,$d->totalcompra,$d->peso,$d->preciotransporte,$d->precioestibador,$d->notadebito,$d->precionotacredito,$d->totalconadicionales,$d->totalunidad, $lastId)";
-    $queryDetalle = mysql_query($insertDetalle, $Ventas) or die(mysql_error());
+    $insertDetalle = "insert into detalle_compras(codigoprod, cantidad, descxitem, vcu, vci, descmonto, vcf, igv, totalcompra, peso, preciotransporte, precioestibador, notadebito, precionotacredito, totalconadicionales, totalunidad, codigocompras) values ($d->codigoprod,$d->cantidad,$d->descuento,$d->vcu,$d->vci,$d->descmonto,$d->vcf,$d->igv,$d->totalcompra,$d->peso,$d->preciotransporte,$d->precioestibador,$d->notadebito,$d->precionotacredito,$d->totalconadicionales,$d->totalunidad, $lastId)";
+    $queryDetalle = mysql_query($insertDetalle, $Ventas) or die("detalle : ".mysql_error());
 
     $validate = "select * from kardex_contable where codigoprod = $d->codigoprod and sucursal = $h->codigosuc order by id_kardex_contable desc limit 1";
-    $res = mysql_query($validate, $Ventas) or die(mysql_error());
+    $res = mysql_query($validate, $Ventas) or die("kardex ".mysql_error());
     $row_Listado1 = mysql_fetch_assoc($res);
 
     if($row_Listado1){
       $newcantidad = $row_Listado1['cantidad'] + $d->cantidad;
-      $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($d->codigoprod, $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $newcantidad, $h->codigosuc)";
+      $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($d->codigoprod, '$h->fecha_registro', $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $newcantidad, $h->codigosuc)";
     }else{
       $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($d->codigoprod, '$h->fecha_registro' $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $d->cantidad, $h->codigosuc)";
     }
-    $queryDetalle = mysql_query($xx, $Ventas) or die(mysql_error());
+    $queryDetalle = mysql_query($xx, $Ventas) or die("ddd".mysql_error());
   }
 
   die(json_encode(array("success" => true), 128));

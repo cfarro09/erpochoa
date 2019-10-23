@@ -53,7 +53,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
 }
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select g.codigoguia,compras.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial from ordencompra_guia g inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor left join compras on compras.codigo_orden_compra = g.codigoguia where g.estado=2 or g.estado=3";
+$query_Listado = "select g.codigoguia,registro_compras.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial from ordencompra_guia g inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor left join registro_compras on registro_compras.codigo_orden_compra = g.codigoguia where g.estado=2 or g.estado=3";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -69,7 +69,7 @@ $row_Listado1 = mysql_fetch_assoc($Listado1);
 $totalRows_Listado1 = mysql_num_rows($Listado1);
  //Enumerar filas de data tablas
 
-$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, compras.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join compras on compras.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
+$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, registro_compras.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras on registro_compras.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
 $listaguiasinoc = mysql_query($queryguiasinoc, $Ventas) or die(mysql_error());
 $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
 $totalRows_listaguiasinoc = mysql_num_rows($listaguiasinoc);
@@ -593,7 +593,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								</div>
 								<div class="col-sm-3">
 									<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
-									<select class="form-control " name="tipocomprobantepro" id="tipocomprobantepro">
+									<select class="form-control " name="tipocomprobantepro" id="tipocomprobantepro" required>
 										<option value="">Select</option>
 										<option value="factura">Guia</option>
 										<option value="factura">Factura</option>
@@ -1359,8 +1359,10 @@ include("Fragmentos/abrirpopupcentro.php");
 		}
 		const descuento = parseFloat(tr.querySelector(".descuento").value);
 		tr.querySelector(".total_costeo").value = importe * (100 - descuento) / 100
+		tr.querySelector(".totalunidadcosteo").value = (importe * (100 - descuento) / 100)/parseInt(tr.querySelector(".cantidad").textContent)
 
 		tr.querySelector(".importe").value = (importe).toFixed(2)
+
 		tr.querySelector(".descuentocantidad").value = (parseFloat(importe) * descuento / 100).toFixed(2)
 		tr.querySelector(".vcf").value = (importe * (100 - descuento) / 100).toFixed(2)
 		tr.querySelector(".valorcompra2").value = (importe * 1.18 * (100 - descuento) / 100).toFixed(2)
@@ -1383,54 +1385,55 @@ include("Fragmentos/abrirpopupcentro.php");
 
 		if (getSelector("#check_transporte").checked) {
 			if (!nrorucpro.value || !proveedorpro.value || !tipocomprobantepro.value || !nrocomprobantepro.value || !preciopro.value) {
+				alert("debe llenar todos los datos de transporte");
+				return;
+			} else {
 				const query =
 					`insert into transporte_compra 
 					(tipo_transporte, tipocomprobante, numerocomprobante, ructransporte, moneda, tipocambio, preciotransp_soles, preciotransp_dolar, codigocompras) 
 				values 
-					('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${nrorucpro.value}', ${monedapro.value}, 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
-				gastos.push(query)
-			} else {
-				alert("debe llenar todos los datos de transporte");
-				return;
+					('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${nrorucpro.value}', '${monedapro.value}', 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
+					data.gastos.push(query)
 			}
 		}
 		if (getSelector("#check_estibador").checked) {
 			if (!rucestibador.value || !proveedorestibador.value || !tipocomprobanteestibador.value || !numerocomprobanteestibador.value || !precio_estibador.value) {
+				alert("debe llenar todos los datos de estibador");
+				return;
+			} else {
 				const query =
 					`insert into estibador_compra 
 					(tipocomprobante, numerocomprobante, rucestibador, moneda, tipocambio, precioestibador_soles, precioestibador_dolar, codigocompras) 
 				values 
-					('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${nrorucpro.value}', ${monedaestibador.value}, 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`
-				gastos.push(query)
-			} else {
-				alert("debe llenar todos los datos de estibador");
-				return;
+					('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${nrorucpro.value}', '${monedaestibador.value}', 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`
+					data.gastos.push(query)
 			}
 		}
 		if (getSelector("#check_notadebito").checked) {
 			if (!rucnotadebito.value || !proveedornotadebito.value || !tipocomprobantenotadebito.value || !numerocomprobantenotadebito.value || !precio_notadebito.value) {
+				alert("debe llenar todos los datos de estibador");
+				return;
+			} else {
 				const query =
 					`insert into notadebito_compra 
 					(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
 				values 
-					('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${nrorucpro.value}', ${monedanotadebito.value}, 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`
-				gastos.push(query)
-			} else {
-				alert("debe llenar todos los datos de estibador");
-				return;
+					('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${nrorucpro.value}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`
+				data.gastos.push(query)
 			}
 		}
 		if (getSelector("#check_notadebito").checked) {
 			if (!rucnotacredito.value || !proveedornotacredito.value || !tipocomprobantenotacredito.value || !numerocomprobantenotacredito.value || !precio_notacredito.value) {
+				alert("debe llenar todos los datos de estibador");
+				return;
+			} else {
+				
 				const query =
 					`insert into notacredito_compra 
 					(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
 				values 
-					('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${nrorucpro.value}', ${monedanotacredito.value}, 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`
-				gastos.push(query)
-			} else {
-				alert("debe llenar todos los datos de estibador");
-				return;
+					('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${nrorucpro.value}', '${monedanotacredito.value}', 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`
+				data.gastos.push(query)
 			}
 		}
 
@@ -1451,9 +1454,9 @@ include("Fragmentos/abrirpopupcentro.php");
 			codigosuc: codigosucursal.value,
 			codigo_orden_compra: codigo_orden_compra.value,
 			codigo_guia_sin_oc: codigo_guia_sin_oc.value,
-			fecha_registro: facturafechaemision,
+			fecha_registro: facturafechaemision.value,
 			valorcambio: tipocambio,
-			descuentocompra: descuento.value
+			descuentocompras: descuento.value ? descuento.value : 0
 
 		}
 		getSelectorAll("#detalleFacturar-list tr").forEach(item => {
@@ -1464,6 +1467,9 @@ include("Fragmentos/abrirpopupcentro.php");
 					preciodolar = preciosoles;
 					preciosoles = preciosoles / parseInt(getSelector("#tipocambio").value)
 				}
+				const peso = item.querySelector(".transporte_costeo").value ? item.querySelector(".transporte_costeo").value : 0;
+				const totalunidad = item.querySelector(".totalunidadcosteo").value ? item.querySelector(".totalunidadcosteo").value : 0;
+				const preciotransporte = item.querySelector(".transporte_costeo").value ? item.querySelector(".transporte_costeo").value : 0
 				data.detalle.push({
 					codigoprod: item.querySelector(".codigoprod").dataset.codigo,
 					cantidad: item.querySelector(".cantidad").textContent,
@@ -1474,13 +1480,13 @@ include("Fragmentos/abrirpopupcentro.php");
 					vcf: item.querySelector(".vcf").value,
 					igv: item.querySelector(".igvrow").value,
 					totalcompra: item.querySelector(".valorcompra2").value,
-					peso: item.querySelector(".transporte_costeo").value,
-					preciotransporte: item.querySelector(".transporte_costeo").value,
+					peso,
+					preciotransporte,
 					precioestibador: item.querySelector(".estibador_costeo").value,
 					notadebito: item.querySelector(".notadebito").value,
 					precionotacredito: item.querySelector(".notacredito").value,
 					totalconadicionales: item.querySelector(".total_costeo").value,
-					totalunidad: item.querySelector(".totalunidadcosteo").value
+					totalunidad
 				})
 			}
 		})
