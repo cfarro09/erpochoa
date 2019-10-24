@@ -1449,7 +1449,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			subtotal: getSelector(".sumavcf").value,
 			igv: getSelector(".sumaigvrow").value,
 			total: getSelector(".sumavalorcompra2").value,
-
+			codigoproveedor: codigoproveedor.value,
 			estadofact: 1,
 			codigosuc: codigosucursal.value,
 			codigo_orden_compra: codigo_orden_compra.value,

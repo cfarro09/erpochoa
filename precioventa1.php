@@ -31,7 +31,7 @@ if (!function_exists("GetSQLValueString")) {
 	}
 }
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select c.codigocompras, c.totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerofactura,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal  from compras c left join sucursal s on s.cod_sucursal = c.codigosuc left join proveedor p on p.codigoproveedor = c.codigoproveedor inner join acceso a on a.codacceso=c.codacceso";
+$query_Listado = "select c.codigorc, 0 as totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerocomprobante,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal  from registro_compras c left join sucursal s on s.cod_sucursal = c.codigosuc left join proveedor p on p.codigoproveedor = c.codigoproveedor inner join acceso a on a.codacceso=c.codacceso";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -88,10 +88,10 @@ include("Fragmentos/abrirpopupcentro.php");
 				<?php //var_dump($row_Listado); die; ?>
 				<tr>
 					<td><?= $i ?></td>
-					<td class="numerofactura"><?= $row_Listado['numerofactura'] ?></td>
+					<td class="numerocomprobante"><?= $row_Listado['numerocomprobante'] ?></td>
 					<td class="tipo_comprobante"><?= $row_Listado['tipo_comprobante'] ?></td>
 					<td style="display: none" class="usuario"><?= $row_Listado['usuario'] ?></td>
-					<td style="display: none" class="codigocompras"><?= $row_Listado['codigocompras'] ?></td>
+					<td style="display: none" class="codigorc"><?= $row_Listado['codigorc'] ?></td>
 					<td class="razonsocial"><?= $row_Listado['razonsocial'] ?></td>
 					<td class="total"><?= $row_Listado['total'] ?></td>
 					<td class="fecha"><?= $row_Listado['fecha'] ?></td>
@@ -103,7 +103,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			</tbody>
 		</table>
 		<div class="modal fade" id="mSetPrecioVenta" role="dialog" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog" role="document">
+			<div class="modal-dialog" role="document" style="width: 1200px">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
 						<h2 class="modal-title" id="moperation-title">Asignar precio venta</h2>
@@ -115,7 +115,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							<input type="hidden" id="codigoguia" value="">
 							<div class="container-fluid">
 
-								N° COMPROBANTE: <span id="mnumerofactura"></span> <BR>
+								N° COMPROBANTE: <span id="mnumerocomprobante"></span> <BR>
 								TIPO COMPROBANTE: <span id="mtipo_comprobante"></span> <BR>
 								PROVEEDOR: <span id="mrazonsocial"></span> <BR>
 								TOTAL COMPRA: <span id="mtotal"></span> <BR>
@@ -123,36 +123,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								FECHA DE EMISION: : <span id="mfecha"></span> <br>
 								GENERADA POR: : <span id="musuario"></span> <br><br>
 
-								<label class="" for="check_transporte">¿Incluye transporte?</label>
-								<input type="checkbox" class="" id="check_transporte">
-								
-								<div class="row" style="display: none" id="container_transporte">
-									<div class="col-sm-3">
-										<label class="control-label" for="tipocomprobante">Tipo Comprobante</label>
-										<select class="form-control select2-allow-clear" name="tipocomprobante" id="tipocomprobante">
-											<option value="">Select</option>
-											<option value="factura">Factura</option>
-											<option value="boleta">Boleta</option>
-											<option value="notaventa">Nota venta</option>
-											<option value="recibo">Recibo</option>
-											<option value="otros">Otros</option>
-										</select>
-									</div>
-									<div class="col-sm-3">
-										<label class="control-label" for="numerocomprobante">Nro Comprobante</label>
-										<input class="form-control" name="" id="numerocomprobante">
-									</div>
-									<div class="col-sm-3">
-										<label class="control-label" for="empresatransporte">Empresa Transporte</label>
-										<input class="form-control" name="" id="empresatransporte">
-									</div>
-									<div class="col-sm-3">
-										<label class="control-label" for="precio_transporte">Precio Transporte</label>
-										<input class="form-control" type="number" name="" id="precio_transporte">
-									</div>
-								</div>
 
-								<input type="hidden" id="codigocompras" name="">
+								<input type="hidden" id="codigorc" name="">
 								<div class="row" style="margin-top:20px">
 									<div class="col-xs-12 col-md-12">
 
@@ -162,9 +134,14 @@ include("Fragmentos/abrirpopupcentro.php");
 												<th>Cant</th>
 												<th>Producto</th>
 												<th>Marca</th>
-												<th>P.Compra</th>
-												<th>P.Venta</th>
-												<th>Importe</th>
+												<th>Precio UND</th>
+												<th>P. UND + C</th>
+												<th class="text-center">% V 1</th>
+												<th class="text-center">P V 1</th>
+												<th class="text-center">% V 2</th>
+												<th class="text-center">P V 2</th>
+												<th class="text-center">% V 3</th>
+												<th class="text-center">P V 3</th>
 											</thead>
 											<tbody id="detalleComprax">
 											</tbody>
@@ -206,39 +183,42 @@ include("Fragmentos/abrirpopupcentro.php");
 			})
 		});
 		function managecompra(e){
-			getSelector("#check_transporte").checked = false;
-			getSelector("#check_transporte").parentElement.classList.remove("checked")
-			getSelector("#container_transporte").style.display = "none";
 			
-			$('#mnumerofactura').text(e.parentElement.parentElement.querySelector(".numerofactura").textContent)
+			
+			$('#mnumerocomprobante').text(e.parentElement.parentElement.querySelector(".numerocomprobante").textContent)
 			$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
 			$('#mrazonsocial').text(e.parentElement.parentElement.querySelector(".razonsocial").textContent)
 			$('#mtotal').text(e.parentElement.parentElement.querySelector(".total").textContent)
 			$('#mnombre_sucursal').text(e.parentElement.parentElement.querySelector(".nombre_sucursal").textContent)
 			$('#mfecha').text(e.parentElement.parentElement.querySelector(".fecha").textContent)
 			$('#musuario').text(e.parentElement.parentElement.querySelector(".usuario").textContent)
-			const codigocompras =  parseInt(e.parentElement.parentElement.querySelector(".codigocompras").textContent)
+			const codigorc =  parseInt(e.parentElement.parentElement.querySelector(".codigorc").textContent)
 			const set = e.dataset.set != "asignar" ? "readonly":"";
-			$("#codigocompras").val(codigocompras);
+			$("#codigorc").val(codigorc);
 			getSelector("#detalleComprax").innerHTML = ""
 
 			let i = 1;
-			fetch(`getDetalleCompra.php?codigocompras=${codigocompras}`)
+			fetch(`getDetalleCompra.php?codigorc=${codigorc}`)
 			.then(res => res.json())
 			.catch(error => console.error("error: ", error))
 			.then(res => {
 				res.forEach(ix => {
+					const pc = (parseFloat(ix.vcf)/parseInt(ix.cantidad)).toFixed(4);
+
 					getSelector("#detalleComprax").innerHTML += `
 					<tr>
-					<td>${i}</td>
-					<td>${ix.cantidad}</td>
-					<td>${ix.nombre_producto}</td>
-					<td>${ix.nombre}</td>
-					<td>${ix.pcompra}</td>
-					<td>
-					<input data-pcompra="${ix.pcompra}"  onfocusout="validatewithpcompra(this)" data-cantidad="${ix.cantidad}" data-codigodetalleproducto="${ix.codigodetalleproducto}" required data-toggle="tooltip" oninput="validatepventa(this)" data-placement="bottom" title="${ix.precio_venta}" type="number" class="prventax1 form-control" ${set} value="${parseFloat(ix.pventa) == 0 ? "" : parseFloat(ix.pventa)}">
-					</td>
-					<td class="importex">0</td>
+						<td>${i}</td>
+						<td>${ix.cantidad}</td>
+						<td>${ix.nombre_producto}</td>
+						<td>${ix.nombre}</td>
+						<td><input class="form-control" value="${pc}" readonly></td>
+						<td><input class="form-control" value="${ix.totalunidad}" readonly></td>
+						<td><input class="form-control porcentajeventa1" ></td>
+						<td><input class="form-control precioventa1" readonly></td>
+						<td><input class="form-control porcentajeventa2" ></td>
+						<td><input class="form-control precioventa2" readonly></td>
+						<td><input class="form-control porcentajeventa3" ></td>
+						<td><input class="form-control precioventa3" readonly></td>
 					</tr>
 
 					`
@@ -258,24 +238,6 @@ include("Fragmentos/abrirpopupcentro.php");
 			}
 
 		}
-		function validatewithpcompra(e){
-			if(parseFloat(e.value) < parseFloat(e.dataset.pcompra)){
-				e.closest("tr").querySelector(".importex").textContent= ""
-				alert("el precio de venta debe ser mayor q al precio de compra")
-				e.value = ""
-			}
-		}
-		function validatepventa(e){
-			if(e.value < 0){
-				e.value = "";
-				e.closest("tr").querySelector(".importex").textContent= ""
-				alert("no debe ingresar numeros negativos")
-			}else if(e.value != ""){
-				e.closest("tr").querySelector(".importex").textContent = (parseFloat(e.value)*parseFloat(e.dataset.cantidad)).toFixed(4)
-			}else{
-				e.closest("tr").querySelector(".importex").textContent = ""
-			}
-		}
 		getSelector("#saveOrdenCompra").addEventListener("submit", e => {
 			e.preventDefault();
 			let transporte = "";
@@ -294,7 +256,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 			}
 			console.log(transporte)
-			const codigocompras = $("#codigocompras").val();
+			const codigorc = $("#codigorc").val();
 			let total = 0;
 			const detalle = [];
 			getSelectorAll(".prventax1").forEach(ee =>  {
@@ -309,7 +271,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			var formData = new FormData();
 			formData.append("detalle", JSON.stringify(detalle))
 			formData.append("transporte", transporte)
-			formData.append("codigocompras", codigocompras)
+			formData.append("codigorc", codigorc)
 			formData.append("ventatotal", total)
 
 			fetch(`setPrecioVenta.php`, { method: 'POST', body: formData })
@@ -323,13 +285,6 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 			});
 		})
-		getSelector("#check_transporte").addEventListener("click", e => {
-			console.log(e.target.checked)
-			if(e.target.checked){
-				getSelector("#container_transporte").style.display = "";
-			}else{
-				getSelector("#container_transporte").style.display = "none";
-			}
-		})
+		
 		
 	</script>

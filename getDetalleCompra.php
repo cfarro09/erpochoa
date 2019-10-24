@@ -31,12 +31,12 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-if (isset($_GET['codigocompras'])) {
-  $codigocompras = $_GET['codigocompras'];
+if (isset($_GET['codigorc'])) {
+  $codigorc = $_GET['codigorc'];
 }
 mysql_select_db($database_Ventas, $Ventas);
 
-$query_Factura = "select d.codigodetalleproducto, d.cantidad, p.nombre_producto, m.nombre, d.pcompra, ps.precio_venta from detalle_compras d left join producto p on p.codigoprod = d.codigoprod left join marca m on m.codigomarca = p.codigomarca left join producto_stock ps on ps.codigoprod = d.codigoprod where d.codigocompras = $codigocompras";
+$query_Factura = "select d.codigodetalleproducto, d.cantidad, p.nombre_producto, m.nombre, d.totalunidad, d.vcf, ps.precio_venta from detalle_compras d left join producto p on p.codigoprod = d.codigoprod left join marca m on m.codigomarca = p.codigomarca left join producto_stock ps on ps.codigoprod = d.codigoprod where d.codigocompras = $codigorc";
 
 $Factura = mysql_query($query_Factura, $Ventas) or die(mysql_error());
 $result = array();
