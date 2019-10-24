@@ -213,11 +213,11 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td>${ix.nombre}</td>
 						<td><input class="form-control" value="${pc}" readonly></td>
 						<td><input class="form-control" value="${ix.totalunidad}" readonly></td>
-						<td><input class="form-control porcentajeventa1" ></td>
+						<td><input data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1"data-pc="${pc}" class="form-control porcentajeventa1" ></td>
 						<td><input class="form-control precioventa1" readonly></td>
-						<td><input class="form-control porcentajeventa2" ></td>
+						<td><input data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2"data-pc="${pc}" class="form-control porcentajeventa2" ></td>
 						<td><input class="form-control precioventa2" readonly></td>
-						<td><input class="form-control porcentajeventa3" ></td>
+						<td><input data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3"data-pc="${pc}" class="form-control porcentajeventa3" ></td>
 						<td><input class="form-control precioventa3" readonly></td>
 					</tr>
 
@@ -236,6 +236,19 @@ include("Fragmentos/abrirpopupcentro.php");
 			}else{
 				getSelector("#btn_save_precioventa1").style.display = ""
 			}
+
+		}
+		function changeporcentaje(e){
+			if(e.value < 0){
+				e.value = 0;
+				return
+			}
+			const porcentaje = parseFloat(e.value)
+			const origin = e.dataset.origin;
+			const pc = parseFloat(e.dataset.pc);
+			const cantidad = parseInt(e.dataset.cantidad);
+
+			e.closest("tr").querySelector(`.precio${origin}`).value = pc*(100 + porcentaje)/100;
 
 		}
 		getSelector("#saveOrdenCompra").addEventListener("submit", e => {
