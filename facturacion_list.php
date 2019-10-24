@@ -1391,7 +1391,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				const query =
 					`insert into transporte_compra 
 					(tipo_transporte, tipocomprobante, numerocomprobante, ructransporte, moneda, tipocambio, preciotransp_soles, preciotransp_dolar, codigocompras) 
-				values 
+					values 
 					('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${nrorucpro.value}', '${monedapro.value}', 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
 					data.gastos.push(query)
 			}
@@ -1411,7 +1411,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		}
 		if (getSelector("#check_notadebito").checked) {
 			if (!rucnotadebito.value || !proveedornotadebito.value || !tipocomprobantenotadebito.value || !numerocomprobantenotadebito.value || !precio_notadebito.value) {
-				alert("debe llenar todos los datos de estibador");
+				alert("debe llenar todos los datos de nota de debito");
 				return;
 			} else {
 				const query =
@@ -1422,15 +1422,15 @@ include("Fragmentos/abrirpopupcentro.php");
 				data.gastos.push(query)
 			}
 		}
-		if (getSelector("#check_notadebito").checked) {
+		if (getSelector("#check_notacredito").checked) {
 			if (!rucnotacredito.value || !proveedornotacredito.value || !tipocomprobantenotacredito.value || !numerocomprobantenotacredito.value || !precio_notacredito.value) {
-				alert("debe llenar todos los datos de estibador");
+				alert("debe llenar todos los datos de nota debito");
 				return;
 			} else {
 				
 				const query =
 					`insert into notacredito_compra 
-					(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
+					(tipocomprobante, numerocomprobante, rucnotacredito, moneda, tipocambio, precionc_soles, precionc_dolar, codigocompras) 
 				values 
 					('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${nrorucpro.value}', '${monedanotacredito.value}', 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`
 				data.gastos.push(query)
