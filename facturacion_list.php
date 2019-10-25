@@ -1124,10 +1124,10 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td class="costeosinchecked"><input type="number" oninput="changedescuento(this)" value="0" class="form-control descuento"></td>
 							<td class="costeosinchecked"><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
 							
-							<td class="costeosinchecked"><input step="any" id="vcf_${i}" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
+							<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
 							
 							<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
-							<td><input type="text" readonly class="form-control vcf"></td>
+							<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
 
 							<td class="costeosinchecked"><input type="text" readonly class="form-control igvrow"></td>
 							<td class="costeosinchecked"><input type="text" readonly class="form-control valorcompra2"></td>
