@@ -183,8 +183,6 @@ include("Fragmentos/abrirpopupcentro.php");
 			})
 		});
 		function managecompra(e){
-			
-			
 			$('#mnumerocomprobante').text(e.parentElement.parentElement.querySelector(".numerocomprobante").textContent)
 			$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
 			$('#mrazonsocial').text(e.parentElement.parentElement.querySelector(".razonsocial").textContent)
@@ -206,19 +204,19 @@ include("Fragmentos/abrirpopupcentro.php");
 					const pc = (parseFloat(ix.vcf)/parseInt(ix.cantidad)).toFixed(4);
 
 					getSelector("#detalleComprax").innerHTML += `
-					<tr>
+					<tr class="rowto" data-codigodetalleproducto="${ix.codigodetalleproducto}" data-codigoprod="${ix.codigoprod}">
 						<td>${i}</td>
-						<td>${ix.cantidad}</td>
+						<td class="cantidad">${ix.cantidad}</td>
 						<td>${ix.nombre_producto}</td>
 						<td>${ix.nombre}</td>
-						<td><input class="form-control" value="${pc}" readonly></td>
-						<td><input class="form-control" value="${ix.totalunidad}" readonly></td>
-						<td><input data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1"data-pc="${pc}" class="form-control porcentajeventa1" ></td>
-						<td><input class="form-control precioventa1" readonly></td>
-						<td><input data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2"data-pc="${pc}" class="form-control porcentajeventa2" ></td>
-						<td><input class="form-control precioventa2" readonly></td>
-						<td><input data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3"data-pc="${pc}" class="form-control porcentajeventa3" ></td>
-						<td><input class="form-control precioventa3" readonly></td>
+						<td><input required class="form-control preciounidad" value="${pc}" readonly></td>
+						<td><input required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1"data-pc="${pc}" class="form-control porcentajeventa1" ></td>
+						<td><input required class="form-control precioventa1" readonly></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2"data-pc="${pc}" class="form-control porcentajeventa2" ></td>
+						<td><input required class="form-control precioventa2" readonly></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3"data-pc="${pc}" class="form-control porcentajeventa3" ></td>
+						<td><input required class="form-control precioventa3" readonly></td>
 					</tr>
 
 					`
@@ -247,45 +245,36 @@ include("Fragmentos/abrirpopupcentro.php");
 			const origin = e.dataset.origin;
 			const pc = parseFloat(e.dataset.pc);
 			const cantidad = parseInt(e.dataset.cantidad);
-
 			e.closest("tr").querySelector(`.precio${origin}`).value = pc*(100 + porcentaje)/100;
-
 		}
 		getSelector("#saveOrdenCompra").addEventListener("submit", e => {
 			e.preventDefault();
-			let transporte = "";
-			if(getSelector("#check_transporte").checked){
-				if($("#tipocomprobante").val() == "" || $("#numerocomprobante").val() == "" || $("#empresatransporte").val() == "" || $("#precio_transporte").val() == "" ){
-					alert("Complete los datos de transporte")
-					return
-				}else{
-					const tdd={
-						tipocomprobante: $("#tipocomprobante").val(),
-						numerocomprobante: $("#numerocomprobante").val(),
-						empresatransporte: $("#empresatransporte").val(),
-						precio_transporte: $("#precio_transporte").val()
-					}
-					transporte = JSON.stringify(tdd);
-				}
-			}
-			console.log(transporte)
-			const codigorc = $("#codigorc").val();
-			let total = 0;
+			const codacceso = <?= $_SESSION['kt_login_id'] ?>;
 			const detalle = [];
-			getSelectorAll(".prventax1").forEach(ee =>  {
-				total += parseFloat(ee.value)*parseFloat(ee.dataset.cantidad)
-				detalle.push({
-					codigodetalleproducto: ee.dataset.codigodetalleproducto,
-					pventa: ee.value
-				})
+			getSelectorAll(".rowto").forEach(ee =>  {
+				detalle.push(
+						`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3)
+						values
+							(
+								${codacceso},
+								1,
+								${ee.dataset.codigodetalleproducto},
+								${ee.dataset.codigoprod},
+								${ee.querySelector(".preciounidad").value},
+								${ee.querySelector(".preciounidadmas").value},
+								${ee.querySelector(".porcentajeventa1").value},
+								${ee.querySelector(".precioventa1").value},
+								${ee.querySelector(".porcentajeventa2").value},
+								${ee.querySelector(".precioventa2").value},
+								${ee.querySelector(".porcentajeventa3").value},
+								${ee.querySelector(".precioventa3").value}
+							);
+						`
+					)
 			})
 
-			total = total.toFixed(4)
 			var formData = new FormData();
-			formData.append("detalle", JSON.stringify(detalle))
-			formData.append("transporte", transporte)
-			formData.append("codigorc", codigorc)
-			formData.append("ventatotal", total)
+			formData.append("exearray", JSON.stringify(detalle))
 
 			fetch(`setPrecioVenta.php`, { method: 'POST', body: formData })
 			.then(res => res.json())

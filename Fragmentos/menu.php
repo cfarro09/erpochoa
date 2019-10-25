@@ -850,7 +850,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="ventas.php.php" class="nav-link font-blue-ebonyclay">
+                                <a href="ventas_add.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Ventas</span>
                                     <span class="selected"></span>

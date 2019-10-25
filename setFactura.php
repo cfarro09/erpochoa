@@ -57,6 +57,7 @@ if($h->codigocompras){
 
 }else{
   $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras, codigoproveedor) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras, $h->codigoproveedor)";
+
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
@@ -78,9 +79,11 @@ if($h->codigocompras){
 
     if($row_Listado1){
       $newcantidad = $row_Listado1['cantidad'] + $d->cantidad;
-      $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($d->codigoprod, '$h->fecha_registro', $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $newcantidad, $h->codigosuc)";
+      $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal) values ($d->codigoprod, '$h->fecha_registro', $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $newcantidad, $h->codigosuc, $d->totalcompra)";
+
+
     }else{
-      $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal) values ($d->codigoprod, '$h->fecha_registro' $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $d->cantidad, $h->codigosuc)";
+      $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante) values ($d->codigoprod, '$h->fecha_registro', $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalunidad, $d->cantidad, $h->codigosuc, $d->totalcompra, '$h->tipo_comprobante')";
     }
     $queryDetalle = mysql_query($xx, $Ventas) or die("ddd".mysql_error());
   }

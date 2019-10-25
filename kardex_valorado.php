@@ -147,7 +147,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			</tbody>
 		</table>
 		<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog" role="document" style="width: 900px">
+			<div class="modal-dialog" role="document" style="width: 1100px">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
 						<h5 class="modal-title" id="moperation-title">Almacen Kardex</h5>
@@ -195,7 +195,7 @@ include("Fragmentos/abrirpopupcentro.php");
 												<table class="table table-striped table-bordered table-hover" id="">
 													<thead>
 														<tr>
-															<th colspan="4" id="headerKardex"></th>
+															<th colspan="5" id="headerKardex"></th>
 															<th colspan="2" style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
 															<th colspan="2" style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
 															<th colspan="2" style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
@@ -205,6 +205,7 @@ include("Fragmentos/abrirpopupcentro.php");
 															<th>DETALLE</th>
 															<th>TIPO</th>
 															<th>N° COMP/GUIA</th>
+															<th>P.UND</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">IMPORTE</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
@@ -276,6 +277,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td></td>
 					<td></td>
 					<td></td>
+					<td></td>
 					<td>0</td>	
 					<td></td>
 					</tr>
@@ -290,8 +292,9 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td>${item.detalle}</td>
 							<td>${item.tipocomprobante}</td>
 							<td>${item.numero}</td>
-							<td>${item.cantidad}</td>
 							<td>${item.precio}</td>
+							<td>${item.cantidad}</td>
+							<td>${item.preciototal}</td>
 							<td></td>
 							<td></td>
 							<td>${item.saldo}</td>

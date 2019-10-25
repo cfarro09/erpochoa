@@ -1,59 +1,8 @@
 <?php require_once('Connections/Ventas.php'); ?>
 <?php
-if (!function_exists("GetSQLValueString")) {
-	function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-	{
-		if (PHP_VERSION < 6) {
-			$theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-		}
-
-		$theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-		switch ($theType) {
-			case "text":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;    
-			case "long":
-			case "int":
-			$theValue = ($theValue != "") ? intval($theValue) : "NULL";
-			break;
-			case "double":
-			$theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-			break;
-			case "date":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;
-			case "defined":
-			$theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-			break;
-		}
-		return $theValue;
-	}
-}
-
-$editFormAction = $_SERVER['PHP_SELF'];
-if (isset($_SERVER['QUERY_STRING'])) {
-	$editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
-}
-
-if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
-	$updateSQL = sprintf("UPDATE producto SET estado=%s WHERE codigoprod=%s",
-		GetSQLValueString($_POST['estado'], "text"),
-		GetSQLValueString($_POST['codigoprod'], "int"));
-
-	mysql_select_db($database_Ventas, $Ventas);
-	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
-
-	$updateGoTo = "product_list.php";
-	if (isset($_SERVER['QUERY_STRING'])) {
-		$updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
-		$updateGoTo .= $_SERVER['QUERY_STRING'];
-	}
-	header(sprintf("Location: %s", $updateGoTo));
-}
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select c.tipo_comprobante, c.numerofactura, c.fecha, p.razonsocial, s.nombre_sucursal, c.total, gso.tipodoc as tipodocsinoc, gso.numero_guia as nrocomprobanteconoc, ocg.tipodocalmacen as tipodocconoc, ocg.numeroguia as nrodocconoc, IF(gso.numero_guia IS NULL, 'Orden Compra', 'Guia sin OC') as tipoAUXILIAR from compras c left join proveedor p on p.codigoproveedor = c.codigoproveedor left join sucursal s on s.cod_sucursal = c.codigosuc left join guia_sin_oc gso on gso.codigo_guia_sin_oc = c.codigo_guia_sin_oc left join ordencompra_guia ocg on ocg.codigoguia = c.codigo_orden_compra";
+$query_Listado = "SELECT rc.tipomoneda, rc.tipo_comprobante, rc.numerocomprobante, s.nombre_sucursal, p.ruc, p.razonsocial, rc.subtotal, rc.igv, rc.total from registro_compras rc inner JOIN proveedor p on p.codigoproveedor=rc.codigoproveedor inner join sucursal s on s.cod_sucursal=rc.codigosuc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -61,17 +10,6 @@ $totalRows_Listado = mysql_num_rows($Listado);
  //Enumerar filas de data tablas
 
 
-//Titulo e icono de la pagina
-$Icono="fa fa-building-o";
-$Color="font-blue";
-$Titulo="Historial de Compras";
-$NombreBotonAgregar="Agregar";
-//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-//$EstadoBotonAgregar="disabled";
-$EstadoBotonAgregar="disabled";
-//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-$popupAncho= 700;
-$popupAlto= 525;
 
 include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
@@ -83,14 +21,12 @@ $i = 1;
 
 ?>
 
-<h2 align="center"><strong>Costeo</strong></h2>
+<h2 align="center"><strong>REGISTRO COMPRAS</strong></h2>
 
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
-	<div class="alert alert-danger">
+	<div class="alert alert-danger" style="margin-top: 20px">
 		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
-
-
 	</div>
 <?php } // Show if recordset empty ?>
 <?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
@@ -98,14 +34,15 @@ $i = 1;
 		<thead>
 			<tr>
 				<th> N&deg; </th>
-				<th> CODIGO</th>
-				<th> FECHA </th>
-				<th> PROVEEDOR </th>
-				<th> IMPORTE </th>
-				<th> TIPO </th>
+				<th>TIPO COMPR</th>
+				<th>N° COMPROBANTE</th>
 				<th>SUCURSAL</th>
-				<th>ESTADO</th>
-				<th> ACCION </th>
+				<th>RUC P</th>
+				<th>RAZON SOCIAL</th>
+				<th>SUBTOTAL</th>
+				<th>IGV</th>
+				<th>TOTAL</th>
+				<th>ACCIONES</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -113,13 +50,14 @@ $i = 1;
 				
 				<tr style="background-color: white">
 					<td> <?php echo $i; ?> </td>
-					<td><?= $row_Listado['tipo_comprobante'] . "-". $row_Listado['numerofactura'] ; ?></td>
-					<td> <?= substr($row_Listado['fecha'], 0,10); ?></td>
-					<td> <?php echo $row_Listado['razonsocial']; ?></td>
-					<td> <?php echo $row_Listado['total']; ?></td>
-					<td><?php echo $row_Listado['tipoAUXILIAR']; ?></td>
-					<td><?php echo $row_Listado['nombre_sucursal']; ?></td>
-					<td><?= "FALTA" ?></td>
+					<td> <?php echo $row_Listado['tipo_comprobante']; ?></td>
+					<td> <?php echo $row_Listado['numerocomprobante']; ?></td>
+					<td> <?php echo $row_Listado['nombre_sucursal']; ?></td>
+					<td><?php echo $row_Listado['ruc']; ?></td>
+					<td><?php echo $row_Listado['razonsocial']; ?></td>
+					<td><?php echo $row_Listado['subtotal']; ?></td>
+					<td><?php echo $row_Listado['igv']; ?></td>
+					<td><?php echo $row_Listado['total']; ?></td>
 					<td><a href="#" class="verDetalle">Ver</a></td>
 				</td>
 			</tr>
