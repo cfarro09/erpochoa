@@ -432,7 +432,6 @@ include("Fragmentos/abrirpopupcentro.php");
 						<div class="col-sm-3">
 							<label class="control-label" for="tipocomprobanteestibador">Tipo Comprobante</label>
 							<select class="form-control" name="tipocomprobanteestibador" id="tipocomprobanteestibador">
-								<option value="">Select</option>
 								<option value="factura">Factura</option>
 								<option value="boleta">Boleta</option>
 								<option value="notaventa">Nota venta</option>
@@ -477,7 +476,6 @@ include("Fragmentos/abrirpopupcentro.php");
 							<label class="control-label" for="tipocomprobantenotadebito">Tipo Comprobante</label>
 							<select class="form-control" name="tipocomprobantenotadebito"
 								id="tipocomprobantenotadebito">
-								<option value="">Select</option>
 								<option value="factura">Factura</option>
 								<option value="boleta">Boleta</option>
 								<option value="notaventa">Nota venta</option>
@@ -522,7 +520,6 @@ include("Fragmentos/abrirpopupcentro.php");
 							<label class="control-label" for="tipocomprobantenotacredito">Tipo Comprobante</label>
 							<select class="form-control" name="tipocomprobantenotacredito"
 								id="tipocomprobantenotacredito">
-								<option value="">Select</option>
 								<option value="factura">Factura</option>
 								<option value="boleta">Boleta</option>
 								<option value="notaventa">Nota venta</option>
@@ -594,7 +591,6 @@ include("Fragmentos/abrirpopupcentro.php");
 								<div class="col-sm-3">
 									<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
 									<select class="form-control " name="tipocomprobantepro" id="tipocomprobantepro" required>
-										<option value="">Select</option>
 										<option value="factura">Guia</option>
 										<option value="factura">Factura</option>
 										<option value="boleta">Boleta</option>
