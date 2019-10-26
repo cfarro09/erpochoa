@@ -595,7 +595,7 @@ include("Fragmentos/abrirpopupcentro.php");
 										<option value="factura">Factura</option>
 										<option value="boleta">Boleta</option>
 										<option value="notaventa">Nota venta</option>
-										<option value="recibo">Recibo</option>
+										<option valgit ue="recibo">Recibo</option>
 										<option value="otros">Otros</option>
 									</select>
 								</div>
@@ -733,7 +733,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			});
 		} else {
 			typetransporte = "porparticipacion";
-			varTypeExtra.textContent = "Valor Compra"
+			varTypeExtra.textContent = "VCF"
 			title_extra.textContent = "PARTICIPACION POR COMPRAS"
 			detalleProrrateo.innerHTML = ""
 			arrayDetalle.detalle.forEach(r => {
@@ -744,7 +744,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
 						<td class="nombre_producto" >${r.nombre_producto}</td>
 						<td class="marca" >${r.marca}</td>
-						<td><input type="number" readonly required class="form-control pesoitempro" oninput="changepeso(this)" value="${getSelector("#preciocompra" + nro).value}"></td>
+						<td><input type="number" readonly required class="form-control pesoitempro" oninput="changepeso(this)" value="${getSelector("#vcf_" + nro).value}"></td>
 						<td><input readonly type="number" class="form-control importeindividualpro"></td>
 						<td><input readonly data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
 						</tr>`)
@@ -1127,7 +1127,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
 							
 							<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
-							<td><input type="text" readonly class="form-control vcf"></td>
+							<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
 
 							<td class="costeosinchecked"><input type="text" readonly class="form-control igvrow"></td>
 							<td class="costeosinchecked"><input type="text" readonly class="form-control valorcompra2"></td>
