@@ -1156,7 +1156,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
-								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
+								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
 								<td><input type="text" readonly class="form-control sumavcf"></td>
 								<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrow"></td>
 								<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2"></td>
@@ -1178,7 +1178,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
 								<td class="costeosinchecked"></td>
-								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
+								<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
 								<td><input type="text" readonly class="form-control sumavcfdolar"></td>
 								<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrowdolar"></td>
 								<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2dolar"></td>
@@ -1277,7 +1277,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			total += parseFloat(i.value) * parseInt(i.closest("tr").querySelector(".cantidad").textContent)
 		});
 
-		getSelectorAll(".precio-compra").forEach(i => {
+		getSelectorAll(".vcf").forEach(i => {
 			const tr = i.closest("tr");
 			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * parseInt(tr.querySelector(".cantidad").textContent) * i.value / total).toFixed(2)
 			tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
