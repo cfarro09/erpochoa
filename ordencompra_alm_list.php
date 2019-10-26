@@ -442,6 +442,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 			$("#mOrdenCompra").modal("hide");
 			if(res.success){
 				alert("registro completo!")
+				location.reload()
 			}
 			
 		});
@@ -498,6 +499,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 			$("#mOrdenCompra").modal("hide");
 			if(res.success){
 				alert("registro completo!")
+				location.reload()
 			}
 			
 		});
