@@ -1417,12 +1417,12 @@ function changeimporte(e) {
 		let tc = getSelector(`#${e.dataset.tipocambio}`).value ? parseFloat(getSelector(`#${e.dataset.tipocambio}`).value) : 0;
 
 		getSelectorAll(".precio-compra").forEach(i => {
-			total += parseFloat(i.value) * parseInt(i.closest("tr").querySelector(".cantidad").textContent)
+			total += parseFloat(i.value)
 		});
 
 		getSelectorAll(".vcf").forEach(i => {
 			const tr = i.closest("tr");
-			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * parseInt(tr.querySelector(".cantidad").textContent) * tc * parseFloat(i.value) / total).toFixed(2)
+			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * tc * parseFloat(i.value) / total).toFixed(2)
 			tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 		});
 		getSelector(`.suma${e.dataset.type}`).value = (parseFloat(e.value)*tc).toFixed(2)

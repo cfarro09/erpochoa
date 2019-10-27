@@ -158,6 +158,51 @@ include("Fragmentos/abrirpopupcentro.php");
 				});
 			})
 		});
+		function verprecioventa(e){
+			$('#mnumerocomprobante').text(e.parentElement.parentElement.querySelector(".numerocomprobante").textContent)
+			$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
+			$('#mrazonsocial').text(e.parentElement.parentElement.querySelector(".razonsocial").textContent)
+			$('#mtotal').text(e.parentElement.parentElement.querySelector(".total").textContent)
+			$('#mnombre_sucursal').text(e.parentElement.parentElement.querySelector(".nombre_sucursal").textContent)
+			$('#mfecha').text(e.parentElement.parentElement.querySelector(".fecha").textContent)
+			$('#musuario').text(e.parentElement.parentElement.querySelector(".usuario").textContent)
+			const codigorc =  parseInt(e.parentElement.parentElement.querySelector(".codigorc").textContent)
+			$("#codigorc").val(codigorc);
+			getSelector("#detalleComprax").innerHTML = ""
+
+			let i = 1;
+			fetch(`getdetalleprecioventa.php?codigorc=${codigorc}`)
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				res.forEach(ix => {
+					const pc = (parseFloat(ix.vcf)/parseInt(ix.cantidad)).toFixed(4);
+
+					getSelector("#detalleComprax").innerHTML += `
+					<tr class="rowto" data-codigodetalleproducto="${ix.codigodetalleproducto}" data-codigoprod="${ix.codigoprod}">
+						<td>${i}</td>
+						<td class="cantidad">${ix.cantidad}</td>
+						<td>${ix.nombre_producto}</td>
+						<td>${ix.nombre}</td>
+						<td><input readonly required class="form-control preciounidad" value="${pc}" readonly></td>
+						<td><input readonly required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
+						<td><input required readonly data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1"data-pc="${pc}" class="form-control porcentajeventa1" ></td>
+						<td><input required class="form-control precioventa1" readonly></td>
+						<td><input readonly required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2"data-pc="${pc}" class="form-control porcentajeventa2" ></td>
+						<td><input required class="form-control precioventa2" readonly></td>
+						<td><input readonly required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3"data-pc="${pc}" class="form-control porcentajeventa3" ></td>
+						<td><input required class="form-control precioventa3" readonly></td>
+					</tr>
+					`
+					$('[data-toggle="tooltip"]').tooltip()
+					$('.tooltips').tooltip();
+					i++;
+				})
+
+			});
+			$("#mSetPrecioVenta").modal();
+		}
+
 		function managecompra(e){
 			$('#mnumerocomprobante').text(e.parentElement.parentElement.querySelector(".numerocomprobante").textContent)
 			$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
@@ -167,7 +212,6 @@ include("Fragmentos/abrirpopupcentro.php");
 			$('#mfecha').text(e.parentElement.parentElement.querySelector(".fecha").textContent)
 			$('#musuario').text(e.parentElement.parentElement.querySelector(".usuario").textContent)
 			const codigorc =  parseInt(e.parentElement.parentElement.querySelector(".codigorc").textContent)
-			const set = e.dataset.set != "asignar" ? "readonly":"";
 			$("#codigorc").val(codigorc);
 			getSelector("#detalleComprax").innerHTML = ""
 
@@ -194,7 +238,6 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3"data-pc="${pc}" class="form-control porcentajeventa3" ></td>
 						<td><input required class="form-control precioventa3" readonly></td>
 					</tr>
-
 					`
 					$('[data-toggle="tooltip"]').tooltip()
 					$('.tooltips').tooltip();
@@ -202,15 +245,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				})
 
 			});
-
 			$("#mSetPrecioVenta").modal();
-			if(set == "readonly"){
-				getSelector("#btn_save_precioventa1").style.display = "none"
-
-			}else{
-				getSelector("#btn_save_precioventa1").style.display = ""
-			}
-
 		}
 		function changeporcentaje(e){
 			if(e.value < 0){
@@ -227,9 +262,13 @@ include("Fragmentos/abrirpopupcentro.php");
 			e.preventDefault();
 			const codacceso = <?= $_SESSION['kt_login_id'] ?>;
 			const detalle = [];
+
+			detalle.push(`
+					update registro_compras set estadofact = 2 where codigorc = ${codigorc.value}
+				`)
 			getSelectorAll(".rowto").forEach(ee =>  {
 				detalle.push(
-						`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3)
+						`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3, codigocompras)
 						values
 							(
 								${codacceso},
@@ -243,7 +282,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								${ee.querySelector(".porcentajeventa2").value},
 								${ee.querySelector(".precioventa2").value},
 								${ee.querySelector(".porcentajeventa3").value},
-								${ee.querySelector(".precioventa3").value}
+								${ee.querySelector(".precioventa3").value},
+								${codigorc.value}
 							);
 						`
 					)
