@@ -1376,7 +1376,7 @@ function changedescuento(e) {
 }
 function calcularcosteobyfile(tr) {
 	let totalx = 0
-	totalx += parseFloat(tr.querySelector(".importe").value ? tr.querySelector(".importe").value : 0);
+	totalx += parseFloat(tr.querySelector(".vcf").value ? tr.querySelector(".vcf").value : 0);
 	totalx += parseFloat(tr.querySelector(".transporte_costeo").value ? tr.querySelector(".transporte_costeo").value : 0);
 	totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
 	totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
