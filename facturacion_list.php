@@ -603,7 +603,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							</div>
 							<div class="col-sm-3" id="containerTipoCambio" style="display: none">
 								<label class="control-label" for="monedapro">Cambio</label>
-								<input type="number" class="form-control" step="any" name="tipocambiopro"
+								<input type="number" class="form-control" value="1" min="1" step="any" name="tipocambiopro"
 								id="tipocambiopro">
 							</div>
 							<div class="col-sm-3">
@@ -818,7 +818,8 @@ mysql_free_result($Listado);
 					getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
 
 				});
-				getSelector(".sumatransporte").value = parseFloat(preciopro.value).toFixed(4)
+				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 0;
+				getSelector(".sumatransporte").value = (parseFloat(preciopro.value)*tc).toFixed(4)
 				calcularExtras()
 				$("#mProrrateo").modal("hide");
 			}
@@ -885,7 +886,11 @@ mysql_free_result($Listado);
 				}
 			});
 			if (proccesspeso) {
-				const unit = $("#preciopro").val() / suma;
+
+
+				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 0;
+
+				const unit = $("#preciopro").val() *tc / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
 					const cantidad = 1
 					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value).toFixed(4)
@@ -1416,13 +1421,14 @@ function changeimporte(e) {
 		let total = 0;
 		let tc = getSelector(`#${e.dataset.tipocambio}`).value ? parseFloat(getSelector(`#${e.dataset.tipocambio}`).value) : 0;
 
-		getSelectorAll(".precio-compra").forEach(i => {
+		getSelectorAll(".vcf").forEach(i => {
 			total += parseFloat(i.value)
 		});
 
-		getSelectorAll(".precio-compra").forEach(i => {
+		getSelectorAll(".vcf").forEach(i => {
 			const tr = i.closest("tr");
-			tr.querySelector(`.${e.dataset.type}`).value = (parseFloat(e.value) * parseFloat(i.value) / total).toFixed(2)
+			debugger
+			tr.querySelector(`.${e.dataset.type}`).value = (parseFloat(e.value) * parseFloat(i.value) * tc/ total).toFixed(2)
 			tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 		});
 		getSelector(`.suma${e.dataset.type}`).value = (parseFloat(e.value)*tc).toFixed(2)
