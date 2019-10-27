@@ -1380,9 +1380,9 @@ function calcularcosteobyfile(tr) {
 	totalx += parseFloat(tr.querySelector(".transporte_costeo").value ? tr.querySelector(".transporte_costeo").value : 0);
 	totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
 	totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
-	totalx += parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
+	totalx -= parseFloat(tr.querySelector(".notacredito").value ? tr.querySelector(".notacredito").value : 0);
 
-	totalx -= tr.querySelector(".descuento").value ? totalx * (parseFloat(tr.querySelector(".descuento").value)) / 100 : 0;
+	// totalx -= tr.querySelector(".descuento").value ? totalx * (parseFloat(tr.querySelector(".descuento").value)) / 100 : 0;
 	return parseFloat(totalx).toFixed(4);
 }
 function changeimporte(e) {
