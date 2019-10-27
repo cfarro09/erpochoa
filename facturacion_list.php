@@ -1,59 +1,9 @@
 <?php require_once('Connections/Ventas.php'); ?>
 <?php
-if (!function_exists("GetSQLValueString")) {
-	function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-	{
-		if (PHP_VERSION < 6) {
-			$theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-		}
 
-		$theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-		switch ($theType) {
-			case "text":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;    
-			case "long":
-			case "int":
-			$theValue = ($theValue != "") ? intval($theValue) : "NULL";
-			break;
-			case "double":
-			$theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-			break;
-			case "date":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;
-			case "defined":
-			$theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-			break;
-		}
-		return $theValue;
-	}
-}
-
-$editFormAction = $_SERVER['PHP_SELF'];
-if (isset($_SERVER['QUERY_STRING'])) {
-	$editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
-}
-
-if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
-	$updateSQL = sprintf("UPDATE producto SET estado=%s WHERE codigoprod=%s",
-		GetSQLValueString($_POST['estado'], "text"),
-		GetSQLValueString($_POST['codigoprod'], "int"));
-
-	mysql_select_db($database_Ventas, $Ventas);
-	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
-
-	$updateGoTo = "product_list.php";
-	if (isset($_SERVER['QUERY_STRING'])) {
-		$updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
-		$updateGoTo .= $_SERVER['QUERY_STRING'];
-	}
-	header(sprintf("Location: %s", $updateGoTo));
-}
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select g.codigoguia,registro_compras.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial from ordencompra_guia g inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor left join registro_compras on registro_compras.codigo_orden_compra = g.codigoguia where g.estado=2 or g.estado=3";
+$query_Listado = "select g.codigoguia, registro_compras.codigorc, registro_compras.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial from ordencompra_guia g inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor left join registro_compras on registro_compras.codigo_orden_compra = g.codigoguia where g.estado=2 or g.estado=3";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -147,8 +97,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<td> <?php echo $row_Listado['razonsocial']; ?></td>
 			<td> <?php echo $row_Listado['fecha_emision']; ?></td>
 			<?php if($row_Listado['subtotal']): ?>
-				<td><a href="#" data-estado="<?= $row_Listado['estado'] ?>" data-codigo="<?= $row_Listado['codigo'] ?>"
-					class="verOrden">Ver</a>
+				<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>" onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Ver</a>
 				</td>
 				<?php else: ?>
 					<td><a href="#" class="aux_compras" data-type="ordencompra"
@@ -184,8 +133,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
 					<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
 						<td>
-							<a href="#" data-estado="<?= $row_listaguiasinoc['estado'] ?>"
-								data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" class="verOrdenSinOc">Ver</a>
+							<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)" data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" data-codigorc="<?= $row_Listado['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
 							</td>
 							<?php else: ?>
 								<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
@@ -388,8 +336,8 @@ include("Fragmentos/abrirpopupcentro.php");
 						<div class="modal-footer">
 							<label for="showcosteo">Mostrar costeo</label>
 							<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
-							<button class="btn btn-success" type="button" onclick="showopciones()">Opciones</button>
-							<button type="submit" class="btn btn-success">Guardar</button>
+							<button class="btn btn-success" id="showopcionesextras" type="button" onclick="showopciones()">Opciones</button>
+							<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
 							<button type="button" data-dismiss="modal" aria-label="Close"
 							class="btn btn-danger">Cerrar</button>
 						</div>
@@ -724,26 +672,26 @@ mysql_free_result($Listado);
 		return result;
 	}
 
- function pathKey(eReg, key){
- 	var letra = String.fromCharCode(key.which);
- 	return keyControl(key) || eReg.test(letra);
- }
+	function pathKey(eReg, key){
+		var letra = String.fromCharCode(key.which);
+		return keyControl(key) || eReg.test(letra);
+	}
 
 
- (function($) {
- 	$(document).ready(function () {
- 		$(document).on('keypress', '.sololetras', function (key) {
- 			return pathKey(/^[a-z]| |[ñÑáéíóúÁÉÍÓÚ]$/i, key);
- 		});
- 		$(document).on('keypress', '.sololetras', function (key) {
- 			return pathKey(/^[a-z]| |[ñÑáéíóúÁÉÍÓÚ]$/i, key);
- 		});
- 		$(document).on('keypress', '.solonumeros', function (key) {
- 			return pathKey(/^[0-9.]/i, key);
- 		});
- 		$(document).on('keypress', '.nospace', function (key) {
- 			return pathKey(/^\S/i, key);
- 		});
+	(function($) {
+		$(document).ready(function () {
+			$(document).on('keypress', '.sololetras', function (key) {
+				return pathKey(/^[a-z]| |[ñÑáéíóúÁÉÍÓÚ]$/i, key);
+			});
+			$(document).on('keypress', '.sololetras', function (key) {
+				return pathKey(/^[a-z]| |[ñÑáéíóúÁÉÍÓÚ]$/i, key);
+			});
+			$(document).on('keypress', '.solonumeros', function (key) {
+				return pathKey(/^[0-9.]/i, key);
+			});
+			$(document).on('keypress', '.nospace', function (key) {
+				return pathKey(/^\S/i, key);
+			});
         //agregado por NN 27/09/
         $(document).on('keypress', '.cantidades', function (key) {
         	return pathKey(/^[0-9]|[.]$/i, key);
@@ -783,8 +731,8 @@ mysql_free_result($Listado);
 
         });
     });
- })(jQuery);
- $(document).on('contextmenu', 'input, select, textarea',function(){ return false; });
+	})(jQuery);
+	$(document).on('contextmenu', 'input, select, textarea',function(){ return false; });
 
 </script>
 <script type="text/javascript">
@@ -985,16 +933,95 @@ mysql_free_result($Listado);
 		})
 	});
 
-	document.querySelector(".modal_close").addEventListener("click", () => {
-		$("#mOrdenCompra").modal("hide");
-	}); var i = 0;
+	function visualizar(e){
+		descuento.setAttribute("readonly", true)
+		facturafechaemision.setAttribute("readonly", true)
+		tipocomprobantefactura.setAttribute("readonly", true)
+		nrocomprobante.setAttribute("readonly", true)
+		moneda.setAttribute("readonly", true)
+		showopcionesextras.style.display = "none"
+		guardarcosteo.style.display = "none"
+
+
+		$("#mFacturaCompra").modal();
+		fetch(`getDetalleCompraCosteo.php?codigorc=${e.dataset.codigorc}&type=${e.dataset.type}&codigo=${e.dataset.codigo}`)
+		.then(res => res.json())
+		.catch(error => console.error("error: ", error))
+		.then(res => {
+			if(res && res.header){
+
+				$("#mproveedor1").text(res.headerx.razonsocial)
+				$("#mfechaemision1").text(res.headerx.fecha_emision)
+				$("#mvalortotal1").text(res.headerx.montofact)
+				$("#mcodref11").text(res.headerx.numero_guia)
+				$("#mcodref21").text(res.headerx.codigoref2 ? res.headerx.codigoref2 : "No tiene")
+				$("#mgeneradapor1").text(res.headerx.usuario)
+				$("#mruc1").text(res.headerx.ruc)
+
+				$("#codigo_orden_compra").val(res.headerx.codigoguia ? res.headerx.codigoguia : 0)
+				$("#codigo_guia_sin_oc").val(res.headerx.codigo_guia_sin_oc ? res.headerx.codigo_guia_sin_oc : 0)
+
+				$("#codigoproveedor").val(res.headerx.codigoproveedor)
+				$("#codigosucursal").val(res.headerx.sucursal)
+				$("#msucursal1").text(res.headerx.nombre_sucursal)
+
+
+
+
+				const {fecha_registro, descuentocompras, tipo_comprobante, numerocomprobante, tipomoneda} = res.header;
+				facturafechaemision.value = fecha_registro.substring(0,10)
+				descuento.value = descuentocompras.substring(0,10)
+				$("#tipocomprobantefactura").val(tipo_comprobante)
+				moneda.value = tipomoneda
+				nrocomprobante.value = numerocomprobante
+
+
+				i = 0;
+				document.querySelector("#detalleFacturar-list").innerHTML = ""
+				res.detalle.forEach(r => {
+					i++
+					$("#detalleFacturar-list").append(`
+						<tr>
+						<td data-codigo="${r.codigoprod}" class="codigoprod">${i}</td>
+						<td class="cantidad">${r.cantidad}</td>
+						<td>${r.nombre_producto}</td>
+						<td >${r.marca}</td>
+						<td class="costeosinchecked"><input readonly type="text" oninput="changedescuento(this)" value="${r.descxitem}" class="form-control descuento solonumeros focusandclean"></td>
+						<td class="costeosinchecked"><input readonly id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.vcu}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
+
+						<td class="costeosinchecked"><input readonly step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.vci}" required type="text" class="solonumeros focusandclean importe form-control"></td>
+
+						<td class="costeosinchecked"><input readonly type="text" value=${r.descmonto} readonly class="form-control descuentocantidad"></td>
+						<td><input readonly type="text" readonly class="form-control vcf" id="vcf_${i}" value="${r.vcf}"></td>
+
+						<td class="costeosinchecked"><input readonly type="text" readonly class="form-control igvrow" value="${r.igv}"></td>
+						<td class="costeosinchecked"><input readonly type="text" readonly value="${r.totalcompra}" class="form-control valorcompra2"></td>
+
+						<td style="display: none" class="costeochecked"><input readonly value="${r.preciotransporte}" id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
+						<td style="display: none" class="costeochecked"><input readonly value="${r.precioestibador}" class="form-control estibador_costeo" readonly></td>
+						<td style="display: none" class="costeochecked"><input readonly value="${r.notadebito}" class="form-control notadebito" readonly></td>
+						<td style="display: none" class="costeochecked"><input readonly value="${r.precionotacredito}" class="form-control notacredito" readonly></td>
+						<td style="display: none" class="costeochecked"><input readonly value="${r.totalconadicionales}" class="form-control total_costeo" readonly></td>
+						<td style="display: none" class="costeochecked"><input readonly value="${r.totalunidad}" class="form-control totalunidadcosteo" readonly></td>
+						</tr>`);
+				});
+
+
+			}else{
+				alert("hubo un error")
+			}
+		})
+
+	}
+
+	var i = 0;
 	document.querySelectorAll(".verOrden").forEach(item => {
 		document.querySelector("#saveOrdenCompra").reset();
 		item.addEventListener("click", (e) => {
 			i = 0;
 
 			document.querySelector("#codigoOrdenCompra").value = e.target.dataset.codigo
-			fetch(`getDetalleOrdenCompraGuia.php?codigo=${e.target.dataset.codigo}`)
+			fetch(`getDetalleCompra.php?codigo=${e.target.dataset.codigo}`)
 			.then(res => res.json())
 			.catch(error => console.error("error: ", error))
 			.then(res => {
@@ -1040,65 +1067,6 @@ mysql_free_result($Listado);
 						<td class="codigoprod" data-codigoprod="${r.codigoprod}">${r.nombre_producto}</td>
 						${tdExtra}
 						<td style="width: 30px"><input required type="number" oninput="validateCantidad(this)" class="form-control cant-arrived" autocomplete="off" value="${r.cant_recibida}" data-cantidad="${validateCant}" readonly></td>
-						</tr>`)
-				});
-			});
-			$("#mOrdenCompra").modal();
-		})
-	});
-	var i = 0;
-	document.querySelectorAll(".verOrdenSinOc").forEach(item => {
-		document.querySelector("#saveOrdenCompra").reset();
-		item.addEventListener("click", (e) => {
-			i = 0;
-
-			document.querySelector("#codigoOrdenCompra").value = e.target.dataset.codigo
-			fetch(`getDetalleGuiaSinOc.php?codigo=${e.target.dataset.codigo}`)
-			.then(res => res.json())
-			.catch(error => console.error("error: ", error))
-			.then(res => {
-				document.querySelector("#codigoordcomp").value = res.header.codigoordcomp
-				$("#mproveedor").text(res.header.razonsocial)
-				$("#mfechaemision").text(res.header.fecha_emision)
-				$("#mvalortotal").text(res.header.montofact)
-				$("#mcodref1").text(res.header.numero_guia)
-				$("#msucursal").text(res.header.nombre_sucursal)
-				$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
-				$("#mgeneradapor").text(res.header.usuario)
-				$("#mruc").text(res.header.ruc)
-
-				$("#observacion").val(res.header.observacion)
-				$("#numero-guia").val(res.header.numero_guia)
-				$("#codigoguia").val(res.header.codigoguia)
-
-				if (res.header.numero_guia) {
-					document.querySelector("#th-saldo").style.display = ""
-					if (res.header.estadoguia == 2 || res.header.estadoguia == 3) {
-						document.querySelector("#btn-finalice").style.display = "none"
-						document.querySelector("#btn-guardarGuia-facturacion").style.display = "none"
-					}
-				} else {
-					document.querySelector("#btn-finalice").style.display = "none"
-					document.querySelector("#th-saldo").style.display = "none"
-				}
-				document.querySelector("#detalleTableOrden-facturacion-list").innerHTML = ""
-				res.detalle.forEach(r => {
-					i++
-					let tdExtra = "";
-					let validateCant = 0;
-					if (res.header.numero_guia) {
-						tdExtra = `<td class="cant-extra">${parseInt(r.cantidad) - parseInt(r.cant_recibida)}</td>`
-						validateCant = parseInt(r.cantidad) - parseInt(r.cant_recibida)
-					} else {
-						validateCant = r.cantidad
-					}
-					$("#detalleTableOrden-facturacion-list").append(`
-						<tr>
-						<td class="codigo" data-codigo_guiaoc="${r.codigo_guiaoc}" data-codigo="${r.codigo}">${i}</td>
-						<td  class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
-						<td class="codigoprod" data-codigoprod="${r.codigoprod}">${r.nombre_producto}</td>
-						${tdExtra}
-						<td style="width: 30px"><input readonly type="number" oninput="validateCantidad(this)" value="${r.cantidad}" class="form-control cant-arrived" autocomplete="off"  data-cantidad="${validateCant}"></td>
 						</tr>`)
 				});
 			});
@@ -1212,6 +1180,21 @@ mysql_free_result($Listado);
 	})
 	document.querySelectorAll(".aux_compras").forEach(item => {
 		item.addEventListener("click", e => {
+			descuento.removeAttribute("readonly")
+			facturafechaemision.removeAttribute("readonly")
+			tipocomprobantefactura.removeAttribute("readonly")
+			nrocomprobante.removeAttribute("readonly")
+			moneda.removeAttribute("readonly")
+
+			facturafechaemision.value = ""
+			descuento.value = ""
+			$("#tipocomprobantefactura").val("")
+			moneda.value = ""
+			nrocomprobante.value = ""
+
+			showopcionesextras.style.display = ""
+			guardarcosteo.style.display = ""
+
 			subtotalGLOBAL = 0;
 			getSelector("#check_transporte").checked = false;
 			getSelector("#check_transporte").parentElement.classList.remove("checked")
@@ -1287,14 +1270,7 @@ mysql_free_result($Listado);
 						<td style="display: none" class="costeochecked"><input class="form-control total_costeo" readonly></td>
 						<td style="display: none" class="costeochecked"><input class="form-control totalunidadcosteo" readonly></td>
 						</tr>`);
-
-						// let suma = 0;
-						// getSelectorAll(".importe").forEach(item => {
-						// 	if (item.textContent)
-						// 		suma += parseFloat(item.value)
-						// })
-						// document.querySelector("#importe-total").textContent = suma * 1.18
-					});
+				});
 				$("#detalleFacturar-list").append(`
 					<tr>
 					<td></td>
@@ -1343,14 +1319,14 @@ mysql_free_result($Listado);
 				$('[data-toggle="tooltip"]').tooltip()
 				$('.tooltips').tooltip();
 			});
-			btn_prorrateo.disabled = true
-			btn_participacion.disabled = true
-			container_cambio.style.display = "none"
-			monedadolar = false;
-			tipocambio.value = 0
-			$("#mFacturaCompra").modal();
-		})
-	});
+btn_prorrateo.disabled = true
+btn_participacion.disabled = true
+container_cambio.style.display = "none"
+monedadolar = false;
+tipocambio.value = 0
+$("#mFacturaCompra").modal();
+})
+});
 function changecambiodolar(e) {
 	if (e.value < 0 || e.value == "") {
 		e.value = 0;
@@ -1554,7 +1530,7 @@ function changeimporte(e) {
 			}
 		}
 		if (getSelector("#check_notadebito").checked) {
-			if ($("#proveedornotadebito").val() || !tipocomprobantenotadebito.value || !numerocomprobantenotadebito.value || !precio_notadebito.value) {
+			if (!$("#proveedornotadebito").val() || !tipocomprobantenotadebito.value || !numerocomprobantenotadebito.value || !precio_notadebito.value) {
 				alert("debe llenar todos los datos de nota de debito");
 				return;
 			} else {
@@ -1568,7 +1544,7 @@ function changeimporte(e) {
 			}
 		}
 		if (getSelector("#check_notacredito").checked) {
-			if (!rucnotacredito.value || !proveedornotacredito.value || !tipocomprobantenotacredito.value || !numerocomprobantenotacredito.value || !precio_notacredito.value) {
+			if (!$("#proveedornotacredito").val() || !proveedornotacredito.value || !tipocomprobantenotacredito.value || !numerocomprobantenotacredito.value || !precio_notacredito.value) {
 				alert("debe llenar todos los datos de nota debito");
 				return;
 			} else {

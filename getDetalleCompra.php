@@ -41,7 +41,6 @@ $query_Factura = "select d.codigodetalleproducto, d.cantidad, d.codigoprod, p.no
 $Factura = mysql_query($query_Factura, $Ventas) or die(mysql_error());
 $result = array();
 while($res = mysql_fetch_assoc($Factura)){
-  
 	array_push($result, $res);
 }
 //$row_Factura = mysql_fetch_assoc($Factura);
