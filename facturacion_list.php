@@ -134,267 +134,267 @@ include("Fragmentos/abrirpopupcentro.php");
 					<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
 						<td>
 							<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)" data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" data-codigorc="<?= $row_Listado['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
+						</td>
+						<?php else: ?>
+							<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
+								data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>">Facturar</a>
 							</td>
-							<?php else: ?>
-								<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
-									data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>">Facturar</a>
-								</td>
-							<?php endif ?>
-							<td>
-								<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-								href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
-								target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
-							</td>
-							<td>Guia sin OC</td>
-						</tr>
-						<?php $i++;} while ($row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc)); endif; ?>
-					</tbody>
-				</table>
-				<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content m-auto">
-							<div class="modal-header">
-								<h5 class="modal-title" id="moperation-title"></h5>
-							</div>
-							<div class="modal-body">
-								<form id="saveOrdenCompra">
-									<input type="hidden" id="codigoOrdenCompra">
-									<input type="hidden" id="codigoordcomp">
-									<input type="hidden" id="codigoguia" value="">
-									<div class="container-fluid">
+						<?php endif ?>
+						<td>
+							<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+							href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
+							target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+						</td>
+						<td>Guia sin OC</td>
+					</tr>
+					<?php $i++;} while ($row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc)); endif; ?>
+				</tbody>
+			</table>
+			<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content m-auto">
+						<div class="modal-header">
+							<h5 class="modal-title" id="moperation-title"></h5>
+						</div>
+						<div class="modal-body">
+							<form id="saveOrdenCompra">
+								<input type="hidden" id="codigoOrdenCompra">
+								<input type="hidden" id="codigoordcomp">
+								<input type="hidden" id="codigoguia" value="">
+								<div class="container-fluid">
 
-										PROVEEDOR: <span id="mproveedor"></span> <BR>
-										SUCURSAL: <span id="msucursal"></span> <BR>
-										FECHA DE EMISION : <span id="mfechaemision"></span> <br>
-										VALOR TOTAL: <span id="mvalortotal"></span><BR>
-										CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
-										CODIGO REF2: : <span id="mcodref2"></span> <br>
-										GENERADA POR: : <span id="mgeneradapor"></span> <br>
-										RUC : <span id="mruc"></span>
+									PROVEEDOR: <span id="mproveedor"></span> <BR>
+									SUCURSAL: <span id="msucursal"></span> <BR>
+									FECHA DE EMISION : <span id="mfechaemision"></span> <br>
+									VALOR TOTAL: <span id="mvalortotal"></span><BR>
+									CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
+									CODIGO REF2: : <span id="mcodref2"></span> <br>
+									GENERADA POR: : <span id="mgeneradapor"></span> <br>
+									RUC : <span id="mruc"></span>
 
-										<div class="row" style="margin-top:20px">
-											<div class="col-xs-12 col-md-12">
-												<div class="row">
-													<div class="col-md-6">
-														<div class="form-group">
-															<label for="field-1" class="control-label">Numero Guia</label>
-															<input type="text" readonly class="form-control" name="numero-guia"
-															id="numero-guia">
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="form-group">
-															<label for="field-1" class="control-label">Observacion</label>
-															<input type="text" readonly class="form-control" name="observacion"
-															id="observacion">
-														</div>
+									<div class="row" style="margin-top:20px">
+										<div class="col-xs-12 col-md-12">
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="field-1" class="control-label">Numero Guia</label>
+														<input type="text" readonly class="form-control" name="numero-guia"
+														id="numero-guia">
 													</div>
 												</div>
-												<table class="table">
-													<thead>
-														<th>Nº</th>
-														<th>Cantidad Solicitada</th>
-														<th>Producto</th>
-														<th id="th-saldo" style="display: none">Saldo</th>
-														<th>Cantidad Recibida</th>
-													</thead>
-													<tbody id="detalleTableOrden-facturacion-list">
-													</tbody>
-												</table>
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="field-1" class="control-label">Observacion</label>
+														<input type="text" readonly class="form-control" name="observacion"
+														id="observacion">
+													</div>
+												</div>
 											</div>
+											<table class="table">
+												<thead>
+													<th>Nº</th>
+													<th>Cantidad Solicitada</th>
+													<th>Producto</th>
+													<th id="th-saldo" style="display: none">Saldo</th>
+													<th>Cantidad Recibida</th>
+												</thead>
+												<tbody id="detalleTableOrden-facturacion-list">
+												</tbody>
+											</table>
 										</div>
 									</div>
-									<div class="modal-footer">
-										<button type="button" id="btn-finalice" style="display: none"
-										class="btn btn-primary">Finalizar</button>
-										<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
-										<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
-									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" id="btn-finalice" style="display: none"
+									class="btn btn-primary">Finalizar</button>
+									<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
+									<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
+								</div>
 
-								</form>
-							</div>
+							</form>
 						</div>
 					</div>
 				</div>
+			</div>
 
-				<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-					<div class="modal-dialog" role="document" style="width: 1300px">
-						<div class="modal-content m-auto">
-							<div class="modal-header">
-								<h2 class="modal-title" id="">Facturar Orden de compra</h2>
-							</div>
-							<div class="modal-body">
-								<form id="saveFacturar">
-									<div class="container-fluid">
-										<div class="row">
-											<div class="col-xs-12 col-md-12">
-												<b>
-													<div style="text-align: right">
-														FECHA DE EMISION: : <span id="mfechaemision1"></span> <br>
-														VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
-													</div>
-													PROVEEDOR: <span id="mproveedor1"></span> <BR>
-													SUCURSAL: <span id="msucursal1"></span> <BR>
-													DOC ALMACEN : <span id="mcodref11"></span> <br>
-													DOC REF 2: : <span id="mcodref21"></span> <br>
-													GENERADA POR: : <span id="mgeneradapor1"></span> <br>
-													RUC : <span id="mruc1"></span>
-												</b>
-												<input type="hidden" id="codigoproveedor">
-												<input type="hidden" id="codigosucursal">
-												<input type="hidden" id="codigo_orden_compra">
-												<input type="hidden" id="codigo_guia_sin_oc">
+			<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
+				<div class="modal-dialog" role="document" style="width: 1300px">
+					<div class="modal-content m-auto">
+						<div class="modal-header">
+							<h2 class="modal-title" id="">Facturar Orden de compra</h2>
+						</div>
+						<div class="modal-body">
+							<form id="saveFacturar">
+								<div class="container-fluid">
+									<div class="row">
+										<div class="col-xs-12 col-md-12">
+											<b>
+												<div style="text-align: right">
+													FECHA DE EMISION: : <span id="mfechaemision1"></span> <br>
+													VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
+												</div>
+												PROVEEDOR: <span id="mproveedor1"></span> <BR>
+												SUCURSAL: <span id="msucursal1"></span> <BR>
+												DOC ALMACEN : <span id="mcodref11"></span> <br>
+												DOC REF 2: : <span id="mcodref21"></span> <br>
+												GENERADA POR: : <span id="mgeneradapor1"></span> <br>
+												RUC : <span id="mruc1"></span>
+											</b>
+											<input type="hidden" id="codigoproveedor">
+											<input type="hidden" id="codigosucursal">
+											<input type="hidden" id="codigo_orden_compra">
+											<input type="hidden" id="codigo_guia_sin_oc">
 
 
-												<div class="row" style="margin-top: 20px">
-													<div class="col-xs-12 col-md-12">
-														<div class="row">
-															<div class="col-md-2">
-																<div class="form-group">
-																	<label for="field-1" class="control-label">Fecha Emision</label>
-																	<input type="text" required name="facturafechaemision"
-																	autocomplete="off" id="facturafechaemision"
-																	class="form-control form-control-inline input-medium date-picker"
-																	data-date-format="yyyy-mm-dd" required />
-																</div>
-															</div>
-															<div class="col-md-2">
-																<div class="form-group">
-																	<label for="field-1" class="control-label">Descuento General</label>
-																	<input type="number" class="form-control"
-																	oninput="changedescuentogeneral(this)" step="any" id="descuento"
-																	name="">
-																</div>
-															</div>
-															<div class="col-md-2">
-																<div class="form-group">
-																	<label for="field-1" class="control-label">Tipo Comp</label>
-																	<select class="form-control" name="tipocomprobantefactura"
-																	id="tipocomprobantefactura">
-																	<option value="factura">Factura</option>
-																	<option value="boleta">Boleta</option>
-																	<option value="recibo">Recibo</option>
-																	<option value="otros">Otros</option>
-																</select>
+											<div class="row" style="margin-top: 20px">
+												<div class="col-xs-12 col-md-12">
+													<div class="row">
+														<div class="col-md-2">
+															<div class="form-group">
+																<label for="field-1" class="control-label">Fecha Emision</label>
+																<input type="text" required name="facturafechaemision"
+																autocomplete="off" id="facturafechaemision"
+																class="form-control form-control-inline input-medium date-picker"
+																data-date-format="yyyy-mm-dd" required />
 															</div>
 														</div>
 														<div class="col-md-2">
 															<div class="form-group">
-																<label for="field-1" class="control-label">Nro Comprobante</label>
-																<input type="text" required class="form-control"
-																name="nrocomprobante" id="nrocomprobante">
+																<label for="field-1" class="control-label">Descuento General</label>
+																<input type="number" class="form-control"
+																oninput="changedescuentogeneral(this)" step="any" id="descuento"
+																name="">
 															</div>
 														</div>
-														<div class="col-md-2 container_moneda">
+														<div class="col-md-2">
 															<div class="form-group">
-																<label for="field-1" class="control-label">Moneda</label>
-																<select class="form-control" onchange="selectmoneda(this)"
-																id="moneda" name="moneda" required>
-																<option value="soles">S/</option>
-																<option value="dolares">$</option>
+																<label for="field-1" class="control-label">Tipo Comp</label>
+																<select class="form-control" name="tipocomprobantefactura"
+																id="tipocomprobantefactura">
+																<option value="factura">Factura</option>
+																<option value="boleta">Boleta</option>
+																<option value="recibo">Recibo</option>
+																<option value="otros">Otros</option>
 															</select>
 														</div>
 													</div>
-													<div class="col-md-2 container_cambio" id="container_cambio"
-													style="display: none">
-													<div class="form-group">
-														<label for="field-1" class="control-label">Cambio</label>
-														<input type="number" step="any" class="form-control" id="tipocambio"
-														oninput="changecambiodolar(this)" name="">
+													<div class="col-md-2">
+														<div class="form-group">
+															<label for="field-1" class="control-label">Nro Comprobante</label>
+															<input type="text" required class="form-control"
+															name="nrocomprobante" id="nrocomprobante">
+														</div>
 													</div>
+													<div class="col-md-2 container_moneda">
+														<div class="form-group">
+															<label for="field-1" class="control-label">Moneda</label>
+															<select class="form-control" onchange="selectmoneda(this)"
+															id="moneda" name="moneda" required>
+															<option value="soles">S/</option>
+															<option value="dolares">$</option>
+														</select>
+													</div>
+												</div>
+												<div class="col-md-2 container_cambio" id="container_cambio"
+												style="display: none">
+												<div class="form-group">
+													<label for="field-1" class="control-label">Cambio</label>
+													<input type="number" step="any" class="form-control" id="tipocambio"
+													oninput="changecambiodolar(this)" name="">
 												</div>
 											</div>
 										</div>
 									</div>
-									<table class="table">
-										<thead>
-											<th>Nº</th>
-											<th>Cantidad</th>
-											<th>Producto</th>
-											<th>Marca</th>
-											<th class="costeosinchecked width=" 120px">Desc x Item</th>
-											<th class="costeosinchecked width=" 120px">VCU</th>
-											<th class="costeosinchecked width=" 120px">VCI</th>
-											<th class="costeosinchecked" width="120px">DSCTO</th>
-											<th width="120px">VCF</th>
-											<th class="costeosinchecked width=" 120px">IGV</th>
-											<th class="costeosinchecked width=" 120px">Total</th>
-											<th width="60px" class="costeochecked" style="display: none">Transporte</th>
-											<th width="60px" class="costeochecked" style="display: none">Estibador</th>
-											<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
-											<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
-											<th width="60px" class="costeochecked" style="display: none">Total</th>
-											<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
-										</thead>
-										<tbody id="detalleFacturar-list">
-										</tbody>
-									</table>
-
 								</div>
+								<table class="table">
+									<thead>
+										<th>Nº</th>
+										<th>Cantidad</th>
+										<th>Producto</th>
+										<th>Marca</th>
+										<th class="costeosinchecked" width=" 120px">Desc x Item</th>
+										<th class="costeosinchecked" width=" 120px">VCU</th>
+										<th class="costeosinchecked" width=" 120px">VCI</th>
+										<th class="costeosinchecked" width="120px">DSCTO</th>
+										<th width="120px">VCF</th>
+										<th class="costeosinchecked" width=" 120px">IGV</th>
+										<th class="costeosinchecked" width=" 120px">Total</th>
+										<th width="60px" class="costeochecked" style="display: none">Transporte</th>
+										<th width="60px" class="costeochecked" style="display: none">Estibador</th>
+										<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
+										<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
+										<th width="60px" class="costeochecked" style="display: none">Total</th>
+										<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
+									</thead>
+									<tbody id="detalleFacturar-list">
+									</tbody>
+								</table>
+
 							</div>
 						</div>
-						<div class="modal-footer">
-							<label for="showcosteo">Mostrar costeo</label>
-							<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
-							<button class="btn btn-success" id="showopcionesextras" type="button" onclick="showopciones()">Opciones</button>
-							<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
-							<button type="button" data-dismiss="modal" aria-label="Close"
-							class="btn btn-danger">Cerrar</button>
-						</div>
-					</form>
-				</div>
+					</div>
+					<div class="modal-footer">
+						<label for="showcosteo">Mostrar costeo</label>
+						<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
+						<button class="btn btn-success" id="showopcionesextras" type="button" onclick="showopciones()">Opciones</button>
+						<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
+						<button type="button" data-dismiss="modal" aria-label="Close"
+						class="btn btn-danger">Cerrar</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="mopcionesextras" role="dialog" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog" role="document" style="width: 700px">
-			<div class="modal-content m-auto">
-				<div class="modal-header">
-					<h2 class="modal-title" id="">Opciones extras</h2>
-				</div>
-				<div class="modal-body">
-					<div style="margin-top: 10px">
-						<label class="" for="check_transporte">transporte?</label>
-						<input type="checkbox" class="" id="check_transporte">
+</div>
+<div class="modal fade" id="mopcionesextras" role="dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog" role="document" style="width: 700px">
+		<div class="modal-content m-auto">
+			<div class="modal-header">
+				<h2 class="modal-title" id="">Opciones extras</h2>
+			</div>
+			<div class="modal-body">
+				<div style="margin-top: 10px">
+					<label class="" for="check_transporte">transporte?</label>
+					<input type="checkbox" class="" id="check_transporte">
 
-						<div class="row" style="display: none" id="container_transporte">
-							<div class="col-sm-6 text-center">
-								<button type="button" disabled class="btn btn-success" data-type="prorrateo"
-								id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO X PESO</button>
-							</div>
-							<div class="col-sm-6 text-center">
-								<button type="button" disabled class="btn btn-success" data-type="participacion"
-								id="btn_participacion" onclick="setExtra(this)" id="participacion">PRORRATEO POR
-							COMPRA</button>
+					<div class="row" style="display: none" id="container_transporte">
+						<div class="col-sm-6 text-center">
+							<button type="button" disabled class="btn btn-success" data-type="prorrateo"
+							id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO X PESO</button>
 						</div>
+						<div class="col-sm-6 text-center">
+							<button type="button" disabled class="btn btn-success" data-type="participacion"
+							id="btn_participacion" onclick="setExtra(this)" id="participacion">PRORRATEO POR
+						COMPRA</button>
 					</div>
 				</div>
+			</div>
 
-				<div style="margin-top: 10px">
-					<label class="" for="check_estibador">Estibador?</label>
-					<input type="checkbox" class="" id="check_estibador">
+			<div style="margin-top: 10px">
+				<label class="" for="check_estibador">Estibador?</label>
+				<input type="checkbox" class="" id="check_estibador">
 
-					<div class="row" style="display: none" id="container_estibador">
-						<div class="col-sm-6">
-							<label class="control-label" for="proveedorestibador">PROVEEDOR</label>
-							<select name="proveedor" id="proveedorestibador" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
-								<option value="">Seleccione</option>
-								<?php do {  ?>
-									<option value="<?= $row_Clientes['razonsocial'] . '&&&' .$row_Clientes['ruc']?>">
-										<?= $row_Clientes['razonsocial'] . ' ' .$row_Clientes['ruc']?>
-									</option>
-									<?php
-								} while ($row_Clientes = mysql_fetch_assoc($Clientes));
-								$rows = mysql_num_rows($Clientes);
-								if($rows > 0) {
-									mysql_data_seek($Clientes, 0);
-									$row_Clientes = mysql_fetch_assoc($Clientes);
-								}
-								?>
-							</select>
-							
-							<!-- <input class="form-control" name="" id="rucestibador"> -->
-						</div>
+				<div class="row" style="display: none" id="container_estibador">
+					<div class="col-sm-6">
+						<label class="control-label" for="proveedorestibador">PROVEEDOR</label>
+						<select name="proveedor" id="proveedorestibador" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
+							<option value="">Seleccione</option>
+							<?php do {  ?>
+								<option value="<?= $row_Clientes['razonsocial'] . '&&&' .$row_Clientes['ruc']?>">
+									<?= $row_Clientes['razonsocial'] . ' ' .$row_Clientes['ruc']?>
+								</option>
+								<?php
+							} while ($row_Clientes = mysql_fetch_assoc($Clientes));
+							$rows = mysql_num_rows($Clientes);
+							if($rows > 0) {
+								mysql_data_seek($Clientes, 0);
+								$row_Clientes = mysql_fetch_assoc($Clientes);
+							}
+							?>
+						</select>
+
+						<!-- <input class="form-control" name="" id="rucestibador"> -->
+					</div>
 						<!-- <div class="col-sm-6">
 							<label class="control-label" for="proveedorestibador">Proveedor</label>
 							<input class="form-control" name="" id="proveedorestibador">
@@ -416,14 +416,18 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="monedaestibador">Moneda</label>
-							<select class="form-control" id="monedaestibador" name="monedaestibador" required>
+							<select class="form-control" data-container="containertipocambioestibador" onchange="changetipomoneda(this)" id="monedaestibador" name="monedaestibador" required>
 								<option value="soles">S/</option>
 								<option value="dolares">$</option>
 							</select>
 						</div>
+						<div class="col-sm-3" id="containertipocambioestibador" style="display: none">
+							<label class="control-label" for="tipocambioestibador">Cambio</label>
+							<input class="form-control"type="number" value="1" min="1" step="any" id="tipocambioestibador">
+						</div>
 						<div class="col-sm-3">
 							<label class="control-label" for="precio_estibador">Valor de Compra</label>
-							<input class="form-control" data-type="estibador_costeo"
+							<input class="form-control" data-tipocambio="tipocambioestibador" data-type="estibador_costeo"
 							oninput="changeprecioestibador(this)" readonly type="number" name=""
 							id="precio_estibador">
 						</div>
@@ -452,10 +456,6 @@ include("Fragmentos/abrirpopupcentro.php");
 								?>
 							</select>
 						</div>
-						<!-- <div class="col-sm-6">
-							<label class="control-label" for="proveedornotadebito">Proveedor</label>
-							<input class="form-control" name="" id="proveedornotadebito">
-						</div> -->
 						<div class="col-sm-3">
 							<label class="control-label" for="tipocomprobantenotadebito">Tipo Comprobante</label>
 							<select class="form-control" name="tipocomprobantenotadebito"
@@ -473,15 +473,19 @@ include("Fragmentos/abrirpopupcentro.php");
 					</div>
 					<div class="col-sm-3">
 						<label class="control-label" for="monedanotadebito">Moneda</label>
-						<select class="form-control" id="monedanotadebito" name="monedanotadebito" required>
+						<select class="form-control" data-container="containertipocambionotadebito" onchange="changetipomoneda(this)" id="monedanotadebito" name="monedanotadebito" required>
 							<option value="soles">S/</option>
 							<option value="dolares">$</option>
 						</select>
 					</div>
+					<div class="col-sm-3" id="containertipocambionotadebito" style="display: none">
+						<label class="control-label" for="tipocambionotadebito">Cambio</label>
+						<input class="form-control"type="number" value="1" min="1" step="any"  id="tipocambionotadebito">
+					</div>
 					<div class="col-sm-3">
 						<label class="control-label" for="precio_notadebito">Precio</label>
 						<input class="form-control" data-type="notadebito" oninput="changeprecioestibador(this)"
-						readonly type="number" name="" id="precio_notadebito">
+						readonly type="number" data-tipocambio="tipocambionotadebito" id="precio_notadebito">
 					</div>
 				</div>
 			</div>
@@ -510,10 +514,6 @@ include("Fragmentos/abrirpopupcentro.php");
 							?>
 						</select>
 					</div>
-					<!-- <div class="col-sm-6">
-						<label class="control-label" for="proveedornotacredito">Proveedor</label>
-						<input class="form-control" name="" id="proveedornotacredito">
-					</div> -->
 					<div class="col-sm-3">
 						<label class="control-label" for="tipocomprobantenotacredito">Tipo Comprobante</label>
 						<select class="form-control" name="tipocomprobantenotacredito"
@@ -531,14 +531,18 @@ include("Fragmentos/abrirpopupcentro.php");
 				</div>
 				<div class="col-sm-3">
 					<label class="control-label" for="monedanotacredito">Moneda</label>
-					<select class="form-control" id="monedanotacredito" name="monedanotacredito" required>
+					<select class="form-control" data-container="containertipocambionotacredito" onchange="changetipomoneda(this)" id="monedanotacredito" name="monedanotacredito" required>
 						<option value="soles">S/</option>
 						<option value="dolares">$</option>
 					</select>
 				</div>
+				<div class="col-sm-3" id="containertipocambionotacredito" style="display: none">
+					<label class="control-label" for="tipocambionotacredito">Cambio</label>
+					<input class="form-control"type="number" value="1" min="1" step="any"  id="tipocambionotacredito">
+				</div>
 				<div class="col-sm-3">
 					<label class="control-label" for="precio_notacredito">Precio</label>
-					<input class="form-control" data-type="notacredito" oninput="changeprecioestibador(this)"
+					<input class="form-control" data-tipocambio="tipocambionotacredito" data-type="notacredito" oninput="changeprecioestibador(this)"
 					readonly type="number" name="" id="precio_notacredito">
 				</div>
 			</div>
@@ -598,7 +602,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								</select>
 							</div>
 							<div class="col-sm-3" id="containerTipoCambio" style="display: none">
-								<label class="control-label" for="monedapro">Tipo Cambio</label>
+								<label class="control-label" for="monedapro">Cambio</label>
 								<input type="number" class="form-control" step="any" name="tipocambiopro"
 								id="tipocambiopro">
 							</div>
@@ -790,19 +794,35 @@ mysql_free_result($Listado);
 		calcularTotalSinExtras();
 		const subtotal = subtotalGLOBAL;
 	}
+	function changetipomoneda(e){
+		if(e.value == "dolares"){
+			getSelector(`#${e.dataset.container}`).style.display = ""
+		}else{
+			getSelector(`#${e.dataset.container}`).style.display = "none"
+			getSelector(`#${e.dataset.container.split("container")[1]}`).value = 1
+		}
+	}
 	formExtra.addEventListener("submit", e => {
 		e.preventDefault()
 		if (getSelector(".importeindividualpro").value && getSelector(".importeindividualpro").value != 0) {
-			getSelectorAll(".importetotalpro").forEach(i => {
+			if("dolares" == monedapro.value && "" == tipocambiopro.value){
+				alert("debe ingresar todos los campos")
+			}else{
+				let tipocambio = 1;
+				if(monedapro.value == "dolares"){
+					tipocambio = parseFloat(tipocambiopro.value)
+				}
+				getSelectorAll(".importetotalpro").forEach(i => {
+					getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value = parseFloat(getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value)*tipocambio + parseFloat(i.value)
 
-				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value = parseFloat(getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).closest("tr").querySelector(".total_costeo").value) + parseFloat(i.value)
+					getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
 
-				getSelector(`#detalleFactura_${i.dataset.indexdetalle}`).value = i.value
-
-			});
-			getSelector(".sumatransporte").value = parseFloat(preciopro.value).toFixed(4)
-			calcularExtras()
-			$("#mProrrateo").modal("hide");
+				});
+				getSelector(".sumatransporte").value = parseFloat(preciopro.value).toFixed(4)
+				calcularExtras()
+				$("#mProrrateo").modal("hide");
+			}
+			
 		} else {
 			alert("debe ingresar todos los campos")
 		}
@@ -867,7 +887,7 @@ mysql_free_result($Listado);
 			if (proccesspeso) {
 				const unit = $("#preciopro").val() / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
-					const cantidad = parseFloat(i.parentElement.parentElement.querySelector(".cant_recibida").textContent)
+					const cantidad = 1
 					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value).toFixed(4)
 					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value * cantidad).toFixed(4)
 				});
@@ -1252,10 +1272,10 @@ mysql_free_result($Listado);
 						<td class="cantidad">${r.cantidad}</td>
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
-						<td class="costeosinchecked"><input type="text" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>
-						<td class="costeosinchecked"><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
+						<td class="costeosinchecked"><input type="text" autocomplete="off" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>
+						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
 
-						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="text" class="solonumeros focusandclean importe form-control"></td>
+						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="text" class="solonumeros focusandclean importe form-control"></td>
 
 						<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
 						<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
@@ -1394,16 +1414,18 @@ function changeimporte(e) {
 	}
 	function changeprecioestibador(e) {
 		let total = 0;
+		let tc = getSelector(`#${e.dataset.tipocambio}`).value ? parseFloat(getSelector(`#${e.dataset.tipocambio}`).value) : 0;
+
 		getSelectorAll(".precio-compra").forEach(i => {
 			total += parseFloat(i.value) * parseInt(i.closest("tr").querySelector(".cantidad").textContent)
 		});
 
 		getSelectorAll(".vcf").forEach(i => {
 			const tr = i.closest("tr");
-			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * parseInt(tr.querySelector(".cantidad").textContent) * i.value / total).toFixed(2)
+			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * parseInt(tr.querySelector(".cantidad").textContent) * tc * parseFloat(i.value) / total).toFixed(2)
 			tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 		});
-		getSelector(`.suma${e.dataset.type}`).value = parseFloat(e.value).toFixed(2)
+		getSelector(`.suma${e.dataset.type}`).value = (parseFloat(e.value)*tc).toFixed(2)
 		calcularExtras()
 		// calcularTotalSinExtras()
 	}
