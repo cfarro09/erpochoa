@@ -1,35 +1,6 @@
 <?php require_once('Connections/Ventas.php'); ?>
 <?php
-if (!function_exists("GetSQLValueString")) {
-	function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-	{
-		if (PHP_VERSION < 6) {
-			$theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-		}
 
-		$theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-		switch ($theType) {
-			case "text":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;    
-			case "long":
-			case "int":
-			$theValue = ($theValue != "") ? intval($theValue) : "NULL";
-			break;
-			case "double":
-			$theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-			break;
-			case "date":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;
-			case "defined":
-			$theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-			break;
-		}
-		return $theValue;
-	}
-}
 mysql_select_db($database_Ventas, $Ventas);
 $query_Listado = "select c.codigorc, 0 as totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerocomprobante,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal  from registro_compras c left join sucursal s on s.cod_sucursal = c.codigosuc left join proveedor p on p.codigoproveedor = c.codigoproveedor inner join acceso a on a.codacceso=c.codacceso";
 
@@ -96,7 +67,12 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td class="total"><?= $row_Listado['total'] ?></td>
 					<td class="fecha"><?= $row_Listado['fecha'] ?></td>
 					<td class="nombre_sucursal"><?= $row_Listado['nombre_sucursal'] ?></td>
-					<td><a href="#" onclick="managecompra(this)" data-totalv="<?= $row_Listado['totalv'] ?>" data-set="<?= $row_Listado['totalv'] == 0 ? "asignar" : "ver" ?>" ><?= $row_Listado['totalv'] == 0 ? "Asignar" : "ver" ?></a></td>
+					<?php if ($row_Listado['estadofact'] == 1): ?>
+						<td><a href="#" onclick="managecompra(this)">Asignar</a></td>
+					<?php else : ?>
+						<td><a href="#" onclick="verprecioventa(this)">Ver</a></td>
+					<?php endif ?>
+					
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 
