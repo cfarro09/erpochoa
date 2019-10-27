@@ -1300,7 +1300,7 @@ mysql_free_result($Listado);
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
-					<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
+					<td id="titlesoles" class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
 					<td><input type="text" readonly class="form-control sumavcf"></td>
 					<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrow"></td>
 					<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2"></td>
@@ -1322,7 +1322,7 @@ mysql_free_result($Listado);
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
-					<td class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
+					<td id="titledolar" class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
 					<td><input type="text" readonly class="form-control sumavcfdolar"></td>
 					<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrowdolar"></td>
 					<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2dolar"></td>
@@ -1579,7 +1579,7 @@ function changeimporte(e) {
 				data.gastos.push(query)
 			}
 		}
-
+		const typepay = moneda.value == "dolares" ? "dolar" : ""
 		data.header = {
 			codigocompras: 0,
 			tipomoneda: moneda.value,
@@ -1589,9 +1589,9 @@ function changeimporte(e) {
 
 			ruc_proveedor: mruc1.textContent,
 
-			subtotal: getSelector(".sumavcf").value,
-			igv: getSelector(".sumaigvrow").value,
-			total: getSelector(".sumavalorcompra2").value,
+			subtotal: getSelector(".sumavcf"+typepay).value,
+			igv: getSelector(".sumaigvrow"+typepay).value,
+			total: getSelector(".sumavalorcompra2"+typepay).value,
 			codigoproveedor: codigoproveedor.value,
 			estadofact: 1,
 			codigosuc: codigosucursal.value,
@@ -1654,10 +1654,15 @@ function validatePventa(e) {
 }
 function selectmoneda(e) {
 	if (e.value == "dolares") {
+		titledolar.textContent = "TOTAL S/"
+		titlesoles.textContent = "TOTAL $"
+
 		rowfacturadolar.style.display = ""
 		getSelector(".container_cambio").style.display = "";
 		monedadolar = true;
 	} else {
+		titledolar.textContent = "TOTAL $"
+		titlesoles.textContent = "TOTAL S/"
 		rowfacturadolar.style.display = "none"
 		getSelector(".container_cambio").style.display = "none";
 		monedadolar = false
