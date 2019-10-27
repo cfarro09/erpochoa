@@ -631,7 +631,7 @@ include("Fragmentos/abrirpopupcentro.php");
 										}
 										?>
 									</select>
-									<input type="text" required class="form-control" name="nrorucpro" id="nrorucpro">
+									<!-- <input type="text" required class="form-control" name="nrorucpro" id="nrorucpro"> -->
 								</div>
 								<!-- <div class="col-sm-6">
 									<label for="field-1" class="control-label">Proveedor</label>
@@ -712,6 +712,88 @@ include("Fragmentos/pie.php");
 mysql_free_result($Listado);
 ?>
 <script type="text/javascript">
+
+	function keyControl(key){
+		var control = [0,8];
+		var result;
+		if(control.indexOf(key.which) >= 0){
+			result = true;
+		}else{
+			result =  false;
+		}
+		return result;
+	}
+
+ function pathKey(eReg, key){
+ 	var letra = String.fromCharCode(key.which);
+ 	return keyControl(key) || eReg.test(letra);
+ }
+
+
+ (function($) {
+ 	$(document).ready(function () {
+ 		$(document).on('keypress', '.sololetras', function (key) {
+ 			return pathKey(/^[a-z]| |[ñÑáéíóúÁÉÍÓÚ]$/i, key);
+ 		});
+ 		$(document).on('keypress', '.sololetras', function (key) {
+ 			return pathKey(/^[a-z]| |[ñÑáéíóúÁÉÍÓÚ]$/i, key);
+ 		});
+ 		$(document).on('keypress', '.solonumeros', function (key) {
+ 			return pathKey(/^[0-9.]/i, key);
+ 		});
+ 		$(document).on('keypress', '.nospace', function (key) {
+ 			return pathKey(/^\S/i, key);
+ 		});
+        //agregado por NN 27/09/
+        $(document).on('keypress', '.cantidades', function (key) {
+        	return pathKey(/^[0-9]|[.]$/i, key);
+        });
+        $(document).on('keypress', '.correo', function (key) {
+        	return pathKey(/^[a-z]|[0-9]|[-_.@]/i, key);
+        });
+        $(document).on('keypress', '.especiales', function (key) {
+        	return pathKey(/^[-a-zA-Z0-9_.ñÑÁÉÍÓÚáéíóú\s]+$/i, key);
+        });
+        $(document).on('keypress', '.letrasnumeros', function (key) {
+        	return pathKey(/^[-a-zA-Z0-9]+$/i, key);
+        });
+        $(document).on('keypress', '.letrasnumeros', function (key) {
+        	return pathKey(/^[-a-zA-Z0-9]+$/i, key);
+        });
+        $(document).on('keypress', '.address', function (key) {
+        	return pathKey(/^[-a-zA-Z0-9_.,#\s]+$/i, key);
+        });
+        $(document).on('keypress', '.letras_especiales', function (key) {
+        	return pathKey(/^[-a-zA-Z_.,#@()\s]+$/i, key);
+        });
+        $(document).on('keypress', '.letrasnumeros_especiales', function (key) {
+        	return pathKey(/^[-a-zA-Z0-9_.,#@\s]+$/i, key);
+        });
+        $(document).on('keypress', '.letrasnumeros_coma', function (key) {
+        	if ($('.letrasnumeros_coma').val().length > 0) {
+        		var last_caracter = $('.letrasnumeros_coma').val().substring($('.letrasnumeros_coma').val().length - 1, $('.letrasnumeros_coma').val().length);
+        		if (last_caracter == "," && last_caracter == key.key) {
+        			return false;
+        		}else{
+        			return pathKey(/^[a-zA-Z0-9,]+$/i, key);
+        		}
+        	}else{
+        		return pathKey(/^[a-zA-Z0-9]+$/i, key);
+        	}
+
+        });
+    });
+ })(jQuery);
+ $(document).on('contextmenu', 'input, select, textarea',function(){ return false; });
+
+</script>
+<script type="text/javascript">
+	$(document).on('focus', '.focusandclean', function (e) {
+		if(e.target.value && parseInt(e.target.value) == 0) {
+			e.target.value = ""
+		}
+	});
+
 	let arrayDetalle;
 	let monedadolar = false;
 	let typetransporte = "";
@@ -1187,10 +1269,10 @@ mysql_free_result($Listado);
 						<td class="cantidad">${r.cantidad}</td>
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
-						<td class="costeosinchecked"><input type="number" oninput="changedescuento(this)" value="0" class="form-control descuento"></td>
-						<td class="costeosinchecked"><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="number" class="precio-compra form-control"></td>
+						<td class="costeosinchecked"><input type="text" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>
+						<td class="costeosinchecked"><input id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
 
-						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="number" class="importe form-control"></td>
+						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="text" class="solonumeros focusandclean importe form-control"></td>
 
 						<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
 						<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
@@ -1261,15 +1343,14 @@ mysql_free_result($Listado);
 				$('[data-toggle="tooltip"]').tooltip()
 				$('.tooltips').tooltip();
 			});
-btn_prorrateo.disabled = true
-btn_participacion.disabled = true
-container_cambio.style.display = "none"
-monedadolar = false;
-tipocambio.value = 0
-$("#mFacturaCompra").modal();
-
-})
-});
+			btn_prorrateo.disabled = true
+			btn_participacion.disabled = true
+			container_cambio.style.display = "none"
+			monedadolar = false;
+			tipocambio.value = 0
+			$("#mFacturaCompra").modal();
+		})
+	});
 function changecambiodolar(e) {
 	if (e.value < 0 || e.value == "") {
 		e.value = 0;
@@ -1312,9 +1393,7 @@ function changeimporte(e) {
 		// const ss = e.value / parseInt(aa.querySelector(".cantidad").textContent)
 		const descuento = parseFloat(aa.querySelector(".descuento").value)
 
-		calcularFila(aa)
-
-
+		calcularFila(aa, "importe")
 		calcularTotalSinExtras();
 		updateColumns();
 	}
@@ -1404,17 +1483,17 @@ function changeimporte(e) {
 		const ss = parseInt(aa.querySelector(".cantidad").textContent) * parseFloat(e.value)
 		const descuento = parseFloat(aa.querySelector(".descuento").value)
 
-		calcularFila(aa, true)
+		calcularFila(aa, "preciocompra")
 		calcularTotalSinExtras();
 		document.querySelector(".tooltip-inner").textContent = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
 		e.dataset.originalTitle = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
 		updateColumns();
 
 	}
-	function calcularFila(tr, preciocompra = false) {
+	function calcularFila(tr, origin = false) {
 
 		let importe = parseFloat(tr.querySelector(".importe").value)
-		if (preciocompra) {
+		if (origin == "preciocompra") {
 			importe = parseFloat(tr.querySelector(".precio-compra").value) * parseInt(tr.querySelector(".cantidad").textContent)
 		} else {
 			tr.querySelector(".precio-compra").value = (importe / parseInt(tr.querySelector(".cantidad").textContent)).toFixed(4)
@@ -1423,7 +1502,8 @@ function changeimporte(e) {
 		tr.querySelector(".total_costeo").value = importe * (100 - descuento) / 100
 		tr.querySelector(".totalunidadcosteo").value = (importe * (100 - descuento) / 100)/parseInt(tr.querySelector(".cantidad").textContent)
 
-		tr.querySelector(".importe").value = (importe).toFixed(2)
+		if(origin != "importe")
+			tr.querySelector(".importe").value = (importe).toFixed(2)
 
 		tr.querySelector(".descuentocantidad").value = (parseFloat(importe) * descuento / 100).toFixed(2)
 		tr.querySelector(".vcf").value = (importe * (100 - descuento) / 100).toFixed(2)
