@@ -1420,9 +1420,9 @@ function changeimporte(e) {
 			total += parseFloat(i.value)
 		});
 
-		getSelectorAll(".vcf").forEach(i => {
+		getSelectorAll(".precio-compra").forEach(i => {
 			const tr = i.closest("tr");
-			tr.querySelector(`.${e.dataset.type}`).value = parseFloat(e.value * tc * parseFloat(i.value) / total).toFixed(2)
+			tr.querySelector(`.${e.dataset.type}`).value = (parseFloat(e.value) * parseFloat(i.value) / total).toFixed(2)
 			tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 		});
 		getSelector(`.suma${e.dataset.type}`).value = (parseFloat(e.value)*tc).toFixed(2)

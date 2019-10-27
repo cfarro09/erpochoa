@@ -36,7 +36,7 @@ if (isset($_GET['codigorc'])) {
 }
 mysql_select_db($database_Ventas, $Ventas);
 
-$query_Factura = "select * from precio_venta where codigocompras = $codigorc";
+$query_Factura = "select pv.*, dc.cantidad, m.nombre as marca, p.nombre_producto from precio_venta pv left join detalle_compras dc on dc.codigodetalleproducto = pv.codigodetalleproducto left join producto p on pv.codigoprod = p.codigoprod left join marca m on m.codigomarca = p.codigomarca where pv.codigocompras = $codigorc " ;
 
 $Factura = mysql_query($query_Factura, $Ventas) or die(mysql_error());
 $result = array();

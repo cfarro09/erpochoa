@@ -176,22 +176,20 @@ include("Fragmentos/abrirpopupcentro.php");
 			.catch(error => console.error("error: ", error))
 			.then(res => {
 				res.forEach(ix => {
-					const pc = (parseFloat(ix.vcf)/parseInt(ix.cantidad)).toFixed(4);
-
 					getSelector("#detalleComprax").innerHTML += `
 					<tr class="rowto" data-codigodetalleproducto="${ix.codigodetalleproducto}" data-codigoprod="${ix.codigoprod}">
 						<td>${i}</td>
 						<td class="cantidad">${ix.cantidad}</td>
 						<td>${ix.nombre_producto}</td>
-						<td>${ix.nombre}</td>
-						<td><input readonly required class="form-control preciounidad" value="${pc}" readonly></td>
+						<td>${ix.marca}</td>
+						<td><input readonly required class="form-control preciounidad" value="${ix.vcf}" readonly></td>
 						<td><input readonly required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
-						<td><input required readonly data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1"data-pc="${pc}" class="form-control porcentajeventa1" ></td>
-						<td><input required class="form-control precioventa1" readonly></td>
-						<td><input readonly required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2"data-pc="${pc}" class="form-control porcentajeventa2" ></td>
-						<td><input required class="form-control precioventa2" readonly></td>
-						<td><input readonly required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3"data-pc="${pc}" class="form-control porcentajeventa3" ></td>
-						<td><input required class="form-control precioventa3" readonly></td>
+						<td><input required readonly data-cantidad="${ix.cantidad}" value="${ix.porcpv1}" oninput="changeporcentaje(this)" data-origin="venta1" class="form-control porcentajeventa1" ></td>
+						<td><input required class="form-control precioventa1" readonly value="${ix.precioventa1}"></td>
+						<td><input readonly required data-cantidad="${ix.cantidad}" value="${ix.porcpv2}" oninput="changeporcentaje(this)" data-origin="venta2" class="form-control porcentajeventa2" ></td>
+						<td><input required class="form-control precioventa2" value="${ix.precioventa1}" readonly></td>
+						<td><input readonly required data-cantidad="${ix.cantidad}" value="${ix.porcpv3}" oninput="changeporcentaje(this)" data-origin="venta3" class="form-control porcentajeventa3" ></td>
+						<td><input required class="form-control precioventa3" value="${ix.precioventa1}" readonly></td>
 					</tr>
 					`
 					$('[data-toggle="tooltip"]').tooltip()
