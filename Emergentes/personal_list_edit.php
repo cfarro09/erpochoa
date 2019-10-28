@@ -202,7 +202,7 @@ include("Fragmentos/bloquea_caja.php");
 <div class="form-group">
 <div class="col-md-4">
 <div class="input-group"><span id="sprytextfield7">
-<input name="celular" type="text" class="form-control tooltips" data-placement="top" data-original-title="Editar N&uacute;mero de Celular" id="celular" value="<?php echo $row_Edit['celular']; ?>" maxlength="14" placeholder="Celular" />
+<input name="celular" type="text" class="form-control tooltips" data-placement="top" data-original-title="Editar N&uacute;mero de Celular" id="celular" value="<?php echo $row_Edit['celular']; ?>" maxlength="13" placeholder="Celular" />
 <span class="textfieldRequiredMsg"></span><span class="textfieldMinCharsMsg"></span></span><span class="input-group-addon">
 <i class="glyphicon glyphicon-phone font-blue-soft"></i>
 </span></div>
@@ -259,6 +259,6 @@ var sprytextfield3 = new Spry.Widget.ValidationTextField("sprytextfield3", "none
 var sprytextfield4 = new Spry.Widget.ValidationTextField("sprytextfield4", "none", {validateOn:["blur", "change"]});
 var sprytextfield5 = new Spry.Widget.ValidationTextField("sprytextfield5", "none", {validateOn:["blur", "change"]});
 var sprytextfield6 = new Spry.Widget.ValidationTextField("sprytextfield6", "none", {validateOn:["blur", "change"]});
-var sprytextfield7 = new Spry.Widget.ValidationTextField("sprytextfield7", "phone_number", {validateOn:["blur", "change"], format:"phone_custom", pattern:"000 - 000 0000"});
+var sprytextfield7 = new Spry.Widget.ValidationTextField("sprytextfield7", "phone_number", {validateOn:["blur", "change"], format:"phone_custom", pattern:"000 - 000 000"});
 var spryselect1 = new Spry.Widget.ValidationSelect("spryselect1", {invalidValue:"0", validateOn:["blur", "change"]});
 </script>

@@ -373,7 +373,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <ul class="sub-menu">
                                 <li class="nav-item">
                                     <a href="ordencompragerencia.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-record"></i>
                                         <span class="title">Orden de Compra</span>
                                         <span class="selected"></span>
                                     </a>
@@ -388,22 +388,22 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 </li>
                                 <li class="nav-item">
                                     <a href="auto_devoluciones.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-record"></i>
                                         <span class="title">Devoluciones</span>
                                         <span class="selected"></span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="precioventa1.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                        <span class="title">Precio Venta 1</span>
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">Fijar PV/CC</span>
                                         <span class="selected"></span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="precioventa2.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                        <span class="title">Precio Venta 2</span>
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">Fijar PV/Est</span>
                                         <span class="selected"></span>
                                     </a>
                                 </li>
@@ -456,7 +456,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                          <!--     <li class="nav-item">
                                     <a href="personal_cargo.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                         <span class="title">Cargos</span>
@@ -464,6 +464,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
                                     </a>
                                 </li>
+                        -->
                                 <li class="nav-item">
                                     <a href="" id="manageUsuarios" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
@@ -474,8 +475,8 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 </li>
                                 <li class="nav-item">
                                     <a href="managevacaciones.php" id="" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                        <span class="title">Papeleta de Vacaciones</span>
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">Vacaciones</span>
                                         <span class="selected"></span>
 
                                     </a>
@@ -525,7 +526,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 <li class="nav-item">
                                     <a href="auto_guia_sin_oc.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                        <span class="title">Entrada de Mercaderia</span>
+                                        <span class="title">Mercaderias - NPR</span>
                                         <span class="selected"></span>
 
                                     </a>
@@ -571,7 +572,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <ul class="sub-menu">
                                 <li class="nav-item">
                                     <a href="personal_list.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Data Trabajador</span>
                                         <span class="selected"></span>
 
@@ -586,7 +587,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                         <!--        <li class="nav-item">
                                     <a href="personal_cargo.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                         <span class="title">Cargos</span>
@@ -610,9 +611,10 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
                                     </a>
                                 </li>
+                        -->
                                 <li class="nav-item">
                                     <a href="managevacaciones.php" id="" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Vacaciones y Permisos</span>
                                         <span class="selected"></span>
 
@@ -646,7 +648,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <ul class="sub-menu">
                                 <li class="nav-item">
                                     <a href="proveedor_list.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Data Proveedor</span>
                                         <span class="selected"></span>
                                     </a>
@@ -655,17 +657,11 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                     <a href="new_ordencompra_add.php?codigo=<?php echo $_GET['codigo']; ?>"
                                         class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                        <span class="title">Orden de compra</span>
+                                        <span class="title">Orden de Compra</span>
                                         <span class="selected"></span>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="ordencompra_list.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                        <span class="title">Ordenes de Compras</span>
-                                        <span class="selected"></span>
-                                    </a>
-                                </li>
+                                
                                 <li class="nav-item">
                                     <a href="facturacion_list.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
@@ -674,26 +670,20 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="kardex_valorado.php" class="nav-link font-blue-ebonyclay">
-                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                        <span class="title">Kardex Valorado</span>
-                                        <span class="selected"></span>
-
-                                    </a>
-                                </li>
+                                
                                 <li class="nav-item">
                                     <a href="cuentas_x_pagar.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                        <span class="title">Cuentas por pagar</span>
+                                        <span class="title">Cuentas por Pagar</span>
                                         <span class="selected"></span>
 
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a href="compras_list.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                        <span class="title">Registro compras</span>
+                                        <span class="title">Registro Compras</span>
                                         <span class="selected"></span>
 
                                     </a>
@@ -701,12 +691,29 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 <li class="nav-item">
                                     <a href="registro_plamar.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                        <span class="title">Registro Plamar</span>
+                                        <span class="title">Registro Plame</span>
                                         <span class="selected"></span>
 
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
+                                    <a href="ordencompra_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <span class="title">Ordenes de Compra</span>
+                                        <span class="selected"></span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="kardex_valorado.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <span class="title">Kardex Valorado</span>
+                                        <span class="selected"></span>
+
+                                    </a>
+                                </li>
+                      <!--          <li class="nav-item">
                                     <a href="javascript:;" class="nav-link font-blue-steel">
                                         <i class="fa fa-cogs font-blue-steel"></i>
                                         <span class="title">MANTENIMIENTOS</span>
@@ -783,7 +790,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
 
                                     </ul>
-                                </li>
+                                </li>-->
                             </ul>
                         </li>
                     <?php endif ?>
@@ -791,7 +798,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                     <li class="nav-item">
                         <a href="javascript:;" class="nav-link font-blue-steel">
                             <i class="fa fa-users font-blue-steel"></i>
-                            <span class="title">Cuentas por pagar</span>
+                            <span class="title">Cuentas por Pagar</span>
                             <span class="selected"></span>
                             <span class="arrow open"></span>
                         </a>
@@ -799,7 +806,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <li class="nav-item">
                                 <a href="conciliacion.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
-                                    <span class="title">Estado de cuenta</span>
+                                    <span class="title">Estado de Cuenta</span>
                                     <span class="selected"></span>
                                 </a>
                             </li>
@@ -864,7 +871,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                     <li class="nav-item">
                         <a href="javascript:;" class="nav-link font-blue-steel">
                             <i class="fa fa-users font-blue-steel"></i>
-                            <span class="title">Cuentas por cobrar</span>
+                            <span class="title">Cuentas por Cobrar</span>
                             <span class="selected"></span>
                             <span class="arrow open"></span>
                         </a>
@@ -872,14 +879,14 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <li class="nav-item">
                                 <a href="emitir_nota_debito.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
-                                    <span class="title">Emitir nota debito</span>
+                                    <span class="title">Emitir Nota Debito</span>
                                     <span class="selected"></span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="emitir_nota_credito.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                    <span class="title">Emitir nota credito</span>
+                                    <span class="title">Emitir Nota Credito</span>
                                     <span class="selected"></span>
 
                                 </a>
@@ -891,7 +898,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                     <li class="nav-item">
                         <a href="javascript:;" class="nav-link font-blue-steel">
                             <i class="glyphicon glyphicon-user font-blue-steel"></i>
-                            <span class="title">Caja principal</span>
+                            <span class="title">Caja Principal</span>
                             <span class="selected"></span>
                             <span class="arrow open"></span>
                         </a>
@@ -899,14 +906,14 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <li class="nav-item">
                                 <a href="abonos_cctt.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
-                                    <span class="title">Registro Abonos en cctt</span>
+                                    <span class="title">Registro Abonos en CCTT</span>
                                     <span class="selected"></span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="cargos_cctt.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                    <span class="title">Registro carggos cctt</span>
+                                    <span class="title">Registro Carggos CCTT</span>
                                     <span class="selected"></span>
 
                                 </a>
@@ -914,7 +921,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <li class="nav-item">
                                 <a href="giros_cheques.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                    <span class="title">Registro giro cheques</span>
+                                    <span class="title">Registro Giro Cheques</span>
                                     <span class="selected"></span>
 
                                 </a>
@@ -922,7 +929,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                             <li class="nav-item">
                                 <a href="estado_cuenta_bancario.php" id="" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                    <span class="title">Estado cuenta bancario</span>
+                                    <span class="title">Estado Cuenta Bancario</span>
                                     <span class="selected"></span>
 
                                 </a>
@@ -938,7 +945,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                 <li class="nav-item">
                     <a href="javascript:;" class="nav-link font-blue-steel">
                         <i class="fa fa-users font-blue-steel"></i>
-                        <span class="title">Area contable</span>
+                        <span class="title">Area Contable</span>
                         <span class="selected"></span>
                         <span class="arrow open"></span>
                     </a>
@@ -954,7 +961,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                         <li class="nav-item">
                             <a href="registro_ventas.php" class="nav-link font-blue-steel">
                                 <i class="glyphicon glyphicon-user font-blue-steel"></i>
-                                <span class="title">Registro ventas</span>
+                                <span class="title">Registro Ventas</span>
                                 <span class="selected"></span>
                                 <span class="arrow open"></span>
                             </a>
