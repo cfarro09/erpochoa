@@ -474,7 +474,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="managevacaciones.php" id="" class="nav-link font-blue-ebonyclay">
+                                    <a href="autorizacionvacper.php" id="" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Vacaciones</span>
                                         <span class="selected"></span>
