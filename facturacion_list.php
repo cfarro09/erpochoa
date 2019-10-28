@@ -892,9 +892,11 @@ mysql_free_result($Listado);
 
 				const unit = $("#preciopro").val() *tc / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
-					const cantidad = 1
-					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value).toFixed(4)
-					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value * cantidad).toFixed(4)
+					debugger
+					const cantidad = parseInt(i.closest("tr").querySelector(".cant_recibida").textContent)
+
+					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value / cantidad).toFixed(4)
+					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value).toFixed(4)
 				});
 
 			} else {
@@ -1316,7 +1318,7 @@ mysql_free_result($Listado);
 					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebito" readonly></td>
 					<td style="display: none" class="costeochecked"><input class="form-control sumanotacredito" readonly></td>
 					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeo" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumatotalunidadcosteo" readonly></td>
+					<td style="display: none" class="dddd"><input class="form-control sumatotalunidadcosteo" readonly></td>
 					</tr>`);
 				$("#detalleFacturar-list").append(`
 					<tr id="rowfacturadolar">
