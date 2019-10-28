@@ -1032,13 +1032,10 @@ mysql_free_result($Listado);
 						<td style="display: none" class="costeochecked"><input readonly value="${r.totalunidad}" class="form-control totalunidadcosteo" readonly></td>
 						</tr>`);
 				});
-
-
 			}else{
 				alert("hubo un error")
 			}
 		})
-
 	}
 
 	var i = 0;
