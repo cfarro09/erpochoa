@@ -2,7 +2,9 @@
 <?php
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT pv.*, p.cedula, p.nombre, p.paterno, p.materno FROM personal_vacaciones pv inner join personal p on p.codigopersonal=pv.codigopersonal";
+$query_Listado = "SELECT pv.*, p.cedula, p.nombre, p.paterno, p.materno, IFNULL((select sum(px1.periodo) from personal_vacaciones px1 where px1.estado = 1 and px1.codigopersonal = pv.codigopersonal), 0) as acumulado FROM personal_vacaciones pv inner join personal p on p.codigopersonal=pv.codigopersonal
+
+";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -50,8 +52,9 @@ include("Fragmentos/menu.php");
       <th> NOMBRES</th>
       <th> TIPO </th>
       <th> FECHA INICIO</th>
-      <th> FECHA FIN </th>
-      <th>Observación </th>
+      <th>FECHA FIN</th>
+      <th>PERIODO</th>
+      <th>ACUMULADO</th>
       <th class="text-center"> Accion </th>
     </tr>
   </thead>
@@ -80,12 +83,17 @@ include("Fragmentos/menu.php");
       <td><?= $row_Listado['tipo']; ?></td>
       <td><?= $row_Listado['fecha_inicio']; ?></td>
       <td><?= $row_Listado['fecha_fin']; ?></td>
-      <td><?= $row_Listado['observacion'] ?></td>
+      <td><?= $row_Listado['periodo'] ?></td>
+      <td><?= $row_Listado['acumulado'] ?></td>
       <td class="text-center">
-        <button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>"
-          data-estado="1" class="btn btn-success">ACEPTAR</button>
-        <button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>"
-          data-estado="-1" class="btn btn-danger">DENEGAR</button>
+        <?php if($row_Listado['estado'] == 1): ?>
+        	<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-estado="-1" class="btn btn-danger">DENEGAR</button>
+		<?php elseif($row_Listado['estado'] == 0): ?>
+			<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-acumulado="<?= $row_Listado['acumulado'] ?>" data-periodo="<?= $row_Listado['periodo'] ?>" data-estado="1" class="btn btn-success">ACEPTAR</button>
+			<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-estado="-1" class="btn btn-danger">DENEGAR</button>
+		<?php elseif($row_Listado['estado'] == -1): ?>
+			<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-acumulado="<?= $row_Listado['acumulado'] ?>" data-periodo="<?= $row_Listado['periodo'] ?>" data-estado="1" class="btn btn-success">ACEPTAR</button>
+        <?php endif ?>
       </td>
 
     </tr>
@@ -110,7 +118,13 @@ mysql_free_result($Listado);
     const queries = []
     const estado = e.dataset.estado;
     const codigo = e.dataset.codigo;
+    const acumulado = parseInt(e.dataset.acumulado);
+    const periodo = parseInt(e.dataset.periodo);
 
+    if(estado == 1 && (acumulado + periodo) > 30){
+      alert("las vacaciones exceden a los 30 días.");
+      return;
+    }
     const query = `update personal_vacaciones set estado = ${estado} where codigo_personal_vacaciones = ${codigo}`
     queries.push(query)
 
