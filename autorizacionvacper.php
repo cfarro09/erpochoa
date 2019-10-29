@@ -86,13 +86,11 @@ include("Fragmentos/menu.php");
       <td><?= $row_Listado['periodo'] ?></td>
       <td><?= $row_Listado['acumulado'] ?></td>
       <td class="text-center">
-        <?php if($row_Listado['estado'] == 1): ?>
-        	<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-estado="-1" class="btn btn-danger">DENEGAR</button>
-		<?php elseif($row_Listado['estado'] == 0): ?>
-			<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-acumulado="<?= $row_Listado['acumulado'] ?>" data-periodo="<?= $row_Listado['periodo'] ?>" data-estado="1" class="btn btn-success">ACEPTAR</button>
-			<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-estado="-1" class="btn btn-danger">DENEGAR</button>
-		<?php elseif($row_Listado['estado'] == -1): ?>
-			<button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-acumulado="<?= $row_Listado['acumulado'] ?>" data-periodo="<?= $row_Listado['periodo'] ?>" data-estado="1" class="btn btn-success">ACEPTAR</button>
+        <?php if($row_Listado['estado'] == 1 || $row_Listado['estado'] == -1): ?>
+          <a href="verpersonalvacaciones/<?= $row_Listado['codigo_personal_vacaciones'] ?>">Ver</a> 
+        <?php elseif($row_Listado['estado'] == 0): ?>
+          <button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-acumulado="<?= $row_Listado['acumulado'] ?>" data-periodo="<?= $row_Listado['periodo'] ?>" data-estado="1" class="btn btn-success">ACEPTAR</button>
+          <button onclick="checkvacaciones(this)" data-codigo="<?= $row_Listado['codigo_personal_vacaciones'] ?>" data-estado="-1" class="btn btn-danger">DENEGAR</button>
         <?php endif ?>
       </td>
 
