@@ -113,7 +113,7 @@ include("Fragmentos/abrirpopupcentro.php");
 													<th>Producto</th>
 													<th>Marca</th>
 													<!-- <th>Precio UND</th> -->
-													<th>P. UND + C</th>
+													<th>VCU</th>
 													<th>IGV</th>
 													<th>PCU</th>
 													<th class="text-center">% V 1</th>
@@ -365,7 +365,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td>${ix.nombre_producto}</td>
 						<td>${ix.marca}</td>
 
-						<td><input readonly required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
+						<td><input type="hidden" class="preciounidad" value="${ix.vcf}"><input readonly required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
 						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*0.18}" readonly></td>
 						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*1.18}" readonly></td>
 						<td><input required readonly data-cantidad="${ix.cantidad}" value="${ix.porcpv1}" oninput="changeporcentaje(this)" data-origin="venta1" class="form-control porcentajeventa1" ></td>
@@ -412,7 +412,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td>${ix.nombre_producto}</td>
 						<td>${ix.nombre}</td>
 
-						<td><input required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
+						<td><input type="hidden" class="preciounidad" value="${ix.vcf}"><input required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
 						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*0.18}" readonly></td>
 						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*1.18}" readonly></td>
 
@@ -473,7 +473,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						`
 						)
 				})
-
+				console.log(detalle)
 				var formData = new FormData();
 				formData.append("exearray", JSON.stringify(detalle))
 
