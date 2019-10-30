@@ -1539,7 +1539,14 @@ function changeimporte(e) {
 				(tipo_transporte, tipocomprobante, numerocomprobante, ructransporte, moneda, tipocambio, preciotransp_soles, preciotransp_dolar, codigocompras) 
 				values 
 				('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${proveedorpro}', '${monedapro.value}', 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
-				data.gastos.push(query)
+				data.gastos.push(query);
+
+				const query1 =
+				`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion) 
+				values 
+				('${nrocomprobantepro.value}', '${nrocomprobantepro}', ${preciopro.value}, 'registrocompras')`;
+				data.gastos.push(query1);
 			}
 		}
 		if (getSelector("#check_estibador").checked) {
@@ -1560,7 +1567,7 @@ function changeimporte(e) {
 				(ruc, nro_recibo, monto, descripcion) 
 				values 
 				('${numerocomprobanteestibador.value}', '${rucestibaodr}', ${precio_estibador.value}, 'estibador')`;
-				data.gastos.push(query1)
+				data.gastos.push(query1);
 			}
 		}
 		if (getSelector("#check_notadebito").checked) {
