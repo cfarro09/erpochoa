@@ -1554,6 +1554,13 @@ function changeimporte(e) {
 				values 
 				('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${rucestibaodr}', '${monedaestibador.value}', 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`;
 				data.gastos.push(query)
+
+				const query1 =
+				`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion) 
+				values 
+				('${numerocomprobanteestibador.value}', '${rucestibaodr}', ${precio_estibador.value}, 'estibador')`;
+				data.gastos.push(query1)
 			}
 		}
 		if (getSelector("#check_notadebito").checked) {
@@ -1566,8 +1573,15 @@ function changeimporte(e) {
 				`insert into notadebito_compra 
 				(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
 				values 
-				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`
-				data.gastos.push(query)
+				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`;
+				data.gastos.push(query);
+
+				const query1 =
+				`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion) 
+				values 
+				('${numerocomprobantenotadebito.value}', '${rucnotadebito}', ${precio_notadebito.value}, 'notadebito')`;
+				data.gastos.push(query1)
 			}
 		}
 		if (getSelector("#check_notacredito").checked) {
@@ -1580,8 +1594,15 @@ function changeimporte(e) {
 				`insert into notacredito_compra 
 				(tipocomprobante, numerocomprobante, rucnotacredito, moneda, tipocambio, precionc_soles, precionc_dolar, codigocompras) 
 				values 
-				('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${rucnotacredito}', '${monedanotacredito.value}', 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`
-				data.gastos.push(query)
+				('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${rucnotacredito}', '${monedanotacredito.value}', 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`;
+				data.gastos.push(query);
+
+				const query1 =
+				`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion) 
+				values 
+				('${numerocomprobantenotacredito.value}', '${rucnotacredito}', ${precio_notacredito.value}, 'notacredito')`;
+				data.gastos.push(query1)
 			}
 		}
 		const typepay = moneda.value == "dolares" ? "dolar" : ""
