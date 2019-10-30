@@ -130,15 +130,15 @@ include("Fragmentos/abrirpopupcentro.php");
 									</div>
 								</div>
 								<button class="btn btn-success" type="button" onclick="vercosteo()">VER COSTEO</button>
-								<button type="submit" id="btn_save_precioventa1" class="btn btn-success">Guardar</button>
+								<button type="submit" id="btn_save_precioventa1" style="display: none" class="btn btn-success">Guardar</button>
 								<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
 							</form>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-				<div class="modal-dialog" role="document" style="width: 1300px">
+			<div class="modal fade bottom" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
+				<div class="modal-dialog" role="document" style="width: 1300px; margin-top: 500px">
 					<div class="modal-content m-auto">
 						<div class="modal-header">
 							<h2 class="modal-title" id="">FICHA COSTEO</h2>
@@ -341,6 +341,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			}
 
 			function verprecioventa(e){
+				btn_save_precioventa1.style.display = "none"
 				$('#mnumerocomprobante').text(e.parentElement.parentElement.querySelector(".numerocomprobante").textContent)
 				$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
 				$('#mrazonsocial').text(e.parentElement.parentElement.querySelector(".razonsocial").textContent)
@@ -386,6 +387,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			}
 
 			function managecompra(e){
+				btn_save_precioventa1.style.display = ""
 				$('#mnumerocomprobante').text(e.parentElement.parentElement.querySelector(".numerocomprobante").textContent)
 				$('#mtipo_comprobante').text(e.parentElement.parentElement.querySelector(".tipo_comprobante").textContent)
 				$('#mrazonsocial').text(e.parentElement.parentElement.querySelector(".razonsocial").textContent)
