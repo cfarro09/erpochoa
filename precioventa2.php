@@ -138,9 +138,9 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a>                                                          </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
 					<td align="center"> <?php echo $row_Listado['Marca']; ?></td>
-					<td> <?php echo $row_Listado['precio_compra']; ?></td>
-					<td align="center"> <?php echo $row_Listado['precio_venta']; ?></td>
-					<td> <?= 1;?></td>
+					<td align="right"> <?php echo  $row_Listado['precio_compra']; ?></td>
+					<td align="right"> <?php echo $row_Listado['precio_venta1']; ?></td>
+					<td align="center"> <?= $row_Listado['saldo'];?></td>
 				
 					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">Asignar</a></td>
 
