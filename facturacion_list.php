@@ -1545,7 +1545,7 @@ function changeimporte(e) {
 				`insert into plamar 
 				(ruc, nro_recibo, monto, descripcion) 
 				values 
-				('${nrocomprobantepro.value}', '${nrocomprobantepro}', ${preciopro.value}, 'registrocompras')`;
+				('${nrocomprobantepro.value}', '${nrocomprobantepro.value}', ${preciopro.value}, 'transporte')`;
 				data.gastos.push(query1);
 			}
 		}
