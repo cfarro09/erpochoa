@@ -288,9 +288,8 @@ include("Fragmentos/abrirpopupcentro.php");
 													<div class="col-md-2 container_moneda">
 														<div class="form-group">
 															<label for="field-1" class="control-label">Moneda</label>
-															<select class="form-control" onchange="selectmoneda(this)"
-															id="moneda" name="moneda" required>
-															<option value="soles">S/</option>
+															<select class="form-control" onchange="selectmoneda(this)" id="moneda" name="moneda" required>
+															<option selected value="soles">S/</option>
 															<option value="dolares">$</option>
 														</select>
 													</div>
@@ -299,8 +298,7 @@ include("Fragmentos/abrirpopupcentro.php");
 												style="display: none">
 												<div class="form-group">
 													<label for="field-1" class="control-label">Cambio</label>
-													<input type="number" step="any" class="form-control" id="tipocambio"
-													oninput="changecambiodolar(this)" name="">
+													<input type="number" min="1" value="1" step="any" class="form-control" id="tipocambio" oninput="changecambiodolar(this)" name="">
 												</div>
 											</div>
 										</div>
@@ -752,6 +750,13 @@ mysql_free_result($Listado);
 	let subtotalGLOBAL = 0;
 	function checkcosteo(e) {
 		if (e.checked) {
+			if("dolares" == moneda.value){
+				const cambio = parseFloat(tipocambio.value)
+				getSelectorAll(".vcf").forEach(i => {
+					i.dataset.vcfsoles = i.value;
+					i.value = (parseFloat(i.value)*cambio).toFixed(2);
+				})	
+			}
 			getSelectorAll(".costeochecked").forEach(e => {
 				e.style.display = ""
 			})
@@ -760,6 +765,11 @@ mysql_free_result($Listado);
 			})
 
 		} else {
+			if("dolares" == moneda.value){
+				getSelectorAll(".vcf").forEach(i => {
+					i.value = i.dataset.vcfsoles
+				})	
+			}
 			getSelectorAll(".costeochecked").forEach(e => {
 				e.style.display = "none"
 			})
@@ -1337,7 +1347,7 @@ mysql_free_result($Listado);
 					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebitodolar" readonly></td>
 					<td style="display: none" class="costeochecked"><input class="form-control sumanotacreditodolar" readonly></td>
 					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumatotalunidadcosteodolar" readonly></td>
+				
 					</tr>`);
 				rowfacturadolar.style.display = "none"
 				$('[data-toggle="tooltip"]').tooltip()
@@ -1347,7 +1357,7 @@ btn_prorrateo.disabled = true
 btn_participacion.disabled = true
 container_cambio.style.display = "none"
 monedadolar = false;
-tipocambio.value = 0
+tipocambio.value = 1
 $("#mFacturaCompra").modal();
 })
 });
