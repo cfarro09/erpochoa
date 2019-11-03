@@ -1,5 +1,5 @@
 <?php require_once('Connections/Ventas.php'); ?>
-<?
+<?php
 mysql_select_db($database_Ventas, $Ventas);
 $querySucursales = "select * from sucursal where estado = 1" ;
 $sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());

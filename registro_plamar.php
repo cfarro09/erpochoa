@@ -107,7 +107,8 @@ include("Fragmentos/menu.php");
       <th> N° RECIBO </th>
       <th> MONTO </th>
       <th> FECHA INICIO </th>
-      <th> FECHA INICIO </th>
+      <th> FECHA FIN </th>
+      <th>ACCION</th>
     </tr>
   </thead>
   <tbody>
@@ -120,6 +121,7 @@ include("Fragmentos/menu.php");
       <td> <?php echo $row_Listado['monto']; ?></td>
       <td> <?php echo $row_Listado['fecha_inicio']; ?></td>
       <td> <?php echo $row_Listado['fecha_fin']; ?></td>
+      <td><a href="#">VER</a></td>
       
 
     </tr>

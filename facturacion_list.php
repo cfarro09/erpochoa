@@ -1550,12 +1550,12 @@ function changeimporte(e) {
 				values 
 				('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${proveedorpro}', '${monedapro.value}', 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
 				data.gastos.push(query);
-
+				const dd = new Date().toISOString().substring(0,10);
 				const query1 =
 				`insert into plamar 
-				(ruc, nro_recibo, monto, descripcion) 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
 				values 
-				('${nrocomprobantepro.value}', '${nrocomprobantepro.value}', ${preciopro.value}, 'transporte')`;
+				('${nrocomprobantepro.value}', '${nrocomprobantepro.value}', ${preciopro.value}, 'transporte', '${dd}', '${dd}')`;
 				data.gastos.push(query1);
 			}
 		}
@@ -1574,9 +1574,9 @@ function changeimporte(e) {
 
 				const query1 =
 				`insert into plamar 
-				(ruc, nro_recibo, monto, descripcion) 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
 				values 
-				('${numerocomprobanteestibador.value}', '${rucestibaodr}', ${precio_estibador.value}, 'estibador')`;
+				('${numerocomprobanteestibador.value}', '${rucestibaodr}', ${precio_estibador.value}, 'estibador', '${dd}', '${dd}')`;
 				data.gastos.push(query1);
 			}
 		}
@@ -1595,9 +1595,9 @@ function changeimporte(e) {
 
 				const query1 =
 				`insert into plamar 
-				(ruc, nro_recibo, monto, descripcion) 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
 				values 
-				('${numerocomprobantenotadebito.value}', '${rucnotadebito}', ${precio_notadebito.value}, 'notadebito')`;
+				('${numerocomprobantenotadebito.value}', '${rucnotadebito}', ${precio_notadebito.value}, 'notadebito', '${dd}', '${dd}')`;
 				data.gastos.push(query1)
 			}
 		}
@@ -1616,9 +1616,9 @@ function changeimporte(e) {
 
 				const query1 =
 				`insert into plamar 
-				(ruc, nro_recibo, monto, descripcion) 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
 				values 
-				('${numerocomprobantenotacredito.value}', '${rucnotacredito}', ${precio_notacredito.value}, 'notacredito')`;
+				('${numerocomprobantenotacredito.value}', '${rucnotacredito}', ${precio_notacredito.value}, 'notacredito', '${dd}', '${dd}')`;
 				data.gastos.push(query1)
 			}
 		}
