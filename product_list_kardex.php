@@ -36,8 +36,40 @@ if (isset($_SERVER['QUERY_STRING'])) {
 	$editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 }
 
+if ((isset($_POST["MM_eliminar"])) && ($_POST["MM_eliminar"] == "Eliminar_Registro")) {
+	$updateSQL = sprintf("DELETE from producto_imagen WHERE codigoprod=%s",
+		GetSQLValueString($_POST['codigoprod'], "int"));
 
+	mysql_select_db($database_Ventas, $Ventas);
+	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
 
+	$updateGoTo = "product_list.php";
+	if (isset($_SERVER['QUERY_STRING'])) {
+		$updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
+		$updateGoTo .= $_SERVER['QUERY_STRING'];
+	}
+	header(sprintf("Location: %s", $updateGoTo));
+}
+
+if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
+	
+	
+	
+	$updateSQL = sprintf("UPDATE producto p, producto_stock ps SET p.estado=%s WHERE p.codigoprod=%s and ps.stock=0 and ps.codigoprod=%s",
+		GetSQLValueString($_POST['estado'], "text"),
+		GetSQLValueString($_POST['codigoprod'], "int"),
+		GetSQLValueString($_POST['codigoprod'], "int"));
+
+	mysql_select_db($database_Ventas, $Ventas);
+	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
+
+	$updateGoTo = "product_list.php";
+	if (isset($_SERVER['QUERY_STRING'])) {
+		$updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
+		$updateGoTo .= $_SERVER['QUERY_STRING'];
+	}
+	header(sprintf("Location: %s", $updateGoTo));
+}
 mysql_select_db($database_Ventas, $Ventas);
 $querySucursales = "select * from sucursal where estado = 1" ;
 $sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
@@ -45,9 +77,7 @@ $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
 
 mysql_select_db($database_Ventas, $Ventas);
-//$query_Listado = "select * from vt_listaproducto";
-
-$query_Listado = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`nombre` AS `Marca`,`pv`.`precioventa1` AS `precio_venta`,`pv`.`precioventa2` AS `precio_venta2`,`pv`.`precioventa3` AS `precio_venta3`,`a`.`minicodigo` AS `minicodigo`, k.precio as precio_compra, sum(saldo) as saldo from `producto` `a` join `marca` `b` on `a`.`codigomarca` = `b`.`codigomarca` left join `precio_venta` `pv` on `pv`.`codigoprod` = `a`.`codigoprod` left join kardex_contable k on k.codigoprod=a.codigoprod where (`a`.`estado` = 0) group by `a`.`codigoprod` order by `a`.`codigoprod`";
+$query_Listado = "select * from vt_listaproducto";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -93,10 +123,23 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th  > PRODUCTO </th>
 				<th  > MARCA </th>
 				
-				<th  >  STOCK</th>
-				<th  >  P. COMPRA</th>
-				<th  >  P. VENTA</th>
-				<th  >  KARDEX</th>
+				<?php do {  ?>
+					<th  class="none"> <?= $row_sucursales['nombre_sucursal'] ?></th>
+					<?php 
+				} while ($row_sucursales = mysql_fetch_assoc($sucursales));
+				$rows = mysql_num_rows($sucursales);
+				if($rows > 0) {
+					mysql_data_seek($sucursales, 0);
+					$row_sucursales = mysql_fetch_assoc($sucursales);
+				}
+				?>
+				<th  class="none"> TOTAL PRODUCTOS</th>
+				<th  > CATEGORIA </th>
+				<th  class="none"> PRESENTACION </th>
+				<th  > COLOR </th>
+				<th  class="none"> CODIGO </th>
+				
+				<th  >  </th>
 			</tr>
 		</thead>
 		<tbody>
@@ -106,29 +149,44 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a>                                                          </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
 					<td align="center"> <?php echo $row_Listado['Marca']; ?></td>
-					<td align="center"> <?php if($row_Listado['saldo']==NULL)
-									echo 0;
-								else 
-									echo $row_Listado['saldo'];
-								 ?></td>
-					<td align="center"> <?php if($row_Listado['precio_compra']==NULL)
-									echo 0;
-								else 
-									echo $row_Listado['precio_compra']; ?></td>
-					<td align="center"> <?php if($row_Listado['precio_venta']==NULL)
-									echo 0;
-								else 
-									echo $row_Listado['precio_venta']; ?></td>
-
-	
-					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">kardex</a></td>
 					
+					<?php 
+					$sux = $row_Listado['codigoprod'];
+					$query_filtro_by_sucursal = "SELECT s.nombre_sucursal, s.cod_sucursal,  IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo, k.codigoprod, k.fecha from sucursal s left join kardex_alm k on k.codsucursal = s.cod_sucursal and k.fecha = ( SELECT MAX(fecha) FROM kardex_alm t2 WHERE k.codigoprod = t2.codigoprod and t2.codsucursal = s.cod_sucursal) and k.codigoprod =  $sux where s.cod_sucursal != 10 order by cod_sucursal asc";
+					$auxx1 = mysql_query($query_filtro_by_sucursal, $Ventas) or die(mysql_error());
+					$row_aux = mysql_fetch_assoc($auxx1);
+					$total = 0 ;
+					do { ?>
+						<?php $total = $total + (int) $row_aux['saldo'];?>
+						<th  class="none"> <?= $row_aux['saldo']; ?></th>
+						<?php 
+					} while ($row_aux = mysql_fetch_assoc($auxx1));
+					
+					$rows = mysql_num_rows($auxx1);
+					if($rows > 0) {
+						mysql_data_seek($auxx1, 0);
+						$row_aux = mysql_fetch_assoc($auxx1);
+					}
+					?>
+					<td> <?= $total;?></td>
+
+					<td> <?php echo $row_Listado['Categoria']; ?></td>
+
+					<td> <?php echo $row_Listado['Presentacion']; ?></td>
+					<td> <?php echo $row_Listado['Color'];?></td>
+					<td> <?php echo $row_Listado['minicodigo'];?></td>
+
+
+					
+					
+					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">kardex</a></td>
+
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 			</tbody>
 		</table>
 		<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog" role="document" style="width: 1100px">
+			<div class="modal-dialog" role="document" style="width: 700px">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
 						<h5 class="modal-title" id="moperation-title">Almacen Kardex</h5>
@@ -176,23 +234,19 @@ include("Fragmentos/abrirpopupcentro.php");
 												<table class="table table-striped table-bordered table-hover" id="">
 													<thead>
 														<tr>
-															<th colspan="5" id="headerKardex"></th>
-															<th colspan="2" style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
-															<th colspan="2" style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
-															<th colspan="2" style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
+															<th colspan="4" id="headerKardex"></th>
+															<th style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
+															<th style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
+															<th style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
 														</tr>
 														<tr>
 															<th>FECHA</th>
 															<th>DETALLE</th>
 															<th>TIPO</th>
 															<th>N° COMP/GUIA</th>
-															<th>P.UND</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">IMPORTE</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">IMPORTE</th>
 															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">IMPORTE</th>
 														</tr>
 													</thead>
 													<tbody id="detalleKardexAlmProd" class="text-center"></tbody>
@@ -243,7 +297,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 			getSelector("#detalleKardexAlmProd").innerHTML = "<tr><td colspan='6'>No hay registros</td></tr>"
 
-			fetch(`getKardexContableFromProductList.php`, { method: 'POST', body: formData })
+			fetch(`getKardexAlmFromProductList.php`, { method: 'POST', body: formData })
 			.then(res => res.json())
 			.catch(error => console.error("error: ", error))
 			.then(res => {
@@ -255,12 +309,8 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td>0</td>	
-					<td></td>
+					<td></td>	
+					<td>0</td>
 					</tr>
 					`
 					console.log(res)
@@ -271,15 +321,11 @@ include("Fragmentos/abrirpopupcentro.php");
 							<tr>
 							<td>${new Date(item.fecha).toLocaleDateString()}</td>
 							<td>${item.detalle}</td>
-							<td>${item.tipocomprobante}</td>
+							<td>${item.tipodocumento}</td>
 							<td>${item.numero}</td>
-							<td>${item.precio}</td>
 							<td>${item.cantidad}</td>
-							<td>${item.preciototal}</td>
-							<td></td>
 							<td></td>
 							<td>${item.saldo}</td>
-							<td>${(item.precio * item.saldo / item.cantidad).toFixed(3)}</td>
 							</tr>
 							`;
 						}

@@ -164,13 +164,14 @@ include("Fragmentos/abrirpopupcentro.php");
 								<div class="container-fluid">
 
 									PROVEEDOR: <span id="mproveedor"></span> <BR>
+									RUC : <span id="mruc"></span>
 									SUCURSAL: <span id="msucursal"></span> <BR>
 									FECHA DE EMISION : <span id="mfechaemision"></span> <br>
 									VALOR TOTAL: <span id="mvalortotal"></span><BR>
 									CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
 									CODIGO REF2: : <span id="mcodref2"></span> <br>
 									GENERADA POR: : <span id="mgeneradapor"></span> <br>
-									RUC : <span id="mruc"></span>
+									
 
 									<div class="row" style="margin-top:20px">
 										<div class="col-xs-12 col-md-12">
@@ -234,11 +235,12 @@ include("Fragmentos/abrirpopupcentro.php");
 													VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
 												</div>
 												PROVEEDOR: <span id="mproveedor1"></span> <BR>
+												RUC : <span id="mruc1"></span><BR>
 												SUCURSAL: <span id="msucursal1"></span> <BR>
 												DOC ALMACEN : <span id="mcodref11"></span> <br>
 												DOC REF 2: : <span id="mcodref21"></span> <br>
 												GENERADA POR: : <span id="mgeneradapor1"></span> <br>
-												RUC : <span id="mruc1"></span>
+												
 											</b>
 											<input type="hidden" id="codigoproveedor">
 											<input type="hidden" id="codigosucursal">

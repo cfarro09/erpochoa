@@ -515,6 +515,15 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                         <span class="selected"></span>
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a href="product_list_kardex.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <span class="title">Kardex Almacen</span>
+                                        <span class="selected"></span>
+                                    </a>
+                                </li>
+
                                 <li class="nav-item">
                                     <a href="ordencompra_alm_list.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
@@ -580,7 +589,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="personal_access.php" class="nav-link font-blue-ebonyclay">
+                                    <a href="personal_estado_cuenta.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Estado de cuenta</span>
                                         <span class="selected"></span>
@@ -672,7 +681,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 </li>
                                 
                                 <li class="nav-item">
-                                    <a href="cuentas_x_pagar.php" class="nav-link font-blue-ebonyclay">
+                                    <a href="cuentas_x_pagar1.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Cuentas por Pagar</span>
                                         <span class="selected"></span>
@@ -849,7 +858,15 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a href="proforma_list.php" class="nav-link font-blue-ebonyclay">
+                                <?php 
+mt_srand(time());
+$d=mt_rand(0,9999999999999999); 
+ 
+                                ?>
+                                <?php
+echo "<a href='proforma_add.php?codigo=$d'>Proforma</a>";
+?>
+                                <a href="proforma_add.php?codigo="<?php echo($d); ?> " class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Proforma</span>
                                     <span class="selected"></span>
