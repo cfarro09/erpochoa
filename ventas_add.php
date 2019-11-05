@@ -5,17 +5,13 @@ $validarc = 1; ?>
 
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Productos = "SELECT * FROM vt_producto_compra";
 
-$Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
-$row_Productos = mysql_fetch_assoc($Productos);
-$totalRows_Productos = mysql_num_rows($Productos);
-
-
-$query_Clientes = "SELECT codigoproveedor as codigoclienten, CONCAT(razonsocial, ' ', ruc) as ClienteNatural FROM proveedor  WHERE estado = 0 order by razonsocial";
+$query_Clientes = "SELECT codigoclienten, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as ClienteNatural  FROM cnatural  WHERE estado = 0";
 $Clientes = mysql_query($query_Clientes, $Ventas) or die(mysql_error());
 $row_Clientes = mysql_fetch_assoc($Clientes);
 $totalRows_Clientes = mysql_num_rows($Clientes);
+
+
 
 //Titulo e icono de la pagina
 $Icono = "glyphicon glyphicon-shopping-cart";
@@ -33,12 +29,23 @@ include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
+
 include("Fragmentos/abrirpopupcentro.php");
+
+$codsucursal = $_SESSION['cod_sucursal'];
+
+$query_Productos = "select k.id_kardex_contable, `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`codigomarca` AS `codigomarca`,`b`.`nombre` AS `Marca`,`c`.`nombre_color` AS `nombre_color`, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, max(k.saldo) as saldo, k.sucursal, pv.totalunidad from `producto` `a` inner join `marca` `b` on(`a`.`codigomarca` = `b`.`codigomarca`) inner join `color` `c` on(`a`.`codigocolor` = `c`.`codigocolor`) inner join precio_venta pv on pv.codigoprod=a.codigoprod inner JOIN kardex_contable k on k.codigoprod=a.codigoprod where `a`.`estado` = 0 and k.saldo>0 and k.sucursal = $codsucursal and pv.precioventa1>0 group by a.codigoprod order by `k`.`id_kardex_contable` asc";
+
+$Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
+$row_Productos = mysql_fetch_assoc($Productos);
+$totalRows_Productos = mysql_num_rows($Productos);
+
 //________________________________________________________________________________________________________________
 $querySucursales = "select * from sucursal where estado = 1 or estado = 999";
 $sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
 $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
+
 ?>
 
 <form id="form-generate-compra">
@@ -56,11 +63,11 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
       <div class="row" style="margin-top: 10px">
         <div class="col-md-6">
           <div class="form-group">
-            <label for="field-1" class="control-label">Proveedor</label>
+            <label for="field-1" class="control-label">Cliente</label>
             <select name="proveedor" id="proveedor" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
               <option value=""></option>
               <?php do {  ?>
-                <option value="<?php echo $row_Clientes['codigoclienten'] ?>">
+                <option value="<?= $row_Clientes['codigoclienten'] ?>">
                   <?php echo $row_Clientes['ClienteNatural'] ?>
                 </option>
               <?php
@@ -103,14 +110,26 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="field-1" class="control-label">Documento de Referencia</label>
-            <input type="text" class="form-control" required="" id="codigoreferencial1" name="codigoreferencial1">
+            <label for="field-1" class="control-label">Tipo Comprobante</label>
+            <select class="form-control" id="tipocomprobante">
+              <option>Factura</option>
+              <option>Boleta</option>
+              <option>Recibo</option>
+              <option>Otros</option>
+            </select>
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label for="field-1" class="control-label">Documento de referencia</label>
-            <input type="text" class="form-control" id="codigoreferencia2" name="codigoreferencia2">
+            <label for="field-1" class="control-label">Forma de Pago</label>
+            <select class="form-control" id="tipocomprobante">
+              <option value="contado">Contado</option>
+              <option value="depositobancario">Deposito Bancario</option>
+              <option value="tarjetadebito">Tarjeta Debito</option>
+              <option value="tarjetacredito">Tarjeta de Credito</option>
+              <option value="cheque">Cheque</option>
+              <option value="otros">Otros</option>
+            </select>
           </div>
         </div>
       </div>
@@ -132,15 +151,12 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <?php
         do {
           ?>
-          <option value="<?php echo $row_Productos['codigoprod'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?php echo $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
-                                                                                                                                                                                            echo "selected=\"selected\"";
-                                                                                                                                                                                          } ?>>
+          <option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {echo "selected=\"selected\""; } ?>>
             <?php echo $row_Productos['nombre_producto'] ?> -
             <?php echo $row_Productos['Marca']; ?> -
             <?php echo $row_Productos['nombre_color']; ?> -
-            <?php echo "$/." . $row_Productos['precio_venta']; ?> -
-            <?php echo $row_Productos['minicodigo']; ?> -
-            (<?php echo "Stock " . $row_Productos['stock']; ?>)</option>
+            <?php echo "$/." . $row_Productos['p2']; ?> -
+            (<?= "Stock " . $row_Productos['saldo']; ?>)</option>
         <?php
         } while ($row_Productos = mysql_fetch_assoc($Productos));
         $rows = mysql_num_rows($Productos);
@@ -161,7 +177,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
           <th>U. Medida</th>
           <th>Producto</th>
           <th>Marca</th>
-          <th>Valor Venta</th>
+          <th>Precio Venta</th>
           <th>Importe</th>
           <th>Accion</th>
         </thead>
@@ -212,35 +228,40 @@ mysql_free_result($Detalle_Compras);
       const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
       $("#detalleFormProducto").append(`
 					<tr class="producto">
-					<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
-					<td class="indexproducto">${cantrows}</td>
-					<td><input type="number" oninput="changevalue(this)" required class="cantidad form-control" value="1" style="width: 80px" ></td>
-					<td>
-					<select class="form-control unidad_medida" name="unidad_medida" required>
-					<option value="unidad">unidad</option>
-					<option value="kilo">kilo</option>
-					<option value="tonelada">tonelada</option>
-					</select>
-					</td>
-					<td class="nombre">${option.dataset.nombre}</td>
-					<td class="marca">${option.dataset.marca}</td>
-					<td style="width: 100px"><input type="number" oninput="changevalue(this)" required class="precio form-control" value="0" ></td>
-					<td class="importe">0</td>
-					<td>
-					<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm tooltips" data-placement="top"  data-original-title="Eliminar Producto"><i class="glyphicon glyphicon-trash"></i></button>
-					</td>
+  					<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
+  					<td class="indexproducto">${cantrows}</td>
+  					<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="1" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+  					<td>
+  					<select class="form-control unidad_medida" name="unidad_medida" required>
+  					<option value="unidad">unidad</option>
+  					<option value="kilo">kilo</option>
+  					<option value="tonelada">tonelada</option>
+  					</select>
+  					</td>
+  					<td class="nombre">${option.dataset.nombre}</td>
+  					<td class="marca">${option.dataset.marca}</td>
+  					<td style="width: 100px"><input type="number" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
+  					<td class="importe">0</td>
+  					<td>
+  					<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm tooltips" data-placement="top"  data-original-title="Eliminar Producto"><i class="glyphicon glyphicon-trash"></i></button>
+  					</td>
 					</tr>
 					`)
+      $('[data-toggle="tooltip"]').tooltip()
+      $('.tooltips').tooltip();
     }
 
   });
 
   function changevalue(e) {
-
-    if (e.value < 0) {
-      e.value = ""
-      alert("no puede ingresar cantidades negativas")
+    if (e.value < 0 || "" == e.value) {
+      e.value = 0
     } else {
+      if(e.dataset.type == "cantidad"){
+        if(parseInt(e.dataset.stock) < parseInt(e.value)){
+          e.value = 0
+        }
+      }
       const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
       const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
 
