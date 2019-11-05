@@ -48,7 +48,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 ?>
 
-<form id="form-generate-compra">
+<form id="form-generate-venta">
   <div class="row">
     <div class="col-sm-12 text-center">
       <button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
@@ -64,7 +64,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Cliente</label>
-            <select name="proveedor" id="proveedor" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
+            <select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
               <option value=""></option>
               <?php do {  ?>
                 <option value="<?= $row_Clientes['codigoclienten'] ?>">
@@ -84,7 +84,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Sucursal</label>
-            <select name="sucursal" id="sucursal-oc-new" disabled class="form-control ">
+            <select name="sucursal" required id="sucursal-oc-new" disabled class="form-control ">
               <?php do {  ?>
                 <option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $row_sucursales['cod_sucursal'] ?>">
                   <?php echo $row_sucursales['nombre_sucursal'] ?>
@@ -100,29 +100,22 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
             </select>
           </div>
         </div>
-        <div class="col-md-6" style="display: none" id="div_aux"></div>
-        <div class="col-md-6" id="div_direccion" style="display: none">
-          <div class="form-group">
-            <label for="direccion" class="control-label">Direccion</label>
-            <input type="text" class="form-control" id="direccion">
-          </div>
-        </div>
 
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Tipo Comprobante</label>
-            <select class="form-control" id="tipocomprobante">
-              <option>Factura</option>
-              <option>Boleta</option>
-              <option>Recibo</option>
-              <option>Otros</option>
+            <select required class="form-control" id="tipocomprobante">
+              <option value="factura">Factura</option>
+              <option value="boleta">Boleta</option>
+              <option value="recibo">Recibo</option>
+              <option value="otros">Otros</option>
             </select>
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Forma de Pago</label>
-            <select class="form-control" id="tipocomprobante">
+            <select required class="form-control" onchange="changeTipoPago(this)" id="tipopago">
               <option value="contado">Contado</option>
               <option value="depositobancario">Deposito Bancario</option>
               <option value="tarjetadebito">Tarjeta Debito</option>
@@ -132,6 +125,32 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
             </select>
           </div>
         </div>
+        
+        <div class="col-md-3 tarjetaso" style="display: none">
+          <div class="form-group">
+            <label class="control-label">Banco</label>
+            <input type="text" class="form-control" id="bancoextra">
+          </div>
+        </div>
+        <div class="col-md-3 tarjetaso" style="display: none">
+          <div class="form-group">
+            <label class="control-label">Codigo Transaccion</label>
+            <input type="number" value="0" class="form-control" id="codigotransaccionextra">
+          </div>
+        </div>
+        <div class="col-md-3 tarjetaso" style="display: none">
+          <div class="form-group">
+            <label class="control-label">Fecha</label>
+            <input type="text" class="form-control" id="fechaextra">
+          </div>
+        </div>
+        <div class="col-md-3 tarjetaso" style="display: none">
+          <div class="form-group">
+            <label class="control-label">Monto</label>
+            <input type="number" class="form-control" id="montoextra">
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -209,6 +228,14 @@ mysql_free_result($Detalle_Compras);
 ?>
 
 <script type="text/javascript">
+  
+  function changeTipoPago(e){
+    if(e.value == "contado")
+      getSelectorAll(".tarjetaso").forEach(i => i.style.display = "none")
+    else
+      getSelectorAll(".tarjetaso").forEach(i => i.style.display = "")
+  }
+
   $("#sucursal-oc-new").on("change", function() {
 
     if ($("#sucursal-oc-new").val() == 10) {
@@ -306,10 +333,10 @@ mysql_free_result($Detalle_Compras);
     }
     return result;
   }
-  getSelector("#form-generate-compra").addEventListener("submit", e => {
+  
+
+  getSelector("#form-generate-venta").addEventListener("submit", e => {
     e.preventDefault();
-    if (!$("#proveedor").val() || !$("#codigoreferencial1").val())
-      return
     if (getSelectorAll(".producto").length < 1) {
       alert("Debes agregar almenos un producto")
     } else {
@@ -318,22 +345,26 @@ mysql_free_result($Detalle_Compras);
         detalle: []
       }
       data.header = {
-        fecha_emision: '<?php echo date("Y-m-d"); ?>',
-        hora_emision: '<?php echo date("h:i:s"); ?>',
-        codigoguia: 0,
         codigo: makeid(20),
-        codigoproveedor: getSelector("#proveedor").value,
-        codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
-        codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
+        codigoventa: makeid(20),
+        tipocomprobante: tipocomprobante.value,
+        codigobanco: bancoextra.value,
+        tipo_pago: tipopago.value,
+        codigocomprobante: codigotransaccionextra.value,
+        codigoclienten: cliente.value,
+        codigoclientej: cliente.value,
+
         subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
         igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
+        total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
         montofact: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
+        fecha_emision: '<?php echo date("Y-m-d"); ?>',
+        hora_emision: '<?php echo date("h:i:s"); ?>',
+        codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
+        codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
         estadofact: 1,
-        sucursal: getSelector("#sucursal-oc-new").value,
-        codigoref1: getSelector("#codigoreferencial1").value,
-        codigoref2: getSelector("#codigoreferencia2").value,
-        estado: 1,
-        direccion: $("#direccion").val()
+
+        
       }
       getSelectorAll(".producto").forEach(item => {
         data.detalle.push({
@@ -358,7 +389,7 @@ mysql_free_result($Detalle_Compras);
         .then(res => {
           if (res.success) {
             alert("registro completo!")
-            getSelector("#form-generate-compra").reset();
+            getSelector("#form-generate-venta").reset();
             getSelector("#detalleFormProducto").innerHTML = ""
             location.reload()
           }
