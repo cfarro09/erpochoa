@@ -112,43 +112,17 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
             </select>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="form-group">
-            <label for="field-1" class="control-label">Forma de Pago</label>
-            <select required class="form-control" onchange="changeTipoPago(this)" id="tipopago">
-              <option value="contado">Contado</option>
-              <option value="depositobancario">Deposito Bancario</option>
-              <option value="tarjetadebito">Tarjeta Debito</option>
-              <option value="tarjetacredito">Tarjeta de Credito</option>
-              <option value="cheque">Cheque</option>
-              <option value="otros">Otros</option>
-            </select>
+            <label for="field-1" class="control-label">Pago en Efectivo</label>
+            <input type="number" class="form-control" id="montoefectivo">
           </div>
         </div>
-        
-        <div class="col-md-3 tarjetaso" style="display: none">
-          <div class="form-group">
-            <label class="control-label">Banco</label>
-            <input type="text" class="form-control" id="bancoextra">
-          </div>
+        <div class="col-md-2" style="margin-top: 10px">
+          <button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
         </div>
-        <div class="col-md-3 tarjetaso" style="display: none">
-          <div class="form-group">
-            <label class="control-label">Codigo Transaccion</label>
-            <input type="number" value="0" class="form-control" id="codigotransaccionextra">
-          </div>
-        </div>
-        <div class="col-md-3 tarjetaso" style="display: none">
-          <div class="form-group">
-            <label class="control-label">Fecha</label>
-            <input type="text" class="form-control" id="fechaextra">
-          </div>
-        </div>
-        <div class="col-md-3 tarjetaso" style="display: none">
-          <div class="form-group">
-            <label class="control-label">Monto</label>
-            <input type="number" class="form-control" id="montoextra">
-          </div>
+        <div class="" id="containerpayextra">
+
         </div>
 
       </div>
@@ -170,7 +144,9 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <?php
         do {
           ?>
-          <option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {echo "selected=\"selected\""; } ?>>
+          <option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
+                                                                                                                                                                                                                                                                                                                                        echo "selected=\"selected\"";
+                                                                                                                                                                                                                                                                                                                                      } ?>>
             <?php echo $row_Productos['nombre_producto'] ?> -
             <?php echo $row_Productos['Marca']; ?> -
             <?php echo $row_Productos['nombre_color']; ?> -
@@ -228,9 +204,8 @@ mysql_free_result($Detalle_Compras);
 ?>
 
 <script type="text/javascript">
-  
-  function changeTipoPago(e){
-    if(e.value == "contado")
+  function changeTipoPago(e) {
+    if (e.value == "contado")
       getSelectorAll(".tarjetaso").forEach(i => i.style.display = "none")
     else
       getSelectorAll(".tarjetaso").forEach(i => i.style.display = "")
@@ -284,8 +259,8 @@ mysql_free_result($Detalle_Compras);
     if (e.value < 0 || "" == e.value) {
       e.value = 0
     } else {
-      if(e.dataset.type == "cantidad"){
-        if(parseInt(e.dataset.stock) < parseInt(e.value)){
+      if (e.dataset.type == "cantidad") {
+        if (parseInt(e.dataset.stock) < parseInt(e.value)) {
           e.value = 0
         }
       }
@@ -314,9 +289,50 @@ mysql_free_result($Detalle_Compras);
 
   }
 
+  function addPayExtra() {
+    containerpayextra.innerHTML += `
+        <div class="col-md-12 containerx" style="border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px">
+          <div class="text-right">
+            <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Banco</label>
+              <input type="text" required class="form-control bancoextra">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Codigo Transaccion</label>
+              <input type="number" required value="0" class="form-control codigotransaccionextra">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Fecha</label>
+              <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Monto</label>
+              <input type="number" required class="form-control montoextra">
+            </div>
+          </div>
+        </div>
+    `;
+    $('.date-picker').datepicker({
+      rtl: App.isRTL(),
+      autoclose: true
+    });
+  }
+
+  function removecontainerpay(e) {
+    e.closest(".containerx").remove()
+  }
+
   function eliminarproducto(e) {
     e.closest(".producto").remove()
-
     var i = 1;
     getSelectorAll(".producto").forEach(p => {
       p.querySelector(".indexproducto").textContent = i;
@@ -333,7 +349,7 @@ mysql_free_result($Detalle_Compras);
     }
     return result;
   }
-  
+
 
   getSelector("#form-generate-venta").addEventListener("submit", e => {
     e.preventDefault();
@@ -342,17 +358,26 @@ mysql_free_result($Detalle_Compras);
     } else {
       const data = {
         header: {},
-        detalle: []
+        detalle: [],
+        payextra: []
       }
+      getSelectorAll(".containerx").forEach(ix => {
+        const bancopay = ix.querySelector(".bancoextra").value
+        const codigotransaccionpay = ix.querySelector(".codigotransaccionextra").value
+        const fechapay = ix.querySelector(".fechaextra").value
+        const montopay = ix.querySelector(".montoextra").value
+      })
+
       data.header = {
         codigo: makeid(20),
         codigoventa: makeid(20),
         tipocomprobante: tipocomprobante.value,
-        codigobanco: bancoextra.value,
         tipo_pago: tipopago.value,
-        codigocomprobante: codigotransaccionextra.value,
         codigoclienten: cliente.value,
         codigoclientej: cliente.value,
+
+        codigobanco: bancoextra.value,
+        codigocomprobante: codigotransaccionextra.value,
 
         subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
         igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
@@ -363,8 +388,6 @@ mysql_free_result($Detalle_Compras);
         codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
         codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
         estadofact: 1,
-
-        
       }
       getSelectorAll(".producto").forEach(item => {
         data.detalle.push({
