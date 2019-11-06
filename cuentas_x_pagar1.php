@@ -33,42 +33,61 @@ $editFormAction = $_SERVER['PHP_SELF'];
 if (isset($_SERVER['QUERY_STRING'])) {
   $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 }
+ 
 
+//------------Inicio Actualizar(Eliminar) Registro----------------
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
-  $updateSQL = sprintf("UPDATE personal SET estado=%s WHERE codigopersonal=%s",
-                       GetSQLValueString($_POST['estado'], "text"),
-                       GetSQLValueString($_POST['codigopersonal'], "int"));
+ // $updateSQL = sprintf("UPDATE proveedor SET estado=%s WHERE codigoproveedor=%s",
+ //                      GetSQLValueString($_POST['estado'], "text"),
+ //                      GetSQLValueString($_POST['codigoproveedor'], "int"));
+
+$codproveedor=$_POST['codigoproveedor'];
+$total = mysql_num_rows(mysql_query("SELECT codigoproveedor FROM proveedor_cuentas WHERE codigoproveedor='$codproveedor'"));
+$total1 = mysql_num_rows(mysql_query("SELECT codigoproveedor FROM historial_producto WHERE codigoproveedor='$codproveedor'"));
+if ($total>=1 || $total1>=1)
+{ echo "<script language='javascript'>"; 
+echo "alert('Error!! NO SE PUEDE ELIMINAR EL REGISTRO PORQUE PUEDE TENER NUMERO DE CUENTA ACTIVO O TENER ARTICULOS REGISTRADOS ')"; 
+echo "</script>";  
+
+}
+else
+{
+$updateSQL = sprintf("DELETE FROM proveedor WHERE codigoproveedor=%s",
+  						GetSQLValueString($_POST['codigoproveedor'], "int"));
+
 
   mysql_select_db($database_Ventas, $Ventas);
   $Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
 
-  $updateGoTo = "personal_list.php";
+  $updateGoTo = "proveedor_list.php";
   if (isset($_SERVER['QUERY_STRING'])) {
     $updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
     $updateGoTo .= $_SERVER['QUERY_STRING'];
   }
   header(sprintf("Location: %s", $updateGoTo));
-}
-
+}}
+//------------Fin Actualizar(Eliminar) Registro----------------
+//------------Inicio Juego de Registro "Listado"----------------
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT * FROM personal WHERE estado = '0'";
+$query_Listado = "SELECT * FROM proveedor WHERE estado = '0'";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
+//------------Fin Juego de Registro "Listado"----------------
  //Enumerar filas de data tablas
  $i = 1;
 
 //Titulo e icono de la pagina
-$Icono="glyphicon glyphicon-user";
+$Icono="fa fa-magic";
 $Color="font-blue";
-$Titulo="Listado de Personal";
+$Titulo="Listado de Proveedores";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
 $EstadoBotonAgregar="";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 $popupAncho= 700;
-$popupAlto= 480;
+$popupAlto= 545;
 
 include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
@@ -91,32 +110,27 @@ include("Fragmentos/abrirpopupcentro.php");
     <thead>
       <tr>
         <th width="5%"> N&deg; </th>
-          <th  width="15%"> DNI </th>
-          <th  width="20%"> PATERNO </th>
-          <th  width="20%"> MATERNO </th>
-          <th  width="25%"> NOMBRES </th>
-          <th  width="5%">  </th>
-          <th  width="5%">  </th>
+          <th  width="10%"> RUC </th>
+          <th  width="30%"> RAZï¿½N SOCIAL </th>
+          <th  width="20%"> CONTACTO </th>
+          <th  width="20%"> CEL/TEL </th>
+          <th  width="10%"> SALDO </th>
+          <th  width="5%">  Est. Cuenta</th>
+
         </tr>
       </thead>
     <tbody>
       <?php do { ?>
         <tr>
           <td> <?php echo $i; ?> </td>
-          <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigopersonal=<?php echo $row_Listado['codigopersonal']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['cedula']; ?> </a>                                                          </td>
-          <td> <?php echo $row_Listado['paterno']; ?></td>
-          <td> <?php echo $row_Listado['materno']; ?> </td>
-          <td> <?php echo $row_Listado['nombre']; ?> </td>
-          <td> 
-            <a  class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigopersonal=<?php echo $row_Listado['codigopersonal']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>          </td>
-          <td>
-            <form method="POST" action="<?php echo $editFormAction; ?>" name="Eliminar_Registro" id="Eliminar_Registro" onSubmit="return confirm('¿ESTA SEGURO QUE DESEA ELIMINAR ESTE REGISTRO: <?php echo $row_Listado['cedula']; ?>?');">
-              <input name="codigopersonal" id="codigopersonal" type="hidden" value="<?php echo $row_Listado['codigopersonal']; ?>">
-              <input name="estado" id="estado" type="hidden" value="1">
-              <button type="submit" class="btn red-thunderbird tooltips" data-placement="top" data-original-title="Eliminar Registro"><i class="glyphicon glyphicon-trash"></i></button>
-                              
-              <input type="hidden" name="MM_update" value="Eliminar_Registro" />
-          </form></td>
+          <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoproveedor=<?php echo $row_Listado['codigoproveedor']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['ruc']; ?> </a>                                                          </td>
+          <td> <?php echo $row_Listado['razonsocial']; ?></td>
+          <td> <?php echo $row_Listado['contacto'] ?> </td>
+          <td> <?php echo $row_Listado['celular']."/".$row_Listado['telefono']; ?> </td>
+          <td align="center"> 0 </td>
+          <td align="center"> Ver
+           </td>
+           
         </tr>
         <?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
     </tbody>

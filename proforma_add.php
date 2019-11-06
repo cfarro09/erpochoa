@@ -135,7 +135,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "IngresarProducto"))
 
 mysql_select_db($database_Ventas, $Ventas);
 $codigoproducto10=$_POST['codigoprod'];
-$query_Productos = "SELECT codigoprod, precio_venta, precio_compra FROM producto_stock WHERE codigoprod = $codigoproducto10 ORDER BY codigoprod desc";
+$query_Productos = "SELECT * FROM Producto p inner join precio_venta pv on p.codigoprod=pv.codigoprod WHERE p.codigoprod = $codigoproducto10 ORDER BY p.codigoprod desc";
 $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
 $row_Productos = mysql_fetch_assoc($Productos);
 $totalRows_Productos = mysql_num_rows($Productos);
@@ -151,7 +151,7 @@ $totalRows_Contador_Clientes = mysql_num_rows($Contador_Clientes);
 	{
 	
 	$concatenacion=$_POST['CodigoProducto'].$_POST['codigoprod'];
-	 $pventa=$row_Productos['precio_venta'];
+	 $pventa=$row_Productos['precioventa1'];
 	 //$pventa=10;
   $insertSQL = sprintf("INSERT INTO detalle_ventas (codigo, codigoprod, pventa, concatenacion) VALUES (%s, %s, %s, %s)",
                        GetSQLValueString($_POST['CodigoProducto'], "text"),
@@ -167,7 +167,7 @@ $totalRows_Contador_Clientes = mysql_num_rows($Contador_Clientes);
 		echo "<script language='JavaScript'>alert('Grabacion Correcta');</script>";  
 	}
 
-  $insertGoTo = "proforma_add.php?codigo=" . $_GET['codigo'] . "";
+  $insertGoTo = "proforma_add.php";
   if (isset($_SERVER['QUERY_STRING'])) {
     $insertGoTo .= (strpos($insertGoTo, '?')) ? "&" : "?";
     $insertGoTo .= $_SERVER['QUERY_STRING'];
@@ -195,7 +195,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Precio_venta")) {
 }
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Productos = "SELECT * FROM vt_producto";
+$query_Productos = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`codigomarca` AS `codigomarca`,`b`.`nombre` AS `Marca`,`c`.`nombre_color` AS `nombre_color`, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3 from `producto` `a` join `marca` `b` on(`a`.`codigomarca` = `b`.`codigomarca`) join `color` `c` on(`a`.`codigocolor` = `c`.`codigocolor`) left join `detalle_ventas` `dt` on(`dt`.`codigoprod` <> `a`.`codigoprod`) inner join precio_venta pv on pv.codigoprod=a.codigoprod where `a`.`estado` = 0 group by `a`.`codigoprod` order by `a`.`codigoprod`";
 
 $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
 $row_Productos = mysql_fetch_assoc($Productos);
@@ -274,7 +274,7 @@ include("Fragmentos/abrirpopupcentro.php");
   <?php
 do {  
 ?>
-  <option value="<?php echo $row_Productos['codigoprod']?>"<?php if (!(strcmp($row_Productos['codigoprod'], "ventas_add.php"))) {echo "selected=\"selected\"";} ?>><?php echo $row_Productos['nombre_producto']?> - <?php echo $row_Productos['Marca']; ?> - <?php echo $row_Productos['nombre_color']; ?> - <?php echo "$/.". $row_Productos['precio_venta']; ?> (<?php echo "Stock ".$row_Productos['stock']; ?>)</option>
+  <option value="<?php echo $row_Productos['codigoprod']?>"<?php if (!(strcmp($row_Productos['codigoprod'], "ventas_add.php"))) {echo "selected=\"selected\"";} ?>><?php echo $row_Productos['nombre_producto']?> - <?php echo $row_Productos['Marca']; ?> - <?php echo $row_Productos['nombre_color']; ?> - <?php echo "S/.". $row_Productos['p1']; ?> </option>
   <?php
 } while ($row_Productos = mysql_fetch_assoc($Productos));
   $rows = mysql_num_rows($Productos);
@@ -355,14 +355,11 @@ do {
             <td align="center">
             
             <?php 
-			if($row_Detalle_Ventas['stock']>=$row_Detalle_Ventas['cantidad'])
-			{
+			
 			$importe=number_format($row_Detalle_Ventas['pventa']*$row_Detalle_Ventas['cantidad'],2);
 			$total=$total+$importe;
 			echo $importe;
-			}
-			else
-				echo "Cantidad es mayor a nuestro Stock ";
+			
 			//echo $row_Detalle_Ventas['Importe']; ?>
             </td>
             <td><?php //echo $EliminarProducto; ?>

@@ -73,7 +73,7 @@ $i = 1;
 							<th> Cedula</th>
 							<th> Nombre </th>
 							<th> Paterno </th>
-							<th> Fecha Inreso </th>
+							<th> Fecha Ingreso </th>
 							<th> Acciones</th>
 						</tr>
 					</thead>

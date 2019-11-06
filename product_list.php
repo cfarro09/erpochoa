@@ -77,7 +77,8 @@ $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select * from vt_listaproducto";
+//$query_Listado = "select * from vt_listaproducto";
+$query_Listado = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`nombre` AS `Marca`,`c`.`nombre` AS `Categoria`,`a`.`minicodigo` AS `minicodigo`, x.nombre_color as color, p.nombre_presentacion as presentacion, i.foto from (`producto` `a` join `marca` `b` on(`a`.`codigomarca` = `b`.`codigomarca`) join `categoria` `c` on(`a`.`codigocat` = `c`.`codigocat`) inner join color x on x.codigocolor=a.codigocolor) inner join presentacion p on p.codigopresent=a.codigopresent left join producto_imagen i on i.codigoprod=a.codigoprod where (`a`.`estado` = 0) group by `a`.`codigoprod`";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -122,26 +123,13 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th  > CODIGO </th>
 				<th  > PRODUCTO </th>
 				<th  > MARCA </th>
-				<th  class="none"> PRECIO COMPRA</th>
-				<th  > PRECIO VENTA</th>
-				<?php do {  ?>
-					<th  class="none"> <?= $row_sucursales['nombre_sucursal'] ?></th>
-					<?php 
-				} while ($row_sucursales = mysql_fetch_assoc($sucursales));
-				$rows = mysql_num_rows($sucursales);
-				if($rows > 0) {
-					mysql_data_seek($sucursales, 0);
-					$row_sucursales = mysql_fetch_assoc($sucursales);
-				}
-				?>
-				<th  class="none"> TOTAL PRODUCTOS</th>
-				<th  class="none"> CATEGORIA </th>
-				<th  class="none"> PRESENTACION </th>
-				<th  class="none"> COLOR </th>
+				<th > COLOR</th>
+				<th  > PRESENTACION</th>
+				<th  > CATEGORIA </th>
 				<th  class="none"> CODIGO </th>
 				<th  >  </th>
 				<th  >  </th>
-				<th  >  </th>
+		
 			</tr>
 		</thead>
 		<tbody>
@@ -151,32 +139,12 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a>                                                          </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
 					<td align="center"> <?php echo $row_Listado['Marca']; ?></td>
-					<td> <?php echo $row_Listado['precio_compra']; ?></td>
-					<td align="center"> <?php echo $row_Listado['precio_venta']; ?></td>
-					<?php 
-					$sux = $row_Listado['codigoprod'];
-					$query_filtro_by_sucursal = "SELECT s.nombre_sucursal, s.cod_sucursal,  IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo, k.codigoprod, k.fecha from sucursal s left join kardex_alm k on k.codsucursal = s.cod_sucursal and k.fecha = ( SELECT MAX(fecha) FROM kardex_alm t2 WHERE k.codigoprod = t2.codigoprod and t2.codsucursal = s.cod_sucursal) and k.codigoprod =  $sux where s.cod_sucursal != 10 order by cod_sucursal asc";
-					$auxx1 = mysql_query($query_filtro_by_sucursal, $Ventas) or die(mysql_error());
-					$row_aux = mysql_fetch_assoc($auxx1);
-					$total = 0 ;
-					do { ?>
-						<?php $total = $total + (int) $row_aux['saldo'];?>
-						<th  class="none"> <?= $row_aux['saldo']; ?></th>
-						<?php 
-					} while ($row_aux = mysql_fetch_assoc($auxx1));
+					<td> <?php echo $row_Listado['color']; ?></td>
+					<td align="center"> <?php echo $row_Listado['presentacion']; ?></td>
 					
-					$rows = mysql_num_rows($auxx1);
-					if($rows > 0) {
-						mysql_data_seek($auxx1, 0);
-						$row_aux = mysql_fetch_assoc($auxx1);
-					}
-					?>
-					<td> <?= $total;?></td>
-
+					
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
 
-					<td> <?php echo $row_Listado['Presentacion']; ?></td>
-					<td> <?php echo $row_Listado['Color'];?></td>
 					<td> <?php echo $row_Listado['minicodigo'];?></td>
 
 
@@ -198,7 +166,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<?php } ?>
 
 					</td>
-					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">kardex</a></td>
+					
 
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
