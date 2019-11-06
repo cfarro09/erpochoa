@@ -51,7 +51,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 <form id="form-generate-venta">
   <div class="row">
     <div class="col-sm-12 text-center">
-      <button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
+      <button class="btn btn-success" type="submit"
+        style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
         <H5><STRONG>
             (CONFIRMAR)
           </STRONG></H5>
@@ -64,12 +65,13 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Cliente</label>
-            <select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
+            <select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single"
+              data-placement="top" data-original-title="Seleccionar cliente">
               <option value=""></option>
               <?php do {  ?>
-                <option value="<?= $row_Clientes['codigoclienten'] ?>">
-                  <?php echo $row_Clientes['ClienteNatural'] ?>
-                </option>
+              <option value="<?= $row_Clientes['codigoclienten'] ?>">
+                <?php echo $row_Clientes['ClienteNatural'] ?>
+              </option>
               <?php
               } while ($row_Clientes = mysql_fetch_assoc($Clientes));
               $rows = mysql_num_rows($Clientes);
@@ -86,9 +88,10 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
             <label for="field-1" class="control-label">Sucursal</label>
             <select name="sucursal" required id="sucursal-oc-new" disabled class="form-control ">
               <?php do {  ?>
-                <option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $row_sucursales['cod_sucursal'] ?>">
-                  <?php echo $row_sucursales['nombre_sucursal'] ?>
-                </option>
+              <option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?>
+                value="<?php echo $row_sucursales['cod_sucursal'] ?>">
+                <?php echo $row_sucursales['nombre_sucursal'] ?>
+              </option>
               <?php
               } while ($row_sucursales = mysql_fetch_assoc($sucursales));
               $rows = mysql_num_rows($sucursales);
@@ -130,7 +133,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
   </div>
   <div class="row" style="display: none">
     <div class="col-sm-12 text-center">
-      <button class="btn btn-success" type="submit" id="generateCompra" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
+      <button class="btn btn-success" type="submit" id="generateCompra"
+        style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
     </div>
   </div>
   <div class="row">
@@ -144,14 +148,18 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <?php
         do {
           ?>
-          <option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
+        <option value="<?php echo $row_Productos['codigoprod'] ?>"
+          data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>"
+          data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
+          data-marca="<?= $row_Productos['Marca']; ?>"
+          <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
                                                                                                                                                                                                                                                                                                                                         echo "selected=\"selected\"";
                                                                                                                                                                                                                                                                                                                                       } ?>>
-            <?php echo $row_Productos['nombre_producto'] ?> -
-            <?php echo $row_Productos['Marca']; ?> -
-            <?php echo $row_Productos['nombre_color']; ?> -
-            <?php echo "$/." . $row_Productos['p2']; ?> -
-            (<?= "Stock " . $row_Productos['saldo']; ?>)</option>
+          <?php echo $row_Productos['nombre_producto'] ?> -
+          <?php echo $row_Productos['Marca']; ?> -
+          <?php echo $row_Productos['nombre_color']; ?> -
+          <?php echo "$/." . $row_Productos['p2']; ?> -
+          (<?= "Stock " . $row_Productos['saldo']; ?>)</option>
         <?php
         } while ($row_Productos = mysql_fetch_assoc($Productos));
         $rows = mysql_num_rows($Productos);
@@ -181,7 +189,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
       </table>
     </div>
   </div>
-  <div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px" id="header-guia">
+  <div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px"
+    id="header-guia">
     <div class="col-sm-4">
       Total: <span id="total-header"></span>
     </div>
@@ -211,7 +220,7 @@ mysql_free_result($Detalle_Compras);
       getSelectorAll(".tarjetaso").forEach(i => i.style.display = "")
   }
 
-  $("#sucursal-oc-new").on("change", function() {
+  $("#sucursal-oc-new").on("change", function () {
 
     if ($("#sucursal-oc-new").val() == 10) {
       $("#direccion").val("");
@@ -222,7 +231,7 @@ mysql_free_result($Detalle_Compras);
       $("#div_aux").hide("fast/300/slow");
     }
   })
-  $('#codigoprod').on('change', function() {
+  $('#codigoprod').on('change', function () {
     if (getSelector(`.codigo_${this.value}`)) {
 
     } else {
