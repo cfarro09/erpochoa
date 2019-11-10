@@ -48,10 +48,11 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 ?>
 
-<form id="form-generate-compra">
+<form id="form-generate-venta">
   <div class="row">
     <div class="col-sm-12 text-center">
-      <button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
+      <button class="btn btn-success" type="submit"
+        style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
         <H5><STRONG>
             (CONFIRMAR)
           </STRONG></H5>
@@ -64,12 +65,13 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Cliente</label>
-            <select name="proveedor" id="proveedor" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
+            <select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single"
+              data-placement="top" data-original-title="Seleccionar cliente">
               <option value=""></option>
               <?php do {  ?>
-                <option value="<?= $row_Clientes['codigoclienten'] ?>">
-                  <?php echo $row_Clientes['ClienteNatural'] ?>
-                </option>
+              <option value="<?= $row_Clientes['codigoclienten'] ?>">
+                <?php echo $row_Clientes['ClienteNatural'] ?>
+              </option>
               <?php
               } while ($row_Clientes = mysql_fetch_assoc($Clientes));
               $rows = mysql_num_rows($Clientes);
@@ -84,11 +86,12 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Sucursal</label>
-            <select name="sucursal" id="sucursal-oc-new" disabled class="form-control ">
+            <select name="sucursal" required id="sucursal-oc-new" disabled class="form-control ">
               <?php do {  ?>
-                <option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $row_sucursales['cod_sucursal'] ?>">
-                  <?php echo $row_sucursales['nombre_sucursal'] ?>
-                </option>
+              <option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?>
+                value="<?php echo $row_sucursales['cod_sucursal'] ?>">
+                <?php echo $row_sucursales['nombre_sucursal'] ?>
+              </option>
               <?php
               } while ($row_sucursales = mysql_fetch_assoc($sucursales));
               $rows = mysql_num_rows($sucursales);
@@ -100,44 +103,38 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
             </select>
           </div>
         </div>
-        <div class="col-md-6" style="display: none" id="div_aux"></div>
-        <div class="col-md-6" id="div_direccion" style="display: none">
-          <div class="form-group">
-            <label for="direccion" class="control-label">Direccion</label>
-            <input type="text" class="form-control" id="direccion">
-          </div>
-        </div>
 
         <div class="col-md-6">
           <div class="form-group">
             <label for="field-1" class="control-label">Tipo Comprobante</label>
-            <select class="form-control" id="tipocomprobante">
-              <option>Factura</option>
-              <option>Boleta</option>
-              <option>Recibo</option>
-              <option>Otros</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <label for="field-1" class="control-label">Forma de Pago</label>
-            <select class="form-control" id="tipocomprobante">
-              <option value="contado">Contado</option>
-              <option value="depositobancario">Deposito Bancario</option>
-              <option value="tarjetadebito">Tarjeta Debito</option>
-              <option value="tarjetacredito">Tarjeta de Credito</option>
-              <option value="cheque">Cheque</option>
+            <select required class="form-control" id="tipocomprobante">
+              <option value="factura">Factura</option>
+              <option value="boleta">Boleta</option>
+              <option value="recibo">Recibo</option>
               <option value="otros">Otros</option>
             </select>
           </div>
         </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="field-1" class="control-label">Pago en Efectivo</label>
+            <input type="number" class="form-control" id="montoefectivo">
+          </div>
+        </div>
+        <div class="col-md-2" style="margin-top: 10px">
+          <button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
+        </div>
+        <div class="" id="containerpayextra">
+
+        </div>
+
       </div>
     </div>
   </div>
   <div class="row" style="display: none">
     <div class="col-sm-12 text-center">
-      <button class="btn btn-success" type="submit" id="generateCompra" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
+      <button class="btn btn-success" type="submit" id="generateCompra"
+        style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
     </div>
   </div>
   <div class="row">
@@ -151,12 +148,18 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <?php
         do {
           ?>
-          <option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {echo "selected=\"selected\""; } ?>>
-            <?php echo $row_Productos['nombre_producto'] ?> -
-            <?php echo $row_Productos['Marca']; ?> -
-            <?php echo $row_Productos['nombre_color']; ?> -
-            <?php echo "$/." . $row_Productos['p2']; ?> -
-            (<?= "Stock " . $row_Productos['saldo']; ?>)</option>
+        <option value="<?php echo $row_Productos['codigoprod'] ?>"
+          data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>"
+          data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
+          data-marca="<?= $row_Productos['Marca']; ?>"
+          <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
+                                                                                                                                                                                                                                                                                                                                        echo "selected=\"selected\"";
+                                                                                                                                                                                                                                                                                                                                      } ?>>
+          <?php echo $row_Productos['nombre_producto'] ?> -
+          <?php echo $row_Productos['Marca']; ?> -
+          <?php echo $row_Productos['nombre_color']; ?> -
+          <?php echo "$/." . $row_Productos['p2']; ?> -
+          (<?= "Stock " . $row_Productos['saldo']; ?>)</option>
         <?php
         } while ($row_Productos = mysql_fetch_assoc($Productos));
         $rows = mysql_num_rows($Productos);
@@ -186,7 +189,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
       </table>
     </div>
   </div>
-  <div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px" id="header-guia">
+  <div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px"
+    id="header-guia">
     <div class="col-sm-4">
       Total: <span id="total-header"></span>
     </div>
@@ -209,7 +213,14 @@ mysql_free_result($Detalle_Compras);
 ?>
 
 <script type="text/javascript">
-  $("#sucursal-oc-new").on("change", function() {
+  function changeTipoPago(e) {
+    if (e.value == "contado")
+      getSelectorAll(".tarjetaso").forEach(i => i.style.display = "none")
+    else
+      getSelectorAll(".tarjetaso").forEach(i => i.style.display = "")
+  }
+
+  $("#sucursal-oc-new").on("change", function () {
 
     if ($("#sucursal-oc-new").val() == 10) {
       $("#direccion").val("");
@@ -220,7 +231,7 @@ mysql_free_result($Detalle_Compras);
       $("#div_aux").hide("fast/300/slow");
     }
   })
-  $('#codigoprod').on('change', function() {
+  $('#codigoprod').on('change', function () {
     if (getSelector(`.codigo_${this.value}`)) {
 
     } else {
@@ -257,8 +268,8 @@ mysql_free_result($Detalle_Compras);
     if (e.value < 0 || "" == e.value) {
       e.value = 0
     } else {
-      if(e.dataset.type == "cantidad"){
-        if(parseInt(e.dataset.stock) < parseInt(e.value)){
+      if (e.dataset.type == "cantidad") {
+        if (parseInt(e.dataset.stock) < parseInt(e.value)) {
           e.value = 0
         }
       }
@@ -287,9 +298,50 @@ mysql_free_result($Detalle_Compras);
 
   }
 
+  function addPayExtra() {
+    containerpayextra.innerHTML += `
+        <div class="col-md-12 containerx" style="border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px">
+          <div class="text-right">
+            <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Banco</label>
+              <input type="text" required class="form-control bancoextra">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Codigo Transaccion</label>
+              <input type="number" required value="0" class="form-control codigotransaccionextra">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Fecha</label>
+              <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Monto</label>
+              <input type="number" required class="form-control montoextra">
+            </div>
+          </div>
+        </div>
+    `;
+    $('.date-picker').datepicker({
+      rtl: App.isRTL(),
+      autoclose: true
+    });
+  }
+
+  function removecontainerpay(e) {
+    e.closest(".containerx").remove()
+  }
+
   function eliminarproducto(e) {
     e.closest(".producto").remove()
-
     var i = 1;
     getSelectorAll(".producto").forEach(p => {
       p.querySelector(".indexproducto").textContent = i;
@@ -306,34 +358,45 @@ mysql_free_result($Detalle_Compras);
     }
     return result;
   }
-  getSelector("#form-generate-compra").addEventListener("submit", e => {
+
+
+  getSelector("#form-generate-venta").addEventListener("submit", e => {
     e.preventDefault();
-    if (!$("#proveedor").val() || !$("#codigoreferencial1").val())
-      return
     if (getSelectorAll(".producto").length < 1) {
       alert("Debes agregar almenos un producto")
     } else {
       const data = {
         header: {},
-        detalle: []
+        detalle: [],
+        payextra: []
       }
+      getSelectorAll(".containerx").forEach(ix => {
+        const bancopay = ix.querySelector(".bancoextra").value
+        const codigotransaccionpay = ix.querySelector(".codigotransaccionextra").value
+        const fechapay = ix.querySelector(".fechaextra").value
+        const montopay = ix.querySelector(".montoextra").value
+      })
+
       data.header = {
-        fecha_emision: '<?php echo date("Y-m-d"); ?>',
-        hora_emision: '<?php echo date("h:i:s"); ?>',
-        codigoguia: 0,
         codigo: makeid(20),
-        codigoproveedor: getSelector("#proveedor").value,
-        codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
-        codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
+        codigoventa: makeid(20),
+        tipocomprobante: tipocomprobante.value,
+        tipo_pago: tipopago.value,
+        codigoclienten: cliente.value,
+        codigoclientej: cliente.value,
+
+        codigobanco: bancoextra.value,
+        codigocomprobante: codigotransaccionextra.value,
+
         subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
         igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
+        total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
         montofact: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
+        fecha_emision: '<?php echo date("Y-m-d"); ?>',
+        hora_emision: '<?php echo date("h:i:s"); ?>',
+        codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
+        codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
         estadofact: 1,
-        sucursal: getSelector("#sucursal-oc-new").value,
-        codigoref1: getSelector("#codigoreferencial1").value,
-        codigoref2: getSelector("#codigoreferencia2").value,
-        estado: 1,
-        direccion: $("#direccion").val()
       }
       getSelectorAll(".producto").forEach(item => {
         data.detalle.push({
@@ -358,7 +421,7 @@ mysql_free_result($Detalle_Compras);
         .then(res => {
           if (res.success) {
             alert("registro completo!")
-            getSelector("#form-generate-compra").reset();
+            getSelector("#form-generate-venta").reset();
             getSelector("#detalleFormProducto").innerHTML = ""
             location.reload()
           }
