@@ -604,7 +604,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							<div class="col-sm-3" id="containerTipoCambio" style="display: none">
 								<label class="control-label" for="monedapro">Cambio</label>
 								<input type="number" class="form-control" value="1" min="1" step="any" name="tipocambiopro"
-								id="tipocambiopro">
+								id="tipocambiopro" oninput="changepeso(preciopro)">
 							</div>
 							<div class="col-sm-3">
 								<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
@@ -789,8 +789,10 @@ mysql_free_result($Listado);
 		if (e.value == "dolares") {
 			containerTipoCambio.style.display = ""
 		} else {
+			tipocambiopro.value = 1
 			containerTipoCambio.style.display = "none"
 		}
+		changepeso(preciopro)
 	}
 	function changedescuentogeneral(e) {
 		if (e.value < 0 || e.value == "") {
@@ -883,7 +885,6 @@ mysql_free_result($Listado);
 		$("#mProrrateo").modal();
 	}
 	function changepeso(e) {
-
 		if (e.value < 0) {
 			e.value = 0;
 			return;
@@ -898,9 +899,7 @@ mysql_free_result($Listado);
 				}
 			});
 			if (proccesspeso) {
-
-
-				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 0;
+				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 1;
 
 				const unit = $("#preciopro").val() *tc / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
