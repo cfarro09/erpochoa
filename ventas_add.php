@@ -199,8 +199,6 @@ include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
 
 
-mysql_free_result($Clientes);
-mysql_free_result($Detalle_Compras);
 ?>
 
 <script type="text/javascript">
@@ -307,16 +305,27 @@ mysql_free_result($Detalle_Compras);
               <input type="number" required value="0" class="form-control codigotransaccionextra">
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="form-group">
               <label class="control-label">Fecha</label>
               <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="form-group">
               <label class="control-label">Monto</label>
               <input type="number" required class="form-control montoextra">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label class="control-label">Tipo Pago</label>
+              <select class="form-control tipopago">
+                <option value="depositobancario">Deposito Bancario</option>
+                <option value="tarjetadebito">Tarjeta Debito</option>
+                <option value="tarjetacredito">Tarjeta Credito</option>
+                <option value="cheque">Cheque</option>
+              </select>
             </div>
           </div>
         </div>
@@ -356,28 +365,29 @@ mysql_free_result($Detalle_Compras);
     if (getSelectorAll(".producto").length < 1) {
       alert("Debes agregar almenos un producto")
     } else {
+      const codigo  = makeid(20);
       const data = {
         header: {},
         detalle: [],
         payextra: []
       }
       getSelectorAll(".containerx").forEach(ix => {
-        const bancopay = ix.querySelector(".bancoextra").value
-        const codigotransaccionpay = ix.querySelector(".codigotransaccionextra").value
-        const fechapay = ix.querySelector(".fechaextra").value
-        const montopay = ix.querySelector(".montoextra").value
+        const bancopay = ix.querySelector(".bancoextra").value;
+        const codigotransaccionpay = ix.querySelector(".codigotransaccionextra").value;
+        const fechapay = ix.querySelector(".fechaextra").value;
+        const montopay = ix.querySelector(".montoextra").value;
+        const tipopago = ix.querySelector(".tipopago").value;
+
+        payextra.push(`insert into pagostarjeta (banco, codigotransaccion, fecha, monto, tipopago, codigoventas) values ('${bancopay})', '${codigotransaccionpay}', '${fechapay}', ${montopay}, '${tipopago}', '${codigo}'`)
       })
 
       data.header = {
-        codigo: makeid(20),
-        codigoventa: makeid(20),
+        codigo,
+        codigoventa: codigo,
         tipocomprobante: tipocomprobante.value,
         tipo_pago: tipopago.value,
         codigoclienten: cliente.value,
         codigoclientej: cliente.value,
-
-        codigobanco: bancoextra.value,
-        codigocomprobante: codigotransaccionextra.value,
 
         subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
         igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
