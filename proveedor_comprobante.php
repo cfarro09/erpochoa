@@ -40,7 +40,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
   $updateSQL = sprintf("UPDATE proveedor_cuentas SET estado=%s WHERE codprovcue=%s",
                        GetSQLValueString($_POST['estado'], "text"),
-                       GetSQLValueString($_POST['codprovcue'], "text"));
+                       GetSQLValueString($_POST['codprovcue'], "int"));
 
   mysql_select_db($database_Ventas, $Ventas);
   $Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
@@ -59,23 +59,20 @@ if (isset($_GET['codigoproveedor'])) {
   $colname_Listado = $_GET['codigoproveedor'];
 }
 mysql_select_db($database_Ventas, $Ventas);
-//$query_Listado = sprintf("SELECT a.codprovcue, a.banco, a.titular, a.numero_cuenta, a.tipo_cuenta, a.estado_cuenta, b.ruc, b.razonsocial FROM proveedor_cuentas a INNER JOIN proveedor b on a.codigoproveedor = b. codigoproveedor WHERE a.codigoproveedor = %s", GetSQLValueString($colname_Listado, "int"));
-$query_Listado = sprintf("SELECT a.codigoproveedor, a.razonsocial, b.comprobante, b.numero, sum(b.precio_compra) as suma, sum(b.cantidad) as cantidad1, count(b.cantidad) as cantidad, b.fecha, c.igv as igv FROM proveedor a INNER JOIN historial_producto b on a.codigoproveedor = b.codigoproveedor left join comprobante_cpmpra c on c.numero=b.numero where a.codigoproveedor= $colname_Listado group by b.numero, b.comprobante");
-                          
+$query_Listado = sprintf("select *, p.ruc, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, count(t.codigocompras) as counttransporte, count(e.codigocompras) as countestibador, count(nd.codigocompras) as countnotadebito, count(nc.codigocompras) as countnotacredito, p.ruc, s.nombre_sucursal from registro_compras r left join transporte_compra t on t.codigocompras = r.codigorc left join estibador_compra e on e.codigocompras = r.codigorc left join notadebito_compra nd on nd.codigocompras = r.codigorc left join notacredito_compra nc on nc.codigocompras = r.codigorc left join sucursal s on s.cod_sucursal=r.codigosuc LEFT JOIN proveedor p on p.ruc=r.rucproveedor where p.ruc= '%s' or t.ructransporte='%s'", GetSQLValueString($colname_Listado, "char"),GetSQLValueString($colname_Listado, "char"));
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
-/*
+
 $colname_Proveedor = "-1";
 if (isset($_GET['codigoproveedor'])) {
   $colname_Proveedor = $_GET['codigoproveedor'];
 }
 mysql_select_db($database_Ventas, $Ventas);
-$query_Proveedor = sprintf("SELECT a.codigoproveedor, a.numero, b.igv as igv FROM historial_producto a left JOIN comprobante_cpmpra b on a.numero = b.numero where a.codigoproveedor= $colname_Listado");
+$query_Proveedor = sprintf("SELECT * FROM proveedor WHERE ruc = %s", GetSQLValueString($colname_Listado, "char"));
 $Proveedor = mysql_query($query_Proveedor, $Ventas) or die(mysql_error());
 $row_Proveedor = mysql_fetch_assoc($Proveedor);
-$totalRows_Proveedor = mysql_num_rows($Proveedor);*/
-
+$totalRows_Proveedor = mysql_num_rows($Proveedor);
 //------------Fin Juego de Registro "Listado"----------------
  //Enumerar filas de data tablas
  $i = 1;
@@ -118,52 +115,117 @@ include("Fragmentos/abrirpopupcentro.php");
     <thead>
       <tr>
         <th width="5%"> N&deg; </th>
-          <th  width="5%" > COMPROBANTE </th>
-          <th  width="5%" > FECHA </th>
-          <th  width="30%"> NUMERO</th>
-          <th  width="25%"> CANTIDAD ARTICULOS </th>
-          <th  width="5%" class="none"> CANTIDAD ARTICULOS EN COMPROBANTE </th>
-          <th  width="5%" > SUMA DE COMPROBANTE  </th>
-          <th  width="5%"> ESTADO </th>
-          <th  width="5%" align="center">  </th>
-          <th  width="5%" align="center">  </th>
+          <th  width="15%" > TIPO - NUMERO </th>
+          <th  width="20%"> FECHA REG  </th>
+          <th  width="20%"> SUCURSAL </th>
+          <th  width="10%" > SUB TOTAL </th>
+          <th  width="5%"> IGV</th>
+          <th  width="5%"> TOTAL </th>
+          <th  width="5%" > SALDO  </th>
+          <th  width="10%"> DETALLE  </th>
+          <th  width="5%"> VER </th>
         </tr>
       </thead>
     <tbody>
       <?php do { ?>
-        <tr>
-          <td> <?php echo $i; ?> </td>
-          <td> <?php echo $row_Listado['comprobante']; ?>                                                           </td>
-          <td> <?php echo $row_Listado['fecha']; ?></td>
-          <td> <?php echo $row_Listado['numero']; ?></td>
-          <td> <?php echo $row_Listado['cantidad']; ?> </td>
-          <td> <?php echo $row_Listado['cantidad1']; ?> </td>
-          <td> 
-		  <?php echo $row_Listado['suma']; ?>
-              
-           </td>
-          <td align="center">  
-          <?php 
-		  if ($row_Listado['igv'] > 0) 
-		  		echo '<dt class="font-blue">Conforme</dt>';
-		  else
-		  		echo '<dt class="font-red">Falta Asignar Datos</dt>';
-		  ?>
-           </td>
-          
-          <td> 
-           <?php 
-		  if ($row_Listado['igv'] == NULL) { ?> 
-            <a  class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Registrar Comprobante"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?numero=<?php echo $row_Listado['numero']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>          </td>
-           <?php } ?>
-           
-           
-          <td>
-           <a href="proveedor_reporte.php?codigonumero=<?php echo $row_Listado['numero']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Bancos y Cuentas"><i class="glyphicon glyphicon-credit-card" ></i></a>          </td>
-           
-            
+            <?php if($row_Listado['codigorc']!=NULL && $row_Listado['rucproveedor']==$colname_Listado ) { ?>
          
-        </tr>
+               <tr>
+             
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td><?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  <td> <?php echo $row_Listado['subtotal']; ?> </td>
+                  <td> <?php echo $row_Listado['igv']; ?> </td>
+                  <td> <?php echo $row_Listado['total']; ?> </td>
+                  <td> 0 </td>
+                  <td> COMPRA </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+          
+         
+            </tr>
+            <?php } ?>
+         <?php if($row_Listado['id_transporte']!=NULL && $row_Listado['ructransporte']==$colname_Listado ) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  <td> <?php echo round($row_Listado['preciotransp_soles']/1.18, 2);?> </td>
+                  <td> <?php echo $row_Listado['preciotransp_soles']-round($row_Listado['preciotransp_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
+                  <td> 0 </td>
+                  <td> TRANSPORTE - <?PHP echo $row_Listado['tipo_transporte']; ?> </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
+
+          <?php if($row_Listado['id_estibador']!=NULL && $row_Listado['rucestibador']==$colname_Listado ) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantee'].' - '.$row_Listado['numerocomprobantee']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  <td> <?php echo round($row_Listado['precioestibador_soles']/1.18, 2);?> </td>
+                  <td> <?php echo $row_Listado['precioestibador_soles']-round($row_Listado['precioestibador_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['precioestibador_soles'],2); ?> </td>
+                  <td> 0 </td>
+                  <td> Estibador </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
+         <?php if($row_Listado['id_notadebito']!=NULL && $row_Listado['rucnd']==$colname_Listado) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  <td> <?php echo round($row_Listado['preciond_soles']/1.18, 2);?> </td>
+                  <td> <?php echo $row_Listado['preciond_soles']-round($row_Listado['preciond_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
+                  <td> 0 </td>
+                  <td> NOTA DEBITO </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
+
+
+
+         <?php if($row_Listado['id_notacredito']!=NULL  && $row_Listado['runotacredito']==$colname_Listado) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?> </td>
+                  <td> <?php echo round($row_Listado['precioNC_soles']/1.18, 2);?> </td>
+                  <td> <?php echo $row_Listado['precionc_soles']-round($row_Listado['precionc_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
+                  <td> 0 </td>
+                  <td> NOTA CREDITO </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
+
         <?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
     </tbody>
   </table>
@@ -175,5 +237,5 @@ include("Fragmentos/pie.php");
 
 mysql_free_result($Listado);
 
-//mysql_free_result($Proveedor);
+mysql_free_result($Proveedor);
 ?>

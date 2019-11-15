@@ -1034,8 +1034,8 @@ echo "<a href='proforma_add.php?codigo=$d'>Proforma</a>";
 <!-- BEGIN CONTENT -->
 <?php if  ($nombre_archivo = "proveedor_cuentas.php") {
 
-   $VarUrl2 = "";
-   $TituloGeneral2 = "";
+   $VarUrl2 = $VarUrl;
+                                   $TituloGeneral2 = $TituloGeneral;
 }
 else {
  $VarUrl2 = "";

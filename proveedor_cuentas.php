@@ -136,19 +136,19 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> <?php echo $row_Listado['nombre_banco']; ?> </td>
           <td> <?php echo $row_Listado['numero_cuenta']; ?> </td>
           <td> 
-		  <?php 
-			if ($row_Listado['tipo_cuenta'] == "ah") {echo "Ahorro";}
-			if ($row_Listado['tipo_cuenta'] == "co") {echo "Corriente";}
-			if ($row_Listado['tipo_cuenta'] == "cd") {echo "Certificado de Déposito";}
-			if ($row_Listado['tipo_cuenta'] == "ch") {echo "Cheque";}
-			?>
+      <?php 
+      if ($row_Listado['tipo_cuenta'] == "ah") {echo "Ahorro";}
+      if ($row_Listado['tipo_cuenta'] == "co") {echo "Corriente";}
+      if ($row_Listado['tipo_cuenta'] == "cd") {echo "Certificado de Déposito";}
+      if ($row_Listado['tipo_cuenta'] == "ch") {echo "Cheque";}
+      ?>
               
            </td>
           <td align="center">  
           <?php 
-		  if ($row_Listado['estado_cuenta'] == 0) {echo '<dt class="font-blue">Activa</dt>';}
-		  if ($row_Listado['estado_cuenta'] == 1) {echo '<dt class="font-red">Inactiva</dt>';}
-		  ?>
+      if ($row_Listado['estado_cuenta'] == 0) {echo '<dt class="font-blue">Activa</dt>';}
+      if ($row_Listado['estado_cuenta'] == 1) {echo '<dt class="font-red">Inactiva</dt>';}
+      ?>
            </td>
           
           <td> 

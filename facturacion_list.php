@@ -25,7 +25,7 @@ $row_Listado1 = mysql_fetch_assoc($Listado1);
 $totalRows_Listado1 = mysql_num_rows($Listado1);
  //Enumerar filas de data tablas
 
-$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, registro_compras.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras on registro_compras.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
+$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, registro_compras.codigorc, registro_compras.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras on registro_compras.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
 $listaguiasinoc = mysql_query($queryguiasinoc, $Ventas) or die(mysql_error());
 $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
 $totalRows_listaguiasinoc = mysql_num_rows($listaguiasinoc);
@@ -138,7 +138,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
 					<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
 						<td>
-							<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)" data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" data-codigorc="<?= $row_Listado['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
+							<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)" data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" data-codigorc="<?= $row_listaguiasinoc['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
 						</td>
 						<?php else: ?>
 							<td><a href="#" class="aux_compras" data-type="guia_sin_oc"

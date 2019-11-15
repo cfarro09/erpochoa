@@ -2,7 +2,9 @@
 <?php
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT rc.tipomoneda, rc.tipo_comprobante, rc.numerocomprobante, s.nombre_sucursal, p.ruc, p.razonsocial, rc.subtotal, rc.igv, rc.total from registro_compras rc inner JOIN proveedor p on p.codigoproveedor=rc.codigoproveedor inner join sucursal s on s.cod_sucursal=rc.codigosuc";
+$query_Listado = "select *, p.ruc, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, count(t.codigocompras) as counttransporte, count(e.codigocompras) as countestibador, count(nd.codigocompras) as countnotadebito, count(nc.codigocompras) as countnotacredito, p.ruc, s.nombre_sucursal from registro_compras r left join transporte_compra t on t.codigocompras = r.codigorc left join estibador_compra e on e.codigocompras = r.codigorc left join notadebito_compra nd on nd.codigocompras = r.codigorc left join notacredito_compra nc on nc.codigocompras = r.codigorc left join sucursal s on s.cod_sucursal=r.codigosuc LEFT JOIN proveedor p on p.ruc=r.rucproveedor";
+
+
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -34,34 +36,96 @@ $i = 1;
 	<table class="table table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
-				<th> N&deg; </th>
-				<th>TIPO COMPR</th>
-				<th>N° COMPROBANTE</th>
-				<th>SUCURSAL</th>
-				<th>RUC P</th>
-				<th>RAZON SOCIAL</th>
-				<th>SUBTOTAL</th>
-				<th>IGV</th>
-				<th>TOTAL</th>
-				<th>ACCIONES</th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php do { ?>
-				
-				<tr style="background-color: white">
-					<td> <?php echo $i; ?> </td>
-					<td> <?php echo $row_Listado['tipo_comprobante']; ?></td>
-					<td> <?php echo $row_Listado['numerocomprobante']; ?></td>
-					<td> <?php echo $row_Listado['nombre_sucursal']; ?></td>
-					<td><?php echo $row_Listado['ruc']; ?></td>
-					<td><?php echo $row_Listado['razonsocial']; ?></td>
-					<td><?php echo $row_Listado['subtotal']; ?></td>
-					<td><?php echo $row_Listado['igv']; ?></td>
-					<td><?php echo $row_Listado['total']; ?></td>
-					<td><a href="#" class="verDetalle">Ver</a></td>
-				</td>
-			</tr>
+        <th width="5%"> N&deg; </th>
+          <th  width="10%" > TIPO - NUM </th>
+          <th  width="15%"> FECHA REG  </th>
+          
+          <th  width="10%"> TOTAL </th>
+          <th  width="20%"> SUCURSAL </th>
+          <th  width="20%"> RUC - PROVEEDOR  </th>
+          <th  width="15%"> DETALLE  </th>
+          <th  width="5%"> VER </th>
+        </tr>
+      </thead>
+    <tbody>
+      <?php do { ?>
+            <?php if($row_Listado['codigorc']!=NULL) { ?>
+         
+               <tr>
+             
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo $row_Listado['total']; ?> </td>
+                  <td><?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  
+                  <td> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
+                  <td> COMPRA </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+          
+         
+            </tr>
+            <?php } ?>
+         <?php if($row_Listado['id_transporte']!=NULL) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  
+                  <td> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
+                  <td> TRANSPORTE - <?PHP echo $row_Listado['tipo_transporte']; ?> </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
+
+          
+         <?php if($row_Listado['id_notadebito']!=NULL) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  
+                  <td> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
+                  <td> NOTA DEBITO </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
+
+
+
+         <?php if($row_Listado['id_notacredito']!=NULL) { ?>
+               <tr>
+          
+                  <td> <?php echo $i; ?> </td>
+                  <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
+                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo $row_Listado['nombre_sucursal']; ?> </td>
+                  <td> <?php echo round($row_Listado['precioNC_soles']/1.18, 2);?> </td>
+                  <td> <?php echo $row_Listado['precionc_soles']-round($row_Listado['precionc_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
+                  <td align="center"> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
+                  <td> NOTA CREDITO </td>
+
+                  <td align="center">  
+                      VER
+                  </td>
+            </tr>
+         <?php } ?>
 			<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 
 		</tbody>

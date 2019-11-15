@@ -49,7 +49,7 @@ if(isset($type)){
     $firstheader = "SELECT c.codigo_guia_sin_oc, a.usuario,p.ruc, s.cod_sucursal as sucursal,s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor  left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso where c.codigo_guia_sin_oc = $codigo";
 
   }
-  $firstheader1 = mysql_query($firstheader, $Ventas) or die(mysql_error());
+  $firstheader1 = mysql_query($firstheader, $Ventas) or die("d21111" . mysql_error());
   $headerx = mysql_fetch_assoc($firstheader1);
 }else{
   $headerx = array();
@@ -60,7 +60,7 @@ if(isset($type)){
 
 $query_Factura_enc = "select * from  registro_compras where codigorc = $codigorc";
 
-$Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
+$Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die("22222" . mysql_error());
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
 

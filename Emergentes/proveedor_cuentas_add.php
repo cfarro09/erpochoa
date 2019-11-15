@@ -33,7 +33,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 
 $editFormAction = $_SERVER['PHP_SELF'];
 if (isset($_SERVER['QUERY_STRING'])) {
-  $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
+    $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 }
 
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")) {
@@ -105,7 +105,7 @@ do {
   $rows = mysql_num_rows($Banco);
   if($rows > 0) {
       mysql_data_seek($Banco, 0);
-	  $row_Banco = mysql_fetch_assoc($Banco);
+    $row_Banco = mysql_fetch_assoc($Banco);
   }
 ?>
   </select>
@@ -138,7 +138,7 @@ do {
     <option value="ah"> Ahorro</option>
     <option value="co"> Corriente</option>
     <option value="ch"> Cheque</option>
-    <option value="cd"> Certificado de Depósito</option>
+    <option value="cd"> Certificado de Dep贸sito</option>
 
     
   </select>
@@ -150,7 +150,7 @@ do {
   <div class="form-group">
 <div class="col-md-10">
 <div class="input-group"><span id="sprytextfield2">
-<input type="text" class="form-control tooltips" data-placement="top" data-original-title="Agregar N&uacute;mero de Cuenta" placeholder="Número Cuenta" id="numero_cuenta" name="numero_cuenta" maxlength="30" />
+<input type="text" class="form-control tooltips" data-placement="top" data-original-title="Agregar N&uacute;mero de Cuenta" placeholder="N煤mero Cuenta" id="numero_cuenta" name="numero_cuenta" maxlength="30" />
 <span class="textfieldRequiredMsg"></span><span class="textfieldInvalidFormatMsg"></span></span><span class="input-group-addon">
 <i class="glyphicon glyphicon-credit-card  font-blue-soft"></i>
 </span>
