@@ -21,6 +21,7 @@ $i = 1;
 
 ?>
 
+
 <h2 align="center"><strong>REGISTRO COMPRAS</strong></h2>
 
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
@@ -78,5 +79,6 @@ mysql_free_result($Listado);
 ?>
 <script type="text/javascript">
 
+getSelector(".caption").style.display = "none"
 
 </script>

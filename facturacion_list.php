@@ -84,8 +84,9 @@ include("Fragmentos/abrirpopupcentro.php");
 				}else{
 					$row_Listado['subtotal'] = 0;
 				}
+				$color1 = $row_Listado['subtotal'] ? "#45f300" : "#fff100"
 				?>
-				<tr style="background-color: #26c281">
+				<tr style="background-color: <?= $color1 ?>">
 					<td> <?php echo $i; ?> </td>
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
 						data-toggle="modal">
@@ -115,7 +116,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 			<?php endif ?>
-			
+
 			<?php if($totalRows_listaguiasinoc > 0): do { ?>
 				<?php 
 
@@ -123,8 +124,9 @@ include("Fragmentos/abrirpopupcentro.php");
 				}else{
 					$row_listaguiasinoc['subtotal'] = 0;
 				}
+				$color = $row_listaguiasinoc['subtotal'] == 0 ? "#f3c200" : "#029128"
 				?>
-				<tr style="background-color: #b8cbec">
+				<tr style="background-color: <?= $color ?>">
 					<td> <?php echo $i; ?> </td>
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
 						data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
@@ -1229,7 +1231,7 @@ mysql_free_result($Listado);
 			facturafechaemision.value = ""
 			descuento.value = ""
 			$("#tipocomprobantefactura").val("")
-			moneda.value = ""
+			moneda.value = "soles"
 			nrocomprobante.value = ""
 
 			showopcionesextras.style.display = ""
@@ -1293,9 +1295,9 @@ mysql_free_result($Listado);
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
 						<td class="costeosinchecked"><input type="text" autocomplete="off" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>
-						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
+						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="0.00" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
 
-						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="text" class="solonumeros focusandclean importe form-control"></td>
+						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="0.00" required type="text" class="solonumeros focusandclean importe form-control"></td>
 
 						<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
 						<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
@@ -1589,7 +1591,8 @@ function changeprecioestibador(e) {
 				(tipocomprobante, numerocomprobante, rucestibador, moneda, tipocambio, precioestibador_soles, precioestibador_dolar, codigocompras) 
 				values 
 				('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${rucestibaodr}', '${monedaestibador.value}', 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`;
-				data.gastos.push(query)
+				data.gastos.push(query);
+				const dd = new Date().toISOString().substring(0,10);
 
 				const query1 =
 				`insert into plamar 
@@ -1611,7 +1614,7 @@ function changeprecioestibador(e) {
 				values 
 				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`;
 				data.gastos.push(query);
-
+				const dd = new Date().toISOString().substring(0,10);
 				const query1 =
 				`insert into plamar 
 				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
