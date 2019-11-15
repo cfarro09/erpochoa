@@ -58,12 +58,21 @@ if(isset($type)){
 
 
 
-$query_Factura_enc = "select * from  registro_compras where codigorc = $codigorc";
+$query_Factura_enc = "
+select r.*,  
+count(t.codigocompras) as counttransporte,
+count(e.codigocompras) as countestibador,
+count(nd.codigocompras) as countnotadebito,
+count(nc.codigocompras) as countnotacredito
+from  registro_compras r 
+left join transporte_compra t on t.codigocompras = r.codigorc
+left join estibador_compra e on e.codigocompras = r.codigorc
+left join notadebito_compra nd on nd.codigocompras = r.codigorc
+left join notacredito_compra nc on nc.codigocompras = r.codigorc
+where r.codigorc = $codigorc";
 
 $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
-
-
 
 $result_enc = array();
 
