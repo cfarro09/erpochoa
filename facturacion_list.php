@@ -31,6 +31,7 @@ $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
 $totalRows_listaguiasinoc = mysql_num_rows($listaguiasinoc);
 
 
+
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
@@ -59,7 +60,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
 	</div>
 <?php } // Show if recordset empty ?>
-<?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
+<?php if ($totalRows_Listado > 0 || $totalRows_listaguiasinoc > 0) { // Show if recordset not empty ?>
 	<table class="table table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
@@ -75,44 +76,46 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th> IMPRIMIR </th>
 			</tr>
 		</thead>
-		<tbody><?php do {  
-			$color = "#bde8dc";
-
-			if(isset($row_Listado['subtotal']) && $row_Listado['subtotal'] ){
-			}else{
-				$row_Listado['subtotal'] = 0;
-			}
-			?>
-			<tr style="background-color: #26c281">
-				<td> <?php echo $i; ?> </td>
-				<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
-					data-toggle="modal">
-					<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
-				</td>
-
-				<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
-				<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
-				<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
-			</td>
-			<td> <?php echo $row_Listado['razonsocial']; ?></td>
-			<td> <?php echo $row_Listado['fecha_emision']; ?></td>
-			<?php if($row_Listado['subtotal']): ?>
-				<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>" onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Ver</a>
-				</td>
-				<?php else: ?>
-					<td><a href="#" class="aux_compras" data-type="ordencompra"
-						data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
-					<?php endif ?>
-					<td>
-						<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-						href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
-						target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+		<tbody>
+			<?php if ($totalRows_Listado > 0): ?>
+				<?php do {  
+				$color = "#bde8dc";
+				if(isset($row_Listado['subtotal']) && $row_Listado['subtotal'] ){
+				}else{
+					$row_Listado['subtotal'] = 0;
+				}
+				?>
+				<tr style="background-color: #26c281">
+					<td> <?php echo $i; ?> </td>
+					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+						data-toggle="modal">
+						<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
 					</td>
-					<td>Orden Compra</td>
-				</td>
-			</tr>
-			<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 
+					<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
+					<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
+					<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
+				</td>
+				<td> <?php echo $row_Listado['razonsocial']; ?></td>
+				<td> <?php echo $row_Listado['fecha_emision']; ?></td>
+				<?php if($row_Listado['subtotal']): ?>
+					<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>" onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Ver</a>
+					</td>
+					<?php else: ?>
+						<td><a href="#" class="aux_compras" data-type="ordencompra"
+							data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
+						<?php endif ?>
+						<td>
+							<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+							href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
+							target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+						</td>
+						<td>Orden Compra</td>
+					</td>
+				</tr>
+				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+			<?php endif ?>
+			
 			<?php if($totalRows_listaguiasinoc > 0): do { ?>
 				<?php 
 
