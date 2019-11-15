@@ -1723,6 +1723,8 @@ function selectmoneda(e) {
 		titlesoles.textContent = "TOTAL S/"
 		rowfacturadolar.style.display = "none"
 		tipocambio.value = 1;
+		calcularTotalSinExtras();
+		calcularUnidadCosteoyTotalcosteo()
 		getSelector(".container_cambio").style.display = "none";
 		monedadolar = false
 	}
