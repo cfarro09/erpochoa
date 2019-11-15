@@ -31,6 +31,7 @@ $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
 $totalRows_listaguiasinoc = mysql_num_rows($listaguiasinoc);
 
 
+
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
@@ -59,7 +60,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
 	</div>
 <?php } // Show if recordset empty ?>
-<?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
+<?php if ($totalRows_Listado > 0 || $totalRows_listaguiasinoc > 0) { // Show if recordset not empty ?>
 	<table class="table table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
@@ -75,43 +76,46 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th> IMPRIMIR </th>
 			</tr>
 		</thead>
-		<tbody><?php do {  
-			$color = "#bde8dc";
-
-			if(isset($row_Listado['subtotal']) && $row_Listado['subtotal'] ){
-			}else{
-				$row_Listado['subtotal'] = 0;
-			}
-			?>
-			<tr style="background-color: #26c281">
-				<td> <?php echo $i; ?> </td>
-				<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
-					data-toggle="modal">
-					<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
-				</td>
-
-				<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
-				<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
-				<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
-			</td>
-			<td> <?php echo $row_Listado['razonsocial']; ?></td>
-			<td> <?php echo $row_Listado['fecha_emision']; ?></td>
-			<?php if($row_Listado['subtotal']): ?>
-				<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>" onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Ver</a>
-				</td>
-				<?php else: ?>
-					<td><a href="#" class="aux_compras" data-type="ordencompra"
-						data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
-					<?php endif ?>
-					<td>
-						<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-						href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
-						target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+		<tbody>
+			<?php if ($totalRows_Listado > 0): ?>
+				<?php do {  
+				$color = "#bde8dc";
+				if(isset($row_Listado['subtotal']) && $row_Listado['subtotal'] ){
+				}else{
+					$row_Listado['subtotal'] = 0;
+				}
+				$color1 = $row_Listado['subtotal'] ? "#45f300" : "#fff100"
+				?>
+				<tr style="background-color: <?= $color1 ?>">
+					<td> <?php echo $i; ?> </td>
+					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+						data-toggle="modal">
+						<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
 					</td>
-					<td>Orden Compra</td>
+
+					<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
+					<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
+					<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
 				</td>
-			</tr>
-			<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+				<td> <?php echo $row_Listado['razonsocial']; ?></td>
+				<td> <?php echo $row_Listado['fecha_emision']; ?></td>
+				<?php if($row_Listado['subtotal']): ?>
+					<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>" onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Ver</a>
+					</td>
+					<?php else: ?>
+						<td><a href="#" class="aux_compras" data-type="ordencompra"
+							data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
+						<?php endif ?>
+						<td>
+							<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+							href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
+							target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+						</td>
+						<td>Orden Compra</td>
+					</td>
+				</tr>
+				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+			<?php endif ?>
 
 			<?php if($totalRows_listaguiasinoc > 0): do { ?>
 				<?php 
@@ -120,8 +124,9 @@ include("Fragmentos/abrirpopupcentro.php");
 				}else{
 					$row_listaguiasinoc['subtotal'] = 0;
 				}
+				$color = $row_listaguiasinoc['subtotal'] == 0 ? "#f3c200" : "#029128"
 				?>
-				<tr style="background-color: #b8cbec">
+				<tr style="background-color: <?= $color ?>">
 					<td> <?php echo $i; ?> </td>
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
 						data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
@@ -291,110 +296,110 @@ include("Fragmentos/abrirpopupcentro.php");
 														<div class="form-group">
 															<label for="field-1" class="control-label">Moneda</label>
 															<select class="form-control" onchange="selectmoneda(this)" id="moneda" name="moneda" required>
-															<option selected value="soles">S/</option>
-															<option value="dolares">$</option>
-														</select>
+																<option selected value="soles">S/</option>
+																<option value="dolares">$</option>
+															</select>
+														</div>
 													</div>
-												</div>
-												<div class="col-md-2 container_cambio" id="container_cambio"
-												style="display: none">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Cambio</label>
-													<input type="number" min="1" value="1" step="any" class="form-control" id="tipocambio" oninput="changecambiodolar(this)" name="">
+													<div class="col-md-2 container_cambio" id="container_cambio"
+													style="display: none">
+													<div class="form-group">
+														<label for="field-1" class="control-label">Cambio</label>
+														<input type="number" min="1" value="1" step="any" class="form-control" id="tipocambio" oninput="changecambiodolar(this)" name="">
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								<table class="table">
-									<thead>
-										<th>Nº</th>
-										<th>Cantidad</th>
-										<th>Producto</th>
-										<th>Marca</th>
-										<th class="costeosinchecked" width=" 120px">Desc x Item</th>
-										<th class="costeosinchecked" width=" 120px">VCU</th>
-										<th class="costeosinchecked" width=" 120px">VCI</th>
-										<th class="costeosinchecked" width="120px">DSCTO</th>
-										<th width="120px">VCF</th>
-										<th class="costeosinchecked" width=" 120px">IGV</th>
-										<th class="costeosinchecked" width=" 120px">Total</th>
-										<th width="60px" class="costeochecked" style="display: none">Transporte</th>
-										<th width="60px" class="costeochecked" style="display: none">Estibador</th>
-										<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
-										<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
-										<th width="60px" class="costeochecked" style="display: none">Total</th>
-										<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
-									</thead>
-									<tbody id="detalleFacturar-list">
-									</tbody>
-								</table>
+									<table class="table">
+										<thead>
+											<th>Nº</th>
+											<th>Cantidad</th>
+											<th>Producto</th>
+											<th>Marca</th>
+											<th class="costeosinchecked" width=" 120px">Desc x Item</th>
+											<th class="costeosinchecked" width=" 120px">VCU</th>
+											<th class="costeosinchecked" width=" 120px">VCI</th>
+											<th class="costeosinchecked" width="120px">DSCTO</th>
+											<th width="120px">VCF</th>
+											<th class="costeosinchecked" width=" 120px">IGV</th>
+											<th class="costeosinchecked" width=" 120px">Total</th>
+											<th width="60px" class="costeochecked" style="display: none">Transporte</th>
+											<th width="60px" class="costeochecked" style="display: none">Estibador</th>
+											<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
+											<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
+											<th width="60px" class="costeochecked" style="display: none">Total</th>
+											<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
+										</thead>
+										<tbody id="detalleFacturar-list">
+										</tbody>
+									</table>
 
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="modal-footer">
-						<label for="showcosteo">Mostrar costeo</label>
-						<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
-						<button class="btn btn-success" id="showopcionesextras" type="button" onclick="showopciones()">Opciones</button>
-						<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
-						<button type="button" data-dismiss="modal" aria-label="Close"
-						class="btn btn-danger">Cerrar</button>
-					</div>
-				</form>
+						<div class="modal-footer">
+							<label for="showcosteo">Mostrar costeo</label>
+							<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
+							<button class="btn btn-success" id="showopcionesextras" type="button" onclick="showopciones()">Opciones</button>
+							<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
+							<button type="button" data-dismiss="modal" aria-label="Close"
+							class="btn btn-danger">Cerrar</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-<div class="modal fade" id="mopcionesextras" role="dialog" data-backdrop="static" data-keyboard="false">
-	<div class="modal-dialog" role="document" style="width: 700px">
-		<div class="modal-content m-auto">
-			<div class="modal-header">
-				<h2 class="modal-title" id="">Opciones extras</h2>
-			</div>
-			<div class="modal-body">
-				<div style="margin-top: 10px">
-					<label class="" for="check_transporte">transporte?</label>
-					<input type="checkbox" class="" id="check_transporte">
+	<div class="modal fade" id="mopcionesextras" role="dialog" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog" role="document" style="width: 700px">
+			<div class="modal-content m-auto">
+				<div class="modal-header">
+					<h2 class="modal-title" id="">Opciones extras</h2>
+				</div>
+				<div class="modal-body">
+					<div style="margin-top: 10px">
+						<label class="" for="check_transporte">transporte?</label>
+						<input type="checkbox" class="" id="check_transporte">
 
-					<div class="row" style="display: none" id="container_transporte">
-						<div class="col-sm-6 text-center">
-							<button type="button" disabled class="btn btn-success" data-type="prorrateo"
-							id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO X PESO</button>
+						<div class="row" style="display: none" id="container_transporte">
+							<div class="col-sm-6 text-center">
+								<button type="button" disabled class="btn btn-success" data-type="prorrateo"
+								id="btn_prorrateo" onclick="setExtra(this)">PRORRATEO X PESO</button>
+							</div>
+							<div class="col-sm-6 text-center">
+								<button type="button" disabled class="btn btn-success" data-type="participacion"
+								id="btn_participacion" onclick="setExtra(this)" id="participacion">PRORRATEO POR
+							COMPRA</button>
 						</div>
-						<div class="col-sm-6 text-center">
-							<button type="button" disabled class="btn btn-success" data-type="participacion"
-							id="btn_participacion" onclick="setExtra(this)" id="participacion">PRORRATEO POR
-						COMPRA</button>
 					</div>
 				</div>
-			</div>
 
-			<div style="margin-top: 10px">
-				<label class="" for="check_estibador">Estibador?</label>
-				<input type="checkbox" class="" id="check_estibador">
+				<div style="margin-top: 10px">
+					<label class="" for="check_estibador">Estibador?</label>
+					<input type="checkbox" class="" id="check_estibador">
 
-				<div class="row" style="display: none" id="container_estibador">
-					<div class="col-sm-6">
-						<label class="control-label" for="proveedorestibador">PROVEEDOR</label>
-						<select name="proveedor" id="proveedorestibador" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
-							<option value="">Seleccione</option>
-							<?php do {  ?>
-								<option value="<?= $row_Clientes['razonsocial'] . '&&&' .$row_Clientes['ruc']?>">
-									<?= $row_Clientes['razonsocial'] . ' ' .$row_Clientes['ruc']?>
-								</option>
-								<?php
-							} while ($row_Clientes = mysql_fetch_assoc($Clientes));
-							$rows = mysql_num_rows($Clientes);
-							if($rows > 0) {
-								mysql_data_seek($Clientes, 0);
-								$row_Clientes = mysql_fetch_assoc($Clientes);
-							}
-							?>
-						</select>
+					<div class="row" style="display: none" id="container_estibador">
+						<div class="col-sm-6">
+							<label class="control-label" for="proveedorestibador">PROVEEDOR</label>
+							<select name="proveedor" id="proveedorestibador" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar proveedor">
+								<option value="">Seleccione</option>
+								<?php do {  ?>
+									<option value="<?= $row_Clientes['razonsocial'] . '&&&' .$row_Clientes['ruc']?>">
+										<?= $row_Clientes['razonsocial'] . ' ' .$row_Clientes['ruc']?>
+									</option>
+									<?php
+								} while ($row_Clientes = mysql_fetch_assoc($Clientes));
+								$rows = mysql_num_rows($Clientes);
+								if($rows > 0) {
+									mysql_data_seek($Clientes, 0);
+									$row_Clientes = mysql_fetch_assoc($Clientes);
+								}
+								?>
+							</select>
 
-						<!-- <input class="form-control" name="" id="rucestibador"> -->
-					</div>
+							<!-- <input class="form-control" name="" id="rucestibador"> -->
+						</div>
 						<!-- <div class="col-sm-6">
 							<label class="control-label" for="proveedorestibador">Proveedor</label>
 							<input class="form-control" name="" id="proveedorestibador">
@@ -604,7 +609,7 @@ include("Fragmentos/abrirpopupcentro.php");
 							<div class="col-sm-3" id="containerTipoCambio" style="display: none">
 								<label class="control-label" for="monedapro">Cambio</label>
 								<input type="number" class="form-control" value="1" min="1" step="any" name="tipocambiopro"
-								id="tipocambiopro">
+								id="tipocambiopro" oninput="changepeso(preciopro)">
 							</div>
 							<div class="col-sm-3">
 								<label class="control-label" for="tipocomprobantepro">Tipo Comprobante</label>
@@ -747,11 +752,13 @@ mysql_free_result($Listado);
 	});
 
 	let arrayDetalle;
+	let windowtype = "costeosingle"
 	let monedadolar = false;
 	let typetransporte = "";
 	let subtotalGLOBAL = 0;
 	function checkcosteo(e) {
 		if (e.checked) {
+			windowtype = "costeoextra"
 			if("dolares" == moneda.value){
 				const cambio = parseFloat(tipocambio.value)
 				getSelectorAll(".vcf").forEach(i => {
@@ -767,9 +774,10 @@ mysql_free_result($Listado);
 			})
 
 		} else {
+			windowtype = "costeosingle"
 			if("dolares" == moneda.value){
 				getSelectorAll(".vcf").forEach(i => {
-					i.value = i.dataset.vcfsoles
+					i.value = i.dataset.vcfsoles ? i.dataset.vcfsoles : i.value
 				})	
 			}
 			getSelectorAll(".costeochecked").forEach(e => {
@@ -780,7 +788,6 @@ mysql_free_result($Listado);
 				e.style.display = ""
 			})
 		}
-		console.log(e.checked)
 	}
 	function showopciones() {
 		$("#mopcionesextras").modal();
@@ -789,8 +796,10 @@ mysql_free_result($Listado);
 		if (e.value == "dolares") {
 			containerTipoCambio.style.display = ""
 		} else {
+			tipocambiopro.value = 1
 			containerTipoCambio.style.display = "none"
 		}
+		changepeso(preciopro)
 	}
 	function changedescuentogeneral(e) {
 		if (e.value < 0 || e.value == "") {
@@ -832,7 +841,7 @@ mysql_free_result($Listado);
 				});
 				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 0;
 				getSelector(".sumatransporte").value = (parseFloat(preciopro.value)*tc).toFixed(4)
-				calcularExtras()
+				calcularUnidadCosteoyTotalcosteo()
 				$("#mProrrateo").modal("hide");
 			}
 			
@@ -883,7 +892,6 @@ mysql_free_result($Listado);
 		$("#mProrrateo").modal();
 	}
 	function changepeso(e) {
-
 		if (e.value < 0) {
 			e.value = 0;
 			return;
@@ -898,9 +906,7 @@ mysql_free_result($Listado);
 				}
 			});
 			if (proccesspeso) {
-
-
-				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 0;
+				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 1;
 
 				const unit = $("#preciopro").val() *tc / suma;
 				getSelectorAll(".pesoitempro").forEach(i => {
@@ -1225,7 +1231,7 @@ mysql_free_result($Listado);
 			facturafechaemision.value = ""
 			descuento.value = ""
 			$("#tipocomprobantefactura").val("")
-			moneda.value = ""
+			moneda.value = "soles"
 			nrocomprobante.value = ""
 
 			showopcionesextras.style.display = ""
@@ -1289,9 +1295,9 @@ mysql_free_result($Listado);
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
 						<td class="costeosinchecked"><input type="text" autocomplete="off" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>
-						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.pcompra}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
+						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="0.00" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
 
-						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="${r.pcompra ? (r.pcompra * r.cantidad).toFixed(4) : ""}" required type="text" class="solonumeros focusandclean importe form-control"></td>
+						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="0.00" required type="text" class="solonumeros focusandclean importe form-control"></td>
 
 						<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
 						<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
@@ -1349,7 +1355,7 @@ mysql_free_result($Listado);
 					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebitodolar" readonly></td>
 					<td style="display: none" class="costeochecked"><input class="form-control sumanotacreditodolar" readonly></td>
 					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" readonly></td>
-				
+
 					</tr>`);
 				rowfacturadolar.style.display = "none"
 				$('[data-toggle="tooltip"]').tooltip()
@@ -1369,6 +1375,9 @@ function changecambiodolar(e) {
 		return;
 	}
 	calcularTotalSinExtras();
+	calcularUnidadCosteoyTotalcosteo()
+
+
 }
 function changedescuento(e) {
 	if (e.value < 0 || e.value == "") {
@@ -1387,7 +1396,9 @@ function changedescuento(e) {
 }
 function calcularcosteobyfile(tr) {
 	let totalx = 0
-	totalx += parseFloat(tr.querySelector(".vcf").value ? tr.querySelector(".vcf").value : 0);
+	const vcfinit = tr.querySelector(".vcf").dataset.vcfsoles ? tr.querySelector(".vcf").dataset.vcfsoles : tr.querySelector(".vcf").value 
+	totalx += parseFloat(vcfinit);
+	totalx *= tipocambio.value;
 	totalx += parseFloat(tr.querySelector(".transporte_costeo").value ? tr.querySelector(".transporte_costeo").value : 0);
 	totalx += parseFloat(tr.querySelector(".estibador_costeo").value ? tr.querySelector(".estibador_costeo").value : 0);
 	totalx += parseFloat(tr.querySelector(".notadebito").value ? tr.querySelector(".notadebito").value : 0);
@@ -1402,51 +1413,58 @@ function changeimporte(e) {
 		return;
 	}
 	const aa = e.parentElement.parentElement
-		// const ss = e.value / parseInt(aa.querySelector(".cantidad").textContent)
-		const descuento = parseFloat(aa.querySelector(".descuento").value)
+	const descuento = parseFloat(aa.querySelector(".descuento").value)
 
-		calcularFila(aa, "importe")
-		calcularTotalSinExtras();
-		updateColumns();
-	}
-	function calcularTotalSinExtras() {
-		let sumavcf = 0
-		let sumaigvrow = 0
-		let sumavalorcompra2 = 0
-		getSelectorAll(".vcf").forEach(s => {
-			const tr = s.closest("tr");
-			sumavcf += parseFloat(s.value ? s.value : 0);
-			sumaigvrow += parseFloat(tr.querySelector(".igvrow").value ? tr.querySelector(".igvrow").value : 0)
-			sumavalorcompra2 += parseFloat(tr.querySelector(".valorcompra2").value ? tr.querySelector(".valorcompra2").value : 0)
-		})
-		getSelector(".sumavcf").value = sumavcf.toFixed(2)
-		getSelector(".sumaigvrow").value = sumaigvrow.toFixed(2)
-		getSelector(".sumavalorcompra2").value = sumavalorcompra2.toFixed(4)
-		if (tipocambio) {
-			getSelector(".sumavcfdolar").value = (sumavcf * parseFloat(tipocambio.value)).toFixed(2)
-			getSelector(".sumaigvrowdolar").value = (sumaigvrow * parseFloat(tipocambio.value)).toFixed(2)
-			getSelector(".sumavalorcompra2dolar").value = (sumavalorcompra2 * parseFloat(tipocambio.value)).toFixed(2)
+	calcularFila(aa, "importe")
+	calcularTotalSinExtras();
+	updateColumns();
+}
+function calcularTotalSinExtras() {
+	let sumavcf = 0
+	let sumaigvrow = 0
+	let sumavalorcompra2 = 0
+	getSelectorAll(".vcf").forEach(s => {
+		const tr = s.closest("tr");
+		sumavcf += parseFloat(s.value ? s.value : 0);
+		sumaigvrow += parseFloat(tr.querySelector(".igvrow").value ? tr.querySelector(".igvrow").value : 0)
+		sumavalorcompra2 += parseFloat(tr.querySelector(".valorcompra2").value ? tr.querySelector(".valorcompra2").value : 0)
+		tr.querySelector(".total_costeo").value =  calcularcosteobyfile(tr);
+		
+		if(windowtype == "costeoextra"){
+			const vcfinit = tr.querySelector(".vcf").dataset.vcfsoles ? tr.querySelector(".vcf").dataset.vcfsoles : tr.querySelector(".vcf").value 
+			tr.querySelector(".vcf").value = parseFloat(vcfinit) * tipocambio.value
+			tr.querySelector(".vcf").dataset.vcfsoles = vcfinit
 		}
+	})
+	getSelector(".sumavcf").value = sumavcf.toFixed(2)
+	getSelector(".sumaigvrow").value = sumaigvrow.toFixed(2)
+	getSelector(".sumavalorcompra2").value = sumavalorcompra2.toFixed(4)
+	if (tipocambio) {
+		getSelector(".sumavcfdolar").value = (sumavcf * parseFloat(tipocambio.value)).toFixed(2)
+		getSelector(".sumaigvrowdolar").value = (sumaigvrow * parseFloat(tipocambio.value)).toFixed(2)
+		getSelector(".sumavalorcompra2dolar").value = (sumavalorcompra2 * parseFloat(tipocambio.value)).toFixed(2)
 	}
-	function changeprecioestibador(e) {
-		let total = 0;
-		let tc = getSelector(`#${e.dataset.tipocambio}`).value ? parseFloat(getSelector(`#${e.dataset.tipocambio}`).value) : 0;
 
-		getSelectorAll(".vcf").forEach(i => {
-			total += parseFloat(i.value)
-		});
+}
+function changeprecioestibador(e) {
+	let total = 0;
+	let tc = getSelector(`#${e.dataset.tipocambio}`).value ? parseFloat(getSelector(`#${e.dataset.tipocambio}`).value) : 0;
 
-		getSelectorAll(".vcf").forEach(i => {
-			const tr = i.closest("tr");
-			debugger
-			tr.querySelector(`.${e.dataset.type}`).value = (parseFloat(e.value) * parseFloat(i.value) * tc/ total).toFixed(2)
-			tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
-		});
-		getSelector(`.suma${e.dataset.type}`).value = (parseFloat(e.value)*tc).toFixed(2)
-		calcularExtras()
+	getSelectorAll(".vcf").forEach(i => {
+		total += parseFloat(i.value)
+	});
+
+	getSelectorAll(".vcf").forEach(i => {
+		const tr = i.closest("tr");
+		debugger
+		tr.querySelector(`.${e.dataset.type}`).value = (parseFloat(e.value) * parseFloat(i.value) * tc/ total).toFixed(2)
+		tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
+	});
+	getSelector(`.suma${e.dataset.type}`).value = (parseFloat(e.value)*tc).toFixed(2)
+	calcularUnidadCosteoyTotalcosteo()
 		// calcularTotalSinExtras()
 	}
-	function calcularExtras() {
+	function calcularUnidadCosteoyTotalcosteo() {
 		let sumatotalcosteo = 0;
 		let sumaunidadtotal = 0;
 		getSelectorAll(".total_costeo").forEach(ix => {
@@ -1456,7 +1474,7 @@ function changeimporte(e) {
 			ix.closest("tr").querySelector(".totalunidadcosteo").value = totalunidad.toFixed(4)
 		});
 		getSelector(".sumatotal_costeo").value = parseFloat(sumatotalcosteo).toFixed(4)
-		getSelector(".sumatotalunidadcosteo").value = parseFloat(sumaunidadtotal).toFixed(4)
+		// getSelector(".sumatotalunidadcosteo").value = parseFloat(sumaunidadtotal).toFixed(4)
 
 	}
 	function updateColumns() {
@@ -1514,7 +1532,7 @@ function changeimporte(e) {
 			tr.querySelector(".precio-compra").value = (importe / parseInt(tr.querySelector(".cantidad").textContent)).toFixed(4)
 		}
 		const descuento = parseFloat(tr.querySelector(".descuento").value);
-		tr.querySelector(".total_costeo").value = importe * (100 - descuento) / 100
+		
 		tr.querySelector(".totalunidadcosteo").value = (importe * (100 - descuento) / 100)/parseInt(tr.querySelector(".cantidad").textContent)
 
 		if(origin != "importe")
@@ -1525,6 +1543,7 @@ function changeimporte(e) {
 		tr.querySelector(".valorcompra2").value = (importe * 1.18 * (100 - descuento) / 100).toFixed(2)
 		tr.querySelector(".igvrow").value = (importe * 0.18 * (100 - descuento) / 100).toFixed(2)
 
+		tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 	}
 	document.querySelector("#saveFacturar").addEventListener("submit", e => {
 		e.preventDefault();
@@ -1572,7 +1591,8 @@ function changeimporte(e) {
 				(tipocomprobante, numerocomprobante, rucestibador, moneda, tipocambio, precioestibador_soles, precioestibador_dolar, codigocompras) 
 				values 
 				('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${rucestibaodr}', '${monedaestibador.value}', 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`;
-				data.gastos.push(query)
+				data.gastos.push(query);
+				const dd = new Date().toISOString().substring(0,10);
 
 				const query1 =
 				`insert into plamar 
@@ -1594,7 +1614,7 @@ function changeimporte(e) {
 				values 
 				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`;
 				data.gastos.push(query);
-
+				const dd = new Date().toISOString().substring(0,10);
 				const query1 =
 				`insert into plamar 
 				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
@@ -1701,7 +1721,6 @@ function selectmoneda(e) {
 	if (e.value == "dolares") {
 		titledolar.textContent = "TOTAL S/"
 		titlesoles.textContent = "TOTAL $"
-
 		rowfacturadolar.style.display = ""
 		getSelector(".container_cambio").style.display = "";
 		monedadolar = true;
@@ -1709,6 +1728,9 @@ function selectmoneda(e) {
 		titledolar.textContent = "TOTAL $"
 		titlesoles.textContent = "TOTAL S/"
 		rowfacturadolar.style.display = "none"
+		tipocambio.value = 1;
+		calcularTotalSinExtras();
+		calcularUnidadCosteoyTotalcosteo()
 		getSelector(".container_cambio").style.display = "none";
 		monedadolar = false
 	}

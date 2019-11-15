@@ -133,10 +133,9 @@ include("Fragmentos/abrirpopupcentro.php");
 					$row_sucursales = mysql_fetch_assoc($sucursales);
 				}
 				?>
-				<th  class="none"> TOTAL PRODUCTOS</th>
 				<th  > CATEGORIA </th>
-				<th  class="none"> PRESENTACION </th>
-				<th  > COLOR </th>
+				<th > TOTAL PRODUCTOS</th>
+				
 				<th  class="none"> CODIGO </th>
 				
 				<th  >  </th>
@@ -168,12 +167,11 @@ include("Fragmentos/abrirpopupcentro.php");
 						$row_aux = mysql_fetch_assoc($auxx1);
 					}
 					?>
+					<td> <?php echo $row_Listado['Categoria']; ?></td>
 					<td> <?= $total;?></td>
 
-					<td> <?php echo $row_Listado['Categoria']; ?></td>
+					
 
-					<td> <?php echo $row_Listado['Presentacion']; ?></td>
-					<td> <?php echo $row_Listado['Color'];?></td>
 					<td> <?php echo $row_Listado['minicodigo'];?></td>
 
 
