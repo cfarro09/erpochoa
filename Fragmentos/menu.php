@@ -679,6 +679,15 @@ $totalRows_personal = mysql_num_rows($listado_personal);
 
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a href="serviciosporpagar.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">servicios por Pagar</span>
+                                        <span class="selected"></span>
+
+                                    </a>
+                                </li>
                                 
                                 <li class="nav-item">
                                     <a href="cuentas_x_pagar1.php" class="nav-link font-blue-ebonyclay">
@@ -1034,8 +1043,13 @@ echo "<a href='proforma_add.php?codigo=$d'>Proforma</a>";
 <!-- BEGIN CONTENT -->
 <?php if  ($nombre_archivo = "proveedor_cuentas.php") {
 
-   $VarUrl2 = $VarUrl;
-                                   $TituloGeneral2 = $TituloGeneral;
+    if(isset($TituloGeneral)){
+        $VarUrl2 = $VarUrl;
+        $TituloGeneral2 = $TituloGeneral;
+    }else{
+        $TituloGeneral2 =  "";
+    }
+   
 }
 else {
  $VarUrl2 = "";
