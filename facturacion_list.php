@@ -127,87 +127,75 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 				$color = $row_listaguiasinoc['subtotal'] == 0 ? "#f3c200" : "#029128"
 				?>
-				<tr style="background-color: <?= $color ?>">
-					<td> <?php echo $i; ?> </td>
-					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
-						data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
-						<td><?php  echo "&#36; ".number_format($row_listaguiasinoc['subtotal'],2); ?> </td>
-						<td> <?php echo "&#36; ".number_format($row_listaguiasinoc['subtotal']/1.18,2); ?></td>
-						<td> <?php echo "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/1.18,2)),2); ?>
-					</td>
-					<td> <?php echo $row_listaguiasinoc['razonsocial']; ?></td>
-					<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
-					<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
-						<td>
-							<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)" data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>" data-codigorc="<?= $row_listaguiasinoc['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
-						</td>
-						<?php else: ?>
-							<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
-								data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>">Facturar</a>
-							</td>
-						<?php endif ?>
-						<td>
-							<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-							href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
-							target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
-						</td>
-						<td>Guia sin OC</td>
-					</tr>
-					<?php $i++;} while ($row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc)); endif; ?>
-				</tbody>
-			</table>
-			<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content m-auto">
-						<div class="modal-header">
-							<h5 class="modal-title" id="moperation-title"></h5>
-						</div>
-						<div class="modal-body">
-							<form id="saveOrdenCompra">
-								<input type="hidden" id="codigoOrdenCompra">
-								<input type="hidden" id="codigoordcomp">
-								<input type="hidden" id="codigoguia" value="">
-								<div class="container-fluid">
+		<tr style="background-color: <?= $color ?>">
+			<td> <?php echo $i; ?> </td>
+			<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+					data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
+			<td><?php  echo "&#36; ".number_format($row_listaguiasinoc['subtotal'],2); ?> </td>
+			<td> <?php echo "&#36; ".number_format($row_listaguiasinoc['subtotal']/1.18,2); ?></td>
+			<td> <?php echo "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/1.18,2)),2); ?>
+			</td>
+			<td> <?php echo $row_listaguiasinoc['razonsocial']; ?></td>
+			<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
+			<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
+			<td>
+				<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)"
+					data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>"
+					data-codigorc="<?= $row_listaguiasinoc['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
+			</td>
+			<?php else: ?>
+			<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
+					data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>">Facturar</a>
+			</td>
+			<?php endif ?>
+			<td>
+				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+					href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
+					target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+			</td>
+			<td>Guia sin OC</td>
+		</tr>
+		<?php $i++;} while ($row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc)); endif; ?>
+	</tbody>
+</table>
+<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content m-auto">
+			<div class="modal-header">
+				<h5 class="modal-title" id="moperation-title"></h5>
+			</div>
+			<div class="modal-body">
+				<form id="saveOrdenCompra">
+					<input type="hidden" id="codigoOrdenCompra">
+					<input type="hidden" id="codigoordcomp">
+					<input type="hidden" id="codigoguia" value="">
+					<div class="container-fluid">
 
-									PROVEEDOR: <span id="mproveedor"></span> <BR>
-									RUC : <span id="mruc"></span>
-									SUCURSAL: <span id="msucursal"></span> <BR>
-									FECHA DE EMISION : <span id="mfechaemision"></span> <br>
-									VALOR TOTAL: <span id="mvalortotal"></span><BR>
-									CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
-									CODIGO REF2: : <span id="mcodref2"></span> <br>
-									GENERADA POR: : <span id="mgeneradapor"></span> <br>
-									
+						PROVEEDOR: <span id="mproveedor"></span> <BR>
+						RUC : <span id="mruc"></span>
+						SUCURSAL: <span id="msucursal"></span> <BR>
+						FECHA DE EMISION : <span id="mfechaemision"></span> <br>
+						VALOR TOTAL: <span id="mvalortotal"></span><BR>
+						CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
+						CODIGO REF2: : <span id="mcodref2"></span> <br>
+						GENERADA POR: : <span id="mgeneradapor"></span> <br>
 
-									<div class="row" style="margin-top:20px">
-										<div class="col-xs-12 col-md-12">
-											<div class="row">
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="field-1" class="control-label">Numero Guia</label>
-														<input type="text" readonly class="form-control" name="numero-guia"
-														id="numero-guia">
-													</div>
-												</div>
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="field-1" class="control-label">Observacion</label>
-														<input type="text" readonly class="form-control" name="observacion"
-														id="observacion">
-													</div>
-												</div>
-											</div>
-											<table class="table">
-												<thead>
-													<th>Nº</th>
-													<th>Cantidad Solicitada</th>
-													<th>Producto</th>
-													<th id="th-saldo" style="display: none">Saldo</th>
-													<th>Cantidad Recibida</th>
-												</thead>
-												<tbody id="detalleTableOrden-facturacion-list">
-												</tbody>
-											</table>
+
+						<div class="row" style="margin-top:20px">
+							<div class="col-xs-12 col-md-12">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="field-1" class="control-label">Numero Guia</label>
+											<input type="text" readonly class="form-control" name="numero-guia"
+												id="numero-guia">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="field-1" class="control-label">Observacion</label>
+											<input type="text" readonly class="form-control" name="observacion"
+												id="observacion">
 										</div>
 									</div>
 								</div>
@@ -225,17 +213,30 @@ include("Fragmentos/abrirpopupcentro.php");
 							</div>
 						</div>
 					</div>
-					<div class="modal-footer">
-						<button type="button" id="btn-finalice" style="display: none"
-							class="btn btn-primary">Finalizar</button>
-						<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
-						<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
-					</div>
-
-				</form>
+					<table class="table">
+						<thead>
+							<th>Nº</th>
+							<th>Cantidad Solicitada</th>
+							<th>Producto</th>
+							<th id="th-saldo" style="display: none">Saldo</th>
+							<th>Cantidad Recibida</th>
+						</thead>
+						<tbody id="detalleTableOrden-facturacion-list">
+						</tbody>
+					</table>
 			</div>
 		</div>
 	</div>
+	<div class="modal-footer">
+		<button type="button" id="btn-finalice" style="display: none" class="btn btn-primary">Finalizar</button>
+		<button type="submit" id="btn-guardarGuia-facturacion" class="btn btn-success">Guardar</button>
+		<button type="button" data-dismiss="modal" class="modal_close btn btn-danger">Cerrar</button>
+	</div>
+
+	</form>
+</div>
+</div>
+</div>
 </div>
 
 <div class="modal fade" id="mFacturaCompra" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -266,6 +267,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								<input type="hidden" id="codigosucursal">
 								<input type="hidden" id="codigo_orden_compra">
 								<input type="hidden" id="codigo_guia_sin_oc">
+
+								<input type="hidden" id="codigorcxx">
 
 
 								<div class="row" style="margin-top: 20px">
@@ -359,6 +362,10 @@ include("Fragmentos/abrirpopupcentro.php");
 					<div class="modal-footer">
 						<label for="showcosteo">Mostrar costeo</label>
 						<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
+
+						<button class="btn btn-success" id="actualizarextras" type="button"
+							onclick="funactualizarextras()">Actualizar</button>
+
 						<button class="btn btn-success" id="showopcionesextras" type="button"
 							onclick="showopciones()">Opciones</button>
 						<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
@@ -1012,7 +1019,108 @@ mysql_free_result($Listado);
 				});
 		})
 	});
+	function funactualizarextras(){
+		const data = {
+			id: codigorcxx.value,
+			gastos: []
+		}
+		if (getSelector("#check_transporte").checked) {
+			if (!$("#proveedorpro").val() || !tipocomprobantepro.value || !nrocomprobantepro.value || !preciopro.value) {
+				alert("debe llenar todos los datos de transporte");
+				return;
+			} else {
+				const proveedorpro = $("#proveedorpro").val().split("&&&")[1];
+				const query =
+					`insert into transporte_compra 
+				(tipo_transporte, tipocomprobante, numerocomprobante, ructransporte, moneda, tipocambio, preciotransp_soles, preciotransp_dolar, codigocompras) 
+				values 
+				('${typetransporte}', '${tipocomprobantepro.value}', '${nrocomprobantepro.value}', '${proveedorpro}', '${monedapro.value}', 0, ${preciopro.value}, 0, ##IDCOMPRAS##)`
+				data.gastos.push(query);
+				const dd = new Date().toISOString().substring(0, 10);
+				const query1 =
+					`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
+				values 
+				('${nrocomprobantepro.value}', '${nrocomprobantepro.value}', ${preciopro.value}, 'transporte', '${dd}', '${dd}')`;
+				data.gastos.push(query1);
+			}
+		}
+		if (getSelector("#check_estibador").checked) {
+			if (!$("#proveedorestibador").val() || !tipocomprobanteestibador.value || !numerocomprobanteestibador.value || !precio_estibador.value) {
+				alert("debe llenar todos los datos de estibador");
+				return;
+			} else {
+				const rucestibaodr = $("#proveedorestibador").val().split("&&&")[1];
+				const query =
+					`insert into estibador_compra 
+				(tipocomprobante, numerocomprobante, rucestibador, moneda, tipocambio, precioestibador_soles, precioestibador_dolar, codigocompras) 
+				values 
+				('${tipocomprobanteestibador.value}', '${numerocomprobanteestibador.value}', '${rucestibaodr}', '${monedaestibador.value}', 0, ${precio_estibador.value}, 0, ##IDCOMPRAS##)`;
+				data.gastos.push(query);
+				const dd = new Date().toISOString().substring(0, 10);
 
+				const query1 =
+					`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
+				values 
+				('${numerocomprobanteestibador.value}', '${rucestibaodr}', ${precio_estibador.value}, 'estibador', '${dd}', '${dd}')`;
+				data.gastos.push(query1);
+			}
+		}
+		if (getSelector("#check_notadebito").checked) {
+			if (!$("#proveedornotadebito").val() || !tipocomprobantenotadebito.value || !numerocomprobantenotadebito.value || !precio_notadebito.value) {
+				alert("debe llenar todos los datos de nota de debito");
+				return;
+			} else {
+				const rucnotadebito = $("#proveedornotadebito").val().split("&&&")[1];
+				const query =
+					`insert into notadebito_compra 
+				(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
+				values 
+				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`;
+				data.gastos.push(query);
+				const dd = new Date().toISOString().substring(0, 10);
+				const query1 =
+					`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
+				values 
+				('${numerocomprobantenotadebito.value}', '${rucnotadebito}', ${precio_notadebito.value}, 'notadebito', '${dd}', '${dd}')`;
+				data.gastos.push(query1)
+			}
+		}
+		if (getSelector("#check_notacredito").checked) {
+			if (!$("#proveedornotacredito").val() || !proveedornotacredito.value || !tipocomprobantenotacredito.value || !numerocomprobantenotacredito.value || !precio_notacredito.value) {
+				alert("debe llenar todos los datos de nota debito");
+				return;
+			} else {
+				const rucnotacredito = $("#proveedornotacredito").val().split("&&&")[1];
+				const query =
+					`insert into notacredito_compra 
+				(tipocomprobante, numerocomprobante, rucnotacredito, moneda, tipocambio, precionc_soles, precionc_dolar, codigocompras) 
+				values 
+				('${tipocomprobantenotacredito.value}', '${numerocomprobantenotacredito.value}', '${rucnotacredito}', '${monedanotacredito.value}', 0, ${precio_notacredito.value}, 0, ##IDCOMPRAS##)`;
+				data.gastos.push(query);
+				const dd = new Date().toISOString().substring(0, 10);
+				const query1 =
+					`insert into plamar 
+				(ruc, nro_recibo, monto, descripcion, fecha_inicio, fecha_fin) 
+				values 
+				('${numerocomprobantenotacredito.value}', '${rucnotacredito}', ${precio_notacredito.value}, 'notacredito', '${dd}', '${dd}')`;
+				data.gastos.push(query1)
+			}
+		}
+		var formData = new FormData();
+		formData.append("json", JSON.stringify(data))
+		fetch(`setupdateextras.php`, { method: 'POST', body: formData })
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => {
+				if (res.success) {
+					alert("registro completo!")
+					location.reload()
+				}
+			});
+	}
 	function visualizar(e) {
 		descuento.setAttribute("readonly", true)
 		facturafechaemision.setAttribute("readonly", true)
@@ -1021,6 +1129,7 @@ mysql_free_result($Listado);
 		moneda.setAttribute("readonly", true)
 		guardarcosteo.style.display = "none"
 		$("#mFacturaCompra").modal();
+		codigorcxx.value = e.dataset.codigorc;
 		fetch(`getDetalleCompraCosteo.php?codigorc=${e.dataset.codigorc}&type=${e.dataset.type}&codigo=${e.dataset.codigo}`)
 			.then(res => res.json())
 			.catch(error => console.error("error: ", error))
@@ -1034,20 +1143,22 @@ mysql_free_result($Listado);
 					const countransporte = parseInt(res.header.counttransporte)
 					const countnotadebito = parseInt(res.header.countnotadebito)
 					const countnotacredito = parseInt(res.header.countnotacredito)
-					if(countestibador && countransporte && countnotadebito && countnotacredito){
+					if (countestibador && countransporte && countnotadebito && countnotacredito) {
 						showopcionesextras.style.display = "none";
-					}else{
+						actualizarextras.style.display = "none";
+					} else {
 						showopcionesextras.style.display = "";
-						if(!countransporte) getSelector(".div_transporte").style.display = ""
-						if(!countestibador){
+						actualizarextras.style.display = "";
+						if (!countransporte) getSelector(".div_transporte").style.display = ""
+						if (!countestibador) {
 							precio_estibador.removeAttribute("readonly")
 							getSelector(".div_estibador").style.display = ""
-						} 
-						if(!countnotacredito){
+						}
+						if (!countnotacredito) {
 							precio_notacredito.removeAttribute("readonly")
 							getSelector(".div_notacredito").style.display = ""
-						} 
-						if(!countnotadebito) {
+						}
+						if (!countnotadebito) {
 							precio_notadebito.removeAttribute("readonly")
 							getSelector(".div_notadebito").style.display = ""
 						}
@@ -1149,7 +1260,8 @@ mysql_free_result($Listado);
 					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" readonly></td>
 
 					</tr>`);
-					rowfacturadolar.style.display = "none"
+					rowfacturadolar.style.display = "none";
+					calcularTotalSinExtras()
 				} else {
 					alert("hubo un error")
 				}
@@ -1322,6 +1434,7 @@ mysql_free_result($Listado);
 	})
 	document.querySelectorAll(".aux_compras").forEach(item => {
 		item.addEventListener("click", e => {
+			actualizarextras.style.display = "none"
 			descuento.removeAttribute("readonly")
 			facturafechaemision.removeAttribute("readonly")
 			tipocomprobantefactura.removeAttribute("readonly")
@@ -1798,7 +1911,6 @@ mysql_free_result($Listado);
 				})
 			}
 		})
-		console.log(data)
 		var formData = new FormData();
 		formData.append("json", JSON.stringify(data))
 		fetch(`setFactura.php`, { method: 'POST', body: formData })
