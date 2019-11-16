@@ -1031,9 +1031,9 @@ mysql_free_result($Listado);
 					btn_participacion.disabled = false
 					getSelectorAll(".divxx").forEach(e => e.style.display = "none")
 					const countestibador = parseInt(res.header.countestibador)
-					const countransporte = parseInt(res.header.countransporte)
+					const countransporte = parseInt(res.header.counttransporte)
 					const countnotadebito = parseInt(res.header.countnotadebito)
-					const countnotacredito = parseInt(res.header.countnotadebito)
+					const countnotacredito = parseInt(res.header.countnotacredito)
 					if(countestibador && countransporte && countnotadebito && countnotacredito){
 						showopcionesextras.style.display = "none";
 					}else{
