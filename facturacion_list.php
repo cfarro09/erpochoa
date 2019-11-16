@@ -1039,9 +1039,18 @@ mysql_free_result($Listado);
 					}else{
 						showopcionesextras.style.display = "";
 						if(!countransporte) getSelector(".div_transporte").style.display = ""
-						if(!countestibador) getSelector(".div_estibador").style.display = ""
-						if(!countnotacredito) getSelector(".div_notacredito").style.display = ""
-						if(!countnotadebito) getSelector(".div_notadebito").style.display = ""
+						if(!countestibador){
+							precio_estibador.removeAttribute("readonly")
+							getSelector(".div_estibador").style.display = ""
+						} 
+						if(!countnotacredito){
+							precio_notacredito.removeAttribute("readonly")
+							getSelector(".div_notacredito").style.display = ""
+						} 
+						if(!countnotadebito) {
+							precio_notadebito.removeAttribute("readonly")
+							getSelector(".div_notadebito").style.display = ""
+						}
 
 					}
 					$("#mproveedor1").text(res.headerx.razonsocial)
