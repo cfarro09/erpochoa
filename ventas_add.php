@@ -395,7 +395,7 @@ include("Fragmentos/pie.php");
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Cta Abonado</label>
-              <input type="number" required value="0" class="form-control cuentaabonado">
+              <input type="text" required class="form-control cuentaabonado">
             </div>
           </div>
 
@@ -457,19 +457,23 @@ include("Fragmentos/pie.php");
     } else {
       const codigo  = makeid(20);
       const data = {}
+      const pagosextras = []
       data.detalle = []
       conpayextra = []
       getSelectorAll(".containerx").forEach(ix => {
+        
         const pay = {
-          banco: ix.querySelector(".bancoextra").value,
-          montopay: ix.querySelector(".montoextra").value,
-          codigotransaccionpay: ix.querySelector(".codigotransaccionextra").value,
-          fechapay: ix.querySelector(".fechaextra").value,
+          bancoextra: ix.querySelector(".bancoextra").value,
+          montoextra: ix.querySelector(".montoextra").value,
+          numero: ix.querySelector(".numero").value,
+          cuentacorriente: ix.querySelector(".cuentacorriente").value,
+          numerooperacion: ix.querySelector(".numerooperacion").value,
+          fechaextra: ix.querySelector(".fechaextra").value,
+          cuentaabonado: ix.querySelector(".cuentaabonado").value,
           tipopago: ix.querySelector(".tipopago").value,
         }
-        
-
-        data.payextra.push(`insert into pagostarjeta (banco, codigotransaccion, fecha, monto, tipopago, codigoventas) values ('${bancopay})', '${codigotransaccionpay}', '${fechapay}', ${montopay}, '${tipopago}', '${codigo}'`)
+        pagosextras.push(pay)
+        debugger
       })
 
       const h = {
@@ -491,9 +495,9 @@ include("Fragmentos/pie.php");
         pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
       }
       data.header = `insert into ventas 
-        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo )
+        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos)
         values
-        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo})
+        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}')
         `
       getSelectorAll(".producto").forEach(item => {
         const d = {
