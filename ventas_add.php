@@ -359,21 +359,21 @@ include("Fragmentos/pie.php");
           <div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
             <div class="form-group">
               <label class="control-label">Monto</label>
-              <input type="number" required class="form-control montoextra">
+              <input type="number" step="any" class="form-control montoextra">
             </div>
           </div>
 
           <div style="display: none" class="col-md-2 inputxxx cheque tarjetacredito tarjetadebito">
             <div class="form-group">
               <label class="control-label">Numero</label>
-              <input type="number" required class="form-control numero">
+              <input type="number" class="form-control numero">
             </div>
           </div>
 
           <div style="display: none" class="col-md-2 inputxxx depositobancario cheque">
             <div class="form-group">
               <label class="control-label">Cuenta Corriente</label>
-              <input type="text" required class="form-control cuentacorriente">
+              <input type="text" class="form-control cuentacorriente">
             </div>
           </div>
 
@@ -381,21 +381,21 @@ include("Fragmentos/pie.php");
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Numero Operacion</label>
-              <input type="text" required  class="form-control numerooperacion">
+              <input type="text"  class="form-control numerooperacion">
             </div>
           </div>
           
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Fecha</label>
-              <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+              <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
             </div>
           </div>
 
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Cta Abonado</label>
-              <input type="text" required class="form-control cuentaabonado">
+              <input type="text" class="form-control cuentaabonado">
             </div>
           </div>
 
@@ -455,26 +455,13 @@ include("Fragmentos/pie.php");
     if (getSelectorAll(".producto").length < 1) {
       alert("Debes agregar almenos un producto")
     } else {
+      let totalpagando = montoefectivo.value ? parseFloat(montoefectivo.value) : 0;
       const codigo  = makeid(20);
-      const data = {}
-      const pagosextras = []
-      data.detalle = []
-      conpayextra = []
-      getSelectorAll(".containerx").forEach(ix => {
-        
-        const pay = {
-          bancoextra: ix.querySelector(".bancoextra").value,
-          montoextra: ix.querySelector(".montoextra").value,
-          numero: ix.querySelector(".numero").value,
-          cuentacorriente: ix.querySelector(".cuentacorriente").value,
-          numerooperacion: ix.querySelector(".numerooperacion").value,
-          fechaextra: ix.querySelector(".fechaextra").value,
-          cuentaabonado: ix.querySelector(".cuentaabonado").value,
-          tipopago: ix.querySelector(".tipopago").value,
-        }
-        pagosextras.push(pay)
-        debugger
-      })
+      const data = {};
+      let porpagar = 0;
+      const pagosextras = [];
+      data.detalle = [];
+      conpayextra = [];
 
       const h = {
         tipocomprobante: tipocomprobante.value,
@@ -494,10 +481,33 @@ include("Fragmentos/pie.php");
         totalc : totalpreciocompra.value,
         pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
       }
+
+      getSelectorAll(".containerx").forEach(ix => {
+        const pay = {
+          bancoextra: ix.querySelector(".bancoextra").value,
+          montoextra: ix.querySelector(".montoextra").value ? parseFloat(ix.querySelector(".montoextra").value) : 0,
+          numero: ix.querySelector(".numero").value,
+          cuentacorriente: ix.querySelector(".cuentacorriente").value,
+          numerooperacion: ix.querySelector(".numerooperacion").value,
+          fechaextra: ix.querySelector(".fechaextra").value,
+          cuentaabonado: ix.querySelector(".cuentaabonado").value,
+          tipopago: ix.querySelector(".tipopago").value,
+        }
+        if(ix.querySelector(".tipopago").value == "porcobrar")
+          porpagar = 1;
+        totalpagando += pay.montoextra;
+        pagosextras.push(pay)
+      })
+
+      if(parseFloat(h.total) != totalpagando){
+        alert("Los montos no coinciden");
+        return;
+      }
+      
       data.header = `insert into ventas 
-        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos)
+        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar)
         values
-        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}')
+        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar})
         `
       getSelectorAll(".producto").forEach(item => {
         const d = {
