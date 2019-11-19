@@ -34,7 +34,16 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "select k.id_kardex_contable, `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`codigomarca` AS `codigomarca`,`b`.`nombre` AS `Marca`,`c`.`nombre_color` AS `nombre_color`, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, max(k.saldo) as saldo, k.sucursal, pv.totalunidad from `producto` `a` inner join `marca` `b` on(`a`.`codigomarca` = `b`.`codigomarca`) inner join `color` `c` on(`a`.`codigocolor` = `c`.`codigocolor`) inner join precio_venta pv on pv.codigoprod=a.codigoprod inner JOIN kardex_contable k on k.codigoprod=a.codigoprod where `a`.`estado` = 0 and k.saldo>0 and k.sucursal = $codsucursal and pv.precioventa1>0 group by a.codigoprod order by `k`.`id_kardex_contable` asc";
+$query_Productos = "
+select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+from kardex_contable k
+inner join producto p on p.codigoprod = k.codigoprod
+inner join marca m on m.codigomarca = p.codigomarca
+inner join `color` `c` on(p.codigocolor = c.codigocolor)
+inner join precio_venta pv on pv.codigoprod = p.codigoprod 
+where k.sucursal = $codsucursal and saldo > 0
+and k.id_kardex_contable in
+(select max(id_kardex_contable) from kardex_contable group by codigoprod)";
 
 $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
 $row_Productos = mysql_fetch_assoc($Productos);
@@ -449,13 +458,16 @@ include("Fragmentos/pie.php");
       const codigo  = makeid(20);
       const data = {}
       data.detalle = []
-      data.payextra = []
+      conpayextra = []
       getSelectorAll(".containerx").forEach(ix => {
-        const bancopay = ix.querySelector(".bancoextra").value;
-        const codigotransaccionpay = ix.querySelector(".codigotransaccionextra").value;
-        const fechapay = ix.querySelector(".fechaextra").value;
-        const montopay = ix.querySelector(".montoextra").value;
-        const tipopago = ix.querySelector(".tipopago").value;
+        const pay = {
+          banco: ix.querySelector(".bancoextra").value,
+          montopay: ix.querySelector(".montoextra").value,
+          codigotransaccionpay: ix.querySelector(".codigotransaccionextra").value,
+          fechapay: ix.querySelector(".fechaextra").value,
+          tipopago: ix.querySelector(".tipopago").value,
+        }
+        
 
         data.payextra.push(`insert into pagostarjeta (banco, codigotransaccion, fecha, monto, tipopago, codigoventas) values ('${bancopay})', '${codigotransaccionpay}', '${fechapay}', ${montopay}, '${tipopago}', '${codigo}'`)
       })
