@@ -16,7 +16,7 @@ $totalRows_Clientes = mysql_num_rows($Clientes);
 //Titulo e icono de la pagina
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Generar Guia sin orden de compra - Principal - Tumbes";
+$Titulo = "Ventas";
 $NombreBotonAgregar = "Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
@@ -302,38 +302,91 @@ include("Fragmentos/pie.php");
           <div class="text-right">
             <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
           </div>
-          <div class="col-md-3">
+
+
+          <div style="display: none" class="col-md-2 inputxxx class="depositobancario cheque tarjetacredito tarjetadebito">
             <div class="form-group">
               <label class="control-label">Banco</label>
-              <input type="text" required class="form-control bancoextra">
+              <select class="form-control bancoextra">
+                <option value="1">BANCO AZTECA</option>
+                <option value="2">BANCO BCP</option>
+                <option value="3">BANCO CENCOSUD</option>
+                <option value="4">BANCO DE LA NACION</option>
+                <option value="5">BANCO FALABELLA</option>
+                <option value="6">BANCO GNB PERÚ</option>
+                <option value="7">BANCO MI BANCO</option>
+                <option value="8">BANCO PICHINCHA</option>
+                <option value="9">BANCO RIPLEY</option>
+                <option value="10">BANCO SANTANDER PERU</option>
+                <option value="11">BANCO SCOTIABANK</option>
+                <option value="12">CMAC AREQUIPA</option>
+                <option value="13">CMAC CUSCO S A</option>
+                <option value="14">CMAC DEL SANTA</option>
+                <option value="15">CMAC HUANCAYO</option>
+                <option value="16">CMAC ICA</option>
+                <option value="17">CMAC LIMA</option>
+                <option value="18">CMAC MAYNA</option>
+                <option value="19">CMAC PAITA</option>
+                <option value="20">CMAC SULLANA</option>
+                <option value="21">CMAC TRUJILLO</option>
+              </select>
             </div>
           </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label class="control-label">Codigo Transaccion</label>
-              <input type="number" required value="0" class="form-control codigotransaccionextra">
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label class="control-label">Fecha</label>
-              <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
-            </div>
-          </div>
-          <div class="col-md-2">
+
+          <div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
             <div class="form-group">
               <label class="control-label">Monto</label>
               <input type="number" required class="form-control montoextra">
             </div>
           </div>
+
+          <div style="display: none" class="col-md-2 inputxxx cheque tarjetacredito tarjetadebito">
+            <div class="form-group">
+              <label class="control-label">Numero</label>
+              <input type="number" required class="form-control numero">
+            </div>
+          </div>
+
+          <div style="display: none" class="col-md-2 inputxxx depositobancario cheque">
+            <div class="form-group">
+              <label class="control-label">Cuenta Corriente</label>
+              <input type="text" required class="form-control cuentacorriente">
+            </div>
+          </div>
+
+
+          <div style="display: none" class="col-md-2 inputxxx depositobancario">
+            <div class="form-group">
+              <label class="control-label">Numero Operacion</label>
+              <input type="text" required  class="form-control numerooperacion">
+            </div>
+          </div>
+          
+          <div style="display: none" class="col-md-2 inputxxx depositobancario">
+            <div class="form-group">
+              <label class="control-label">Fecha</label>
+              <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+            </div>
+          </div>
+
+          <div style="display: none" class="col-md-2 inputxxx depositobancario">
+            <div class="form-group">
+              <label class="control-label">Cta Abonado</label>
+              <input type="number" required value="0" class="form-control cuentaabonado">
+            </div>
+          </div>
+
+
           <div class="col-md-2">
             <div class="form-group">
               <label class="control-label">Tipo Pago</label>
-              <select class="form-control tipopago">
+              <select onchange="changetypepago(this)" class="form-control tipopago">
+                <option value="">[Seleccione]</option>
                 <option value="depositobancario">Deposito Bancario</option>
                 <option value="tarjetadebito">Tarjeta Debito</option>
                 <option value="tarjetacredito">Tarjeta Credito</option>
                 <option value="cheque">Cheque</option>
+                <option value="porcobrar">Por cobrar</option>
               </select>
             </div>
           </div>
@@ -343,6 +396,11 @@ include("Fragmentos/pie.php");
       rtl: App.isRTL(),
       autoclose: true
     });
+  }
+  function changetypepago(e){
+    getSelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
+    getSelectorAll("."+e.value).forEach(ix => ix.style.display = "");
+
   }
 
   function removecontainerpay(e) {
