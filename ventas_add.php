@@ -136,11 +136,10 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
             <input type="number" class="form-control" id="montoefectivo">
           </div>
         </div>
-        <div class="col-md-2" style="margin-top: 10px">
+        <div class="col-md-12 text-center" style="margin-top: 10px; margin-bottom: 10px">
           <button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
         </div>
-        <div class="" id="containerpayextra">
-
+        <div style="margin-bottom: 10px" id="containerpayextra">
         </div>
 
       </div>
@@ -326,6 +325,19 @@ include("Fragmentos/pie.php");
             <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
           </div>
 
+          <div class="col-md-2">
+            <div class="form-group">
+              <label class="control-label">Tipo Pago</label>
+              <select onchange="changetypepago(this)" class="form-control tipopago">
+                <option value="">[Seleccione]</option>
+                <option value="depositobancario">Deposito Bancario</option>
+                <option value="tarjetadebito">Tarjeta Debito</option>
+                <option value="tarjetacredito">Tarjeta Credito</option>
+                <option value="cheque">Cheque</option>
+                <option value="porcobrar">Por cobrar</option>
+              </select>
+            </div>
+          </div>
 
           <div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
             <div class="form-group">
@@ -399,20 +411,6 @@ include("Fragmentos/pie.php");
             </div>
           </div>
 
-
-          <div class="col-md-2">
-            <div class="form-group">
-              <label class="control-label">Tipo Pago</label>
-              <select onchange="changetypepago(this)" class="form-control tipopago">
-                <option value="">[Seleccione]</option>
-                <option value="depositobancario">Deposito Bancario</option>
-                <option value="tarjetadebito">Tarjeta Debito</option>
-                <option value="tarjetacredito">Tarjeta Credito</option>
-                <option value="cheque">Cheque</option>
-                <option value="porcobrar">Por cobrar</option>
-              </select>
-            </div>
-          </div>
         </div>
     `;
     $('.date-picker').datepicker({
@@ -421,8 +419,8 @@ include("Fragmentos/pie.php");
     });
   }
   function changetypepago(e){
-    getSelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
-    getSelectorAll("."+e.value).forEach(ix => ix.style.display = "");
+    e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
+    e.closest(".containerx").querySelectorAll("."+e.value).forEach(ix => ix.style.display = "");
 
   }
 
@@ -456,6 +454,7 @@ include("Fragmentos/pie.php");
       alert("Debes agregar almenos un producto")
     } else {
       let totalpagando = montoefectivo.value ? parseFloat(montoefectivo.value) : 0;
+      let pagoacomulado = montoefectivo.value ? parseFloat(montoefectivo.value) : 0;
       const codigo  = makeid(20);
       const data = {};
       let porpagar = 0;
@@ -495,6 +494,8 @@ include("Fragmentos/pie.php");
         }
         if(ix.querySelector(".tipopago").value == "porcobrar")
           porpagar = 1;
+        else
+          pagoacomulado += pay.montoextra
         totalpagando += pay.montoextra;
         pagosextras.push(pay)
       })
@@ -505,9 +506,9 @@ include("Fragmentos/pie.php");
       }
       
       data.header = `insert into ventas 
-        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar)
+        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacumulado)
         values
-        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar})
+        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacumulado})
         `
       getSelectorAll(".producto").forEach(item => {
         const d = {
