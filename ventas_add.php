@@ -133,7 +133,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         <div class="col-md-4">
           <div class="form-group">
             <label for="field-1" class="control-label">Pago en Efectivo</label>
-            <input type="number" class="form-control" id="montoefectivo">
+            <input type="number" step="any" class="form-control" id="montoefectivo">
           </div>
         </div>
         <div class="col-md-12 text-center" style="margin-top: 10px; margin-bottom: 10px">
@@ -166,7 +166,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
           data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>"
           data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
           data-marca="<?= $row_Productos['Marca']; ?>"
-          <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) { ?>>
+          >
           <?php echo $row_Productos['nombre_producto'] ?> -
           <?php echo $row_Productos['Marca']; ?> -
           <?php echo $row_Productos['nombre_color']; ?> -
@@ -317,8 +317,11 @@ include("Fragmentos/pie.php");
   }
 
   function addPayExtra() {
-    containerpayextra.innerHTML += `
-        <div class="col-md-12 containerx" style="border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px">
+    const newxx = document.createElement("div");
+    newxx.className = "col-md-12 containerx";
+    newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
+
+    newxx.innerHTML += `
           <div class="text-right">
             <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
           </div>
@@ -341,27 +344,27 @@ include("Fragmentos/pie.php");
             <div class="form-group">
               <label class="control-label">Banco</label>
               <select class="form-control bancoextra">
-                <option value="1">BANCO AZTECA</option>
-                <option value="2">BANCO BCP</option>
-                <option value="3">BANCO CENCOSUD</option>
-                <option value="4">BANCO DE LA NACION</option>
-                <option value="5">BANCO FALABELLA</option>
-                <option value="6">BANCO GNB PERÚ</option>
-                <option value="7">BANCO MI BANCO</option>
-                <option value="8">BANCO PICHINCHA</option>
-                <option value="9">BANCO RIPLEY</option>
-                <option value="10">BANCO SANTANDER PERU</option>
-                <option value="11">BANCO SCOTIABANK</option>
-                <option value="12">CMAC AREQUIPA</option>
-                <option value="13">CMAC CUSCO S A</option>
-                <option value="14">CMAC DEL SANTA</option>
-                <option value="15">CMAC HUANCAYO</option>
-                <option value="16">CMAC ICA</option>
-                <option value="17">CMAC LIMA</option>
-                <option value="18">CMAC MAYNA</option>
-                <option value="19">CMAC PAITA</option>
-                <option value="20">CMAC SULLANA</option>
-                <option value="21">CMAC TRUJILLO</option>
+                <option value="BANCO AZTECA">BANCO AZTECA</option>
+                <option value="BANCO BCP">BANCO BCP</option>
+                <option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
+                <option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
+                <option value="BANCO FALABELLA">BANCO FALABELLA</option>
+                <option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
+                <option value="BANCO MI BANCO">BANCO MI BANCO</option>
+                <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
+                <option value="BANCO RIPLEY">BANCO RIPLEY</option>
+                <option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
+                <option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
+                <option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
+                <option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
+                <option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
+                <option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
+                <option value="CMAC ICA">CMAC ICA</option>
+                <option value="CMAC LIMA">CMAC LIMA</option>
+                <option value="CMAC MAYNA">CMAC MAYNA</option>
+                <option value="CMAC PAITA">CMAC PAITA</option>
+                <option value="CMAC SULLANA">CMAC SULLANA</option>
+                <option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
               </select>
             </div>
           </div>
@@ -408,9 +411,9 @@ include("Fragmentos/pie.php");
               <input type="text" class="form-control cuentaabonado">
             </div>
           </div>
-
-        </div>
     `;
+    containerpayextra.appendChild(newxx);
+    
     $('.date-picker').datepicker({
       rtl: App.isRTL(),
       autoclose: true
@@ -478,6 +481,11 @@ include("Fragmentos/pie.php");
         totalc : totalpreciocompra.value,
         pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
       }
+      let errorxxx = "";
+      if(!h.total){
+        alert("debe ingresar una cantidad al producto");
+        return;
+      }
 
       getSelectorAll(".containerx").forEach(ix => {
         const pay = {
@@ -490,6 +498,17 @@ include("Fragmentos/pie.php");
           cuentaabonado: ix.querySelector(".cuentaabonado").value,
           tipopago: ix.querySelector(".tipopago").value,
         }
+        
+        if(pay.tipopago == "depositobancario" && (!pay.bancoextra || !pay.montoextra || !pay.cuentacorriente || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)){
+                errorxxx = "Llena todos los datos de deposito bancario";
+                return;
+            }else if(pay.tipopago == "cheque" && (!pay.bancoextra || !pay.montoextra || !pay.numero || !pay.cuentacorriente)){
+                errorxxx = "Llena todos los datos de cheque";
+                return;
+            }else if((pay.tipopago == "tarjetacredito" || pay.tipopago == "tarjetadebito") && (!pay.bancoextra || !pay.montoextra || !pay.numero)){
+                errorxxx = "Llena todos los datos de "+pay.tipopago;
+                return;
+            }
         if(ix.querySelector(".tipopago").value == "porcobrar")
           porpagar = 1;
         else
@@ -497,16 +516,19 @@ include("Fragmentos/pie.php");
         totalpagando += pay.montoextra;
         pagosextras.push(pay)
       })
-
+      if(errorxxx){
+        alert(errorxxx);
+        return;
+      }
       if(parseFloat(h.total) != totalpagando){
         alert("Los montos no coinciden");
         return;
       }
       
       data.header = `insert into ventas 
-        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacumulado)
+        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado)
         values
-        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacumulado})
+        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado})
         `
       getSelectorAll(".producto").forEach(item => {
         const d = {
