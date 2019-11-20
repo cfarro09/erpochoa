@@ -105,7 +105,6 @@ $i = 1;
                                     </tbody>
                                 </table>
                             </div>
-                            
                             <div class="col-sm-12" id="containerpayextra">
                                 
                             </div>
@@ -173,6 +172,9 @@ include("Fragmentos/pie.php");
                 textt = `Numero: ${ix.numero} |
                         Ente: ${ix.bancoextra} | 
                         Monto: ${ix.montoextra}`
+            else if(ix.tipopago == "efectivo"){
+                textt = `Monto: ${ix.montoextra} `
+            }
             
             historialbody.innerHTML += `
                 <tr>
@@ -203,6 +205,7 @@ include("Fragmentos/pie.php");
                 <option value="tarjetadebito">Tarjeta Debito</option>
                 <option value="tarjetacredito">Tarjeta Credito</option>
                 <option value="cheque">Cheque</option>
+                <option value="efectivo">Efectivo</option>
               </select>
             </div>
           </div>
@@ -236,7 +239,7 @@ include("Fragmentos/pie.php");
             </div>
           </div>
 
-          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
+          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito efectivo porcobrar">
             <div class="form-group">
               <label class="control-label">Monto</label>
               <input type="number" step="any" class="form-control montoextra">
@@ -292,6 +295,7 @@ include("Fragmentos/pie.php");
         let error = "";
         let porpagar = 1;
         let restante = 0;
+        let errorrr = "";
         const arraypagos = JSON.parse(jsonpagos.value);
         getSelectorAll(".containerx").forEach(ix => {
             const bancoextra = ix.querySelector(".bancoextra").value;
@@ -315,17 +319,24 @@ include("Fragmentos/pie.php");
             })
             totalpagando += parseFloat(montoextra);
             if(tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)){
-                alert("Llena todos los datos de deposito bancario");
+                errorrr = "Llena todos los datos de deposito bancario";
                 return;
             }else if(tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)){
-                alert("Llena todos los datos de cheque");
+                errorrr = "Llena todos los datos de cheque";
                 return;
             }else if((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero)){
-                alert("Llena todos los datos de "+tipopago);
+                errorrr = "Llena todos los datos de "+tipopago;
+                return;
+            }else if(tipopago == "efectivo" && !montoextra){
+                errorrr = "Debe ingresa el monto";
                 return;
             }
+
         });
-        
+        if(errorrr){
+            alert(errorrr);
+            return;
+        }
         if(totalpagando > parseFloat(inputrestante.value)){
             alert("El monto a pagar excede");
             return
