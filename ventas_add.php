@@ -152,9 +152,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
           data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>"
           data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
           data-marca="<?= $row_Productos['Marca']; ?>"
-          <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
-                                                                                                                                                                                                                                                                                                                                        echo "selected=\"selected\"";
-                                                                                                                                                                                                                                                                                                                                      } ?>>
+          <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) { ?>>
           <?php echo $row_Productos['nombre_producto'] ?> -
           <?php echo $row_Productos['Marca']; ?> -
           <?php echo $row_Productos['nombre_color']; ?> -
