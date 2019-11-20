@@ -290,7 +290,9 @@ include("Fragmentos/pie.php");
         e.preventDefault();
         let totalpagando = 0;
         let error = "";
-        const newpagos = [];
+        let porpagar = 1;
+        let restante = 0;
+        const arraypagos = JSON.parse(jsonpagos.value);
         getSelectorAll(".containerx").forEach(ix => {
             const bancoextra = ix.querySelector(".bancoextra").value;
             const montoextra = ix.querySelector(".montoextra").value ? parseFloat(ix.querySelector(".montoextra").value) : 0;
@@ -301,7 +303,7 @@ include("Fragmentos/pie.php");
             const cuentaabonado = ix.querySelector(".cuentaabonado").value;
             const tipopago = ix.querySelector(".tipopago").value;
 
-            newpagos.push({
+            arraypagos.push({
                 bancoextra,
                 montoextra,
                 numero,
@@ -323,35 +325,41 @@ include("Fragmentos/pie.php");
                 return;
             }
         });
-        let porpagar = 1;
+        
         if(totalpagando > parseFloat(inputrestante.value)){
             alert("El monto a pagar excede");
             return
         }else if(totalpagando == parseFloat(inputrestante.value)){
             porpagar = 0;
+        }else{
+            restante = parseFloat(inputrestante.value) - totalpagando;
         }
+        let acumulado = parseFloat(inputtotal.value) - restante;
 
 
+        const jssson = JSON.stringify(arraypagos);
 
-        // const query = `insert into serviciosporpagar (fechafacturacion, concepto, numerorecibo, mespago, aniopago, precio, codsucursal) values ('${fechafacturacion.value}', '${concepto.value}', '${numerorecibo.value}', '${mespago.value}', '${aniopago.value}', ${preciopago.value}, ${codsucursal.value})`
-        // const detalle = [];
-        // detalle.push(query);
-        // const formData = new FormData();
-        // formData.append("exearray", JSON.stringify(detalle))
+        const query = `
+            update ventas set jsonpagos = ${jssson}, porpagar = ${porpagar}, pagoacomulado = ${acumulado}
+            where codigoventas = ${codigoventa.value}`
+        const detalle = [];
+        detalle.push(query);
+        const formData = new FormData();
+        formData.append("exearray", JSON.stringify(detalle))
 
-        // fetch(`setPrecioVenta.php`, {
-        //         method: 'POST',
-        //         body: formData
-        //     })
-        //     .then(res => res.json())
-        //     .catch(error => console.error("error: ", error))
-        //     .then(res => {
-        //         $("#mOrdenCompra").modal("hide");
-        //         if (res.success) {
-        //             alert("registro completo!")
-        //             location.reload()
-        //         }
-        //     });
+        fetch(`setPrecioVenta.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                $("#mOrdenCompra").modal("hide");
+                if (res.success) {
+                    alert("registro completo!")
+                    location.reload()
+                }
+            });
     }
     formoperacion.addEventListener("submit", guardar)
 

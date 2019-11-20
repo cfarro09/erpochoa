@@ -263,7 +263,7 @@ include("Fragmentos/pie.php");
   					</td>
   					<td class="nombre">${option.dataset.nombre}</td>
   					<td class="marca">${option.dataset.marca}</td>
-  					<td style="width: 100px"><input type="number" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
+  					<td style="width: 100px"><input step="any" type="number" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
   					<td class="importe">0</td>
   					<td>
   					<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm tooltips" data-placement="top"  data-original-title="Eliminar Producto"><i class="glyphicon glyphicon-trash"></i></button>
