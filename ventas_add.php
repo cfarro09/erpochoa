@@ -34,7 +34,16 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "select k.id_kardex_contable, `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`codigomarca` AS `codigomarca`,`b`.`nombre` AS `Marca`,`c`.`nombre_color` AS `nombre_color`, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, max(k.saldo) as saldo, k.sucursal, pv.totalunidad from `producto` `a` inner join `marca` `b` on(`a`.`codigomarca` = `b`.`codigomarca`) inner join `color` `c` on(`a`.`codigocolor` = `c`.`codigocolor`) inner join precio_venta pv on pv.codigoprod=a.codigoprod inner JOIN kardex_contable k on k.codigoprod=a.codigoprod where `a`.`estado` = 0 and k.saldo>0 and k.sucursal = $codsucursal and pv.precioventa1>0 group by a.codigoprod order by `k`.`id_kardex_contable` asc";
+$query_Productos = "
+select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+from kardex_contable k
+inner join producto p on p.codigoprod = k.codigoprod
+inner join marca m on m.codigomarca = p.codigomarca
+inner join `color` `c` on(p.codigocolor = c.codigocolor)
+inner join precio_venta pv on pv.codigoprod = p.codigoprod 
+where k.sucursal = $codsucursal and saldo > 0
+and k.id_kardex_contable in
+(select max(id_kardex_contable) from kardex_contable group by codigoprod)";
 
 $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
 $row_Productos = mysql_fetch_assoc($Productos);
@@ -104,7 +113,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
           </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="form-group">
             <label for="field-1" class="control-label">Tipo Comprobante</label>
             <select required class="form-control" id="tipocomprobante">
@@ -117,15 +126,20 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         </div>
         <div class="col-md-4">
           <div class="form-group">
+            <label for="field-1" class="control-label">Codigo Comprobante</label>
+            <input type="text" class="form-control" id="codigocomprobante">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
             <label for="field-1" class="control-label">Pago en Efectivo</label>
             <input type="number" class="form-control" id="montoefectivo">
           </div>
         </div>
-        <div class="col-md-2" style="margin-top: 10px">
+        <div class="col-md-12 text-center" style="margin-top: 10px; margin-bottom: 10px">
           <button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
         </div>
-        <div class="" id="containerpayextra">
-
+        <div style="margin-bottom: 10px" id="containerpayextra">
         </div>
 
       </div>
@@ -189,6 +203,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
   </div>
   <div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px"
     id="header-guia">
+    <input type="hidden" id="totalpreciocompra">
     <div class="col-sm-4">
       Total: <span id="total-header"></span>
     </div>
@@ -235,9 +250,10 @@ include("Fragmentos/pie.php");
       const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
       $("#detalleFormProducto").append(`
 					<tr class="producto">
+            <input type="hidden" class="pcompra" value="${option.dataset.preciocompra}">
   					<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
   					<td class="indexproducto">${cantrows}</td>
-  					<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="1" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+  					<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
   					<td>
   					<select class="form-control unidad_medida" name="unidad_medida" required>
   					<option value="unidad">unidad</option>
@@ -277,15 +293,21 @@ include("Fragmentos/pie.php");
 
       e.closest(".producto").querySelector(".importe").textContent = res
       let total = 0;
+      let totalpc = 0;
       getSelectorAll(".producto").forEach(p => {
         total += parseFloat(p.querySelector(".importe").textContent);
+        totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
       })
       if (total != 0) {
+        totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
+
         total = parseFloat(total)
         getSelector("#subtotal-header").textContent = total.toFixed(3);
         getSelector("#total-header").textContent = (total * 1.18).toFixed(3);
         getSelector("#igv-header").textContent = (total * 0.18).toFixed(3);
       } else {
+        totalpreciocompra.value = 0;
+
         getSelector("#subtotal-header").textContent = 0;
         getSelector("#total-header").textContent = 0;
         getSelector("#igv-header").textContent = 0;
@@ -301,8 +323,21 @@ include("Fragmentos/pie.php");
             <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
           </div>
 
+          <div class="col-md-2">
+            <div class="form-group">
+              <label class="control-label">Tipo Pago</label>
+              <select onchange="changetypepago(this)" class="form-control tipopago">
+                <option value="">[Seleccione]</option>
+                <option value="depositobancario">Deposito Bancario</option>
+                <option value="tarjetadebito">Tarjeta Debito</option>
+                <option value="tarjetacredito">Tarjeta Credito</option>
+                <option value="cheque">Cheque</option>
+                <option value="porcobrar">Por cobrar</option>
+              </select>
+            </div>
+          </div>
 
-          <div style="display: none" class="col-md-2 inputxxx class="depositobancario cheque tarjetacredito tarjetadebito">
+          <div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
             <div class="form-group">
               <label class="control-label">Banco</label>
               <select class="form-control bancoextra">
@@ -334,21 +369,21 @@ include("Fragmentos/pie.php");
           <div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
             <div class="form-group">
               <label class="control-label">Monto</label>
-              <input type="number" required class="form-control montoextra">
+              <input type="number" step="any" class="form-control montoextra">
             </div>
           </div>
 
           <div style="display: none" class="col-md-2 inputxxx cheque tarjetacredito tarjetadebito">
             <div class="form-group">
               <label class="control-label">Numero</label>
-              <input type="number" required class="form-control numero">
+              <input type="number" class="form-control numero">
             </div>
           </div>
 
           <div style="display: none" class="col-md-2 inputxxx depositobancario cheque">
             <div class="form-group">
               <label class="control-label">Cuenta Corriente</label>
-              <input type="text" required class="form-control cuentacorriente">
+              <input type="text" class="form-control cuentacorriente">
             </div>
           </div>
 
@@ -356,38 +391,24 @@ include("Fragmentos/pie.php");
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Numero Operacion</label>
-              <input type="text" required  class="form-control numerooperacion">
+              <input type="text"  class="form-control numerooperacion">
             </div>
           </div>
           
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Fecha</label>
-              <input type="text" required class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+              <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
             </div>
           </div>
 
           <div style="display: none" class="col-md-2 inputxxx depositobancario">
             <div class="form-group">
               <label class="control-label">Cta Abonado</label>
-              <input type="number" required value="0" class="form-control cuentaabonado">
+              <input type="text" class="form-control cuentaabonado">
             </div>
           </div>
 
-
-          <div class="col-md-2">
-            <div class="form-group">
-              <label class="control-label">Tipo Pago</label>
-              <select onchange="changetypepago(this)" class="form-control tipopago">
-                <option value="">[Seleccione]</option>
-                <option value="depositobancario">Deposito Bancario</option>
-                <option value="tarjetadebito">Tarjeta Debito</option>
-                <option value="tarjetacredito">Tarjeta Credito</option>
-                <option value="cheque">Cheque</option>
-                <option value="porcobrar">Por cobrar</option>
-              </select>
-            </div>
-          </div>
         </div>
     `;
     $('.date-picker').datepicker({
@@ -396,8 +417,8 @@ include("Fragmentos/pie.php");
     });
   }
   function changetypepago(e){
-    getSelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
-    getSelectorAll("."+e.value).forEach(ix => ix.style.display = "");
+    e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
+    e.closest(".containerx").querySelectorAll("."+e.value).forEach(ix => ix.style.display = "");
 
   }
 
@@ -430,30 +451,20 @@ include("Fragmentos/pie.php");
     if (getSelectorAll(".producto").length < 1) {
       alert("Debes agregar almenos un producto")
     } else {
+      let totalpagando = montoefectivo.value ? parseFloat(montoefectivo.value) : 0;
+      let pagoacomulado = montoefectivo.value ? parseFloat(montoefectivo.value) : 0;
       const codigo  = makeid(20);
-      const data = {
-        header: {},
-        detalle: [],
-        payextra: []
-      }
-      getSelectorAll(".containerx").forEach(ix => {
-        const bancopay = ix.querySelector(".bancoextra").value;
-        const codigotransaccionpay = ix.querySelector(".codigotransaccionextra").value;
-        const fechapay = ix.querySelector(".fechaextra").value;
-        const montopay = ix.querySelector(".montoextra").value;
-        const tipopago = ix.querySelector(".tipopago").value;
+      const data = {};
+      let porpagar = 0;
+      const pagosextras = [];
+      data.detalle = [];
+      conpayextra = [];
 
-        payextra.push(`insert into pagostarjeta (banco, codigotransaccion, fecha, monto, tipopago, codigoventas) values ('${bancopay})', '${codigotransaccionpay}', '${fechapay}', ${montopay}, '${tipopago}', '${codigo}'`)
-      })
-
-      data.header = {
-        codigo,
-        codigoventa: codigo,
+      const h = {
         tipocomprobante: tipocomprobante.value,
-        tipo_pago: tipopago.value,
+        codigocomprobante: codigocomprobante.value,
         codigoclienten: cliente.value,
         codigoclientej: cliente.value,
-
         subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
         igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
         total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
@@ -463,22 +474,69 @@ include("Fragmentos/pie.php");
         codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
         codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
         estadofact: 1,
+        codsucursal: <?= $_SESSION['cod_sucursal'] ?>,
+        totalc : totalpreciocompra.value,
+        pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
       }
+
+      getSelectorAll(".containerx").forEach(ix => {
+        const pay = {
+          bancoextra: ix.querySelector(".bancoextra").value,
+          montoextra: ix.querySelector(".montoextra").value ? parseFloat(ix.querySelector(".montoextra").value) : 0,
+          numero: ix.querySelector(".numero").value,
+          cuentacorriente: ix.querySelector(".cuentacorriente").value,
+          numerooperacion: ix.querySelector(".numerooperacion").value,
+          fechaextra: ix.querySelector(".fechaextra").value,
+          cuentaabonado: ix.querySelector(".cuentaabonado").value,
+          tipopago: ix.querySelector(".tipopago").value,
+        }
+        if(ix.querySelector(".tipopago").value == "porcobrar")
+          porpagar = 1;
+        else
+          pagoacomulado += pay.montoextra
+        totalpagando += pay.montoextra;
+        pagosextras.push(pay)
+      })
+
+      if(parseFloat(h.total) != totalpagando){
+        alert("Los montos no coinciden");
+        return;
+      }
+      
+      data.header = `insert into ventas 
+        (tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacumulado)
+        values
+        ('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacumulado})
+        `
       getSelectorAll(".producto").forEach(item => {
-        data.detalle.push({
+        const d = {
           codigoprod: item.querySelector(".codigopro").dataset.codigo,
           cantidad: item.querySelector(".cantidad").value,
           unidad_medida: item.querySelector(".unidad_medida").value,
           concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
-          pcompra: item.querySelector(".precio").value,
+          pventa: item.querySelector(".precio").value,
           igv: parseFloat(item.querySelector(".precio").value) * 0.18,
-          totalcompras: parseFloat(item.querySelector(".precio").value) * 1.18
-        })
+          totalventa: (parseInt(item.querySelector(".cantidad").value) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
+        }
+        data.detalle.push(`
+          insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa)
+          values
+          (${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###)
+        `);
+
+        data.detalle.push(`
+        insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
+          values
+          (${d.codigoprod}, '${h.fecha_emision}', ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad}, ${d.pventa}, 
+          (select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad}
+          , ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
+        `);
+
       })
       var formData = new FormData();
       formData.append("json", JSON.stringify(data))
 
-      fetch(`setOrdenCompraNew.php`, {
+      fetch(`setVenta.php`, {
           method: 'POST',
           body: formData
         })
