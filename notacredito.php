@@ -20,7 +20,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select * from ventas where porpagar = 1";
+$query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where porpagar = 1";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -56,7 +56,7 @@ $i = 1;
                 <td><?= $row["pagoacomulado"] ?></td>
                 <td><?= $row["tipocomprobante"] ?></td>
                 <td><?= $row["codigocomprobante"] ?></td>
-                <td><a href="#" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)">Pagar</a></td>
+                <td><a href="#"  data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)">Pagar</a></td>
                 </tr>
             <?php
                     $i++;
@@ -77,6 +77,34 @@ $i = 1;
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
+                        <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputfecha" class="control-label">Fecha</label>
+                                    <input type="text" readonly autocomplete="off" id="inputfecha" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputtipocomprobante" class="control-label">Tipo Comp</label>
+                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputnumerocomprobante" class="control-label">N° Comprobante</label>
+                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputcliente" class="control-label">Cliente</label>
+                                    <input type="text" readonly autocomplete="off" id="inputcliente" class="form-control"/>
+                                </div>
+                            </div>
+                            
+
+
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputrestante" class="control-label">Falta Pagar</label>
@@ -137,6 +165,11 @@ include("Fragmentos/pie.php");
         $("#moperation").modal();
         const pagoefectivo = parseFloat(e.dataset.pagoefectivo);
         historialbody.innerHTML = "";
+
+        inputfecha.value = e.dataset.fecha;
+        inputtipocomprobante.value = e.dataset.codigocomprobante;
+        inputnumerocomprobante.value = e.dataset.cliente;
+        inputcliente.value = e.dataset.tipocomprobante;
 
         codigoventa.value = e.dataset.id;
         jsonpagos.value = e.dataset.json;
