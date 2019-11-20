@@ -340,7 +340,7 @@ include("Fragmentos/pie.php");
         const jssson = JSON.stringify(arraypagos);
 
         const query = `
-            update ventas set jsonpagos = ${jssson}, porpagar = ${porpagar}, pagoacomulado = ${acumulado}
+            update ventas set jsonpagos = '${jssson}', porpagar = ${porpagar}, pagoacomulado = ${acumulado}
             where codigoventas = ${codigoventa.value}`
         const detalle = [];
         detalle.push(query);
