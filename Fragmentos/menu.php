@@ -407,6 +407,13 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                         <span class="selected"></span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="cuentascaja.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">Cuentas Financieras</span>
+                                        <span class="selected"></span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     <?php endif ?>

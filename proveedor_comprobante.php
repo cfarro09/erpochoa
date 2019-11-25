@@ -115,13 +115,14 @@ include("Fragmentos/abrirpopupcentro.php");
     <thead>
       <tr>
         <th width="5%"> N&deg; </th>
-          <th  width="15%" > TIPO - NUMERO </th>
-          <th  width="20%"> FECHA REG  </th>
-          <th  width="20%"> SUCURSAL </th>
           
-          <th  width="5%"> TOTAL </th>
-          <th  width="5%" > SALDO  </th>
+          <th  width="20%"> FECHA REG  </th>
+          <th  width="15%" > TIPO - NUMERO </th>
           <th  width="10%"> DETALLE  </th>
+          <th  width="5%"> CARGO </th>
+          <th  width="20%"> ABONOS </th>
+          <th  width="5%" > SALDO  </th>
+          
           <th  width="5%"> VER </th>
         </tr>
       </thead>
@@ -132,13 +133,15 @@ include("Fragmentos/abrirpopupcentro.php");
                <tr>
                        <?php $rc=$row_Listado['codigorc']; ?>  
                   <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td><?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>                                                           </td>
+                  <td> COMPRA </td>
+                  
                  
                   <td> <?php echo $row_Listado['total']; ?> </td>
+                  <td>0 </td>
                   <td> 0 </td>
-                  <td> COMPRA </td>
+                  
 
                   <td align="center"> 
                     <a href="#" data-rc="<?= $row_Listado['codigorc']; ?>" data-codigoproveedor="<?= $row_Listado['rucproveedor']; ?>" onclick="mostrarModalRC(this)">Ver</a>
@@ -148,12 +151,14 @@ include("Fragmentos/abrirpopupcentro.php");
          <?php if($row_Listado['id_transporte']!=NULL && $row_Listado['ructransporte']==$colname_Listado ) { ?>
                <tr>
                   <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>    </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
-                  <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
-                  <td> 0 </td>
+                  <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>    </td>
                   <td> TRANSPORTE - <?PHP echo $row_Listado['tipo_transporte']; ?> </td>
+                  
+                  <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
+                  <td> 0  </td>
+                  <td> 0 </td>
+                  
 
                   <td align="center">  
                       <a href="#" data-trans="<?= $row_Listado['id_transporte']; ?>" data-codigotrans="<?= $row_Listado['ructransporte']; ?>" onclick="mostrarModalTRANS(this)">Ver</a>
@@ -165,12 +170,14 @@ include("Fragmentos/abrirpopupcentro.php");
                <tr>
           
                   <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['tipocomprobantee'].' - '.$row_Listado['numerocomprobantee']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
+                  <td> <?php echo $row_Listado['tipocomprobantee'].' - '.$row_Listado['numerocomprobantee']; ?>                                                           </td>
+                  <td> Estibador </td>
+                  
                   <td> <?php echo round($row_Listado['precioestibador_soles'],2); ?> </td>
                   <td> 0 </td>
-                  <td> Estibador </td>
+                  <td> 0 </td>
+                  
 
                   <td align="center">  
                       <a href="#" data-toggle="modal" data-target="#ver_e">Ver </a>
@@ -181,12 +188,14 @@ include("Fragmentos/abrirpopupcentro.php");
                <tr>
           
                   <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
-                  <td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
-                  <td> 0 </td>
+                  <td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?>                                                           </td>
                   <td> NOTA DEBITO </td>
+                  
+                  <td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
+                  <td> 0  </td>
+                  <td> 0 </td>
+                  
 
                   <td align="center">  
                     <a href="#" data-notad="<?= $row_Listado['id_notadebito']; ?>" data-codigonotad="<?= $row_Listado['rucnd']; ?>" onclick="mostrarModalNOTAD(this)">Ver</a>
@@ -200,12 +209,14 @@ include("Fragmentos/abrirpopupcentro.php");
                <tr>
           
                   <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['nombre_sucursal']; ?> </td>
-                  <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
-                  <td> 0 </td>
+                  <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
                   <td> NOTA CREDITO </td>
+                  <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
+                  <td> 0</td>
+                  
+                  <td> 0 </td>
+                  
 
                   <td align="center">  
                       <a href="#" data-notac="<?= $row_Listado['id_notacredito']; ?>" data-codigonotac="<?= $row_Listado['rucnotacredito']; ?>" onclick="mostrarModalNOTAC(this)">Ver</a>
