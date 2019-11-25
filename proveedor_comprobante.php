@@ -199,7 +199,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 			<td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
 			<td> <?= $row_Listado["pagoacumulado"]  ?> </td>
-			<td><?= $row_Listado["pagoacumulado"] -?></td>
+			<td><?= $row_Listado["preciond_soles"] -$row_Listado["pagoacumulado"] ?></td>
 
 
 			<td align="center">
