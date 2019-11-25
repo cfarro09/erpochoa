@@ -57,9 +57,10 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
 $colname_Listado = "-1";
 if (isset($_GET['codigoproveedor'])) {
   $colname_Listado = $_GET['codigoproveedor'];
+  $rucxx = $_GET['codigoproveedor'];
 }
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = sprintf("select *, p.ruc, t.id_transporte, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, p.ruc, s.nombre_sucursal from registro_compras r left join transporte_compra t on t.codigocompras = r.codigorc left join estibador_compra e on e.codigocompras = r.codigorc left join notadebito_compra nd on nd.codigocompras = r.codigorc left join notacredito_compra nc on nc.codigocompras = r.codigorc left join sucursal s on s.cod_sucursal=r.codigosuc LEFT JOIN proveedor p on p.ruc=r.rucproveedor where p.ruc= '%s' or t.ructransporte='%s'", GetSQLValueString($colname_Listado, "char"),GetSQLValueString($colname_Listado, "char"));
+$query_Listado = sprintf("select *, p.ruc, t.id_transporte, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.pagoacumulado, nd.preciond_soles, nd.id_notadebito, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, p.ruc, s.nombre_sucursal from registro_compras r left join transporte_compra t on t.codigocompras = r.codigorc left join estibador_compra e on e.codigocompras = r.codigorc left join notadebito_compra nd on nd.codigocompras = r.codigorc left join notacredito_compra nc on nc.codigocompras = r.codigorc left join sucursal s on s.cod_sucursal=r.codigosuc LEFT JOIN proveedor p on p.ruc=r.rucproveedor where p.ruc= '%s' or t.ructransporte='%s' or nd.rucnd = '$rucxx' or nc.rucnotacredito = '$rucxx'", GetSQLValueString($colname_Listado, "char"),GetSQLValueString($colname_Listado, "char"));
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -98,136 +99,142 @@ include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 include("Fragmentos/abrirpopupcentro.php");
 //________________________________________________________________________________________________________________
-?>        
+?>
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
-  <div class="alert alert-danger">
-    <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
-    
-    
-  </div>
-  <?php } // Show if recordset empty ?>
+<div class="alert alert-danger">
+	<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
+
+
+</div>
+<?php } // Show if recordset empty ?>
 <?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
 
 
-  <table width="700" class="table table-striped table-bordered table-hover dt-responsive" id="sample_1">
-   
-    <thead>
-      <tr>
-        <th width="5%"> N&deg; </th>
-          
-          <th  width="20%"> FECHA REG  </th>
-          <th  width="15%" > TIPO - NUMERO </th>
-          <th  width="10%"> DETALLE  </th>
-          <th  width="5%"> CARGO </th>
-          <th  width="20%"> ABONOS </th>
-          <th  width="5%" > SALDO  </th>
-          
-          <th  width="5%"> VER </th>
-        </tr>
-      </thead>
-    <tbody>
-      <?php do { ?>
-            <?php if($row_Listado['codigorc']!=NULL && $row_Listado['rucproveedor']==$colname_Listado ) { ?>
-         
-               <tr>
-                       <?php $rc=$row_Listado['codigorc']; ?>  
-                  <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>                                                           </td>
-                  <td> COMPRA </td>
-                  
-                 
-                  <td> <?php echo $row_Listado['total']; ?> </td>
-                  <td>0 </td>
-                  <td> 0 </td>
-                  
+<table width="700" class="table table-striped table-bordered table-hover dt-responsive" id="sample_1">
 
-                  <td align="center"> 
-                    <a href="#" data-rc="<?= $row_Listado['codigorc']; ?>" data-codigoproveedor="<?= $row_Listado['rucproveedor']; ?>" onclick="mostrarModalRC(this)">Ver</a>
-                  </td>
-            </tr>
-            <?php } ?>
-         <?php if($row_Listado['id_transporte']!=NULL && $row_Listado['ructransporte']==$colname_Listado ) { ?>
-               <tr>
-                  <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>    </td>
-                  <td> TRANSPORTE - <?PHP echo $row_Listado['tipo_transporte']; ?> </td>
-                  
-                  <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
-                  <td> 0  </td>
-                  <td> 0 </td>
-                  
+	<thead>
+		<tr>
+			<th width="5%"> N&deg; </th>
 
-                  <td align="center">  
-                      <a href="#" data-trans="<?= $row_Listado['id_transporte']; ?>" data-codigotrans="<?= $row_Listado['ructransporte']; ?>" onclick="mostrarModalTRANS(this)">Ver</a>
-                  </td>
-            </tr>
-         <?php } ?>
+			<th width="20%"> FECHA REG </th>
+			<th width="15%"> TIPO - NUMERO </th>
+			<th width="10%"> DETALLE </th>
+			<th width="5%"> CARGO </th>
+			<th width="20%"> ABONOS </th>
+			<th width="5%"> SALDO </th>
 
-          <?php if($row_Listado['id_estibador']!=NULL && $row_Listado['rucestibador']==$colname_Listado ) { ?>
-               <tr>
-          
-                  <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['tipocomprobantee'].' - '.$row_Listado['numerocomprobantee']; ?>                                                           </td>
-                  <td> Estibador </td>
-                  
-                  <td> <?php echo round($row_Listado['precioestibador_soles'],2); ?> </td>
-                  <td> 0 </td>
-                  <td> 0 </td>
-                  
+			<th width="5%"> VER </th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php do { ?>
+		<?php if($row_Listado['codigorc']!=NULL && $row_Listado['rucproveedor']==$colname_Listado ) { ?>
 
-                  <td align="center">  
-                      <a href="#" data-toggle="modal" data-target="#ver_e">Ver </a>
-                  </td>
-            </tr>
-         <?php } ?>
-         <?php if($row_Listado['id_notadebito']!=NULL && $row_Listado['rucnd']==$colname_Listado) { ?>
-               <tr>
-          
-                  <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?>                                                           </td>
-                  <td> NOTA DEBITO </td>
-                  
-                  <td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
-                  <td> 0  </td>
-                  <td> 0 </td>
-                  
-
-                  <td align="center">  
-                    <a href="#" data-notad="<?= $row_Listado['id_notadebito']; ?>" data-codigonotad="<?= $row_Listado['rucnd']; ?>" onclick="mostrarModalNOTAD(this)">Ver</a>
-                  </td>
-            </tr>
-         <?php } ?>
+		<tr>
+			<?php $rc=$row_Listado['codigorc']; ?>
+			<td> <?php echo $i; ?> </td>
+			<td> <?php echo $row_Listado['fecha_registro']; ?></td>
+			<td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?> </td>
+			<td> COMPRA </td>
 
 
+			<td> <?php echo $row_Listado['total']; ?> </td>
+			<td>0 </td>
+			<td> 0 </td>
 
-         <?php if($row_Listado['id_notacredito']!=NULL  && $row_Listado['rucnotacredito']==$colname_Listado) { ?>
-               <tr>
-          
-                  <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
-                  <td> NOTA CREDITO </td>
-                  <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
-                  <td> 0</td>
-                  
-                  <td> 0 </td>
-                  
 
-                  <td align="center">  
-                      <a href="#" data-notac="<?= $row_Listado['id_notacredito']; ?>" data-codigonotac="<?= $row_Listado['rucnotacredito']; ?>" onclick="mostrarModalNOTAC(this)">Ver</a>
-                  </td>
-            </tr>
-         <?php } ?>
+			<td align="center">
+				<a href="#" data-rc="<?= $row_Listado['codigorc']; ?>"
+					data-codigoproveedor="<?= $row_Listado['rucproveedor']; ?>" onclick="mostrarModalRC(this)">Ver</a>
+			</td>
+		</tr>
+		<?php } ?>
+		<?php if($row_Listado['id_transporte']!=NULL && $row_Listado['ructransporte']==$colname_Listado ) { ?>
+		<tr>
+			<td> <?php echo $i; ?> </td>
+			<td> <?php echo $row_Listado['fecha_registro']; ?></td>
+			<td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?> </td>
+			<td> TRANSPORTE -
+				<?PHP echo $row_Listado['tipo_transporte']; ?>
+			</td>
 
-        <?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
-    </tbody>
-  </table>
-  <?php } // Show if recordset not empty ?>
+			<td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
+			<td> 0 </td>
+			<td> 0 </td>
+
+
+			<td align="center">
+				<a href="#" data-trans="<?= $row_Listado['id_transporte']; ?>"
+					data-codigotrans="<?= $row_Listado['ructransporte']; ?>" onclick="mostrarModalTRANS(this)">Ver</a>
+			</td>
+		</tr>
+		<?php } ?>
+
+		<?php if($row_Listado['id_estibador']!=NULL && $row_Listado['rucestibador']==$colname_Listado ) { ?>
+		<tr>
+
+			<td> <?php echo $i; ?> </td>
+			<td> <?php echo $row_Listado['fecha_registro']; ?></td>
+			<td> <?php echo $row_Listado['tipocomprobantee'].' - '.$row_Listado['numerocomprobantee']; ?> </td>
+			<td> Estibador </td>
+
+			<td> <?php echo round($row_Listado['precioestibador_soles'],2); ?> </td>
+			<td> 0 </td>
+			<td> 0 </td>
+
+
+			<td align="center">
+				<a href="#" data-toggle="modal" data-target="#ver_e">Ver </a>
+			</td>
+		</tr>
+		<?php } ?>
+		<?php if($row_Listado['id_notadebito']!=NULL && $row_Listado['rucnd']==$colname_Listado) { ?>
+		<tr>
+
+			<td> <?php echo $i; ?> </td>
+			<td> <?php echo $row_Listado['fecha_registro']; ?></td>
+			<td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?> </td>
+			<td> NOTA DEBITO </td>
+
+			<td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
+			<td> <?= $row_Listado["pagoacumulado"]  ?> </td>
+			<td><?= $row_Listado["pagoacumulado"] -?></td>
+
+
+			<td align="center">
+				<a href="#" data-notad="<?= $row_Listado['id_notadebito']; ?>"
+					data-codigonotad="<?= $row_Listado['rucnd']; ?>" onclick="mostrarModalNOTAD(this, <?= $row_Listado['id_notadebito'] ?>)">Ver</a>
+			</td>
+		</tr>
+		<?php } ?>
+
+
+
+		<?php if($row_Listado['id_notacredito']!=NULL  && $row_Listado['rucnotacredito']==$colname_Listado) { ?>
+		<tr>
+
+			<td> <?php echo $i; ?> </td>
+			<td> <?php echo $row_Listado['fecha_registro']; ?></td>
+			<td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?> </td>
+			<td> NOTA CREDITO </td>
+			<td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
+			<td> 0</td>
+
+			<td> 0 </td>
+
+
+			<td align="center">
+				<a href="#" data-notac="<?= $row_Listado['id_notacredito']; ?>"
+					data-codigonotac="<?= $row_Listado['rucnotacredito']; ?>" onclick="mostrarModalNOTAC(this)">Ver</a>
+			</td>
+		</tr>
+		<?php } ?>
+
+		<?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+	</tbody>
+</table>
+<?php } // Show if recordset not empty ?>
 
 
 
@@ -236,68 +243,84 @@ include("Fragmentos/abrirpopupcentro.php");
 <!-- MODAL DE REGISTRO DE COMPRA  -->
 
 <div role="dialog" tabindex="-1" class="modal fade" id="ver_rc"
-style="max-width:600px;margin-right:auto;margin-left:auto;">
-   <div class="modal-dialog" role="document">
-     <div class="modal-content">
-       <div class="modal-header"> <!-- CABECERA -->
-       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-       <h4 class="text-center modal-title">Registro de Compra <span id="ver_rc_codigorc"></span></h4>
-       </div>
-       <div class="modal-body"> <!-- CUERPO DEL MENSAJE -->
-       <br align="center">COMPROBANTE: <span id="ver_rc_tipocomp"> </span>- <span id="ver_rc_numerocomprobante"></span>
-       <br align="right">FECHA:<span id="ver_rc_fecha"></span>
-       <br align="right">TOTAL:<span id="ver_rc_total"></span>
-       <br align="left">RUC: <span id="ver_rc_ruc"></span>
-       <br align="left">PROVEEDOR: <span id="ver_rc_proveedor"></span>
-       <br align="left">SUCURSAL: <span id="ver_rc_sucursal"></span>
-       <br align="left">GENERADA POR: <span id="ver_rc_usuario"></span>
-       <div class="table-responsive-sm">
-          <table class="table">
-            <thead>
-              <tr>
-                <td>#</td>
-                <td>Cant</td>
-                <td>Detalle</td>
-                <td>Desc x Item</td>
-                <td>Precio UND</td>
-             </tr>
-            </thead>
-            <tbody id="ver_rc_body_tabla">             
-            </tbody>           
-          </table>
-      </div>       </div>         <div class="modal-footer"> <!-- PIE -->
-       <button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar </button>
-       </div>      </div>         </div>
+	style="max-width:600px;margin-right:auto;margin-left:auto;">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- CABECERA -->
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">x</span></button>
+				<h4 class="text-center modal-title">Registro de Compra <span id="ver_rc_codigorc"></span></h4>
+			</div>
+			<div class="modal-body">
+				<!-- CUERPO DEL MENSAJE -->
+				<br align="center">COMPROBANTE: <span id="ver_rc_tipocomp"> </span>- <span
+					id="ver_rc_numerocomprobante"></span>
+				<br align="right">FECHA:<span id="ver_rc_fecha"></span>
+				<br align="right">TOTAL:<span id="ver_rc_total"></span>
+				<br align="left">RUC: <span id="ver_rc_ruc"></span>
+				<br align="left">PROVEEDOR: <span id="ver_rc_proveedor"></span>
+				<br align="left">SUCURSAL: <span id="ver_rc_sucursal"></span>
+				<br align="left">GENERADA POR: <span id="ver_rc_usuario"></span>
+				<div class="table-responsive-sm">
+					<table class="table">
+						<thead>
+							<tr>
+								<td>#</td>
+								<td>Cant</td>
+								<td>Detalle</td>
+								<td>Desc x Item</td>
+								<td>Precio UND</td>
+							</tr>
+						</thead>
+						<tbody id="ver_rc_body_tabla">
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<!-- PIE -->
+				<button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- MODAL DE TRANSPORTE  -->
 <div role="dialog" tabindex="-1" class="modal fade" id="ver_trans"
-style="max-width:600px;margin-right:auto;margin-left:auto;">
-   <div class="modal-dialog" role="document">
-     <div class="modal-content">
-       <div class="modal-header"> <!-- CABECERA -->
-       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-       <h4 class="text-center modal-title">TRANSPORTE <span id="ver_trans_id_transporte"></span></h4>
-       </div>
-       <div class="modal-body"> <!-- CUERPO DEL MENSAJE -->
-    <!--   <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
+	style="max-width:600px;margin-right:auto;margin-left:auto;">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- CABECERA -->
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">×</span></button>
+				<h4 class="text-center modal-title">TRANSPORTE <span id="ver_trans_id_transporte"></span></h4>
+			</div>
+			<div class="modal-body">
+				<!-- CUERPO DEL MENSAJE -->
+				<!--   <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
       -->
-       <br align="right">TIPO:<span id="ver_trans_tipotransp"></span>
-       <br align="left">RUC: <span id="ver_trans_ruc"></span>
-       <br align="left">PROVEEDOR: <span id="ver_trans_razonsocial"></span>
-       <br align="left">FECHA: <span id="ver_trans_fecha"></span>
-       <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
-       <br align="center">MONEDA: <span id="ver_trans_moneda"></span>
-       <br align="center">TOTAL SOLES: <span id="ver_trans_preciotransp_soles"></span>     
-     <!--  <br align="right">MONEDA:<span id="ver_trans_moneda"></span>
+				<br align="right">TIPO:<span id="ver_trans_tipotransp"></span>
+				<br align="left">RUC: <span id="ver_trans_ruc"></span>
+				<br align="left">PROVEEDOR: <span id="ver_trans_razonsocial"></span>
+				<br align="left">FECHA: <span id="ver_trans_fecha"></span>
+				<br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span
+					id="ver_trans_numerocomprobante"></span>
+				<br align="center">MONEDA: <span id="ver_trans_moneda"></span>
+				<br align="center">TOTAL SOLES: <span id="ver_trans_preciotransp_soles"></span>
+				<!--  <br align="right">MONEDA:<span id="ver_trans_moneda"></span>
        <br align="right">TOTAL:<span id="ver_trans_ruc"></span>
        <br align="left">SUCURSAL: <span id="ver_trans_ruc"></span>-->
-       </div>
-       <div class="modal-footer"> <!-- PIE -->
-       <button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar </button>
-       </div>
-     </div>
-   </div>
+			</div>
+			<div class="modal-footer">
+				<!-- PIE -->
+				<button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 
@@ -307,62 +330,96 @@ style="max-width:600px;margin-right:auto;margin-left:auto;">
 
 <!-- MODAL DE NOTA DEBITO  -->
 
-<div role="dialog" tabindex="-1" class="modal fade" id="ver_notad"
-style="max-width:600px;margin-right:auto;margin-left:auto;">
-   <div class="modal-dialog" role="document">
-     <div class="modal-content">
-       <div class="modal-header"> <!-- CABECERA -->
-       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-       <h4 class="text-center modal-title">NOTA DE DEBITO <span id="ver_notad_id_notadebito"></span></h4>
-       </div>
-       <div class="modal-body"> <!-- CUERPO DEL MENSAJE -->
-    <!--   <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
+<div role="dialog" tabindex="-1" class="modal fade" id="ver_notad" style="margin-right:auto;margin-left:auto;">
+	<div class="modal-dialog" role="document" style="min-width:900px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- CABECERA -->
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">×</span></button>
+				<h4 class="text-center modal-title">NOTA DE DEBITO <span id="ver_notad_id_notadebito"></span></h4>
+			</div>
+			<input type="hidden" id="idnotadebito">
+			<input type="hidden" id="jsonpagos">
+			<input type="hidden" id="restantex">
+				<div class="modal-body">
+					<!-- CUERPO DEL MENSAJE -->
+					<!--   <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
     -->
-       <br align="left">RUC: <span id="ver_notad_ruc"></span>
-       <br align="left">PROVEEDOR: <span id="ver_notad_razonsocial"></span>
-       <br align="left">FECHA: <span id="ver_notad_fecha"></span>
-       <br align="center">COMPROBANTE: <span id="ver_notad_tipocomp"> </span>- <span id="ver_notad_numerocomprobante"></span>
-       <br align="center">MONEDA: <span id="ver_notad_moneda"></span>
-       <br align="center">TOTAL SOLES: <span id="ver_notad_preciond_soles"></span>     
-    
-       </div>
-       <div class="modal-footer"> <!-- PIE -->
-       <button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar </button>
-       </div>
-     </div>
-   </div>
-   </div>
+					<br align="left">RUC: <span id="ver_notad_ruc"></span>
+					<br align="left">PROVEEDOR: <span id="ver_notad_razonsocial"></span>
+					<br align="left">FECHA: <span id="ver_notad_fecha"></span>
+					<br align="center">COMPROBANTE: <span id="ver_notad_tipocomp"> </span>- <span
+						id="ver_notad_numerocomprobante"></span>
+					<br align="center">MONEDA: <span id="ver_notad_moneda"></span>
+					<br align="center">TOTAL SOLES: <span id="ver_notad_preciond_soles"></span>
+
+					<div style="margin-top: 15px">
+						<button class="btn btn-success" type="button" id="btnaddpay" onclick="addPayExtra()">Agregar Pago</button>
+					</div>
+
+					<div class="col-sm-12" style="margin-top: 10px">
+						<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<td>TIPO PAGO</td>
+									<td>MONTO</td>
+									<td>DETALLE</td>
+								</tr>
+							</thead>
+							<tbody id="historialbody">
+							</tbody>
+						</table>
+					</div>
+					<div class="col-sm-12" id="containerpayextra">
+
+					</div>
+				</div>
+			<div class="modal-footer">
+				<button type="submit" id="guardar_button" onclick="guardar()" class="btn btn-success">Guardar</button>
+				<button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 <!-- MODAL DE NOTA CREDITO  -->
 
 <div role="dialog" tabindex="-1" class="modal fade" id="ver_notac"
-style="max-width:600px;margin-right:auto;margin-left:auto;">
-   <div class="modal-dialog" role="document">
-     <div class="modal-content">
-       <div class="modal-header"> <!-- CABECERA -->
-       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-       <h4 class="text-center modal-title">NOTA DE CREDITO <span id="ver_notac_id_notacrebito"></span></h4>
-       </div>
-       <div class="modal-body"> <!-- CUERPO DEL MENSAJE -->
-    <!--   <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
+	style="max-width:600px;margin-right:auto;margin-left:auto;">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- CABECERA -->
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">×</span></button>
+				<h4 class="text-center modal-title">NOTA DE CREDITO <span id="ver_notac_id_notacrebito"></span></h4>
+			</div>
+			<div class="modal-body">
+				<!-- CUERPO DEL MENSAJE -->
+				<!--   <br align="center">COMPROBANTE: <span id="ver_trans_tipocomp"> </span>- <span id="ver_trans_numerocomprobante"></span>
     -->
-       <br align="left">RUC: <span id="ver_notac_ruc"></span>
-       <br align="left">PROVEEDOR: <span id="ver_notac_razonsocial"></span>
-       <br align="left">FECHA: <span id="ver_notac_fecha"></span>
-       <br align="center">COMPROBANTE: <span id="ver_notac_tipocomp"> </span>- <span id="ver_notac_numerocomprobante"></span>
-       <br align="center">MONEDA: <span id="ver_notac_moneda"></span>
-       <br align="center">TOTAL SOLES: <span id="ver_notac_precionc_soles"></span>     
-    
-       </div>
-       <div class="modal-footer"> <!-- PIE -->
-       <button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar </button>
-       </div>
-     </div>
-   </div>
+				<br align="left">RUC: <span id="ver_notac_ruc"></span>
+				<br align="left">PROVEEDOR: <span id="ver_notac_razonsocial"></span>
+				<br align="left">FECHA: <span id="ver_notac_fecha"></span>
+				<br align="center">COMPROBANTE: <span id="ver_notac_tipocomp"> </span>- <span
+					id="ver_notac_numerocomprobante"></span>
+				<br align="center">MONEDA: <span id="ver_notac_moneda"></span>
+				<br align="center">TOTAL SOLES: <span id="ver_notac_precionc_soles"></span>
+
+			</div>
+			<div class="modal-footer">
+				<!-- PIE -->
+				<button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar
+				</button>
+			</div>
+		</div>
+	</div>
 
 
-<?php 
+	<?php 
 //___________________________________________________________________________________________________________________
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
@@ -371,149 +428,374 @@ mysql_free_result($Listado);
 
 mysql_free_result($Proveedor);
 ?>
-<script type="text/javascript">
-  function mostrarModalRC(etiqueta){
+	<script type="text/javascript">
+		function mostrarModalRC(etiqueta) {
 
-    $("#ver_rc").modal();
-    ver_rc_ruc.textContent = etiqueta.dataset.codigoproveedor;
-    ver_rc_codigorc.textContent = etiqueta.dataset.rc;
-    ver_rc_body_tabla.innerHTML = ""
-    fetch("http://localhost:8080/erpochoa/traerregistrocompra.php?codigorc="+etiqueta.dataset.rc)
-        .then(res => res.json())
-        .catch(error => console.error("error: ", error))
+			$("#ver_rc").modal();
+			ver_rc_ruc.textContent = etiqueta.dataset.codigoproveedor;
+			ver_rc_codigorc.textContent = etiqueta.dataset.rc;
+			ver_rc_body_tabla.innerHTML = ""
+			fetch("traerregistrocompra.php?codigorc=" + etiqueta.dataset.rc)
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
 
-        .then(res => {
-          ver_rc_numerocomprobante.textContent = res.header.numerocomprobante
-          ver_rc_fecha.textContent = res.header.fecha
-          ver_rc_total.textContent = res.header.total
-          ver_rc_proveedor.textContent = res.header.razonsocial
-          ver_rc_sucursal.textContent = res.header.nombre_sucursal
-          ver_rc_usuario.textContent = res.header.usuario
-          ver_rc_tipocomp.textContent = res.header.tipo_comprobante
-          console.log(ver_rc_numerocomprobante.textContent)
-          res.detalle.forEach(row => {
-            ver_rc_body_tabla.innerHTML += `
-              <tr>
-                <td></td>
-                <td>${row.cantidad}</td>
-                <td>${row.nombre_producto}</td>
-                <td>${row.descxitem}</td>
-                <td>${row.vcu}</td>
-              </tr>
-            `;
+				.then(res => {
+					ver_rc_numerocomprobante.textContent = res.header.numerocomprobante
+					ver_rc_fecha.textContent = res.header.fecha
+					ver_rc_total.textContent = res.header.total
+					ver_rc_proveedor.textContent = res.header.razonsocial
+					ver_rc_sucursal.textContent = res.header.nombre_sucursal
+					ver_rc_usuario.textContent = res.header.usuario
+					ver_rc_tipocomp.textContent = res.header.tipo_comprobante
+					
 
-          });
-          //console.log(res.numerocomprobante)
-        });
-   // console.log(etiqueta.dataset.rc)
-    //console.log(etiqueta.dataset.codigoproveedor)
+					res.detalle.forEach(row => {
+						ver_rc_body_tabla.innerHTML += `
+						<tr>
+							<td></td>
+							<td>${row.cantidad}</td>
+							<td>${row.nombre_producto}</td>
+							<td>${row.descxitem}</td>
+							<td>${row.vcu}</td>
+						</tr>
+						`;
+					});
+				});
+		}
+		function removecontainerpay(e) {
+			e.closest(".containerx").remove()
+		}
+		function changetypepago(e) {
+			guardar_button.style.display = ""
+			e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
+			e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
+		}
+		function addPayExtra() {
 
-  }
-  
-  function mostrarModalTRANS(etiqueta){
+			const newxx = document.createElement("div");
+			newxx.className = "col-md-12 containerx";
+			newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
 
-    $("#ver_trans").modal();
-    ver_trans_ruc.textContent = etiqueta.dataset.ructransporte;
-    ver_trans_tipotransp.textContent = etiqueta.dataset.tipo_transporte;
-    ver_trans_razonsocial.textContent = etiqueta.dataset.razonsocial;
-    ver_trans_id_transporte.textContent = etiqueta.dataset.trans;
-    ver_trans_tipocomp.textContent = etiqueta.dataset.tipocomprobante;
-    ver_trans_numerocomprobante.textContent = etiqueta.dataset.numerocomprobante;
-    ver_trans_moneda.textContent = etiqueta.dataset.moneda;
-    ver_trans_preciotransp_soles.textContent=etiqueta.dataset.preciotransp_soles
-    
-    //ver_trans_body_tabla.innerHTML = ""
-    fetch("http://localhost:8080/erpochoa/traerregistrocompra.php?codigotrans="+etiqueta.dataset.trans)
-    .then(res => res.json())
-    .catch(error => console.error("error: ", error))
+			newxx.innerHTML += `
+				<div class="text-right">
+					<button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
+				</div>
 
-    .then(res => {
-      ver_trans_ruc.textContent = res.header.ructransporte
-      ver_trans_tipotransp.textContent = res.header.tipo_transporte
-      ver_trans_tipocomp.textContent = res.header.tipocomprobante
-      ver_trans_numerocomprobante.textContent = res.header.numerocomprobante
-      ver_trans_razonsocial.textContent = res.header.razonsocial
-      ver_trans_moneda.textContent = res.header.moneda
-      ver_trans_preciotransp_soles.textContent = res.header.preciotransp_soles
-      //ver_trans_usuario.textContent = res.header.usuario
-      //ver_trans_tipocomp.textContent = res.header.tipo_comprobante
-      console.log(res)
-                //console.log(res.numerocomprobante)
-    });
-    //console.log(etiqueta.dataset.codigoproveedor)
+				<div class="col-md-3">
+					<div class="form-group">
+					<label class="control-label">Tipo Pago</label>
+					<select onchange="changetypepago(this)" class="form-control tipopago">
+						<option value="">[Seleccione]</option>
+						<option value="depositobancario">Deposito Bancario</option>
+						<option value="tarjetadebito">Tarjeta Debito</option>
+						<option value="tarjetacredito">Tarjeta Credito</option>
+						<option value="cheque">Cheque</option>
+						<option value="efectivo">Efectivo</option>
+					</select>
+					</div>
+				</div>
 
-  }
+				<div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
+					<div class="form-group">
+					<label class="control-label">Banco</label>
+					<select class="form-control bancoextra">
+						<option value="BANCO AZTECA">BANCO AZTECA</option>
+						<option value="BANCO BCP">BANCO BCP</option>
+						<option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
+						<option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
+						<option value="BANCO FALABELLA">BANCO FALABELLA</option>
+						<option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
+						<option value="BANCO MI BANCO">BANCO MI BANCO</option>
+						<option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
+						<option value="BANCO RIPLEY">BANCO RIPLEY</option>
+						<option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
+						<option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
+						<option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
+						<option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
+						<option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
+						<option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
+						<option value="CMAC ICA">CMAC ICA</option>
+						<option value="CMAC LIMA">CMAC LIMA</option>
+						<option value="CMAC MAYNA">CMAC MAYNA</option>
+						<option value="CMAC PAITA">CMAC PAITA</option>
+						<option value="CMAC SULLANA">CMAC SULLANA</option>
+						<option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
+					</select>
+					</div>
+				</div>
 
+				<div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito efectivo porcobrar">
+					<div class="form-group">
+					<label class="control-label">Monto</label>
+					<input type="number" step="any" class="form-control montoextra">
+					</div>
+				</div>
 
+				<div style="display: none" class="col-md-3 inputxxx cheque tarjetacredito tarjetadebito">
+					<div class="form-group">
+					<label class="control-label">Numero</label>
+					<input type="number" class="form-control numero">
+					</div>
+				</div>
 
-
-
-function mostrarModalNOTAD(etiqueta){
-
-    $("#ver_notad").modal();
-    //ver_notad_ruc.textContent = etiqueta.dataset.rucnd;
-    ver_notad_tipocomp.textContent = etiqueta.dataset.tipocomprobante;
-    ver_notad_numerocomprobante.textContent = etiqueta.dataset.numerocomprobante;
-    ver_notad_razonsocial.textContent = etiqueta.dataset.razonsocial;
-    ver_notad_id_notadebito.textContent = etiqueta.dataset.notad;
-    ver_notad_moneda.textContent = etiqueta.dataset.moneda;
-    ver_notad_preciond_soles.textContent=etiqueta.dataset.preciond_soles
-    
-    //ver_trans_body_tabla.innerHTML = ""
-    fetch("http://localhost:8080/erpochoa/traerregistrocompra.php?codigonotad="+etiqueta.dataset.notad)
-    .then(res => res.json())
-    .catch(error => console.error("error: ", error))
-
-    .then(res => {
-      ver_notad_ruc.textContent = res.header.rucnd
-      ver_notad_tipocomp.textContent = res.header.tipocomprobante
-      ver_notad_numerocomprobante.textContent = res.header.numerocomprobante
-      ver_notad_id_notadebito.textContent=res.header.id_notadebito
-      ver_notad_razonsocial.textContent = res.header.razonsocial
-      ver_notad_moneda.textContent = res.header.moneda
-      ver_notad_preciond_soles.textContent = res.header.preciond_soles
-      
-      console.log(res)
-      
-    });
-    //console.log(etiqueta.dataset.codigoproveedor)
-
-  }
-
-
-
-function mostrarModalNOTAC(etiqueta){
-
-    $("#ver_notac").modal();
-   // ver_notac_ruc.textContent = etiqueta.dataset.rucnotacredito;
-    ver_notac_tipocomp.textContent = etiqueta.dataset.tipocomprobante;
-    ver_notac_numerocomprobante.textContent = etiqueta.dataset.numerocomprobante;
-    ver_notac_razonsocial.textContent = etiqueta.dataset.razonsocial;
-    ver_notac_id_notacrebito.textContent = etiqueta.dataset.notac;
-    ver_notac_moneda.textContent = etiqueta.dataset.moneda;
-    ver_notac_precionc_soles.textContent=etiqueta.dataset.precionc_soles
-    
-    //ver_trans_body_tabla.innerHTML = ""
-    fetch("http://localhost:8080/erpochoa/traerregistrocompra.php?codigonotac="+etiqueta.dataset.notac)
-    .then(res => res.json())
-    .catch(error => console.error("error: ", error))
-
-    .then(res => {
-      ver_notac_ruc.textContent = res.header.rucnotacredito
-      ver_notac_tipocomp.textContent = res.header.tipocomprobante
-      ver_notac_numerocomprobante.textContent = res.header.numerocomprobante
-      ver_notac_id_notacrebito.textContent=res.header.id_notacredito
-      ver_notac_razonsocial.textContent = res.header.razonsocial
-      ver_notac_moneda.textContent = res.header.moneda
-      ver_notac_precionc_soles.textContent = res.header.precionc_soles
-      //ver_trans_usuario.textContent = res.header.usuario
-      //ver_trans_tipocomp.textContent = res.header.tipo_comprobante
-      console.log(res)
-                //console.log(res.numerocomprobante)
-    });
-    //console.log(etiqueta.dataset.codigoproveedor)
-
-  }
+				<div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
+					<div class="form-group">
+					<label class="control-label">Cuenta Corriente</label>
+					<input type="text" class="form-control cuentacorriente">
+					</div>
+				</div>
 
 
-</script>
+				<div style="display: none" class="col-md-3 inputxxx depositobancario">
+					<div class="form-group">
+					<label class="control-label">Numero Operacion</label>
+					<input type="text"  class="form-control numerooperacion">
+					</div>
+				</div>
+				
+				<div style="display: none" class="col-md-3 inputxxx depositobancario">
+					<div class="form-group">
+					<label class="control-label">Fecha</label>
+					<input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+					</div>
+				</div>
+
+				<div style="display: none" class="col-md-3 inputxxx depositobancario">
+					<div class="form-group">
+					<label class="control-label">Cta Abonado</label>
+					<input type="text" class="form-control cuentaabonado">
+					</div>
+				</div>`;
+			containerpayextra.appendChild(newxx);
+
+			$('.date-picker').datepicker({
+				rtl: App.isRTL(),
+				autoclose: true
+			});
+		}
+		function mostrarModalTRANS(etiqueta) {
+
+			$("#ver_trans").modal();
+			ver_trans_ruc.textContent = etiqueta.dataset.ructransporte;
+			ver_trans_tipotransp.textContent = etiqueta.dataset.tipo_transporte;
+			ver_trans_razonsocial.textContent = etiqueta.dataset.razonsocial;
+			ver_trans_id_transporte.textContent = etiqueta.dataset.trans;
+			ver_trans_tipocomp.textContent = etiqueta.dataset.tipocomprobante;
+			ver_trans_numerocomprobante.textContent = etiqueta.dataset.numerocomprobante;
+			ver_trans_moneda.textContent = etiqueta.dataset.moneda;
+			ver_trans_preciotransp_soles.textContent = etiqueta.dataset.preciotransp_soles
+
+			//ver_trans_body_tabla.innerHTML = ""
+			fetch("traerregistrocompra.php?codigotrans=" + etiqueta.dataset.trans)
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
+
+				.then(res => {
+					ver_trans_ruc.textContent = res.header.ructransporte
+					ver_trans_tipotransp.textContent = res.header.tipo_transporte
+					ver_trans_tipocomp.textContent = res.header.tipocomprobante
+					ver_trans_numerocomprobante.textContent = res.header.numerocomprobante
+					ver_trans_razonsocial.textContent = res.header.razonsocial
+					ver_trans_moneda.textContent = res.header.moneda
+					ver_trans_preciotransp_soles.textContent = res.header.preciotransp_soles
+					//ver_trans_usuario.textContent = res.header.usuario
+					//ver_trans_tipocomp.textContent = res.header.tipo_comprobante
+					console.log(res)
+					//console.log(res.numerocomprobante)
+				});
+			//console.log(etiqueta.dataset.codigoproveedor)
+
+		}
+
+
+
+
+
+		function mostrarModalNOTAD(etiqueta, idx) {
+			idnotadebito.value = idx
+			$("#ver_notad").modal();
+			//ver_notad_ruc.textContent = etiqueta.dataset.rucnd;
+			ver_notad_tipocomp.textContent = etiqueta.dataset.tipocomprobante;
+			ver_notad_numerocomprobante.textContent = etiqueta.dataset.numerocomprobante;
+			ver_notad_razonsocial.textContent = etiqueta.dataset.razonsocial;
+			ver_notad_id_notadebito.textContent = etiqueta.dataset.notad;
+			ver_notad_moneda.textContent = etiqueta.dataset.moneda;
+			ver_notad_preciond_soles.textContent = etiqueta.dataset.preciond_soles
+
+			//ver_trans_body_tabla.innerHTML = ""
+			fetch("traerregistrocompra.php?codigonotad=" + etiqueta.dataset.notad)
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
+
+				.then(res => {
+					ver_notad_ruc.textContent = res.header.rucnd
+					ver_notad_tipocomp.textContent = res.header.tipocomprobante
+					ver_notad_numerocomprobante.textContent = res.header.numerocomprobante
+					ver_notad_id_notadebito.textContent = res.header.id_notadebito
+					ver_notad_razonsocial.textContent = res.header.razonsocial
+					ver_notad_moneda.textContent = res.header.moneda
+					ver_notad_preciond_soles.textContent = res.header.preciond_soles
+
+					
+					if(res.header.pagoacumulado == res.header.preciond_soles){
+						btnaddpay.style.display = "none";
+						guardar_button.style.display = "none";
+					}else{
+						btnaddpay.style.display = "";
+						guardar_button.style.display = "";
+					}
+
+					historialbody.innerHTML = "<tr><td colspan='3'>SIN REGISTROS</td></tr>";
+					const pagoacumulado = res.header.pagoacumulado ? parseFloat(res.header.pagoacumulado) : 0;
+					restantex.value = parseFloat(res.header.preciond_soles) - pagoacumulado;
+					jsonpagos.value = res.header.jsonpagos ? res.header.jsonpagos : "[]"
+					if (res.header.jsonpagos) {
+						historialbody.innerHTML = ""
+						JSON.parse(res.header.jsonpagos).forEach(ix => {
+							let textt = "";
+							if (ix.tipopago == "depositobancario")
+								textt = `Numero Operacion: ${ix.numerooperacion} |
+										Fecha: ${ix.fechaextra} |
+										Cta. Abonada: ${ix.cuentaabonado} |
+										Ente: ${ix.bancoextra} |
+										Monto: ${ix.montoextra}`
+							else if (ix.tipopago == "cheque")
+								textt = `Numero: ${ix.numero} |
+										Ente: ${ix.bancoextra} |
+										Cta. Cte.: ${ix.cuentacorriente} |
+										Monto: ${ix.montoextra}`
+							else if (ix.tipopago == "tarjetacredito")
+								textt = `Numero: ${ix.numero} |
+										Ente: ${ix.bancoextra} |
+										Monto: ${ix.montoextra}`
+							else if (ix.tipopago == "tarjetadebito")
+								textt = `Numero: ${ix.numero} |
+										Ente: ${ix.bancoextra} | 
+										Monto: ${ix.montoextra}`
+							else if (ix.tipopago == "efectivo") {
+								textt = `Monto: ${ix.montoextra} `
+							}
+
+							historialbody.innerHTML += `
+									<tr>
+										<td>${ix.tipopago}</td>
+										<td>${ix.montoextra}</td>
+										<td>${textt}</td>
+									</tr>`;
+						});
+					}
+
+
+				});
+		}
+		function mostrarModalNOTAC(etiqueta) {
+
+			$("#ver_notac").modal();
+			// ver_notac_ruc.textContent = etiqueta.dataset.rucnotacredito;
+			ver_notac_tipocomp.textContent = etiqueta.dataset.tipocomprobante;
+			ver_notac_numerocomprobante.textContent = etiqueta.dataset.numerocomprobante;
+			ver_notac_razonsocial.textContent = etiqueta.dataset.razonsocial;
+			ver_notac_id_notacrebito.textContent = etiqueta.dataset.notac;
+			ver_notac_moneda.textContent = etiqueta.dataset.moneda;
+			ver_notac_precionc_soles.textContent = etiqueta.dataset.precionc_soles
+
+			//ver_trans_body_tabla.innerHTML = ""
+			fetch("traerregistrocompra.php?codigonotac=" + etiqueta.dataset.notac)
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
+
+				.then(res => {
+					ver_notac_ruc.textContent = res.header.rucnotacredito
+					ver_notac_tipocomp.textContent = res.header.tipocomprobante
+					ver_notac_numerocomprobante.textContent = res.header.numerocomprobante
+					ver_notac_id_notacrebito.textContent = res.header.id_notacredito
+					ver_notac_razonsocial.textContent = res.header.razonsocial
+					ver_notac_moneda.textContent = res.header.moneda
+					ver_notac_precionc_soles.textContent = res.header.precionc_soles
+				});
+		}
+		const guardar = () => {
+			let totalpagando = 0;
+			let error = "";
+			let porpagar = 1;
+			let restante = 0;
+			let errorrr = "";
+			const arraypagos = JSON.parse(jsonpagos.value);
+			getSelectorAll(".containerx").forEach(ix => {
+				const bancoextra = ix.querySelector(".bancoextra").value;
+				const montoextra = ix.querySelector(".montoextra").value ? parseFloat(ix.querySelector(".montoextra").value) : 0;
+				const numero = ix.querySelector(".numero").value;
+				const cuentacorriente = ix.querySelector(".cuentacorriente").value;
+				const numerooperacion = ix.querySelector(".numerooperacion").value;
+				const fechaextra = ix.querySelector(".fechaextra").value;
+				const cuentaabonado = ix.querySelector(".cuentaabonado").value;
+				const tipopago = ix.querySelector(".tipopago").value;
+
+				arraypagos.push({
+					bancoextra,
+					montoextra,
+					numero,
+					cuentacorriente,
+					numerooperacion,
+					fechaextra,
+					cuentaabonado,
+					tipopago,
+				})
+				totalpagando += parseFloat(montoextra);
+				if (tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)) {
+					errorrr = "Llena todos los datos de deposito bancario";
+					return;
+				} else if (tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)) {
+					errorrr = "Llena todos los datos de cheque";
+					return;
+				} else if ((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero)) {
+					errorrr = "Llena todos los datos de " + tipopago;
+					return;
+				} else if (tipopago == "efectivo" && !montoextra) {
+					errorrr = "Debe ingresa el monto";
+					return;
+				}
+
+			});
+			
+			if (errorrr) {
+				alert(errorrr);
+				return;
+			}
+			if (totalpagando > restantex.value) {
+				alert("El monto a pagar excede");
+				return
+			} else if (totalpagando == parseFloat(restantex.value)) {
+				porpagar = 0;
+			} else {
+				restante = parseFloat(restantex.value) - totalpagando;
+			}
+			let acumulado = parseFloat(ver_notad_preciond_soles.textContent) - restante;
+
+
+			const jssson = JSON.stringify(arraypagos);
+
+			const query = `
+            update notadebito_compra set jsonpagos = '${jssson}', porpagar = ${porpagar}, pagoacumulado = ${acumulado}
+            where id_notadebito = ${idnotadebito.value}`
+			const detalle = [];
+			detalle.push(query);
+			const formData = new FormData();
+			formData.append("exearray", JSON.stringify(detalle))
+
+			fetch(`setPrecioVenta.php`, {
+				method: 'POST',
+				body: formData
+			})
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
+				.then(res => {
+					$("#mOrdenCompra").modal("hide");
+					if (res.success) {
+						alert("registro completo!")
+						location.reload()
+					}
+				});
+		}
+
+	</script>

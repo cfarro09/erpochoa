@@ -1435,6 +1435,11 @@ mysql_free_result($Listado);
 	})
 	document.querySelectorAll(".aux_compras").forEach(item => {
 		item.addEventListener("click", e => {
+			getSelector(".div_estibador").style.display = ""
+			getSelector(".div_notacredito").style.display = ""
+			getSelector(".div_notadebito").style.display = ""
+			getSelector(".div_transporte").style.display = ""
+
 			actualizarextras.style.display = "none"
 			descuento.removeAttribute("readonly")
 			facturafechaemision.removeAttribute("readonly")
@@ -1824,9 +1829,9 @@ mysql_free_result($Listado);
 				const rucnotadebito = $("#proveedornotadebito").val().split("&&&")[1];
 				const query =
 					`insert into notadebito_compra 
-				(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras) 
+				(tipocomprobante, numerocomprobante, rucnd, moneda, tipocambio, preciond_soles, preciond_dolar, codigocompras, porpagar) 
 				values 
-				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##)`;
+				('${tipocomprobantenotadebito.value}', '${numerocomprobantenotadebito.value}', '${rucnotadebito}', '${monedanotadebito.value}', 0, ${precio_notadebito.value}, 0, ##IDCOMPRAS##, 1)`;
 				data.gastos.push(query);
 				const dd = new Date().toISOString().substring(0, 10);
 				const query1 =

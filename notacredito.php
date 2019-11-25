@@ -46,17 +46,17 @@ $i = 1;
             </tr>
         </thead>
         <tbody>
-            <?php do {  
-                $restante = $row["total"] - $row["pagoacomulado"];
-                ?>
+            <?php do {
+                    $restante = $row["total"] - $row["pagoacomulado"];
+                    ?>
                 <tr>
-                <td><?= $i ?></td>
-                <td><?= $row["fecha_emision"] ?></td>
-                <td><?= $row["total"] ?></td>
-                <td><?= $row["pagoacomulado"] ?></td>
-                <td><?= $row["tipocomprobante"] ?></td>
-                <td><?= $row["codigocomprobante"] ?></td>
-                <td><a href="#"  data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)">Pagar</a></td>
+                    <td><?= $i ?></td>
+                    <td><?= $row["fecha_emision"] ?></td>
+                    <td><?= $row["total"] ?></td>
+                    <td><?= $row["pagoacomulado"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
+                    <td><?= $row["codigocomprobante"] ?></td>
+                    <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)">Pagar</a></td>
                 </tr>
             <?php
                     $i++;
@@ -77,34 +77,31 @@ $i = 1;
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
-                        <div class="col-sm-4">
+                            <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputfecha" class="control-label">Fecha</label>
-                                    <input type="text" readonly autocomplete="off" id="inputfecha" class="form-control"/>
+                                    <input type="text" readonly autocomplete="off" id="inputfecha" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputtipocomprobante" class="control-label">Tipo Comp</label>
-                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante" class="form-control"/>
+                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputnumerocomprobante" class="control-label">N° Comprobante</label>
-                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante" class="form-control"/>
+                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante" class="form-control" />
                                 </div>
                             </div>
 
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputcliente" class="control-label">Cliente</label>
-                                    <input type="text" readonly autocomplete="off" id="inputcliente" class="form-control"/>
+                                    <input type="text" readonly autocomplete="off" id="inputcliente" class="form-control" />
                                 </div>
                             </div>
-                            
-
-
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputrestante" class="control-label">Falta Pagar</label>
@@ -121,7 +118,7 @@ $i = 1;
                                 <button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
                             </div>
                             <div class="col-sm-12">
-                                <table class="table table-bordered table-hover" >
+                                <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
                                             <td>TIPO PAGO</td>
@@ -134,13 +131,13 @@ $i = 1;
                                 </table>
                             </div>
                             <div class="col-sm-12" id="containerpayextra">
-                                
+
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button  type="submit" id="guardar_button" class="btn btn-success">Guardar</button>
+                    <button type="submit" id="guardar_button" class="btn btn-success">Guardar</button>
                     <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
                 </div>
             </form>
@@ -154,12 +151,11 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
-    function changetypepago(e){
+    function changetypepago(e) {
         guardar_button.style.display = ""
         e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
-        e.closest(".containerx").querySelectorAll("."+e.value).forEach(ix => ix.style.display = "");
-
-      }
+        e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
+    }
     const pagar = e => {
         guardar_button.style.display = "none"
         $("#moperation").modal();
@@ -175,7 +171,7 @@ include("Fragmentos/pie.php");
         jsonpagos.value = e.dataset.json;
         inputrestante.value = e.dataset.restante;
         inputtotal.value = e.dataset.total;
-        if(pagoefectivo){
+        if (pagoefectivo) {
             historialbody.innerHTML += `
                 <tr>
                     <td>Pago Efectivo</td>
@@ -186,29 +182,29 @@ include("Fragmentos/pie.php");
         }
         JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
             let textt = "";
-            if(ix.tipopago == "depositobancario")
+            if (ix.tipopago == "depositobancario")
                 textt = `Numero Operacion: ${ix.numerooperacion} |
                         Fecha: ${ix.fechaextra} |
                         Cta. Abonada: ${ix.cuentaabonado} |
                         Ente: ${ix.bancoextra} |
                         Monto: ${ix.montoextra}`
-            else if(ix.tipopago == "cheque")
+            else if (ix.tipopago == "cheque")
                 textt = `Numero: ${ix.numero} |
                         Ente: ${ix.bancoextra} |
                         Cta. Cte.: ${ix.cuentacorriente} |
                         Monto: ${ix.montoextra}`
-            else if(ix.tipopago == "tarjetacredito")
+            else if (ix.tipopago == "tarjetacredito")
                 textt = `Numero: ${ix.numero} |
                         Ente: ${ix.bancoextra} |
                         Monto: ${ix.montoextra}`
-            else if(ix.tipopago == "tarjetadebito")
+            else if (ix.tipopago == "tarjetadebito")
                 textt = `Numero: ${ix.numero} |
                         Ente: ${ix.bancoextra} | 
                         Monto: ${ix.montoextra}`
-            else if(ix.tipopago == "efectivo"){
+            else if (ix.tipopago == "efectivo") {
                 textt = `Monto: ${ix.montoextra} `
             }
-            
+
             historialbody.innerHTML += `
                 <tr>
                     <td>${ix.tipopago}</td>
@@ -218,13 +214,18 @@ include("Fragmentos/pie.php");
             `;
         });
     }
+
+    function removecontainerpay(e) {
+        e.closest(".containerx").remove()
+    }
+
     function addPayExtra() {
 
-    const newxx = document.createElement("div");
-    newxx.className = "col-md-12 containerx";
-    newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
+        const newxx = document.createElement("div");
+        newxx.className = "col-md-12 containerx";
+        newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
 
-    newxx.innerHTML += `
+        newxx.innerHTML += `
           <div class="text-right">
             <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
           </div>
@@ -313,15 +314,14 @@ include("Fragmentos/pie.php");
               <label class="control-label">Cta Abonado</label>
               <input type="text" class="form-control cuentaabonado">
             </div>
-          </div>
-    `;
-    containerpayextra.appendChild(newxx);
-    
-    $('.date-picker').datepicker({
-      rtl: App.isRTL(),
-      autoclose: true
-    });
-  }
+          </div>`;
+        containerpayextra.appendChild(newxx);
+
+        $('.date-picker').datepicker({
+            rtl: App.isRTL(),
+            autoclose: true
+        });
+    }
     const guardar = e => {
         e.preventDefault();
         let totalpagando = 0;
@@ -351,31 +351,31 @@ include("Fragmentos/pie.php");
                 tipopago,
             })
             totalpagando += parseFloat(montoextra);
-            if(tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)){
+            if (tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)) {
                 errorrr = "Llena todos los datos de deposito bancario";
                 return;
-            }else if(tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)){
+            } else if (tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)) {
                 errorrr = "Llena todos los datos de cheque";
                 return;
-            }else if((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero)){
-                errorrr = "Llena todos los datos de "+tipopago;
+            } else if ((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero)) {
+                errorrr = "Llena todos los datos de " + tipopago;
                 return;
-            }else if(tipopago == "efectivo" && !montoextra){
+            } else if (tipopago == "efectivo" && !montoextra) {
                 errorrr = "Debe ingresa el monto";
                 return;
             }
 
         });
-        if(errorrr){
+        if (errorrr) {
             alert(errorrr);
             return;
         }
-        if(totalpagando > parseFloat(inputrestante.value)){
+        if (totalpagando > parseFloat(inputrestante.value)) {
             alert("El monto a pagar excede");
             return
-        }else if(totalpagando == parseFloat(inputrestante.value)){
+        } else if (totalpagando == parseFloat(inputrestante.value)) {
             porpagar = 0;
-        }else{
+        } else {
             restante = parseFloat(inputrestante.value) - totalpagando;
         }
         let acumulado = parseFloat(inputtotal.value) - restante;
@@ -406,5 +406,4 @@ include("Fragmentos/pie.php");
             });
     }
     formoperacion.addEventListener("submit", guardar)
-
 </script>
