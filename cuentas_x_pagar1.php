@@ -128,7 +128,7 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> <?php echo $row_Listado['contacto'] ?> </td>
           <td> <?php echo $row_Listado['celular']."/".$row_Listado['telefono']; ?> </td>
           <td align="center"> 0 </td>
-          <td align="center"> Ver
+          <td align="center"> <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $row_Listado['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>
            
         </tr>
