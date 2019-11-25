@@ -101,11 +101,11 @@ include("Fragmentos/abrirpopupcentro.php");
 			<td> <?php echo $row_Listado['fecha_emision']; ?></td>
 			<?php if($row_Listado['subtotal']): ?>
 			<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>"
-					onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Ver</a>
+					onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Procesado</a>
 			</td>
 			<?php else: ?>
 			<td><a href="#" class="aux_compras" data-type="ordencompra"
-					data-codigo="<?= $row_Listado['codigo'] ?>">Asignar</a></td>
+					data-codigo="<?= $row_Listado['codigo'] ?>">Pendiente</a></td>
 			<?php endif ?>
 			<td>
 				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
@@ -141,7 +141,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<td>
 				<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)"
 					data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>"
-					data-codigorc="<?= $row_listaguiasinoc['codigorc'] ?>" class="verOrdenSinOc">Ver</a>
+					data-codigorc="<?= $row_listaguiasinoc['codigorc'] ?>" class="verOrdenSinOc">Procesado</a>
 			</td>
 			<?php else: ?>
 			<td><a href="#" class="aux_compras" data-type="guia_sin_oc"
@@ -243,7 +243,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	<div class="modal-dialog" role="document" style="width: 1300px">
 		<div class="modal-content m-auto">
 			<div class="modal-header">
-				<h2 class="modal-title" id="">Facturar Orden de compra</h2>
+				<h2 class="modal-title" id="">Registro de Compras / Por Recibir </h2>
 			</div>
 			<div class="modal-body">
 				<form id="saveFacturar">
@@ -252,14 +252,14 @@ include("Fragmentos/abrirpopupcentro.php");
 							<div class="col-xs-12 col-md-12">
 								<b>
 									<div style="text-align: right">
-										FECHA DE EMISION: : <span id="mfechaemision1"></span> <br>
+										FECHA DE REGISTRO: <span id="mfechaemision1"></span> <br>
 										VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
 									</div>
 									PROVEEDOR: <span id="mproveedor1"></span> <BR>
 									RUC : <span id="mruc1"></span><BR>
 									SUCURSAL: <span id="msucursal1"></span> <BR>
 									DOC ALMACEN : <span id="mcodref11"></span> <br>
-									DOC REF 2: : <span id="mcodref21"></span> <br>
+									DOC REF 2:  <span id="mcodref21"></span> <br>
 									GENERADA POR: : <span id="mgeneradapor1"></span> <br>
 
 								</b>
@@ -283,14 +283,7 @@ include("Fragmentos/abrirpopupcentro.php");
 														data-date-format="yyyy-mm-dd" required />
 												</div>
 											</div>
-											<div class="col-md-2">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Descuento General</label>
-													<input type="number" class="form-control"
-														oninput="changedescuentogeneral(this)" step="any" id="descuento"
-														name="">
-												</div>
-											</div>
+											
 											<div class="col-md-2">
 												<div class="form-group">
 													<label for="field-1" class="control-label">Tipo Comp</label>
@@ -329,6 +322,14 @@ include("Fragmentos/abrirpopupcentro.php");
 														oninput="changecambiodolar(this)" name="">
 												</div>
 											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<label for="field-1" class="control-label">Descuento General</label>
+													<input type="number" class="form-control"
+														oninput="changedescuentogeneral(this)" step="any" id="descuento"
+														name="">
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -350,7 +351,7 @@ include("Fragmentos/abrirpopupcentro.php");
 										<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
 										<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
 										<th width="60px" class="costeochecked" style="display: none">Total</th>
-										<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
+										<th width="60px" class="costeochecked" style="display: none">VCUF</th>
 									</thead>
 									<tbody id="detalleFacturar-list">
 									</tbody>

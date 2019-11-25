@@ -883,6 +883,14 @@ echo "<a href='proforma_add.php?codigo=$d'>Proforma</a>";
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="listventas.php" class="nav-link font-blue-ebonyclay">
+                                    <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                    <span class="title">Listado de Ventas</span>
+                                    <span class="selected"></span>
+
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="ventas_add.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Ventas</span>
@@ -910,7 +918,7 @@ echo "<a href='proforma_add.php?codigo=$d'>Proforma</a>";
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="emitir_nota_credito.php" class="nav-link font-blue-ebonyclay">
+                                <a href="notacredito.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Emitir Nota Credito</span>
                                     <span class="selected"></span>

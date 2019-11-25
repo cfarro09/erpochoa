@@ -117,7 +117,7 @@ include("Fragmentos/abrirpopupcentro.php");
           <th  width="14%"> E-MAIL </th>
           <th  width="4%">  </th>
           <th  width="4%">  </th>
-          <th  width="4%">  </th>
+         <!-- <th  width="4%">  </th> -->
           <th  width="4%">  </th>
         </tr>
       </thead>
@@ -132,8 +132,8 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> <?php echo $row_Listado['email']; ?> </td>
           <td> 
             <a href="proveedor_cuentas.php?codigoproveedor=<?php echo $row_Listado['codigoproveedor']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Bancos y Cuentas"><i class="glyphicon glyphicon-credit-card" ></i></a>          </td>
-           <td> 
-            <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $row_Listado['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>          </td> 
+       <!--    <td> 
+            <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $row_Listado['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>          </td> -->
           <td> 
             <a  class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoproveedor=<?php echo $row_Listado['codigoproveedor']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>          </td>
           <td>
