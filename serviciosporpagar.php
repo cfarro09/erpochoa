@@ -50,6 +50,7 @@ $i = 1;
         </thead>
         <tbody>
             <?php do {  ?>
+                <tr>
                 <td><?= $i ?></td>
                 <td><?= $row_Listado["fechafacturacion"] ?></td>
                 <td><?= $row_Listado["concepto"] ?></td>
@@ -58,6 +59,7 @@ $i = 1;
                 <td><?= $row_Listado["aniopago"] ?></td>
                 <td><?= $row_Listado["precio"] ?></td>
                 <td><?= $row_Listado["nombre_sucursal"] ?></td>
+                </tr>
             <?php
                     $i++;
                 } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
