@@ -1,344 +1,423 @@
-<head></head>
-<?php require_once('Connections/Ventas.php'); ?>
 <?php
-if (!function_exists("GetSQLValueString")) {
-function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-{
-  if (PHP_VERSION < 6) {
-    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-  }
+require_once('Connections/Ventas.php');
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-  switch ($theType) {
-    case "text":
-      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-      break;    
-    case "long":
-    case "int":
-      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
-      break;
-    case "double":
-      $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-      break;
-    case "date":
-      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-      break;
-    case "defined":
-      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-      break;
-  }
-  return $theValue;
-}
-}
-
-$editFormAction = $_SERVER['PHP_SELF'];
-if (isset($_SERVER['QUERY_STRING'])) {
-  $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
-}
-
-//------------Inicio Juego de Registro "Listado"----------------
-$colname_Listado = "-1";
-if (isset($_GET['codigocliente'])) {
-  $colname_Listado = $_GET['codigocliente'];
-}
 mysql_select_db($database_Ventas, $Ventas);
 
-$query_Listado = "SELECT * FROM cnatural n INNER JOIN ventas v on n.codigoclienten = v.codigoclienten WHERE v.jsonpagos like '%porcobrar%' and n.codigoclienten =$colname_Listado";
-
-$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row_Listado = mysql_fetch_assoc($Listado);
-$totalRows_Listado = mysql_num_rows($Listado);
-/*
-$query_Listado = sprintf("SELECT * FROM cnatural n INNER JOIN ventas v on n.codigoclienten = v.codigoclienten WHERE v.jsonpagos like '%porcobrar%' and n.codigoclienten = %s", GetSQLValueString($colname_Listado, "int"));
-$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row_Listado = mysql_fetch_assoc($Listado);
-$totalRows_Listado = mysql_num_rows($Listado);
-*/
- //Enumerar filas de data tablas
- $i = 1;
-
-//Titulo e icono de la pagina
-$Icono="glyphicon glyphicon-credit-card";
-$Color="font-blue";
-
-$VarUrl= "?codigoclienten=".$row_Listado['cedula'];
-$TituloGeneral='<div class="page-title"><h1 class="font-red-thunderbird">CLIENTE: '.$row_Listado['nombre'].' '.$row_Listado['paterno'].' '.$row_Listado['materno'].' - '.$row_Listado['cedula'].'</h1></div>';
-$Titulo= "Cuentas Proveedor"; 
-$NombreBotonAgregar="Agregar";
-//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-//$EstadoBotonAgregar="disabled";
-$EstadoBotonAgregar="";
-//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-$popupAncho= 700;
-$popupAlto= 475;
+$Icono = "glyphicon glyphicon-shopping-cart";
+$Color = "font-blue";
+$Titulo = "Servicios por pagar";
+$NombreBotonAgregar = "Agregar";
+$EstadoBotonAgregar = "disabled";
+$popupAncho = 700;
+$popupAlto = 525;
 
 include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
+
 include("Fragmentos/abrirpopupcentro.php");
-//________________________________________________________________________________________________________________
-?>        
-<!--  ----------------------------------------------------------------------------------------------------------------------------------->
-<?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
-  <div class="alert alert-danger">
-    <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
-    
-    
-  </div>
-  <?php } // Show if recordset empty ?>
-<?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
 
+$codsucursal = $_SESSION['cod_sucursal'];
+if (isset($_GET['codigocliente'])) {
+    $codcliente = $_GET['codigocliente'];
+}
+$query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente";
 
-  <table width="700" class="table table-striped table-bordered table-hover dt-responsive" id="sample_1">
-   
-    <thead>
-      <tr>
-        <th width="5%"> N&deg; </th>
-          <th  width="5%" > FECHA REG </th>
-          <th  width="5%" > TIPO - NUMERO </th>
-          <th  width="30%"> DETALLE</th>
-          <th  width="25%"> CARGO </th>
-          <th  width="5%"> ABONOS </th>
-          <th  width="5%"> SALDO  </th>
-         <th width="5%"> VER </th>
-          
-        </tr>
-      </thead>
-    <tbody>
-      <?php do { ?>
-        <tr>
-          <td> <?php echo $i; ?> </td>
-          <td> <?php echo $row_Listado['fecha_emision']; ?>                                                           </td>
-          <td> <?php echo $row_Listado['tipocomprobante'].' - '.$row_Listado['codigocomprobante']; ?></td>
-          <td> VENTAS </a> </td>
-          <td> <?php echo $row_Listado['total']; ?> </td>
-          <td> 0 </td>
-          <td> 0 </td>
-          <td align="center">  
-          <a href="#" data-dt="<?= $row_Listado['codigoventas']; ?>"
-          data-codigodetalle="<?= $row_Listado['codigoclienten']; ?>" onclick="mostrarModalDET(this)">Ver</a>
-           </td>
-        </tr>
-        <?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
-    </tbody>
-  </table>
-  <?php } // Show if recordset not empty ?>
+// $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where porpagar = 1";
 
-
-
-
-
-
-
-<!-- MODAL DE CLIENTES Y VENTAS  -->
-
-<div role="dialog" tabindex="-1" class="modal fade" id="ver_dt"
-  style="max-width:600px;margin-right:auto;margin-left:auto;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <!-- CABECERA -->
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">x</span></button>
-        <h4 class="text-center modal-title">Registro de Compra <span id="ver_dt_cedula"></span></h4>
-      </div>
-      <div class="modal-body">
-        <!-- CUERPO DEL MENSAJE -->
-        <br align="center">COMPROBANTE: <span id="ver_dt_tipocomp"> </span>- <span
-          id="ver_rc_numerocomprobante"></span>
-        <br align="right">FECHA:<span id="ver_dt_fecha"></span>
-        <br align="right">TOTAL:<span id="ver_dt_total"></span>
-        <br align="left">RUC: <span id="ver_dt_ruc"></span>
-        <br align="left">PROVEEDOR: <span id="ver_dt_proveedor"></span>
-        <br align="left">SUCURSAL: <span id="ver_dt_sucursal"></span>
-        <br align="left">GENERADA POR: <span id="ver_dt_usuario"></span>
-        <div class="table-responsive-sm">
-          <table class="table">
-            <thead>
-              <tr>
-                <td>#</td>
-                <td>Cant</td>
-                <td>Detalle</td>
-                <td>Desc x Item</td>
-                <td>Precio UND</td>
-              </tr>
-            </thead>
-            <tbody id="ver_dt_body_tabla">
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <!-- PIE -->
-        <button class="btn btn-default btn btn-primary btn-lg" type="button" data-dismiss="modal">Cerrar
-        </button>
-      </div>
+$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
+$row = mysql_fetch_assoc($Listado);
+$totalRows_Listado = mysql_num_rows($Listado);
+$i = 1;
+?>
+<h3>Cliente <?= $row["ClienteNatural"] . " - " . $row["cedula"] ?></h3>
+<?php if ($totalRows_Listado == 0) : ?>
+    <div class="alert alert-danger">
+        <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
     </div>
-  </div>
+<?php else : ?>
+    <table class="table table-bordered table-hover" id="sample_1">
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Fecha</th>
+                <th>Tipo Comp.</th>
+                <th>Cod. Comp</th>
+                <th>CARGO</th>
+                <th>ABONO</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php do {
+                    $restante = $row["total"] - $row["pagoacomulado"];
+                    ?>
+                <tr>
+                    <td><?= $i ?></td>
+                    <td><?= $row["fecha_emision"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
+                    <td><?= $row["codigocomprobante"] ?></td>
+                    <td><?= $row["total"] ?></td>
+                    <td><?= $row["pagoacomulado"] ?></td>
+                    <td>
+                        <a href="#" data-porpagar="<?= $row["porpagar"] ?>" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)"><?= $row["porpagar"] == 1 ? "Pagar" : "Movimientos" ?>
+                        </a>
+                    </td>
+
+                </tr>
+            <?php
+                    $i++;
+                } while ($row = mysql_fetch_assoc($Listado)); ?>
+        </tbody>
+    </table>
+<?php endif ?>
+
+<div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 900px">
+        <div class="modal-content m-auto">
+            <form id="formoperacion" action="">
+                <div class="modal-header">
+                    <h2 class="modal-title">PAGAR</h2>
+                </div>
+                <input type="hidden" id="codigoventa">
+                <input type="hidden" id="jsonpagos">
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputfecha" class="control-label">Fecha</label>
+                                    <input type="text" readonly autocomplete="off" id="inputfecha" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputtipocomprobante" class="control-label">Tipo Comp</label>
+                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputnumerocomprobante" class="control-label">N° Comprobante</label>
+                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputcliente" class="control-label">Cliente</label>
+                                    <input type="text" readonly autocomplete="off" id="inputcliente" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputrestante" class="control-label">Falta Pagar</label>
+                                    <input type="number" readonly autocomplete="off" id="inputrestante" class="form-control" required />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputtotal" class="control-label">Total Venta</label>
+                                    <input type="number" readonly autocomplete="off" id="inputtotal" class="form-control" required />
+                                </div>
+                            </div>
+                            <div class="col-sm-4" style="margin-top: 15px">
+                                <button class="btn btn-success" id="btnaddpay" type="button" onclick="addPayExtra()">Agregar Pago</button>
+                            </div>
+                            <div class="col-sm-12">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <td>TIPO PAGO</td>
+                                            <td>MONTO</td>
+                                            <td>DETALLE</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historialbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-12" id="containerpayextra">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="guardar_button" class="btn btn-success">Guardar</button>
+                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-
-
-
-<?php 
-//___________________________________________________________________________________________________________________
+<?php
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
-
-mysql_free_result($Listado);
-
-mysql_free_result($Proveedor);
 ?>
 
+<script>
+    function changetypepago(e) {
+        guardar_button.style.display = ""
+        e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
+        e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
+    }
+    const pagar = e => {
+        guardar_button.style.display = "none"
+        $("#moperation").modal();
+        const pagoefectivo = parseFloat(e.dataset.pagoefectivo);
+        historialbody.innerHTML = "";
 
+        if(e.dataset.porpagar == "1"){
+            btnaddpay.style.display = "";
+        }else{
+            btnaddpay.style.display = "none";
+        }
 
+        inputfecha.value = e.dataset.fecha;
+        inputtipocomprobante.value = e.dataset.codigocomprobante;
+        inputnumerocomprobante.value = e.dataset.cliente;
+        inputcliente.value = e.dataset.tipocomprobante;
 
-
-
-<script type="text/javascript">
-    function mostrarModalDET(etiqueta) {
-
-      $("#ver_dt").modal();
-      ver_dt_ruc.textContent = etiqueta.dataset.codigoproveedor;
-      ver_dt_codigorc.textContent = etiqueta.dataset.rc;
-      ver_dt_body_tabla.innerHTML = ""
-      fetch("traerregistroclienteventas.php?codigodt=" + etiqueta.dataset.rc)
-        .then(res => res.json())
-        .catch(error => console.error("error: ", error))
-
-        .then(res => {
-          ver_dt_numerocomprobante.textContent = res.header.numerocomprobante
-          ver_dt_fecha.textContent = res.header.fecha
-          ver_dt_total.textContent = res.header.total
-          ver_dt_proveedor.textContent = res.header.razonsocial
-          ver_dt_sucursal.textContent = res.header.nombre_sucursal
-          ver_dt_usuario.textContent = res.header.usuario
-          ver_dt_tipocomp.textContent = res.header.tipo_comprobante
-          
-
-          res.detalle.forEach(row => {
-            ver_rc_body_tabla.innerHTML += `
-            <tr>
-              <td></td>
-              <td>${row.cantidad}</td>
-              <td>${row.nombre_producto}</td>
-              <td>${row.descxitem}</td>
-              <td>${row.vcu}</td>
-            </tr>
+        codigoventa.value = e.dataset.id;
+        jsonpagos.value = e.dataset.json;
+        inputrestante.value = e.dataset.restante;
+        inputtotal.value = e.dataset.total;
+        if (pagoefectivo) {
+            historialbody.innerHTML += `
+                <tr>
+                    <td>Pago Efectivo</td>
+                    <td>${pagoefectivo}</td>
+                    <td>-</td>
+                </tr>
             `;
-          });
+        }
+        JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
+            let textt = "";
+            if (ix.tipopago == "depositobancario")
+                textt = `Numero Operacion: ${ix.numerooperacion} |
+                        Fecha: ${ix.fechaextra} |
+                        Cta. Abonada: ${ix.cuentaabonado} |
+                        Ente: ${ix.bancoextra} |
+                        Monto: ${ix.montoextra}`
+            else if (ix.tipopago == "cheque")
+                textt = `Numero: ${ix.numero} |
+                        Ente: ${ix.bancoextra} |
+                        Cta. Cte.: ${ix.cuentacorriente} |
+                        Monto: ${ix.montoextra}`
+            else if (ix.tipopago == "tarjetacredito")
+                textt = `Numero: ${ix.numero} |
+                        Ente: ${ix.bancoextra} |
+                        Monto: ${ix.montoextra}`
+            else if (ix.tipopago == "tarjetadebito")
+                textt = `Numero: ${ix.numero} |
+                        Ente: ${ix.bancoextra} | 
+                        Monto: ${ix.montoextra}`
+            else if (ix.tipopago == "efectivo") {
+                textt = `Monto: ${ix.montoextra} `
+            }
+
+            historialbody.innerHTML += `
+                <tr>
+                    <td>${ix.tipopago}</td>
+                    <td>${ix.montoextra}</td>
+                    <td>${textt}</td>
+                </tr>
+            `;
         });
     }
+
     function removecontainerpay(e) {
-      e.closest(".containerx").remove()
+        e.closest(".containerx").remove()
     }
-    function changetypepago(e) {
-      guardar_button.style.display = ""
-      e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
-      e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
-    }
+
     function addPayExtra() {
 
-      const newxx = document.createElement("div");
-      newxx.className = "col-md-12 containerx";
-      newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
+        const newxx = document.createElement("div");
+        newxx.className = "col-md-12 containerx";
+        newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
 
-      newxx.innerHTML += `
-        <div class="text-right">
-          <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
-        </div>
-
-        <div class="col-md-3">
-          <div class="form-group">
-          <label class="control-label">Tipo Pago</label>
-          <select onchange="changetypepago(this)" class="form-control tipopago">
-            <option value="">[Seleccione]</option>
-            <option value="depositobancario">Deposito Bancario</option>
-            <option value="tarjetadebito">Tarjeta Debito</option>
-            <option value="tarjetacredito">Tarjeta Credito</option>
-            <option value="cheque">Cheque</option>
-            <option value="efectivo">Efectivo</option>
-          </select>
+        newxx.innerHTML += `
+          <div class="text-right">
+            <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
           </div>
-        </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
-          <div class="form-group">
-          <label class="control-label">Banco</label>
-          <select class="form-control bancoextra">
-            <option value="BANCO AZTECA">BANCO AZTECA</option>
-            <option value="BANCO BCP">BANCO BCP</option>
-            <option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
-            <option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
-            <option value="BANCO FALABELLA">BANCO FALABELLA</option>
-            <option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
-            <option value="BANCO MI BANCO">BANCO MI BANCO</option>
-            <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
-            <option value="BANCO RIPLEY">BANCO RIPLEY</option>
-            <option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
-            <option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
-            <option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
-            <option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
-            <option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
-            <option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
-            <option value="CMAC ICA">CMAC ICA</option>
-            <option value="CMAC LIMA">CMAC LIMA</option>
-            <option value="CMAC MAYNA">CMAC MAYNA</option>
-            <option value="CMAC PAITA">CMAC PAITA</option>
-            <option value="CMAC SULLANA">CMAC SULLANA</option>
-            <option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
-          </select>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label">Tipo Pago</label>
+              <select onchange="changetypepago(this)" class="form-control tipopago">
+                <option value="">[Seleccione]</option>
+                <option value="depositobancario">Deposito Bancario</option>
+                <option value="tarjetadebito">Tarjeta Debito</option>
+                <option value="tarjetacredito">Tarjeta Credito</option>
+                <option value="cheque">Cheque</option>
+                <option value="efectivo">Efectivo</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito efectivo porcobrar">
-          <div class="form-group">
-          <label class="control-label">Monto</label>
-          <input type="number" step="any" class="form-control montoextra">
+          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
+            <div class="form-group">
+              <label class="control-label">Banco</label>
+              <select class="form-control bancoextra">
+                <option value="BANCO AZTECA">BANCO AZTECA</option>
+                <option value="BANCO BCP">BANCO BCP</option>
+                <option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
+                <option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
+                <option value="BANCO FALABELLA">BANCO FALABELLA</option>
+                <option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
+                <option value="BANCO MI BANCO">BANCO MI BANCO</option>
+                <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
+                <option value="BANCO RIPLEY">BANCO RIPLEY</option>
+                <option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
+                <option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
+                <option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
+                <option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
+                <option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
+                <option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
+                <option value="CMAC ICA">CMAC ICA</option>
+                <option value="CMAC LIMA">CMAC LIMA</option>
+                <option value="CMAC MAYNA">CMAC MAYNA</option>
+                <option value="CMAC PAITA">CMAC PAITA</option>
+                <option value="CMAC SULLANA">CMAC SULLANA</option>
+                <option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div style="display: none" class="col-md-3 inputxxx cheque tarjetacredito tarjetadebito">
-          <div class="form-group">
-          <label class="control-label">Numero</label>
-          <input type="number" class="form-control numero">
+          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito efectivo porcobrar">
+            <div class="form-group">
+              <label class="control-label">Monto</label>
+              <input type="number" step="any" class="form-control montoextra">
+            </div>
           </div>
-        </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
-          <div class="form-group">
-          <label class="control-label">Cuenta Corriente</label>
-          <input type="text" class="form-control cuentacorriente">
+          <div style="display: none" class="col-md-3 inputxxx cheque tarjetacredito tarjetadebito">
+            <div class="form-group">
+              <label class="control-label">Numero</label>
+              <input type="number" class="form-control numero">
+            </div>
           </div>
-        </div>
 
-
-        <div style="display: none" class="col-md-3 inputxxx depositobancario">
-          <div class="form-group">
-          <label class="control-label">Numero Operacion</label>
-          <input type="text"  class="form-control numerooperacion">
+          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
+            <div class="form-group">
+              <label class="control-label">Cuenta Corriente</label>
+              <input type="text" class="form-control cuentacorriente">
+            </div>
           </div>
-        </div>
-        
-        <div style="display: none" class="col-md-3 inputxxx depositobancario">
-          <div class="form-group">
-          <label class="control-label">Fecha</label>
-          <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
-          </div>
-        </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario">
-          <div class="form-group">
-          <label class="control-label">Cta Abonado</label>
-          <input type="text" class="form-control cuentaabonado">
-          </div>
-        </div>`;
-      containerpayextra.appendChild(newxx);
 
-      $('.date-picker').datepicker({
-        rtl: App.isRTL(),
-        autoclose: true
-      });
+          <div style="display: none" class="col-md-3 inputxxx depositobancario">
+            <div class="form-group">
+              <label class="control-label">Numero Operacion</label>
+              <input type="text"  class="form-control numerooperacion">
+            </div>
+          </div>
+          
+          <div style="display: none" class="col-md-3 inputxxx depositobancario">
+            <div class="form-group">
+              <label class="control-label">Fecha</label>
+              <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+            </div>
+          </div>
+
+          <div style="display: none" class="col-md-3 inputxxx depositobancario">
+            <div class="form-group">
+              <label class="control-label">Cta Abonado</label>
+              <input type="text" class="form-control cuentaabonado">
+            </div>
+          </div>`;
+        containerpayextra.appendChild(newxx);
+
+        $('.date-picker').datepicker({
+            rtl: App.isRTL(),
+            autoclose: true
+        });
     }
+    const guardar = e => {
+        e.preventDefault();
+        let totalpagando = 0;
+        let error = "";
+        let porpagar = 1;
+        let restante = 0;
+        let errorrr = "";
+        const arraypagos = JSON.parse(jsonpagos.value);
+        getSelectorAll(".containerx").forEach(ix => {
+            const bancoextra = ix.querySelector(".bancoextra").value;
+            const montoextra = ix.querySelector(".montoextra").value ? parseFloat(ix.querySelector(".montoextra").value) : 0;
+            const numero = ix.querySelector(".numero").value;
+            const cuentacorriente = ix.querySelector(".cuentacorriente").value;
+            const numerooperacion = ix.querySelector(".numerooperacion").value;
+            const fechaextra = ix.querySelector(".fechaextra").value;
+            const cuentaabonado = ix.querySelector(".cuentaabonado").value;
+            const tipopago = ix.querySelector(".tipopago").value;
+
+            arraypagos.push({
+                bancoextra,
+                montoextra,
+                numero,
+                cuentacorriente,
+                numerooperacion,
+                fechaextra,
+                cuentaabonado,
+                tipopago,
+            })
+            totalpagando += parseFloat(montoextra);
+            if (tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)) {
+                errorrr = "Llena todos los datos de deposito bancario";
+                return;
+            } else if (tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)) {
+                errorrr = "Llena todos los datos de cheque";
+                return;
+            } else if ((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero)) {
+                errorrr = "Llena todos los datos de " + tipopago;
+                return;
+            } else if (tipopago == "efectivo" && !montoextra) {
+                errorrr = "Debe ingresa el monto";
+                return;
+            }
+
+        });
+        if (errorrr) {
+            alert(errorrr);
+            return;
+        }
+        if (totalpagando > parseFloat(inputrestante.value)) {
+            alert("El monto a pagar excede");
+            return
+        } else if (totalpagando == parseFloat(inputrestante.value)) {
+            porpagar = 0;
+        } else {
+            restante = parseFloat(inputrestante.value) - totalpagando;
+        }
+        let acumulado = parseFloat(inputtotal.value) - restante;
+
+
+        const jssson = JSON.stringify(arraypagos);
+
+        const query = `
+            update ventas set jsonpagos = '${jssson}', porpagar = ${porpagar}, pagoacomulado = ${acumulado}
+            where codigoventas = ${codigoventa.value}`
+        const detalle = [];
+        detalle.push(query);
+        const formData = new FormData();
+        formData.append("exearray", JSON.stringify(detalle))
+
+        fetch(`setPrecioVenta.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                $("#mOrdenCompra").modal("hide");
+                if (res.success) {
+                    alert("registro completo!")
+                    location.reload()
+                }
+            });
+    }
+    formoperacion.addEventListener("submit", guardar)
+</script>
