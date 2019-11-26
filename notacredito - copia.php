@@ -20,7 +20,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select * from cnatural c inner join ventas v on v.codigoclienten=c.codigoclienten where v.jsonpagos like '%porcobrar%'";
+$query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where porpagar = 1";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -37,11 +37,11 @@ $i = 1;
         <thead>
             <tr>
                 <th>N°</th>
-                <th>RUC/CODIGO</th>
-                <th>CLIENTE/RAZON SOCIAL</th>
-                <th>CARGOS</th>
-                <th>ABONOS</th>
-                <th>SALDOS</th>
+                <th>Fecha</th>
+                <th>Total Venta</th>
+                <th>Total Pago</th>
+                <th>Tipo Comp.</th>
+                <th>Cod. Comp</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -51,13 +51,12 @@ $i = 1;
                     ?>
                 <tr>
                     <td><?= $i ?></td>
-                    <td><?= $row["cedula"] ?></td>
-                    <td><?= $row["paterno"].' '.$row["materno"].' '.$row["nombre"] ?></td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                     <td align="center"> <a href="listado_cuentasxcobrar.php?codigocliente=<?php echo $row['codigoclienten']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
-           </td>
+                    <td><?= $row["fecha_emision"] ?></td>
+                    <td><?= $row["total"] ?></td>
+                    <td><?= $row["pagoacomulado"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
+                    <td><?= $row["codigocomprobante"] ?></td>
+                    <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)">Pagar</a></td>
                 </tr>
             <?php
                     $i++;
