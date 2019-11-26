@@ -122,7 +122,7 @@ $i = 1;
                                     <input type="number" readonly autocomplete="off" id="inputtotal" class="form-control" required />
                                 </div>
                             </div>
-                            <div class="col-sm-4" style="margin-top: 15px">
+                            <div class="col-sm-4" style="margin-top: 15px; margin-bottom;: 15px">
                                 <button class="btn btn-success" id="btnaddpay" type="button" onclick="addPayExtra()">Agregar Pago</button>
                             </div>
                             <div class="col-sm-12">
