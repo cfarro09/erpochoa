@@ -20,7 +20,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select * from cnatural c inner join ventas v on v.codigoclienten=c.codigoclienten where v.jsonpagos like '%porcobrar%'";
+$query_Listado = "select * from cnatural c inner join ventas v on v.codigoclienten=c.codigoclienten where v.jsonpagos like '%porcobrar%' group by c.codigoclienten";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
