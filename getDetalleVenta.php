@@ -10,6 +10,7 @@ $querydetalle = "
   select dv.*, p.nombre_producto, m.nombre as marca from detalle_ventas dv
   inner join producto p on p.codigoprod = dv.codigoprod
   inner join marca m on m.codigomarca = p.codigomarca
+  where codigoventa = $id
 ";
 
 $resultquery = mysql_query($querydetalle, $Ventas) or die(mysql_error());
