@@ -36,39 +36,39 @@ $i = 1;
     <div class="alert alert-danger">
         <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
     </div>
-<?php else : ?>
-    <table class="table table-bordered table-hover" id="sample_1">
-        <thead>
-            <tr>
-                <th>N°</th>
-                <th>Fecha</th>
-                <th>Tipo Comp.</th>
-                <th>Cod. Comp</th>
-                <th>CARGO</th>
-                <th>ABONO</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php do {
+    <?php else : ?>
+        <table class="table table-bordered table-hover" id="sample_1">
+            <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Fecha</th>
+                    <th>Tipo Comp.</th>
+                    <th>Cod. Comp</th>
+                    <th>CARGO</th>
+                    <th>ABONO</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php do {
                     $restante = $row["total"] - $row["pagoacomulado"];
                     ?>
-                <tr>
-                    <td><?= $i ?></td>
-                    <td><?= $row["fecha_emision"] ?></td>
-                    <td><?= $row["tipocomprobante"] ?></td>
-                    <td><?= $row["codigocomprobante"] ?></td>
-                    <td><?= $row["total"] ?></td>
-                    <td><?= $row["pagoacomulado"] ?></td>
-                    <td>
-                        <a href="#" data-porpagar="<?= $row["porpagar"] ?>" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)"><?= $row["porpagar"] == 1 ? "Pagar" : "Movimientos" ?>
+                    <tr>
+                        <td><?= $i ?></td>
+                        <td><?= $row["fecha_emision"] ?></td>
+                        <td><?= $row["tipocomprobante"] ?></td>
+                        <td><?= $row["codigocomprobante"] ?></td>
+                        <td><?= $row["total"] ?></td>
+                        <td><?= $row["pagoacomulado"] ?></td>
+                        <td>
+                            <a href="#" data-porpagar="<?= $row["porpagar"] ?>" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)"><?= $row["porpagar"] == 1 ? "Pagar" : "Movimientos" ?>
                         </a>
                     </td>
 
                 </tr>
-            <?php
-                    $i++;
-                } while ($row = mysql_fetch_assoc($Listado)); ?>
+                <?php
+                $i++;
+            } while ($row = mysql_fetch_assoc($Listado)); ?>
         </tbody>
     </table>
 <?php endif ?>
@@ -122,12 +122,34 @@ $i = 1;
                                     <input type="number" readonly autocomplete="off" id="inputtotal" class="form-control" required />
                                 </div>
                             </div>
-                            <div class="col-sm-4" style="margin-top: 15px; margin-bottom;: 15px">
+
+                            <div class="col-sm-12">
+                                <table class="table table-bordered table-hover" >
+                                    <thead>
+                                        <tr>
+                                            <td class="text-center" colspan="5"><b>DEALLE PRODUCTOS</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>PRODUCTO</b></td>
+                                            <td><b>MARCA</b></td>
+                                            <td><b>CANTIDAD</b></td>
+                                            <td><b>P VENTA</b></td>
+                                            <td><b>UNIDAD MEDIDA</b></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detallebody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-4" style="margin-top: 15px; margin-bottom: 15px">
                                 <button class="btn btn-success" id="btnaddpay" type="button" onclick="addPayExtra()">Agregar Pago</button>
                             </div>
                             <div class="col-sm-12">
                                 <table class="table table-bordered table-hover">
                                     <thead>
+                                        <tr>
+                                            <td class="text-center" colspan="3"><b>HISTORIAL DE PAGOS</b></td>
+                                        </tr>
                                         <tr>
                                             <td>TIPO PAGO</td>
                                             <td>MONTO</td>
@@ -185,46 +207,68 @@ include("Fragmentos/pie.php");
         jsonpagos.value = e.dataset.json;
         inputrestante.value = e.dataset.restante;
         inputtotal.value = e.dataset.total;
+        
+        detallebody.innerHTML = "";
+        fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
+        .then(res => res.json())
+        .catch(error => console.error("error: ", error))
+        .then(res => {
+            if(res){
+                res.forEach(ix => {
+                    detallebody.innerHTML += `
+                    <tr>
+                    <td>${ix.nombre_producto}</td>
+                    <td>${ix.marca}</td>
+                    <td>${ix.cantidad}</td>
+                    <td>${ix.pventa}</td>
+                    <td>${ix.unidad_medida}</td>
+                    </tr>
+                    `;
+                })
+            }
+        })
+
+
         if (pagoefectivo) {
             historialbody.innerHTML += `
-                <tr>
-                    <td>Pago Efectivo</td>
-                    <td>${pagoefectivo}</td>
-                    <td>-</td>
-                </tr>
+            <tr>
+            <td>Pago Efectivo</td>
+            <td>${pagoefectivo}</td>
+            <td>-</td>
+            </tr>
             `;
         }
         JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
             let textt = "";
             if (ix.tipopago == "depositobancario")
                 textt = `Numero Operacion: ${ix.numerooperacion} |
-                        Fecha: ${ix.fechaextra} |
-                        Cta. Abonada: ${ix.cuentaabonado} |
-                        Ente: ${ix.bancoextra} |
-                        Monto: ${ix.montoextra}`
+            Fecha: ${ix.fechaextra} |
+            Cta. Abonada: ${ix.cuentaabonado} |
+            Ente: ${ix.bancoextra} |
+            Monto: ${ix.montoextra}`
             else if (ix.tipopago == "cheque")
                 textt = `Numero: ${ix.numero} |
-                        Ente: ${ix.bancoextra} |
-                        Cta. Cte.: ${ix.cuentacorriente} |
-                        Monto: ${ix.montoextra}`
+            Ente: ${ix.bancoextra} |
+            Cta. Cte.: ${ix.cuentacorriente} |
+            Monto: ${ix.montoextra}`
             else if (ix.tipopago == "tarjetacredito")
                 textt = `Numero: ${ix.numero} |
-                        Ente: ${ix.bancoextra} |
-                        Monto: ${ix.montoextra}`
+            Ente: ${ix.bancoextra} |
+            Monto: ${ix.montoextra}`
             else if (ix.tipopago == "tarjetadebito")
                 textt = `Numero: ${ix.numero} |
-                        Ente: ${ix.bancoextra} | 
-                        Monto: ${ix.montoextra}`
+            Ente: ${ix.bancoextra} | 
+            Monto: ${ix.montoextra}`
             else if (ix.tipopago == "efectivo") {
                 textt = `Monto: ${ix.montoextra} `
             }
 
             historialbody.innerHTML += `
-                <tr>
-                    <td>${ix.tipopago}</td>
-                    <td>${ix.montoextra}</td>
-                    <td>${textt}</td>
-                </tr>
+            <tr>
+            <td>${ix.tipopago}</td>
+            <td>${ix.montoextra}</td>
+            <td>${textt}</td>
+            </tr>
             `;
         });
     }
@@ -240,95 +284,95 @@ include("Fragmentos/pie.php");
         newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
 
         newxx.innerHTML += `
-          <div class="text-right">
-            <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
-          </div>
+        <div class="text-right">
+        <button type="button" class="btn btn-danger" onclick="removecontainerpay(this)">Cerrar</button>
+        </div>
 
-          <div class="col-md-3">
-            <div class="form-group">
-              <label class="control-label">Tipo Pago</label>
-              <select onchange="changetypepago(this)" class="form-control tipopago">
-                <option value="">[Seleccione]</option>
-                <option value="depositobancario">Deposito Bancario</option>
-                <option value="tarjetadebito">Tarjeta Debito</option>
-                <option value="tarjetacredito">Tarjeta Credito</option>
-                <option value="cheque">Cheque</option>
-                <option value="efectivo">Efectivo</option>
-              </select>
-            </div>
-          </div>
+        <div class="col-md-3">
+        <div class="form-group">
+        <label class="control-label">Tipo Pago</label>
+        <select onchange="changetypepago(this)" class="form-control tipopago">
+        <option value="">[Seleccione]</option>
+        <option value="depositobancario">Deposito Bancario</option>
+        <option value="tarjetadebito">Tarjeta Debito</option>
+        <option value="tarjetacredito">Tarjeta Credito</option>
+        <option value="cheque">Cheque</option>
+        <option value="efectivo">Efectivo</option>
+        </select>
+        </div>
+        </div>
 
-          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
-            <div class="form-group">
-              <label class="control-label">Banco</label>
-              <select class="form-control bancoextra">
-                <option value="BANCO AZTECA">BANCO AZTECA</option>
-                <option value="BANCO BCP">BANCO BCP</option>
-                <option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
-                <option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
-                <option value="BANCO FALABELLA">BANCO FALABELLA</option>
-                <option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
-                <option value="BANCO MI BANCO">BANCO MI BANCO</option>
-                <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
-                <option value="BANCO RIPLEY">BANCO RIPLEY</option>
-                <option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
-                <option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
-                <option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
-                <option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
-                <option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
-                <option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
-                <option value="CMAC ICA">CMAC ICA</option>
-                <option value="CMAC LIMA">CMAC LIMA</option>
-                <option value="CMAC MAYNA">CMAC MAYNA</option>
-                <option value="CMAC PAITA">CMAC PAITA</option>
-                <option value="CMAC SULLANA">CMAC SULLANA</option>
-                <option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
-              </select>
-            </div>
-          </div>
+        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
+        <div class="form-group">
+        <label class="control-label">Banco</label>
+        <select class="form-control bancoextra">
+        <option value="BANCO AZTECA">BANCO AZTECA</option>
+        <option value="BANCO BCP">BANCO BCP</option>
+        <option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
+        <option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
+        <option value="BANCO FALABELLA">BANCO FALABELLA</option>
+        <option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
+        <option value="BANCO MI BANCO">BANCO MI BANCO</option>
+        <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
+        <option value="BANCO RIPLEY">BANCO RIPLEY</option>
+        <option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
+        <option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
+        <option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
+        <option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
+        <option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
+        <option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
+        <option value="CMAC ICA">CMAC ICA</option>
+        <option value="CMAC LIMA">CMAC LIMA</option>
+        <option value="CMAC MAYNA">CMAC MAYNA</option>
+        <option value="CMAC PAITA">CMAC PAITA</option>
+        <option value="CMAC SULLANA">CMAC SULLANA</option>
+        <option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
+        </select>
+        </div>
+        </div>
 
-          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito efectivo porcobrar">
-            <div class="form-group">
-              <label class="control-label">Monto</label>
-              <input type="number" step="any" class="form-control montoextra">
-            </div>
-          </div>
+        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito efectivo porcobrar">
+        <div class="form-group">
+        <label class="control-label">Monto</label>
+        <input type="number" step="any" class="form-control montoextra">
+        </div>
+        </div>
 
-          <div style="display: none" class="col-md-3 inputxxx cheque tarjetacredito tarjetadebito">
-            <div class="form-group">
-              <label class="control-label">Numero</label>
-              <input type="number" class="form-control numero">
-            </div>
-          </div>
+        <div style="display: none" class="col-md-3 inputxxx cheque tarjetacredito tarjetadebito">
+        <div class="form-group">
+        <label class="control-label">Numero</label>
+        <input type="number" class="form-control numero">
+        </div>
+        </div>
 
-          <div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
-            <div class="form-group">
-              <label class="control-label">Cuenta Corriente</label>
-              <input type="text" class="form-control cuentacorriente">
-            </div>
-          </div>
+        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
+        <div class="form-group">
+        <label class="control-label">Cuenta Corriente</label>
+        <input type="text" class="form-control cuentacorriente">
+        </div>
+        </div>
 
 
-          <div style="display: none" class="col-md-3 inputxxx depositobancario">
-            <div class="form-group">
-              <label class="control-label">Numero Operacion</label>
-              <input type="text"  class="form-control numerooperacion">
-            </div>
-          </div>
-          
-          <div style="display: none" class="col-md-3 inputxxx depositobancario">
-            <div class="form-group">
-              <label class="control-label">Fecha</label>
-              <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
-            </div>
-          </div>
+        <div style="display: none" class="col-md-3 inputxxx depositobancario">
+        <div class="form-group">
+        <label class="control-label">Numero Operacion</label>
+        <input type="text"  class="form-control numerooperacion">
+        </div>
+        </div>
 
-          <div style="display: none" class="col-md-3 inputxxx depositobancario">
-            <div class="form-group">
-              <label class="control-label">Cta Abonado</label>
-              <input type="text" class="form-control cuentaabonado">
-            </div>
-          </div>`;
+        <div style="display: none" class="col-md-3 inputxxx depositobancario">
+        <div class="form-group">
+        <label class="control-label">Fecha</label>
+        <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
+        </div>
+        </div>
+
+        <div style="display: none" class="col-md-3 inputxxx depositobancario">
+        <div class="form-group">
+        <label class="control-label">Cta Abonado</label>
+        <input type="text" class="form-control cuentaabonado">
+        </div>
+        </div>`;
         containerpayextra.appendChild(newxx);
 
         $('.date-picker').datepicker({
@@ -398,26 +442,26 @@ include("Fragmentos/pie.php");
         const jssson = JSON.stringify(arraypagos);
 
         const query = `
-            update ventas set jsonpagos = '${jssson}', porpagar = ${porpagar}, pagoacomulado = ${acumulado}
-            where codigoventas = ${codigoventa.value}`
+        update ventas set jsonpagos = '${jssson}', porpagar = ${porpagar}, pagoacomulado = ${acumulado}
+        where codigoventas = ${codigoventa.value}`
         const detalle = [];
         detalle.push(query);
         const formData = new FormData();
         formData.append("exearray", JSON.stringify(detalle))
 
         fetch(`setPrecioVenta.php`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .catch(error => console.error("error: ", error))
-            .then(res => {
-                $("#mOrdenCompra").modal("hide");
-                if (res.success) {
-                    alert("registro completo!")
-                    location.reload()
-                }
-            });
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .catch(error => console.error("error: ", error))
+        .then(res => {
+            $("#mOrdenCompra").modal("hide");
+            if (res.success) {
+                alert("registro completo!")
+                location.reload()
+            }
+        });
     }
     formoperacion.addEventListener("submit", guardar)
 </script>

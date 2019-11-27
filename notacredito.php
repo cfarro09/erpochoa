@@ -20,7 +20,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select * from cnatural c inner join ventas v on v.codigoclienten=c.codigoclienten where v.jsonpagos like '%porcobrar%' group by c.codigoclienten";
+$query_Listado = "select c.*, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from cnatural c inner join ventas v on v.codigoclienten=c.codigoclienten where v.jsonpagos like '%porcobrar%' group by c.codigoclienten";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -47,15 +47,14 @@ $i = 1;
         </thead>
         <tbody>
             <?php do {
-                    $restante = $row["total"] - $row["pagoacomulado"];
                     ?>
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $row["cedula"] ?></td>
                     <td><?= $row["paterno"].' '.$row["materno"].' '.$row["nombre"] ?></td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td><?= round($row["totalcargo"], 2) ?></td>
+                    <td><?= round($row["totalabono"], 2) ?></td>
+                    <td><?= round($row["totalcargo"] - $row["totalabono"], 2) ?></td>
                      <td align="center"> <a href="listado_cuentasxcobrar.php?codigocliente=<?php echo $row['codigoclienten']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>
                 </tr>
