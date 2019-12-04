@@ -114,7 +114,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 		</div>
 	</div>
 
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="form-group">
 			<label for="field-1" class="control-label">Tipo Comprobante</label>
 			<select required class="form-control" id="tipocomprobante">
@@ -125,13 +125,13 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			</select>
 		</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="form-group">
 			<label for="field-1" class="control-label">Codigo Comprobante</label>
 			<input type="text" class="form-control" id="codigocomprobante">
 		</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="form-group">
 			<label for="field-1" class="control-label">Modalidad Entrega</label>
 			<select required class="form-control" id="tipocomprobante">
@@ -141,7 +141,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			</select>
 		</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="form-group">
 			<label for="field-1" class="control-label">Forma Pago</label>
 			<select required onchange="changemodopago(this)" class="form-control" id="tipocomprobante">
@@ -150,13 +150,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			</select>
 		</div>
 	</div>
-				<!-- <div class="col-md-4">7
-					<div class="form-group">
-						<label for="field-1" class="control-label">Pago en Efectivo</label>
-						<input type="number" step="any" class="form-control" oninput="calcularmontopagado()" id="montoefectivo">
-					</div>
-				</div> -->
-				<div class="col-md-4">
+				<div class="col-md-4" style="display: none">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Monto Pagado</label>
 						<input type="number" readonly step="any" class="form-control" id="montopagado">
@@ -350,9 +344,9 @@ include("Fragmentos/pie.php");
 				totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
 
 				total = parseFloat(total)
-				getSelector("#subtotal-header").textContent = total.toFixed(3);
-				getSelector("#total-header").textContent = (total * 1.18).toFixed(3);
-				getSelector("#igv-header").textContent = (total * 0.18).toFixed(3);
+				getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
+				getSelector("#total-header").textContent = (total).toFixed(3);
+				getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
 			} else {
 				totalpreciocompra.value = 0;
 
