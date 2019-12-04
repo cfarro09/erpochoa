@@ -253,7 +253,15 @@ include("Fragmentos/pie.php");
 	});
 	function changemodopago(e) {
 		if (e.value == "unico") {
+			getSelector(".montoextra").value = 0;
 			divparentpayextra.style.display = "none";
+			let ii = 0;
+			getSelectorAll(".containerx").forEach(ix => {
+				if(ii != 0){
+					ix.remove();
+				}
+				ii++;
+			});
 		} else {
 			divparentpayextra.style.display = "";
 		}
