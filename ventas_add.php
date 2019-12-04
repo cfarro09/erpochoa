@@ -134,7 +134,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 	<div class="col-md-3">
 		<div class="form-group">
 			<label for="field-1" class="control-label">Modalidad Entrega</label>
-			<select required class="form-control" id="tipocomprobante">
+			<select required class="form-control" id="modalidadentrega">
 				<option value="S/G">Entrega Inmediata S/G</option>
 				<option value="C/G">Entrega Inmediata C/G</option>
 				<option value="C/G">Entrega desde Almacen C/G</option>
@@ -144,7 +144,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 	<div class="col-md-3">
 		<div class="form-group">
 			<label for="field-1" class="control-label">Forma Pago</label>
-			<select required onchange="changemodopago(this)" class="form-control" id="tipocomprobante">
+			<select required onchange="changemodopago(this)" class="form-control" id="formpago">
 				<option value="unico">Unico</option>
 				<option value="compuesto">Compuesto</option>
 			</select>
@@ -249,6 +249,7 @@ include("Fragmentos/pie.php");
 	$(document).ready(function () {
 		addPayExtra();
 		getSelector(".containerx").firstElementChild.style.display = "none"
+		getSelector(".containerx").style.border = "none"
 	});
 	function changemodopago(e) {
 		if (e.value == "unico") {
@@ -342,11 +343,16 @@ include("Fragmentos/pie.php");
 			})
 			if (total != 0) {
 				totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
-
 				total = parseFloat(total)
 				getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
 				getSelector("#total-header").textContent = (total).toFixed(3);
 				getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
+
+				if(formpago.value == "unico" ){
+					getSelector(".montoextra").value = (total).toFixed(3);
+				}else{
+					getSelector(".montoextra").value = 0
+				}
 			} else {
 				totalpreciocompra.value = 0;
 
