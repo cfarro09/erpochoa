@@ -40,7 +40,7 @@ from kardex_contable k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
 inner join `color` `c` on(p.codigocolor = c.codigocolor)
-inner join precio_venta pv on pv.codigoprod = p.codigoprod 
+inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
 where k.sucursal = $codsucursal and saldo > 0
 and k.id_kardex_contable in
 (select max(id_kardex_contable) from kardex_contable group by codigoprod)";
