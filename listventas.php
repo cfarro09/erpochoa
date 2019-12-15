@@ -152,7 +152,7 @@ $i = 1;
                                     </table>
                                 </div>
                                 <div class="col-sm-12" id="">
-                                    <label>Motivo Devolcuion</label>
+                                    <label>Motivo Devolución</label>
                                     <textarea class="form-control" id="motivodevolucion"></textarea>
                                 </div>
                             </div>
@@ -196,8 +196,9 @@ $i = 1;
             }
             let dataxx = false;
             getSelectorAll(".inputdevo").forEach(ix =>{
-                if(ix.value){
-                    data  = true;
+                debugger
+                if(ix.value && parseInt(ix.value) != 0){
+                    dataxx  = true;
                     const iddetalle = ix.dataset.iddetalle;
                     let historialdevolucion = ix.dataset.historialdevolucion;
                     const idventa = ix.dataset.idventa;
@@ -250,13 +251,12 @@ $i = 1;
                 
                 const iddetalle = e.dataset.iddetalle;
                 let historialdevolucion = JSON.parse(e.dataset.historial);
-
-                historialdevolucion.push(JSON.stringify({
+                historialdevolucion.push({
                     fecha: new Date(),
                     cantidad: e.value,
                     motivo: "CANCELADO"
-                }))
-
+                })
+                historialdevolucion = JSON.stringify(historialdevolucion);
                 data.detalle.push(`update detalle_ventas set devolucion = 0, historialdevolucion = '${historialdevolucion}' where codigodetalleproducto = ${iddetalle}`)
                 var formData = new FormData();
                 formData.append("json", JSON.stringify(data))
