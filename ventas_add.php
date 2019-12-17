@@ -537,7 +537,7 @@ include("Fragmentos/pie.php");
 				estadofact: 1,
 				codsucursal: <?= $_SESSION['cod_sucursal'] ?>,
 				totalc: totalpreciocompra.value,
-				pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
+				// pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
 			}
 			let errorxxx = "";
 			if (!h.total) {
@@ -585,9 +585,9 @@ include("Fragmentos/pie.php");
 			}
 
 			data.header = `insert into ventas 
-			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado)
+			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal)
 			values
-			('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${h.pagoefectivo}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado})
+			('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${totalpagando}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal})
 			`
 			getSelectorAll(".producto").forEach(item => {
 				const d = {
