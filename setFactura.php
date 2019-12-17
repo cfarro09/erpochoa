@@ -78,7 +78,7 @@ if($h->codigocompras){
     $row_Listado1 = mysql_fetch_assoc($res);
 
     if($row_Listado1){
-      $newcantidad = $row_Listado1['cantidad'] + $d->cantidad;
+      $newcantidad = $row_Listado1['saldo'] + $d->cantidad;
       $xx = "insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor) values ($d->codigoprod, '$h->fecha_registro', $lastId, '$h->numerocomprobante', 'Compras', $d->cantidad, $d->totalcompra, $newcantidad, $h->codigosuc, $d->totalcompra, '$h->tipo_comprobante', $h->codigoproveedor)";
 
 
