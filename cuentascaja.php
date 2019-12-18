@@ -45,6 +45,7 @@ $i = 1;
                 <th>Titular</th>
                 <th>Sectorista</th>
                 <th>Celular</th>
+                <th>Saldo Inicial</th>
             </tr>
         </thead>
         <tbody>
@@ -57,6 +58,7 @@ $i = 1;
                     <td><?= $row["titular"] ?></td>
                     <td><?= $row["nombre_sectorista"] ?></td>
                     <td><?= $row["cel_sectorista"] ?></td>
+                    <td><?= $row['saldoinicial'] ?></td>
                 </tr>
             <?php
                     $i++;
@@ -156,7 +158,13 @@ $i = 1;
                                     <input type="text" required class="form-control" id="celsectorista">
                                 </div>
                             </div>
-                            
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Saldo Inicial</label>
+                                    <input type="number" required class="form-control" id="saldoinicial">
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -178,7 +186,7 @@ include("Fragmentos/pie.php");
 <script>
     const guardar = e => {
         e.preventDefault();
-        const query = `insert into cuenta (idcodigobanco, tipo, cci, moneda, numero_cuenta, titular, nombre_sectorista, cel_sectorista) values (${bancocuenta.value}, '${tipocuenta.value}', '${cci.value}', '${monedacuenta.value}', '${numero_cuenta.value}', '${titular.value}', '${sectorista.value}', '${celsectorista.value}')`
+        const query = `insert into cuenta (idcodigobanco, tipo, cci, moneda, numero_cuenta, titular, nombre_sectorista, cel_sectorista, saldoinicial) values (${bancocuenta.value}, '${tipocuenta.value}', '${cci.value}', '${monedacuenta.value}', '${numero_cuenta.value}', '${titular.value}', '${sectorista.value}', '${celsectorista.value}','${saldoinicial.value}')`
         const detalle = [];
         detalle.push(query);
         const formData = new FormData();
