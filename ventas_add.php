@@ -135,9 +135,9 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 		<div class="form-group">
 			<label for="field-1" class="control-label">Modalidad Entrega</label>
 			<select required class="form-control" id="modalidadentrega">
-				<option value="S/G">Entrega Inmediata S/G</option>
-				<option value="C/G">Entrega Inmediata C/G</option>
-				<option value="C/G">Entrega desde Almacen C/G</option>
+				<option value="Entrega inmediata S/G">Entrega Inmediata S/G</option>
+				<option value="Entrega inmediata C/G">Entrega Inmediata C/G</option>
+				<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
 			</select>
 		</div>
 	</div>
@@ -585,9 +585,9 @@ include("Fragmentos/pie.php");
 			}
 
 			data.header = `insert into ventas 
-			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal)
+			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
-			('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${totalpagando}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal})
+			('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, ${totalpagando}, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
 			`
 			getSelectorAll(".producto").forEach(item => {
 				const d = {
@@ -604,7 +604,7 @@ include("Fragmentos/pie.php");
 					values
 					(${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###)
 					`);
-
+				
 				data.detalle.push(`
 					insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
 					values
