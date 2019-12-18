@@ -61,8 +61,8 @@ $i = 1;
                     <td><?= $row['saldoinicial'] ?></td>
                 </tr>
             <?php
-                    $i++;
-                } while ($row = mysql_fetch_assoc($Listado)); ?>
+                $i++;
+            } while ($row = mysql_fetch_assoc($Listado)); ?>
         </tbody>
     </table>
 <?php endif ?>
@@ -186,18 +186,20 @@ include("Fragmentos/pie.php");
 <script>
     const guardar = e => {
         e.preventDefault();
-        const query = `insert into cuenta (idcodigobanco, tipo, cci, moneda, numero_cuenta, titular, nombre_sectorista, cel_sectorista, saldoinicial) values (${bancocuenta.value}, '${tipocuenta.value}', '${cci.value}', '${monedacuenta.value}', '${numero_cuenta.value}', '${titular.value}', '${sectorista.value}', '${celsectorista.value}','${saldoinicial.value}')`
-        const dd = new Date().toISOString().substring(0, 10);
-        const query1 = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (##ID##, '${dd}', 'saldo inicial', 'saldo inicial', '${saldoinicial.value}', '${saldoinicial.value}')`
-        const detalle = [];
-        const cabecera = [];
-        detalle.push(query);
-        cabecera.push(query1);
-        const formData = new FormData();
-        formData.append("exearray", JSON.stringify(detalle))
-        formData.append("querys", JSON.stringify(cabecera))
+        const data = {
+            header: "",
+            detalle: []
+        }
+        data.header = `insert into cuenta (idcodigobanco, tipo, cci, moneda, numero_cuenta, titular, nombre_sectorista, cel_sectorista, saldoinicial) values (${bancocuenta.value}, '${tipocuenta.value}', '${cci.value}', '${monedacuenta.value}', '${numero_cuenta.value}', '${titular.value}', '${sectorista.value}', '${celsectorista.value}','${saldoinicial.value}')`
 
-        fetch(`setPrecioVenta.php`, {
+        const dd = new Date().toISOString().substring(0, 10);
+        const query = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (###ID###, '${dd}', 'saldo inicial', 'saldo inicial', '${saldoinicial.value}', '${saldoinicial.value}')`
+        data.detalle.push(query);
+
+        const formData = new FormData();
+        formData.append("json", JSON.stringify(data))
+
+        fetch(`setVenta.php`, {
                 method: 'POST',
                 body: formData
             })

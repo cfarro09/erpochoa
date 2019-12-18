@@ -41,19 +41,6 @@ foreach($exearray as $de){
   mysql_query($de, $Ventas) or die(mysql_error());
 }
 
-if (isset($_POST['querys'])) {
-  $querys = $_POST['querys'];
-  $querys = json_decode($querys);
-
-  $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
-  $lastId = (int) mysql_fetch_assoc($lastId)["LAST_INSERT_ID()"];
-
-  foreach ($querys as $query) {
-    $query = str_replace("##ID##", $lastId, $query);
-    mysql_query($query, $Ventas) or die(mysql_error());
-  }
-}
-
 die(json_encode(array("success" => true), 128));
 
 
