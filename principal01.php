@@ -75,7 +75,8 @@ $row_frase = mysql_fetch_assoc($frases);
         </div>
 
         <div class="item" style="margin-top:150px">
-          <h2><?= $row_frase['frase'] ?></h2>
+          <h2 style="margin-bottom: 30px"><?= $row_frase['titulo'] ?></h2>
+          <h4><?= $row_frase['frase'] ?></h4>
         </div>
       </div>
       <!-- Left and right controls -->

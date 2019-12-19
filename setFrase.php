@@ -34,6 +34,9 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 if (isset($_POST['frase'])) {
   $frase = $_POST['frase'];
 }
+if (isset($_POST['titulo'])) {
+  $titulo = $_POST['titulo'];
+}
 if (isset($_POST['type'])) {
   $type = $_POST['type'];
 }
@@ -44,7 +47,7 @@ mysql_select_db($database_Ventas, $Ventas);
 $queryUpdate = "update frases set selected = 0";
 $sucursal = mysql_query($queryUpdate, $Ventas) or die(mysql_error());
 if($type == "add"){
-  $query_setSucursal = "insert into frases (frase, selected) values ('$frase', 1)";
+  $query_setSucursal = "insert into frases (titulo, frase, selected) values ('$titulo','$frase', 1)";
 }else{
   $query_setSucursal = "update frases set selected = 1 where id = $id";
 }

@@ -312,9 +312,14 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                     <form id="saveFrase">
                                         <div class="col-md-12">
                                             <div class="form-group">
+                                                <label for="frase_titulo">Titulo:</label>
                                                 <input type="hidden" name="cod_acceso_seguridad" value="0"
                                                 id="cod_acceso_seguridad">
-                                                <textarea class="form-control" required id="newfrase"></textarea>
+                                                <textarea name="frase_titulo" class="jqte-test" id="frase_titulo"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="newfrase">Nueva Frase:</label>
+                                                <textarea name="newfrase" class="jqte-test" id="newfrase" style="height: 100px"></textarea>
                                             </div>
                                             <button class="btn btn-success">GUARDAR</button>
                                         </div>
@@ -325,6 +330,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 <table class="table table-striped table-bordered table-hover" id="">
                                     <thead>
                                         <tr>
+                                            <td>Titulo</td>
                                             <td>Frase</td>
                                             <td>Estado</td>
                                         </tr>
@@ -334,6 +340,7 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                             <?php do { ?>
                                                 <?php $id = $row_frases['id'] ?>
                                                 <tr>
+                                                    <td> <?= $row_frases['titulo']; ?></td>
                                                     <td> <?= $row_frases['frase']; ?></td>
                                                     <td> <?= $row_frases['selected'] == 0 ? "<a class='select-frase' data-idfrase='$id'>Seleccionar</a>" : "Seleccionada" ; ?></td>
                                                 </td>
@@ -1140,6 +1147,7 @@ else {
                                     
                                     var formData = new FormData();
                                     formData.append("frase", $("#newfrase").val())
+                                    formData.append("titulo", $("#frase_titulo").val())
                                     formData.append("type", "add")
                                     fetch(`setFrase.php`, { method: 'POST', body: formData })
                                     .then(res => res.json())
@@ -1371,4 +1379,32 @@ document.querySelector("#saveManageUsuarios").addEventListener("submit", e => {
 
 
 })
+</script>
+<!-- <script src="assets/global/plugins/jquery.min.js" type="text/javascript"></script> -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+<!-- <script src="assets/global/plugins/jquery-te/js/jquery-te-1.4.0.min.js" type="text/javascript"></script> -->
+<script>
+
+    $(".jqte-test").jqte(
+        {
+            fsize: false,
+            format: false,
+            ol: false,
+            ul: false,
+            sub: false,
+            sup: false,
+            remove: false,
+            link: false,
+            unlink: false,
+            source:false,
+            outdent: false,
+            indent: false
+        }
+        );
+    
+    
+    // $('.jqte_editor').on('keypress',function(e){
+    //     var value = $('.jqte-test').val();
+    //  alert(value); 
+    // });
 </script>

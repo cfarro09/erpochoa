@@ -68,6 +68,11 @@ $totalRows_Conf_Sis = mysql_num_rows($Conf_Sis);
         <link href="assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/global/plugins/typeahead/typeahead.css" rel="stylesheet" type="text/css" />
+
+
+        <script src="assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+        <link href="assets/global/plugins/jquery-te/css/jquery-te-1.4.0.css" rel="stylesheet" type="text/css" />
+        <script src="assets/global/plugins/jquery-te/js/jquery-te-1.4.0.min.js" type="text/javascript"></script>
         
         <link href="assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
