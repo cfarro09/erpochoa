@@ -43,7 +43,7 @@ inner join `color` `c` on(p.codigocolor = c.codigocolor)
 inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
 where k.sucursal = $codsucursal and saldo > 0
 and k.id_kardex_contable in
-(select max(id_kardex_contable) from kardex_contable group by codigoprod)";
+(select max(id_kardex_contable) from kardex_contable where sucursal = $codsucursal group by codigoprod)";
 
 $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
 $row_Productos = mysql_fetch_assoc($Productos);

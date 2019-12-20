@@ -34,7 +34,7 @@
     inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
     where k.sucursal = $sucursal_actual and saldo > 0
     and k.id_kardex_contable in
-    (select max(id_kardex_contable) from kardex_contable group by codigoprod)";
+    (select max(id_kardex_contable) from kardex_contable where sucursal = $sucursal_actual group by codigoprod)";
 
     $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
     $row_Productos = mysql_fetch_assoc($Productos);
@@ -73,7 +73,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="sucursal_destino">Sucursal Destino:</label>
-                <select name="sucursal_destino" id="sucursal_destino" class="form-control">
+                <select name="sucursal_destino" id="sucursal_destino" class="form-control" required>
                             <option value="" disabled selected> SELECCIONAR </option>
                     <?php
                         foreach ($sucursales as $sucursal) { ?>
@@ -88,7 +88,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="sucursal_destino">Numero de Guia:</label>
-                <input type="text" name="numero_guia" class="form-control">
+                <input type="text" name="numero_guia" id="numero_guia" class="form-control" required>
             </div>
         </div>
         <div class="col-md-12">
@@ -128,6 +128,7 @@
                     <th>U. Medida</th>
                     <th>Producto</th>
                     <th>Marca</th>
+                    <th>Precio Venta</th>
                     <th>Accion</th>
                 </thead>
                 <tbody id="detalleFormProducto">
@@ -145,6 +146,15 @@
     <script>
         // Inicializando elementos
         $('#sucursal_destino option[value='+<?=$sucursal_actual?>+']').hide();
+        
+        function eliminarproducto(e) {
+            e.closest(".producto").remove()
+            var i = 1;
+            getSelectorAll(".producto").forEach(p => {
+                p.querySelector(".indexproducto").textContent = i;
+                i++;
+            })
+        }
 
         function cambiar_sucursal(actual) {
             $('#sucursal_destino').val($('#sucursal_destino option:first').val());
@@ -159,6 +169,39 @@
             $('#producto').append('<option value="">Seleccionar</option>');
         }
 
+        function changevalue(e) {
+            if (e.value < 0 || "" == e.value) {
+                e.value = 0
+            } else {
+                if (e.dataset.type == "cantidad") {
+                    if (parseInt(e.dataset.stock) < parseInt(e.value)) {
+                        e.value = 0
+                    }
+                }
+                const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
+                const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+            }
+        }
+
+        function validaciones(){
+            var validar = new Array();
+            validar['success'] = true;
+
+            if (getSelectorAll(".producto").length < 1) {
+                validar['success'] = false;
+                validar['msj'] = 'Debes agregar al menos un producto'; 
+            } else if (!$('#sucursal_destino').val()) {
+                validar['success'] = false;
+                validar['msj'] = 'Debes seleccionar una sucursal de destino'; 
+            }
+            getSelectorAll(".producto").forEach(item => {
+                if (item.querySelector(".cantidad").value == 0) {
+                    validar['success'] = false;
+                    validar['msj'] = 'La cantidad no puede ser 0'; 
+                }
+            });
+            return validar;
+        }
 
         $('#sucursal_origen').on('change',function(e){
             var actual = $(this).val();
@@ -174,7 +217,7 @@
                         "inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod) "+
                         "where k.sucursal = "+actual+" and saldo > 0 "+
                         "and k.id_kardex_contable in "+
-                        "(select max(id_kardex_contable) from kardex_contable group by codigoprod)";
+                        "(select max(id_kardex_contable) from kardex_contable where sucursal = "+actual+" group by codigoprod)";
             formData.append('query',query);
 
             fetch(`get_data_dynamic.php`, { method: 'POST', body: formData })
@@ -215,6 +258,7 @@
                         </td>
                         <td class="nombre">${option.dataset.nombre}</td>
                         <td class="marca">${option.dataset.marca}</td>
+                        <td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
                         <td>
                         <button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm tooltips" data-placement="top"  data-original-title="Eliminar Producto"><i class="glyphicon glyphicon-trash"></i></button>
                         </td>
@@ -227,49 +271,139 @@
             }
           });
 
-        function changevalue(e) {
-            if (e.value < 0 || "" == e.value) {
-                e.value = 0
+        
+        getSelector("#form-cambio-mercancia").addEventListener("submit", e => {
+            e.preventDefault();
+            /* Declaracion de variables */
+            const data = {};
+			data.detalle = [];
+
+            /* Valiaciones */
+            var res = validaciones();
+            if (!res['success']) {
+                alert(res['msj']);
             } else {
-                if (e.dataset.type == "cantidad") {
-                    if (parseInt(e.dataset.stock) < parseInt(e.value)) {
-                        e.value = 0
-                    }
+                const h = {
+                    fecha: '<?php echo date("Y-m-d"); ?>',
+                    sucursal_origen: $('#sucursal_origen').val(),
+                    sucursal_destino: $('#sucursal_destino').val(),
+                    nro_guia: $('#numero_guia').val(),
                 }
-                const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
-                const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+                
+                data.header = `insert into cambio_mercancia (fecha,sucursal_origen,sucursal_destino,nro_guia) `+
+                              `values ('${h.fecha}','${h.sucursal_origen}','${h.sucursal_destino}','${h.nro_guia}')`;
+            
+                getSelectorAll(".producto").forEach(item => {
+                    const d = {
+                        codigoprod: item.querySelector(".codigopro").dataset.codigo,
+                        cantidad: item.querySelector(".cantidad").value,
+                        unidad_medida: item.querySelector(".unidad_medida").value,
+                        concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
+                        pventa: item.querySelector(".precio").value,
+                        stock: item.querySelector(".cantidad").dataset.stock,
+                    }
+                    
+                    // Se registra la salida kardex_contable
+                    data.detalle.push(`
+                        INSERT INTO kardex_contable (codigoprod, fecha, codigocompras, numero, tipo_comprobante, detalle, cantidad, precio, saldo, sucursal, preciodolar, preciototal, tipocomprobante,codigoproveedor)
+                        VALUES
+                        (
+                            ${d.codigoprod},
+                            '${h.fecha}',
+                            ###ID###,
+                            '${h.nro_guia}',
+                            '',
+                            'Cambio mercancia - Sale',
+                            ${d.cantidad}, 
+                            0,
+                            (select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.sucursal_origen} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad},
+                            ${h.sucursal_origen},
+                            0, 
+                            0, 
+                            'guia',
+                            0
+                        )
+                    `)
 
-                const mu = precio * cantidad
-                const res = mu.toFixed(2)
+                    // Se registra la entrada kardex_contable
+                    data.detalle.push(`
+                        INSERT INTO kardex_contable (codigoprod, fecha, codigocompras, numero, tipo_comprobante, detalle, cantidad, precio, saldo, sucursal, preciodolar, preciototal, tipocomprobante,codigoproveedor)
+                        VALUES
+                        (
+                            ${d.codigoprod},
+                            '${h.fecha}',
+                            ###ID###,
+                            '${h.nro_guia}',
+                            '',
+                            'Cambio mercancia - Entra',
+                            ${d.cantidad}, 
+                            0,
+                            (select ifnull((SELECT saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.sucursal_destino} order by kc.id_kardex_contable desc limit 1), 0 )) + ${d.cantidad},
+                            ${h.sucursal_destino}, 
+                            0, 
+                            0, 
+                            'guia',
+                            0
+                        )
+                    `)
 
-                e.closest(".producto").querySelector(".importe").textContent = res
-                let total = 0;
-                let totalpc = 0;
-                getSelectorAll(".producto").forEach(p => {
-                    total += parseFloat(p.querySelector(".importe").textContent);
-                    totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
+                    // Se registra la salida en kardex_almacen
+                    data.detalle.push(`
+                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
+                        VALUES 
+                        (
+                            ${d.codigoprod},
+                            ###ID###,
+                            '${h.nro_guia}',
+                            'Cambio mercancia - Sale',
+                            ${d.cantidad},
+                            (select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.sucursal_origen} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad},
+                            '${h.fecha}',
+                            ${h.sucursal_origen},
+                            '',
+                            'guia'
+                        )
+                    `)
+
+                    // Se registra la entrada en kardex_almacen
+                    data.detalle.push(`
+                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
+                        VALUES 
+                        (
+                            ${d.codigoprod},
+                            ###ID###,
+                            '${h.nro_guia}',
+                            'Cambio mercancia - Entra',
+                            ${d.cantidad},
+                            (select ifnull((SELECT saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.sucursal_destino} order by kc.id_kardex_alm desc limit 1), 0 )) + ${d.cantidad},
+                            '${h.fecha}',
+                            ${h.sucursal_destino},
+                            '',
+                            'guia'
+                        )
+                    `)
                 })
-                if (total != 0) {
-                    totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
-                    total = parseFloat(total)
-                    getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
-                    getSelector("#total-header").textContent = (total).toFixed(3);
-                    getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
 
-                    if(formpago.value == "unico" ){
-                        getSelector(".montoextra").value = (total).toFixed(3);
-                    }else{
-                        getSelector(".montoextra").value = 0
+                var formData = new FormData();
+                formData.append("json", JSON.stringify(data))
+
+                fetch(`setVenta.php`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .catch(error => console.error("error: ", error))
+                .then(res => {
+                    if (res.success) {
+                        alert("registro completo!")
+                        getSelector("#form-cambio-mercancia").reset();
+                        getSelector("#detalleFormProducto").innerHTML = ""
+                        location.reload()
                     }
-                } else {
-                    totalpreciocompra.value = 0;
-
-                    getSelector("#subtotal-header").textContent = 0;
-                    getSelector("#total-header").textContent = 0;
-                    getSelector("#igv-header").textContent = 0;
-                }
+                });
+                console.log(data);
             }
-
-        }
+        });
+                
     </script>
 
