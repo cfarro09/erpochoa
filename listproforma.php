@@ -128,8 +128,9 @@ if ($totalRows_Listado == 0) : ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" aria-label="Close"
-                        onClick="devolver()">Imprimir</button>
+                    <a href="" class="btn btn-primary" id="imprimir">Imprimir</a>
+                    <!-- <button type="button" class="btn btn-primary" aria-label="Close"
+                        onClick="devolver()">Imprimir</button> -->
                     <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
                         aria-label="Close">Cerrar</button>
                 </div>
@@ -148,6 +149,7 @@ include("Fragmentos/pie.php");
     const detalle = e => {
         $("#moperation").modal();
         codigoproforma.value = e.dataset.id;
+        imprimir.href = `Imprimir/proforma_imprimir.php?id=${e.dataset.id}`;
         detallebody.innerHTML = "";
 
         fetch(`getDetalleProforma.php?id=${e.dataset.id}`)
