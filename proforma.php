@@ -351,9 +351,9 @@ include("Fragmentos/pie.php");
 			// })
 
             data.header = `
-                INSERT INTO proforma (codigoclienten,codigoclientej,subtotal,igv,total,fecha_emision,hora_emision,codacceso,codigopersonal,sucursal)
+                INSERT INTO proforma (codigo,codigoclienten,codigoclientej,subtotal,igv,total,fecha_emision,hora_emision,codacceso,codigopersonal,sucursal)
                 VALUES
-                   (${h.codigoclienten}, ${h.codigoclientej}, ${h.subtotal}, ${h.igv},${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, ${h.codsucursal})`
+                   ('',${h.codigoclienten}, ${h.codigoclientej}, ${h.subtotal}, ${h.igv},${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, ${h.codsucursal})`
 
 			getSelectorAll(".producto").forEach(item => {
 				const d = {

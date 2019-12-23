@@ -889,9 +889,15 @@ $d=mt_rand(0,9999999999999999);
                                 <?php
 echo "<a href='proforma.php'>Proforma</a>";
 ?>
-                                <a href="proforma.php"<?php echo($d); ?> " class="nav-link font-blue-ebonyclay">
+                                <a href="proforma.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Proforma</span>
+                                    <span class="selected"></span>
+
+                                </a>
+                                <a href="listproforma.php" class="nav-link font-blue-ebonyclay">
+                                    <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                    <span class="title">Listado de Proformas</span>
                                     <span class="selected"></span>
 
                                 </a>
