@@ -169,9 +169,7 @@ include("Fragmentos/pie.php");
 <script>
     // Funciones - eliminar producto
     function eliminarproducto(e) {
-        $('#producto').val(null).trigger('change');
-        getSelector("#producto").innerHTML = "";
-		e.closest(".producto").remove()
+        e.closest(".producto").remove()
 		var i = 1;
 		getSelectorAll(".producto").forEach(p => {
 			p.querySelector(".indexproducto").textContent = i;
