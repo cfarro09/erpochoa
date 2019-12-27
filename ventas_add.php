@@ -494,6 +494,38 @@ include("Fragmentos/pie.php");
 			p.querySelector(".indexproducto").textContent = i;
 			i++;
 		})
+		const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
+			const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+
+			const mu = precio * cantidad
+			const res = mu.toFixed(2)
+
+			e.closest(".producto").querySelector(".importe").textContent = res
+			let total = 0;
+			let totalpc = 0;
+			getSelectorAll(".producto").forEach(p => {
+				total += parseFloat(p.querySelector(".importe").textContent);
+				totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
+			})
+			if (total != 0) {
+				totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
+				total = parseFloat(total)
+				getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
+				getSelector("#total-header").textContent = (total).toFixed(3);
+				getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
+
+				if(formpago.value == "unico" ){
+					getSelector(".montoextra").value = (total).toFixed(3);
+				}else{
+					getSelector(".montoextra").value = 0
+				}
+			} else {
+				totalpreciocompra.value = 0;
+
+				getSelector("#subtotal-header").textContent = 0;
+				getSelector("#total-header").textContent = 0;
+				getSelector("#igv-header").textContent = 0;
+			}
 	}
 
 	function makeid(length) {
@@ -612,6 +644,16 @@ include("Fragmentos/pie.php");
 					(select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad}
 					, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
 					`);
+				
+				if(modalidadentrega != "Entrega almacen C/G"){
+					data.detalle.push(`
+						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
+
+						values
+						(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
+						(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad}
+						, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+				}
 
 			})
 			var formData = new FormData();
