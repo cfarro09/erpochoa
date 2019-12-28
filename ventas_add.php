@@ -670,7 +670,7 @@ include("Fragmentos/pie.php");
 					, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
 					`);
 
-				if (modalidadentrega != "Entrega almacen C/G") {
+				if (modalidadentrega.value != "Entrega almacen C/G") {
 					data.detalle.push(`
 						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
 
