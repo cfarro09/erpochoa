@@ -217,8 +217,7 @@ include("Fragmentos/pie.php");
                 let historialdevolucion = ix.dataset.historial;
                 const idventa = ix.dataset.idventa;
 
-                if (historialdevolucion && historialdevolucion != "null") {
-                    historialdevolucion = JSON.parse(historialdevolucion)
+                if (historialdevolucion && historialdevolucion != "null") { historialdevolucion = JSON.parse(historialdevolucion)
                     historialdevolucion.push({
                         fecha: new Date(),
                         cantidad: ix.value,

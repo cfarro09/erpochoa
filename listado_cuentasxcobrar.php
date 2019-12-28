@@ -32,57 +32,108 @@ $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
 <h3>Cliente <?= $row["ClienteNatural"] . " - " . $row["cedula"] ?></h3>
+<button class="btn btn-success" style="margin: 10px 0" data-toggle="modal" data-target="#mpagar">PAGAR ACUMULADO</button>
 <?php if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
         <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
     </div>
-    <?php else : ?>
-        <table class="table table-bordered table-hover" id="sample_1">
-            <thead>
+<?php else : ?>
+    <table class="table table-bordered table-hover" id="sample_1">
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Fecha</th>
+                <th>Tipo Comp.</th>
+                <th>Cod. Comp</th>
+                <th>CARGO</th>
+                <th>ABONO</th>
+                <th>SALDO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $acumulado = 0; $lastcodigoventa = 0; $abonoproveedor = ""?>
+            <?php do {
+                $restante = $row["total"] - $row["pagoacomulado"];
+                $acumulado += $row["total"] - $row["pagoacomulado"];
+                $lastcodigoventa = $row["codigoventas"];
+                $abonoproveedor = $row["abonoproveedor"];
+            ?>
                 <tr>
-                    <th>N°</th>
-                    <th>Fecha</th>
-                    <th>Tipo Comp.</th>
-                    <th>Cod. Comp</th>
-                    <th>CARGO</th>
-                    <th>ABONO</th>
-                    <th>SALDO</th>
-                    <th>Acciones</th>
+                    <td><?= $i ?></td>
+                    <td><?= $row["fecha_emision"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
+                    <td><?= $row["codigocomprobante"] ?></td>
+                    <td><?= $row["total"] ?></td>
+                    <td><?= $row["pagoacomulado"] ?></td>
+                    <td><?= $acumulado ?></td>
+                    
                 </tr>
-            </thead>
-            <tbody>
-                <?php $acumulado = 0; ?>
-                <?php do {
-                    $restante = $row["total"] - $row["pagoacomulado"];
-                    $acumulado += $row["total"] - $row["pagoacomulado"]
-                    ?>
-                    <tr>
-                        <td><?= $i ?></td>
-                        <td><?= $row["fecha_emision"] ?></td>
-                        <td><?= $row["tipocomprobante"] ?></td>
-                        <td><?= $row["codigocomprobante"] ?></td>
-                        <td><?= $row["total"] ?></td>
-                        <td><?= $row["pagoacomulado"] ?></td>
-                        <td><?= $acumulado ?></td>
-                        <td>
-                            <a href="#" data-porpagar="<?= $row["porpagar"] ?>" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)"><?= $row["porpagar"] == 1 ? "Pagar" : "Movimientos" ?>
-                        </a>
-                    </td>
-
-                </tr>
-                <?php
+                <?php if($row["abonoproveedor"] != null): ?>
+                    <?php $arrayabonoproveedor = json_decode($row["abonoproveedor"]) ?>
+                    <?php foreach ($arrayabonoproveedor as $abono): ?>
+                        <?php 
+                            $acumulado = $acumulado - $abono->montoextra;
+                            $i++;
+                        ?>
+                        <tr>
+                            <td><?= $i ?></td>
+                            <td><?= $abono->fechaxxx ?></td>
+                            <td>ABONO</td>
+                            <td><?= $abono->tipopago ?></td>
+                            <td>0</td>
+                            <td><?= number_format((float)$abono->montoextra, 2, '.', '') ?></td>
+                            <td><?= $acumulado ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
+            <?php
                 $i++;
             } while ($row = mysql_fetch_assoc($Listado)); ?>
         </tbody>
     </table>
 <?php endif ?>
-
-<div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal fade" id="mpagar" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document" style="width: 900px">
         <div class="modal-content m-auto">
             <form id="formoperacion" action="">
                 <div class="modal-header">
                     <h2 class="modal-title">PAGAR</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <input type="hidden" id="lastcodigoventas" value="<?= $lastcodigoventa ?>">
+                            <input type="hidden" id="abonoproveedor" value='<?= $abonoproveedor ?>'>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="acumulado" class="control-label">Saldo Pendiente</label>
+                                    <input type="number" id="saldoacumulado" readonly class="form-control" required value="<?= $acumulado ?>"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4" style="margin-top: 15px; margin-bottom: 15px">
+                                <button class="btn btn-success" id="btnaddpay" type="button" onclick="addPayExtra()">Agregar Pago</button>
+                            </div>
+                            <div class="col-sm-12" id="containerpayextra">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="guardar_button" class="btn btn-success">Guardar</button>
+                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 900px">
+        <div class="modal-content m-auto">
+            <form id="" action="">
+                <div class="modal-header">
+                    <h2 class="modal-title">Detalle</h2>
                 </div>
                 <input type="hidden" id="codigoventa">
                 <input type="hidden" id="jsonpagos">
@@ -128,7 +179,7 @@ $i = 1;
                             </div>
 
                             <div class="col-sm-12">
-                                <table class="table table-bordered table-hover" >
+                                <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
                                             <td class="text-center" colspan="5"><b>DEALLE PRODUCTOS</b></td>
@@ -145,33 +196,11 @@ $i = 1;
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-sm-4" style="margin-top: 15px; margin-bottom: 15px">
-                                <button class="btn btn-success" id="btnaddpay" type="button" onclick="addPayExtra()">Agregar Pago</button>
-                            </div>
-                            <div class="col-sm-12">
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <td class="text-center" colspan="3"><b>HISTORIAL DE PAGOS</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>TIPO PAGO</td>
-                                            <td>MONTO</td>
-                                            <td>DETALLE</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="historialbody">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-sm-12" id="containerpayextra">
-
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" id="guardar_button" class="btn btn-success">Guardar</button>
                     <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
                 </div>
             </form>
@@ -186,21 +215,21 @@ include("Fragmentos/pie.php");
 
 <script>
     function changetypepago(e) {
-        guardar_button.style.display = ""
+        // guardar_button.style.display = ""
         e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
         e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
     }
     const pagar = e => {
-        guardar_button.style.display = "none"
+        // guardar_button.style.display = "none"
         $("#moperation").modal();
         const pagoefectivo = parseFloat(e.dataset.pagoefectivo);
-        historialbody.innerHTML = "";
+        // historialbody.innerHTML = "";
 
-        if(e.dataset.porpagar == "1"){
-            btnaddpay.style.display = "";
-        }else{
-            btnaddpay.style.display = "none";
-        }
+        // if (e.dataset.porpagar == "1") {
+        //     btnaddpay.style.display = "";
+        // } else {
+        //     btnaddpay.style.display = "none";
+        // }
 
         inputfecha.value = e.dataset.fecha;
         inputtipocomprobante.value = e.dataset.codigocomprobante;
@@ -211,15 +240,15 @@ include("Fragmentos/pie.php");
         jsonpagos.value = e.dataset.json;
         inputrestante.value = e.dataset.restante;
         inputtotal.value = e.dataset.total;
-        
+
         detallebody.innerHTML = "";
         fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
-        .then(res => res.json())
-        .catch(error => console.error("error: ", error))
-        .then(res => {
-            if(res){
-                res.forEach(ix => {
-                    detallebody.innerHTML += `
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                if (res) {
+                    res.forEach(ix => {
+                        detallebody.innerHTML += `
                     <tr>
                     <td>${ix.nombre_producto}</td>
                     <td>${ix.marca}</td>
@@ -228,53 +257,52 @@ include("Fragmentos/pie.php");
                     <td>${ix.unidad_medida}</td>
                     </tr>
                     `;
-                })
-            }
-        })
+                    })
+                }
+            })
 
+        // if (pagoefectivo) {
+        //     historialbody.innerHTML += `
+        //     <tr>
+        //     <td>Pago Efectivo</td>
+        //     <td>${pagoefectivo}</td>
+        //     <td>-</td>
+        //     </tr>
+        //     `;
+        // }
+        // JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
+        //     let textt = "";
+        //     if (ix.tipopago == "depositobancario")
+        //         textt = `Numero Operacion: ${ix.numerooperacion} |
+        //     Fecha: ${ix.fechaextra} |
+        //     Cta. Abonada: ${ix.cuentaabonado} |
+        //     Ente: ${ix.bancoextra} |
+        //     Monto: ${ix.montoextra}`
+        //     else if (ix.tipopago == "cheque")
+        //         textt = `Numero: ${ix.numero} |
+        //     Ente: ${ix.bancoextra} |
+        //     Cta. Cte.: ${ix.cuentacorriente} |
+        //     Monto: ${ix.montoextra}`
+        //     else if (ix.tipopago == "tarjetacredito")
+        //         textt = `Numero: ${ix.numero} |
+        //     Ente: ${ix.bancoextra} |
+        //     Monto: ${ix.montoextra}`
+        //     else if (ix.tipopago == "tarjetadebito")
+        //         textt = `Numero: ${ix.numero} |
+        //     Ente: ${ix.bancoextra} | 
+        //     Monto: ${ix.montoextra}`
+        //     else if (ix.tipopago == "efectivo") {
+        //         textt = `Monto: ${ix.montoextra} `
+        //     }
 
-        if (pagoefectivo) {
-            historialbody.innerHTML += `
-            <tr>
-            <td>Pago Efectivo</td>
-            <td>${pagoefectivo}</td>
-            <td>-</td>
-            </tr>
-            `;
-        }
-        JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
-            let textt = "";
-            if (ix.tipopago == "depositobancario")
-                textt = `Numero Operacion: ${ix.numerooperacion} |
-            Fecha: ${ix.fechaextra} |
-            Cta. Abonada: ${ix.cuentaabonado} |
-            Ente: ${ix.bancoextra} |
-            Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "cheque")
-                textt = `Numero: ${ix.numero} |
-            Ente: ${ix.bancoextra} |
-            Cta. Cte.: ${ix.cuentacorriente} |
-            Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "tarjetacredito")
-                textt = `Numero: ${ix.numero} |
-            Ente: ${ix.bancoextra} |
-            Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "tarjetadebito")
-                textt = `Numero: ${ix.numero} |
-            Ente: ${ix.bancoextra} | 
-            Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "efectivo") {
-                textt = `Monto: ${ix.montoextra} `
-            }
-
-            historialbody.innerHTML += `
-            <tr>
-            <td>${ix.tipopago}</td>
-            <td>${ix.montoextra}</td>
-            <td>${textt}</td>
-            </tr>
-            `;
-        });
+        //     historialbody.innerHTML += `
+        //     <tr>
+        //     <td>${ix.tipopago}</td>
+        //     <td>${ix.montoextra}</td>
+        //     <td>${textt}</td>
+        //     </tr>
+        //     `;
+        // });
     }
 
     function removecontainerpay(e) {
@@ -282,7 +310,6 @@ include("Fragmentos/pie.php");
     }
 
     function addPayExtra() {
-
         const newxx = document.createElement("div");
         newxx.className = "col-md-12 containerx";
         newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
@@ -391,7 +418,9 @@ include("Fragmentos/pie.php");
         let porpagar = 1;
         let restante = 0;
         let errorrr = "";
-        const arraypagos = JSON.parse(jsonpagos.value);
+        let pagoxxx = {};
+        debugger
+        const arraypagoxxx = JSON.parse(abonoproveedor.value ? abonoproveedor.value : "[]")
         getSelectorAll(".containerx").forEach(ix => {
             const bancoextra = ix.querySelector(".bancoextra").value;
             const montoextra = ix.querySelector(".montoextra").value ? parseFloat(ix.querySelector(".montoextra").value) : 0;
@@ -402,7 +431,7 @@ include("Fragmentos/pie.php");
             const cuentaabonado = ix.querySelector(".cuentaabonado").value;
             const tipopago = ix.querySelector(".tipopago").value;
 
-            arraypagos.push({
+            arraypagoxxx.push({
                 bancoextra,
                 montoextra,
                 numero,
@@ -411,6 +440,7 @@ include("Fragmentos/pie.php");
                 fechaextra,
                 cuentaabonado,
                 tipopago,
+                fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0,10)
             })
             totalpagando += parseFloat(montoextra);
             if (tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)) {
@@ -432,40 +462,39 @@ include("Fragmentos/pie.php");
             alert(errorrr);
             return;
         }
-        if (totalpagando > parseFloat(inputrestante.value)) {
+        if (totalpagando > parseFloat(saldoacumulado.value)) {
             alert("El monto a pagar excede");
             return
-        } else if (totalpagando == parseFloat(inputrestante.value)) {
+        } else if (totalpagando == parseFloat(saldoacumulado.value)) {
             porpagar = 0;
         } else {
-            restante = parseFloat(inputrestante.value) - totalpagando;
+            restante = parseFloat(saldoacumulado.value) - totalpagando;
         }
-        let acumulado = parseFloat(inputtotal.value) - restante;
-
-
-        const jssson = JSON.stringify(arraypagos);
-
+        const data = {
+            header: "",
+            detalle: []
+        }
+        const jssson = JSON.stringify(arraypagoxxx);
+        
         const query = `
-        update ventas set jsonpagos = '${jssson}', porpagar = ${porpagar}, pagoacomulado = ${acumulado}
-        where codigoventas = ${codigoventa.value}`
-        const detalle = [];
-        detalle.push(query);
-        const formData = new FormData();
-        formData.append("exearray", JSON.stringify(detalle))
+        update ventas set abonoproveedor = '${jssson}' where codigoventas = ${lastcodigoventas.value}`
+        data.detalle.push(query)
 
-        fetch(`setPrecioVenta.php`, {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .catch(error => console.error("error: ", error))
-        .then(res => {
-            $("#mOrdenCompra").modal("hide");
-            if (res.success) {
-                alert("registro completo!")
-                location.reload()
-            }
-        });
+        var formData = new FormData();
+        formData.append("json", JSON.stringify(data))
+        
+        fetch(`setVenta.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                if (res.success) {
+                    alert("registro completo!")
+                    location.reload()
+                }
+            });
     }
     formoperacion.addEventListener("submit", guardar)
 </script>
