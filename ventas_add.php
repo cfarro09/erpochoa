@@ -60,182 +60,159 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 <form id="form-generate-venta">
 	<div class="row">
 		<div class="col-sm-12 text-center">
-			<button class="btn btn-success" type="submit"
-			style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
-			<H5><STRONG>
-				(CONFIRMAR)
-			</STRONG></H5>
-		</button>
-	</div>
-</div>
-<div class="row">
-	<div class="col-sm-12">
-		<div class="row" style="margin-top: 10px">
-			<div class="col-md-6">
-				<div class="form-group">
-					<label for="field-1" class="control-label">Cliente</label>
-					<select name="cliente" required id="cliente" required class="form-control select2 tooltips"
-					id="single" data-placement="top" data-original-title="Seleccionar cliente">
-					<option value=""></option>
-					<?php do {  ?>
-						<option value="<?= $row_Clientes['codigoclienten'] ?>">
-							<?php echo $row_Clientes['ClienteNatural'] ?>
-						</option>
-						<?php
-					} while ($row_Clientes = mysql_fetch_assoc($Clientes));
-					$rows = mysql_num_rows($Clientes);
-					if ($rows > 0) {
-						mysql_data_seek($Clientes, 0);
-						$row_Clientes = mysql_fetch_assoc($Clientes);
-					}
-					?>
-				</select>
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div class="form-group">
-				<label for="field-1" class="control-label">Sucursal</label>
-				<select name="sucursal" required id="sucursal-oc-new" disabled class="form-control ">
-					<?php do {  ?>
-						<option
-						<?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?>
-						value="<?php echo $row_sucursales['cod_sucursal'] ?>">
-						<?php echo $row_sucursales['nombre_sucursal'] ?>
-					</option>
-					<?php
-				} while ($row_sucursales = mysql_fetch_assoc($sucursales));
-				$rows = mysql_num_rows($sucursales);
-				if ($rows > 0) {
-					mysql_data_seek($sucursales, 0);
-					$row_sucursales = mysql_fetch_assoc($sucursales);
-				}
-				?>
-			</select>
+			<button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
+				<H5><STRONG>
+						(CONFIRMAR)
+					</STRONG></H5>
+			</button>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="row" style="margin-top: 10px">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Cliente</label>
+						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
+							<option value="">Seleccione tipo de comprobante</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Sucursal</label>
+						<select name="sucursal" required id="sucursal-oc-new" disabled class="form-control ">
+							<?php do {  ?>
+								<option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $row_sucursales['cod_sucursal'] ?>">
+									<?php echo $row_sucursales['nombre_sucursal'] ?>
+								</option>
+							<?php
+							} while ($row_sucursales = mysql_fetch_assoc($sucursales));
+							$rows = mysql_num_rows($sucursales);
+							if ($rows > 0) {
+								mysql_data_seek($sucursales, 0);
+								$row_sucursales = mysql_fetch_assoc($sucursales);
+							}
+							?>
+						</select>
+					</div>
+				</div>
 
-	<div class="col-md-3">
-		<div class="form-group">
-			<label for="field-1" class="control-label">Tipo Comprobante</label>
-			<select required class="form-control" id="tipocomprobante">
-				<option value="factura">Factura</option>
-				<option value="boleta">Boleta</option>
-				<option value="recibo">Recibo</option>
-				<option value="otros">Otros</option>
-			</select>
-		</div>
-	</div>
-	<div class="col-md-3">
-		<div class="form-group">
-			<label for="field-1" class="control-label">Codigo Comprobante</label>
-			<input type="text" class="form-control" id="codigocomprobante">
-		</div>
-	</div>
-	<div class="col-md-3">
-		<div class="form-group">
-			<label for="field-1" class="control-label">Modalidad Entrega</label>
-			<select required class="form-control" id="modalidadentrega">
-				<option value="Entrega inmediata S/G">Entrega Inmediata S/G</option>
-				<option value="Entrega inmediata C/G">Entrega Inmediata C/G</option>
-				<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
-			</select>
-		</div>
-	</div>
-	<div class="col-md-3">
-		<div class="form-group">
-			<label for="field-1" class="control-label">Forma Pago</label>
-			<select required onchange="changemodopago(this)" class="form-control" id="formpago">
-				<option value="unico">Unico</option>
-				<option value="compuesto">Compuesto</option>
-			</select>
-		</div>
-	</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Tipo Comprobante</label>
+						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
+							<option value="factura">Factura</option>
+							<option value="boleta">Boleta</option>
+							<option value="recibo">Recibo</option>
+							<option value="otros">Otros</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Codigo Comprobante</label>
+						<input type="text" class="form-control" id="codigocomprobante">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Modalidad Entrega</label>
+						<select required class="form-control" id="modalidadentrega">
+							<option value="Entrega inmediata S/G">Entrega Inmediata S/G</option>
+							<option value="Entrega inmediata C/G">Entrega Inmediata C/G</option>
+							<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Forma Pago</label>
+						<select required onchange="changemodopago(this)" class="form-control" id="formpago">
+							<option value="unico">Unico</option>
+							<option value="compuesto">Compuesto</option>
+						</select>
+					</div>
+				</div>
 				<div class="col-md-4" style="display: none">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Monto Pagado</label>
 						<input type="number" readonly step="any" class="form-control" id="montopagado">
 					</div>
 				</div>
-				<div class="col-md-12 text-center" id="divparentpayextra"
-				style="margin-top: 10px; margin-bottom: 10px; display: none">
-				<button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
-			</div>
-			<div style="margin-bottom: 10px" id="containerpayextra">
-			</div>
+				<div class="col-md-12 text-center" id="divparentpayextra" style="margin-top: 10px; margin-bottom: 10px; display: none">
+					<button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
+				</div>
+				<div style="margin-bottom: 10px" id="containerpayextra">
+				</div>
 
+			</div>
 		</div>
 	</div>
-</div>
-<div class="row" style="display: none">
-	<div class="col-sm-12 text-center">
-		<button class="btn btn-success" type="submit" id="generateCompra"
-		style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
+	<div class="row" style="display: none">
+		<div class="col-sm-12 text-center">
+			<button class="btn btn-success" type="submit" id="generateCompra" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
+		</div>
 	</div>
-</div>
-<div class="row">
-	<div class="col-sm-12">
-		<label class="" style="font-weight: bold">Seleccione un producto</label>
-		<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
-			<option value="" <?php if (!(strcmp("", "compras_add.php"))) {
-				echo "selected=\"selected\"";
-			} ?>>
-		</option>
-		<?php
-		do {
-			?>
-			<option value="<?php echo $row_Productos['codigoprod'] ?>"
-				data-preciocompra="<?= $row_Productos['totalunidad'] ?>"
-				data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>"
-				data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
-				data-marca="<?= $row_Productos['Marca']; ?>">
-				<?php echo $row_Productos['nombre_producto'] ?> -
-				<?php echo $row_Productos['Marca']; ?> -
-				<?php echo $row_Productos['nombre_color']; ?> -
-				<?php echo "$/." . $row_Productos['p2']; ?> -
-				(<?= "Stock " . $row_Productos['saldo']; ?>)</option>
+	<div class="row">
+		<div class="col-sm-12">
+			<label class="" style="font-weight: bold">Seleccione un producto</label>
+			<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
+				<option value="" <?php if (!(strcmp("", "compras_add.php"))) {
+										echo "selected=\"selected\"";
+									} ?>>
+				</option>
 				<?php
-			} while ($row_Productos = mysql_fetch_assoc($Productos));
-			$rows = mysql_num_rows($Productos);
-			if ($rows > 0) {
-				mysql_data_seek($Productos, 0);
-				$row_Productos = mysql_fetch_assoc($Productos);
-			}
-			?>
-		</select>
+				do {
+				?>
+					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
+						<?php echo $row_Productos['nombre_producto'] ?> -
+						<?php echo $row_Productos['Marca']; ?> -
+						<?php echo $row_Productos['nombre_color']; ?> -
+						<?php echo "$/." . $row_Productos['p2']; ?> -
+						(<?= "Stock " . $row_Productos['saldo']; ?>)</option>
+				<?php
+				} while ($row_Productos = mysql_fetch_assoc($Productos));
+				$rows = mysql_num_rows($Productos);
+				if ($rows > 0) {
+					mysql_data_seek($Productos, 0);
+					$row_Productos = mysql_fetch_assoc($Productos);
+				}
+				?>
+			</select>
+		</div>
 	</div>
-</div>
-<div class="row" style="margin-top:20px">
-	<div class="col-sm-12">
-		<table class="table">
-			<thead>
-				<th>Nº</th>
-				<th>Cantidad</th>
-				<th>U. Medida</th>
-				<th>Producto</th>
-				<th>Marca</th>
-				<th>Precio Venta</th>
-				<th>Importe</th>
-				<th>Accion</th>
-			</thead>
-			<tbody id="detalleFormProducto">
-			</tbody>
-		</table>
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+			<table class="table">
+				<thead>
+					<th>Nº</th>
+					<th>Cantidad</th>
+					<th>U. Medida</th>
+					<th>Producto</th>
+					<th>Marca</th>
+					<th>Precio Venta</th>
+					<th>Importe</th>
+					<th>Accion</th>
+				</thead>
+				<tbody id="detalleFormProducto">
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
-<div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px"
-id="header-guia">
-<input type="hidden" id="totalpreciocompra">
+	<div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px" id="header-guia">
+		<input type="hidden" id="totalpreciocompra">
 
-<div class="col-sm-4">
-	SUBTOTAL: <span id="subtotal-header"></span>
-</div>
-<div class="col-sm-4">
-	IGV: <span id="igv-header"></span>
-</div>
-<div class="col-sm-4">
-	TOTAL: <span id="total-header"></span>
-</div>
-</div>
+		<div class="col-sm-4">
+			SUBTOTAL: <span id="subtotal-header"></span>
+		</div>
+		<div class="col-sm-4">
+			IGV: <span id="igv-header"></span>
+		</div>
+		<div class="col-sm-4">
+			TOTAL: <span id="total-header"></span>
+		</div>
+	</div>
 </form>
 <?php
 //___________________________________________________________________________________________________________________
@@ -246,18 +223,19 @@ include("Fragmentos/pie.php");
 ?>
 
 <script type="text/javascript">
-	$(document).ready(function () {
+	$(document).ready(function() {
 		addPayExtra();
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none"
 	});
+
 	function changemodopago(e) {
 		if (e.value == "unico") {
 			getSelector(".montoextra").value = 0;
 			divparentpayextra.style.display = "none";
 			let ii = 0;
 			getSelectorAll(".containerx").forEach(ix => {
-				if(ii != 0){
+				if (ii != 0) {
 					ix.remove();
 				}
 				ii++;
@@ -266,15 +244,17 @@ include("Fragmentos/pie.php");
 			divparentpayextra.style.display = "";
 		}
 	}
-	function calcularmontopagado(){
+
+	function calcularmontopagado() {
 		let total = 0;
-		if(getSelectorAll(".montoextra")){
+		if (getSelectorAll(".montoextra")) {
 			getSelectorAll(".montoextra").forEach(ee => {
 				total += ee.value ? parseFloat(ee.value) : 0;
 			})
 		}
 		montopagado.value = total;
 	}
+
 	function changeTipoPago(e) {
 		if (e.value == "contado")
 			getSelectorAll(".tarjetaso").forEach(i => i.style.display = "none")
@@ -282,7 +262,7 @@ include("Fragmentos/pie.php");
 			getSelectorAll(".tarjetaso").forEach(i => i.style.display = "")
 	}
 
-	$("#sucursal-oc-new").on("change", function () {
+	$("#sucursal-oc-new").on("change", function() {
 
 		if ($("#sucursal-oc-new").val() == 10) {
 			$("#direccion").val("");
@@ -293,7 +273,7 @@ include("Fragmentos/pie.php");
 			$("#div_aux").hide("fast/300/slow");
 		}
 	})
-	$('#codigoprod').on('change', function () {
+	$('#codigoprod').on('change', function() {
 		if (getSelector(`.codigo_${this.value}`)) {
 
 		} else {
@@ -352,13 +332,13 @@ include("Fragmentos/pie.php");
 			if (total != 0) {
 				totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
 				total = parseFloat(total)
-				getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
+				getSelector("#subtotal-header").textContent = (total / 1.18).toFixed(3);
 				getSelector("#total-header").textContent = (total).toFixed(3);
-				getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
+				getSelector("#igv-header").textContent = (total - total / 1.18).toFixed(3);
 
-				if(formpago.value == "unico" ){
+				if (formpago.value == "unico") {
 					getSelector(".montoextra").value = (total).toFixed(3);
-				}else{
+				} else {
 					getSelector(".montoextra").value = 0
 				}
 			} else {
@@ -476,6 +456,7 @@ include("Fragmentos/pie.php");
 			autoclose: true
 		});
 	}
+
 	function changetypepago(e) {
 		e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
 		e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
@@ -495,37 +476,37 @@ include("Fragmentos/pie.php");
 			i++;
 		})
 		const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
-			const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+		const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
 
-			const mu = precio * cantidad
-			const res = mu.toFixed(2)
+		const mu = precio * cantidad
+		const res = mu.toFixed(2)
 
-			e.closest(".producto").querySelector(".importe").textContent = res
-			let total = 0;
-			let totalpc = 0;
-			getSelectorAll(".producto").forEach(p => {
-				total += parseFloat(p.querySelector(".importe").textContent);
-				totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
-			})
-			if (total != 0) {
-				totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
-				total = parseFloat(total)
-				getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
-				getSelector("#total-header").textContent = (total).toFixed(3);
-				getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
+		e.closest(".producto").querySelector(".importe").textContent = res
+		let total = 0;
+		let totalpc = 0;
+		getSelectorAll(".producto").forEach(p => {
+			total += parseFloat(p.querySelector(".importe").textContent);
+			totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
+		})
+		if (total != 0) {
+			totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
+			total = parseFloat(total)
+			getSelector("#subtotal-header").textContent = (total / 1.18).toFixed(3);
+			getSelector("#total-header").textContent = (total).toFixed(3);
+			getSelector("#igv-header").textContent = (total - total / 1.18).toFixed(3);
 
-				if(formpago.value == "unico" ){
-					getSelector(".montoextra").value = (total).toFixed(3);
-				}else{
-					getSelector(".montoextra").value = 0
-				}
+			if (formpago.value == "unico") {
+				getSelector(".montoextra").value = (total).toFixed(3);
 			} else {
-				totalpreciocompra.value = 0;
-
-				getSelector("#subtotal-header").textContent = 0;
-				getSelector("#total-header").textContent = 0;
-				getSelector("#igv-header").textContent = 0;
+				getSelector(".montoextra").value = 0
 			}
+		} else {
+			totalpreciocompra.value = 0;
+
+			getSelector("#subtotal-header").textContent = 0;
+			getSelector("#total-header").textContent = 0;
+			getSelector("#igv-header").textContent = 0;
+		}
 	}
 
 	function makeid(length) {
@@ -538,6 +519,50 @@ include("Fragmentos/pie.php");
 		return result;
 	}
 
+	async function setcombocliente(e) {
+		clearselect2("#cliente")
+		const query = "SELECT codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
+		const query2 = "SELECT codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
+		let queryselected = "";
+		if(e.value == "boleta")
+			queryselected = query
+		else if(e.value == "factura")
+			queryselected = query2
+		else
+			queryselected = query + " UNION " + query2
+		
+		const res = await get_data_dynamic(queryselected).then(r => r);
+		cargarselect2("#cliente", res, "codigo", "cliente");
+	}
+
+	function clearselect2(id) {
+		getSelector(id).innerHTML = "";
+		$(id).val(null).trigger('change');
+	}
+	const cargarselect2 = (id, arrayres, key, value) =>   {
+		getSelector(id).innerHTML = "<option>Seleccione</option>"
+		arrayres.forEach(xx => {
+			getSelector(id).innerHTML += `<option value="${xx[key]}">${xx[value]}</option>`
+		});
+		$(id).select2();
+	}
+	const get_data_dynamic = async (query) => {
+		var formData = new FormData();
+		formData.append("query", query)
+		const response = await fetch("get_data_dynamic2.php", {
+			method: 'POST',
+			body: formData,
+		});
+		if (response.ok) {
+			try {
+				return await response.json();
+			} catch (e) {
+				alert(e)
+			}
+		} else {
+			alert("hubo un problema")
+		}
+	};
 
 	getSelector("#form-generate-venta").addEventListener("submit", e => {
 		e.preventDefault();
@@ -636,7 +661,7 @@ include("Fragmentos/pie.php");
 					values
 					(${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###)
 					`);
-				
+
 				data.detalle.push(`
 					insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
 					values
@@ -644,8 +669,8 @@ include("Fragmentos/pie.php");
 					(select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad}
 					, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
 					`);
-				
-				if(modalidadentrega != "Entrega almacen C/G"){
+
+				if (modalidadentrega != "Entrega almacen C/G") {
 					data.detalle.push(`
 						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
 
@@ -660,20 +685,19 @@ include("Fragmentos/pie.php");
 			formData.append("json", JSON.stringify(data))
 
 			fetch(`setVenta.php`, {
-				method: 'POST',
-				body: formData
-			})
-			.then(res => res.json())
-			.catch(error => console.error("error: ", error))
-			.then(res => {
-				if (res.success) {
-					alert("registro completo!")
-					getSelector("#form-generate-venta").reset();
-					getSelector("#detalleFormProducto").innerHTML = ""
-					location.reload()
-				}
-			});
-
+					method: 'POST',
+					body: formData
+				})
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
+				.then(res => {
+					if (res.success) {
+						alert("registro completo!")
+						getSelector("#form-generate-venta").reset();
+						getSelector("#detalleFormProducto").innerHTML = ""
+						location.reload()
+					}
+				});
 		}
 	})
 </script>
