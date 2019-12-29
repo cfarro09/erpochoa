@@ -62,15 +62,17 @@ $i = 1;
                 $acumulado += $row["total"] - $row["pagoacomulado"];
                 $lastcodigoventa = $row["codigoventas"];
                 $abonoproveedor = $row["abonoproveedor"];
+
+                $auxiliar = number_format($acumulado, 2, '.', '')
             ?>
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $row["fecha_emision"] ?></td>
                     <td><?= $row["tipocomprobante"] ?></td>
                     <td><?= $row["codigocomprobante"] ?></td>
-                    <td><?= $row["total"] ?></td>
-                    <td><?= $row["pagoacomulado"] ?></td>
-                    <td><?= $acumulado ?></td>
+                    <td><?= number_format($row["total"], 2, '.', '') ?></td>
+                    <td><?= number_format($row["pagoacomulado"], 2, '.', '') ?></td>
+                    <td><?= $auxiliar ?></td>
                     
                 </tr>
                 <?php if($row["abonoproveedor"] != null): ?>
@@ -78,6 +80,9 @@ $i = 1;
                     <?php foreach ($arrayabonoproveedor as $abono): ?>
                         <?php 
                             $acumulado = $acumulado - $abono->montoextra;
+
+                            $auxiliar = number_format($acumulado, 2, '.', '');
+
                             $i++;
                         ?>
                         <tr>
@@ -85,9 +90,9 @@ $i = 1;
                             <td><?= $abono->fechaxxx ?></td>
                             <td>ABONO</td>
                             <td><?= $abono->tipopago ?></td>
-                            <td>0</td>
+                            <td>0.00</td>
                             <td><?= number_format((float)$abono->montoextra, 2, '.', '') ?></td>
-                            <td><?= $acumulado ?></td>
+                            <td><?= $auxiliar ?></td>
                         </tr>
                     <?php endforeach ?>
                 <?php endif ?>

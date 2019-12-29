@@ -65,9 +65,9 @@ $i = 1;
                     <td><?= $i ?></td>
                     <td><?= $row["identificacion"] ?></td>
                     <td><?= $row["fullname"] ?></td>
-                    <td><?= round($row["totalcargo"], 2) ?></td>
-                    <td><?= round($row["totalabono"] + $row["abonoproveedor"], 2) ?></td>
-                    <td><?= round($row["totalcargo"] - $row["totalabono"] - $row["abonoproveedor"], 2) ?></td>
+                    <td><?= number_format($row["totalcargo"], 2, '.', '') ?></td>
+                    <td><?= number_format($row["totalabono"] + $row["abonoproveedor"], 2, '.', '') ?></td>
+                    <td><?= number_format($row["totalcargo"] - $row["totalabono"] - $row["abonoproveedor"], 2, '.', '') ?></td>
                      <td align="center"> <a href="listado_cuentasxcobrar.php?codigo=<?= $row['codigo']."&tipo=".$row["tipo"] ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>
                 </tr>
