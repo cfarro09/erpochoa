@@ -47,7 +47,12 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 mysql_select_db($database_Ventas, $Ventas);
 //$query_Listado = "select * from vt_listaproducto";
 
-$query_Listado = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`nombre` AS `Marca`,`pv`.`precioventa1` AS `precio_venta`,`pv`.`precioventa2` AS `precio_venta2`,`pv`.`precioventa3` AS `precio_venta3`,`a`.`minicodigo` AS `minicodigo`, k.precio as precio_compra, sum(saldo) as saldo from `producto` `a` join `marca` `b` on `a`.`codigomarca` = `b`.`codigomarca` left join `precio_venta` `pv` on `pv`.`codigoprod` = `a`.`codigoprod` left join kardex_contable k on k.codigoprod=a.codigoprod where (`a`.`estado` = 0) group by `a`.`codigoprod` order by `a`.`codigoprod`";
+$query_Listado = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`nombre` AS `Marca`,`pv`.`precioventa1` AS `precio_venta`,`pv`.`precioventa2` AS `precio_venta2`,`pv`.`precioventa3` AS `precio_venta3`,`a`.`minicodigo` AS `minicodigo`, k.precio as precio_compra, k.saldo from `producto` `a` join `marca` `b` on `a`.`codigomarca` = `b`.`codigomarca` 
+left join `precio_venta` `pv` on `pv`.`codigoprod` = `a`.`codigoprod`
+left join kardex_contable k on k.codigoprod = a.codigoprod and k.id_kardex_contable = (select max(k1.id_kardex_contable) from kardex_contable k1 where k1.codigoprod = k.codigoprod)
+where 
+	(`a`.`estado` = 0) 
+group by `a`.`codigoprod` order by a.codigoprod";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -274,10 +279,10 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td>${item.tipocomprobante}</td>
 							<td>${item.numero}</td>
 							<td>${item.precio}</td>
-							<td>${item.cantidad}</td>
-							<td>${item.preciototal}</td>
-							<td></td>
-							<td></td>
+							<td>${item.detalle == "Compras" ? item.cantidad : ""}</td>
+							<td>${item.detalle == "Compras" ? item.preciototal : ""}</td>
+							<td>${item.detalle == "Ventas" ? item.cantidad : ""}</td>
+							<td>${item.detalle == "Ventas" ? item.preciototal : ""}</td>
 							<td>${item.saldo}</td>
 							<td>${(item.precio * item.saldo / item.cantidad).toFixed(3)}</td>
 							</tr>
