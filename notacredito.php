@@ -20,7 +20,20 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select c.*, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from cnatural c inner join ventas v on v.codigoclienten=c.codigoclienten where v.jsonpagos like '%porcobrar%' group by c.codigoclienten";
+$query_Listado = "
+
+select 'natural' as tipo, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
+inner join cnatural cn on v.codigoclienten = cn.codigoclienten 
+where 
+    v.jsonpagos like '%porcobrar%' group by cn.codigoclienten and
+    v.codigoclienten is not null
+UNION    
+select 'juridico' as tipo, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
+    inner join cjuridico cj on v.codigoclientej = cj.codigoclientej 
+    where 
+        v.jsonpagos like '%porcobrar%' group by cj.codigoclientej and
+        v.codigoclientej is not null
+";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -50,12 +63,12 @@ $i = 1;
                     ?>
                 <tr>
                     <td><?= $i ?></td>
-                    <td><?= $row["cedula"] ?></td>
-                    <td><?= $row["paterno"].' '.$row["materno"].' '.$row["nombre"] ?></td>
+                    <td><?= $row["identificacion"] ?></td>
+                    <td><?= $row["fullname"] ?></td>
                     <td><?= round($row["totalcargo"], 2) ?></td>
                     <td><?= round($row["totalabono"], 2) ?></td>
                     <td><?= round($row["totalcargo"] - $row["totalabono"], 2) ?></td>
-                     <td align="center"> <a href="listado_cuentasxcobrar.php?codigocliente=<?php echo $row['codigoclienten']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
+                     <td align="center"> <a href="listado_cuentasxcobrar.php?codigo=<?= $row['codigo']."&tipo=".$row["tipo"] ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>
                 </tr>
             <?php

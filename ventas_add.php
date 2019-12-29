@@ -521,8 +521,8 @@ include("Fragmentos/pie.php");
 
 	async function setcombocliente(e) {
 		clearselect2("#cliente")
-		const query = "SELECT codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
-		const query2 = "SELECT codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
+		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
+		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
 		let queryselected = "";
 		if(e.value == "boleta")
 			queryselected = query
@@ -532,17 +532,23 @@ include("Fragmentos/pie.php");
 			queryselected = query + " UNION " + query2
 		
 		const res = await get_data_dynamic(queryselected).then(r => r);
-		cargarselect2("#cliente", res, "codigo", "cliente");
+		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 	}
 
 	function clearselect2(id) {
 		getSelector(id).innerHTML = "";
 		$(id).val(null).trigger('change');
 	}
-	const cargarselect2 = (id, arrayres, key, value) =>   {
+	const cargarselect2 = (id, arrayres, key, value, data = false) =>   {
 		getSelector(id).innerHTML = "<option>Seleccione</option>"
 		arrayres.forEach(xx => {
-			getSelector(id).innerHTML += `<option value="${xx[key]}">${xx[value]}</option>`
+			let datastr = "";
+			if(data){
+				data.forEach(yy => {
+					datastr += ` data-${yy}="${xx[yy]}"`
+				});
+			}
+			getSelector(id).innerHTML += `<option ${datastr} value="${xx[key]}">${xx[value]}</option>`
 		});
 		$(id).select2();
 	}
@@ -578,11 +584,12 @@ include("Fragmentos/pie.php");
 			data.detalle = [];
 			conpayextra = [];
 
+			const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
 			const h = {
 				tipocomprobante: tipocomprobante.value,
 				codigocomprobante: codigocomprobante.value,
-				codigoclienten: cliente.value,
-				codigoclientej: cliente.value,
+				codigoclienten: tipocliente == "natural" ? cliente.value : "null",
+				codigoclientej: tipocliente == "juridico" ? cliente.value : "null",
 				subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
 				igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
 				total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,

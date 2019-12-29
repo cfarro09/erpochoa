@@ -19,10 +19,15 @@ include("Fragmentos/menu.php");
 include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
-if (isset($_GET['codigocliente'])) {
-    $codcliente = $_GET['codigocliente'];
+if (isset($_GET['codigo'])) {
+    $codcliente = $_GET['codigo'];
+    $tipo = $_GET['tipo'];
 }
-$query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and porpagar = 1 order by v.codigoventas asc";
+if($tipo == "juridico"){
+    $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and porpagar = 1 order by v.codigoventas asc";
+}else{
+    $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and porpagar = 1 order by v.codigoventas asc";
+}
 
 // $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where porpagar = 1";
 
