@@ -22,13 +22,13 @@ $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Listado = "
 
-select 'natural' as tipo, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
+select 'natural' as tipo, sum(montoabono) as abonoproveedor, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
 inner join cnatural cn on v.codigoclienten = cn.codigoclienten 
 where 
     v.jsonpagos like '%porcobrar%' group by cn.codigoclienten and
     v.codigoclienten is not null
 UNION    
-select 'juridico' as tipo, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
+select 'juridico' as tipo, sum(montoabono) as abonoproveedor, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
     inner join cjuridico cj on v.codigoclientej = cj.codigoclientej 
     where 
         v.jsonpagos like '%porcobrar%' group by cj.codigoclientej and
@@ -66,8 +66,8 @@ $i = 1;
                     <td><?= $row["identificacion"] ?></td>
                     <td><?= $row["fullname"] ?></td>
                     <td><?= round($row["totalcargo"], 2) ?></td>
-                    <td><?= round($row["totalabono"], 2) ?></td>
-                    <td><?= round($row["totalcargo"] - $row["totalabono"], 2) ?></td>
+                    <td><?= round($row["totalabono"] + $row["abonoproveedor"], 2) ?></td>
+                    <td><?= round($row["totalcargo"] - $row["totalabono"] - $row["abonoproveedor"], 2) ?></td>
                      <td align="center"> <a href="listado_cuentasxcobrar.php?codigo=<?= $row['codigo']."&tipo=".$row["tipo"] ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>
                 </tr>

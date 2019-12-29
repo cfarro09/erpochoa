@@ -424,7 +424,7 @@ include("Fragmentos/pie.php");
         let restante = 0;
         let errorrr = "";
         let pagoxxx = {};
-        debugger
+        let acumuladoabono = 0;
         const arraypagoxxx = JSON.parse(abonoproveedor.value ? abonoproveedor.value : "[]")
         getSelectorAll(".containerx").forEach(ix => {
             const bancoextra = ix.querySelector(".bancoextra").value;
@@ -435,6 +435,8 @@ include("Fragmentos/pie.php");
             const fechaextra = ix.querySelector(".fechaextra").value;
             const cuentaabonado = ix.querySelector(".cuentaabonado").value;
             const tipopago = ix.querySelector(".tipopago").value;
+
+            acumuladoabono += montoextra;
 
             arraypagoxxx.push({
                 bancoextra,
@@ -482,7 +484,11 @@ include("Fragmentos/pie.php");
         const jssson = JSON.stringify(arraypagoxxx);
         
         const query = `
-        update ventas set abonoproveedor = '${jssson}' where codigoventas = ${lastcodigoventas.value}`
+        update ventas 
+            set 
+                abonoproveedor = '${jssson}',
+                montoabono =  IFNULL(montoabono, 0) + ${acumuladoabono}
+        where codigoventas = ${lastcodigoventas.value}`
         data.detalle.push(query)
 
         var formData = new FormData();
