@@ -20,7 +20,12 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten";
+$query_Listado = "
+    select v.*, CONCAT(cn.paterno,  ' ', cn.materno, ' ', cn.nombre) as ClienteNatural, cn.cedula,
+    cj.razonsocial, cj.ruc 
+    from ventas v 
+    left join  cnatural cn on cn.codigoclienten = v.codigoclienten
+    left join  cjuridico cj on cj.codigoclientej = v.codigoclientej";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -53,7 +58,7 @@ $i = 1;
         <tr>
             <td><?= $i ?></td>
             <td><?= $row["fecha_emision"] ?></td>
-            <td><?= $row["ClienteNatural"] ?></td>
+            <td><?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?></td>
             <td><?= $row["total"] ?></td>
             <td><?= $row["pagoacomulado"] ?></td>
             <td><?= $row["tipocomprobante"] ?></td>
