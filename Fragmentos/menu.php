@@ -539,6 +539,14 @@ $totalRows_personal = mysql_num_rows($listado_personal);
                                 </li>
 
                                 <li class="nav-item">
+                                    <a href="ventas_cg_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                        <span class="title">Entrega Venta C/G</span>
+                                        <span class="selected"></span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
                                     <a href="ordencompra_alm_list.php" class="nav-link font-blue-ebonyclay">
                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                         <span class="title">Mercaderias - PR</span>
