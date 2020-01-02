@@ -69,7 +69,12 @@ $updateSQL = sprintf("DELETE FROM proveedor WHERE codigoproveedor=%s",
 //------------Fin Actualizar(Eliminar) Registro----------------
 //------------Inicio Juego de Registro "Listado"----------------
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT * FROM proveedor WHERE estado = '0'";
+$query_Listado = "SELECT * FROM proveedor p
+  LEFT JOIN transporte_compra t on t.ructransporte = p.ruc
+  LEFT JOIN estibador_compra e on e.rucestibador = p.ruc
+  LEFT JOIN notadebito_compra nd on nd.rucnd = p.ruc
+  LEFT JOIN notacredito_compra nc on nc.rucnotacredito = p.ruc
+  WHERE estado = '0'";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
