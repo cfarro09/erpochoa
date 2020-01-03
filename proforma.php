@@ -26,7 +26,7 @@
     $sucursal_actual = (int) $_SESSION['cod_sucursal'];
    
     # Cargar Clientes
-    $query_Clientes = "SELECT codigoclienten, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as ClienteNatural  FROM cnatural  WHERE estado = 0";
+    $query_Clientes = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as ClienteNatural  FROM cnatural  WHERE estado = 0 UNION SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
     $Clientes = mysql_query($query_Clientes, $Ventas) or die(mysql_error());
     $row_Clientes = mysql_fetch_assoc($Clientes);
     $totalRows_Clientes = mysql_num_rows($Clientes);
@@ -65,8 +65,8 @@
                 id="single" data-placement="top" data-original-title="Seleccionar cliente">
                 <option value=""></option>
                 <?php do {  ?>
-                    <option value="<?= $row_Clientes['codigoclienten'] ?>">
-                        <?php echo $row_Clientes['ClienteNatural'] ?>
+                    <option data-tipo="<?= $row_Clientes['tipo'] ?>" value="<?= $row_Clientes['codigo'] ?>">
+                        <?= $row_Clientes["ClienteNatural"] != null ? $row_Clientes["ClienteNatural"] : $row_Clientes["razonsocial"]  ?>
                     </option>
                     <?php
                 } while ($row_Clientes = mysql_fetch_assoc($Clientes));
@@ -175,6 +175,35 @@ include("Fragmentos/pie.php");
 			p.querySelector(".indexproducto").textContent = i;
 			i++;
 		})
+
+        const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
+		const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+
+        const mu = precio * cantidad
+		const res = mu.toFixed(2)
+
+        e.closest(".producto").querySelector(".importe").textContent = res
+		let total = 0;
+		let totalpc = 0;
+		getSelectorAll(".producto").forEach(p => {
+			total += parseFloat(p.querySelector(".importe").textContent);
+			totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
+		})
+		if (total != 0) {
+			totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
+			total = parseFloat(total)
+			getSelector("#subtotal-header").textContent = (total / 1.18).toFixed(3);
+			getSelector("#total-header").textContent = (total).toFixed(3);
+			getSelector("#igv-header").textContent = (total - total / 1.18).toFixed(3);
+
+		} else {
+			totalpreciocompra.value = 0;
+
+			getSelector("#subtotal-header").textContent = 0;
+			getSelector("#total-header").textContent = 0;
+			getSelector("#igv-header").textContent = 0;
+		}
+
 	}
     
     // Funciones - crear id
@@ -264,12 +293,6 @@ include("Fragmentos/pie.php");
 				getSelector("#subtotal-header").textContent = (total/1.18).toFixed(3);
 				getSelector("#total-header").textContent = (total).toFixed(3);
 				getSelector("#igv-header").textContent = (total - total/1.18).toFixed(3);
-
-				if(formpago.value == "unico" ){
-					getSelector(".montoextra").value = (total).toFixed(3);
-				}else{
-					getSelector(".montoextra").value = 0
-				}
 			} else {
 				totalpreciocompra.value = 0;
 
@@ -282,6 +305,7 @@ include("Fragmentos/pie.php");
     
     getSelector("#form-generate-proforma").addEventListener("submit", e => {
 		e.preventDefault();
+        const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
 		var res = validaciones();
         if (!res['success']) {
             alert(res['msj']);
@@ -298,8 +322,8 @@ include("Fragmentos/pie.php");
 			const h = {
 				// tipocomprobante: tipocomprobante.value,
 				// codigocomprobante: codigocomprobante.value,
-				codigoclienten: cliente.value,
-				codigoclientej: cliente.value,
+				codigoclienten: tipocliente == "natural" ? cliente.value : "null",
+				codigoclientej: tipocliente == "juridico" ? cliente.value : "null",
 				subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
 				igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
 				total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,

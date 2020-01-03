@@ -63,11 +63,13 @@ $i = 1;
             <td><?= $row["pagoacomulado"] ?></td>
             <td><?= $row["tipocomprobante"] ?></td>
             <td><?= $row["codigocomprobante"] ?></td>
-            <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>"
+            <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>"
                     data-codigocomprobante="<?= $row["codigocomprobante"] ?>"
                     data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>"
                     data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>"
+                    data-modoentrega="<?= $row['modalidadentrega'] ?>"
                     data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>"
+                    data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>'
                     onclick="pagar(this)">Detalle</a></td>
         </tr>
         <?php
@@ -86,6 +88,8 @@ $i = 1;
                 </div>
                 <input type="hidden" id="codigoventa">
                 <input type="hidden" id="jsonpagos">
+                <input type="hidden" id="modoentrega">
+                <input type="hidden" id="nroguia">
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
@@ -175,10 +179,20 @@ $i = 1;
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" aria-label="Close"
-                        onClick="devolver()">Guardar</button>
-                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
-                        aria-label="Close">Cerrar</button>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4">
+                            <button type="button" class="btn btn-primary" style="float:left" aria-label="Close" id="btnimprimirfactura"
+                                onClick="imprimir_factura()">Imprimir Factura</button>
+                            <button type="button" class="btn btn-primary" style="float:left" aria-label="Close" id="btnimprimirguia"
+                                onClick="imprimir_guia()">Imprimir Guia</button>
+                        </div>
+                        <div class="col-sm-6 col-md-8 mr-auto">
+                            <button type="button" class="btn btn-primary" aria-label="Close"
+                                onClick="devolver()">Guardar</button>
+                            <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
+                                aria-label="Close">Cerrar</button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -297,11 +311,21 @@ include("Fragmentos/pie.php");
                 });
         }
     }
-    const pagar = e => {
+    async function pagar(e) {
         $("#moperation").modal();
         codigoventa.value = e.dataset.id;
         motivodevolucion.value = "";
         detallebody.innerHTML = "";
+        modoentrega.value = e.dataset.modoentrega;
+        
+        if (modoentrega.value == 'Entrega inmediata C/G') {
+            var query = `select nroguia from ventas where codigoventas = ${codigoventa.value}`;
+            const res = await get_data_dynamic(query).then(r => r);
+            nroguia.value = res[0].nroguia;
+            $('#btnimprimirguia').show();
+        } else {
+            $('#btnimprimirguia').hide();
+        }
 
         fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
             .then(res => res.json())
@@ -386,5 +410,66 @@ include("Fragmentos/pie.php");
                 </tr>
                 `;
         });
+    }
+
+    async function imprimir_factura()
+    {
+        var url = `Imprimir/facturaventa_imprimir.php?id=`+parseInt(codigoventa.value,10);
+        console.log(url);
+        window.location=url;
+        $("#moperation").modal('hide');
+    }
+
+    const get_data_dynamic = async (query) => {
+		var formData = new FormData();
+		formData.append("query", query)
+		const response = await fetch("get_data_dynamic2.php", {
+			method: 'POST',
+			body: formData,
+		});
+		if (response.ok) {
+			try {
+				return await response.json();
+			} catch (e) {
+				alert(e)
+			}
+		} else {
+			alert("hubo un problema")
+		}
+	};
+
+    async function imprimir_guia()
+    {
+        if (!nroguia.value) {
+            const data = {};
+            data.header = '';
+            data.detalle = [];
+            var query = "select value from propiedades where `key` = 'despacho_guia'";
+            const res = await get_data_dynamic(query).then(r => r);
+            var nguia = res[0].value;
+
+            data.detalle.push(`UPDATE ventas SET despachado=1, nroguia=${nguia} WHERE codigoventas=${codigoventa.value}`);
+            data.detalle.push("UPDATE propiedades SET value = ("+nguia+"+1) where `key` = 'despacho_guia'");
+            console.log(data);
+            var formData = new FormData();
+            formData.append("json", JSON.stringify(data));
+
+            await fetch(`setVenta.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                if (res.success) {
+                    console.log("registro completo!");
+                }
+            });
+        }
+        console.log(nroguia.value);
+        var url = `Imprimir/guia_imprimir.php?id=`+parseInt(codigoventa.value,10);
+        console.log(url);
+        window.location=url;
+        $("#moperation").modal('hide');
     }
 </script>

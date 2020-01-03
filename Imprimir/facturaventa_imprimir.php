@@ -22,7 +22,8 @@ if (isset($_GET['id'])) {
 $querydetalle = "
     select 
     dv.*, v.*, p.nombre_producto, m.nombre as marca, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,
-    cj.razonsocial, cj.ruc
+    cj.razonsocial, cj.ruc,
+    (select ka.numero from kardex_alm ka where codigoguia = $id limit 1) as nroguia
     from detalle_ventas dv
     inner join ventas v on v.codigoventas = dv.codigoventa
     inner join producto p on p.codigoprod = dv.codigoprod
@@ -44,7 +45,7 @@ class PDF extends FPDF
     $this->SetFont('Arial','B',15);
     $this->SetMargins(15,10);
     $this->Ln(10);
-    $this->Cell(0,8,utf8_decode("Guia Nº $id"),0,2,'C');
+    $this->Cell(0,8,utf8_decode("FACTURA Nº $id"),0,2,'C');
     $this->Ln(1);
     $this->SetFont('Arial','B',9);
     $this->Cell(140,8,utf8_decode("RAZON SOCIAL: ".strtoupper($razon_social)),0,0,'L');
@@ -94,7 +95,7 @@ class PDF extends FPDF
   {
     $this->Ln(24);
     $this->SetFont('Arial','B',10);
-    $this->Cell(0,8,'GUIA VALIDA POR 7 DIAS O HASTA AGOTAR STOCK.',0,0,'C');
+    $this->Cell(0,8,'FACTURA VALIDA POR 7 DIAS O HASTA AGOTAR STOCK.',0,0,'C');
   }
 }
 
@@ -102,9 +103,9 @@ $pdf = new PDF();
 $pdf->AddPage();
 $cliente = (isset($detalle[0]['ClienteNatural']) ? $detalle[0]['ClienteNatural'] : $detalle[0]['razonsocial']);
 $cedula = (isset($detalle[0]['cedula']) ? $detalle[0]['cedula'] : $detalle[0]['ruc']);
-$pdf->setHeader($detalle[0]['nroguia'],$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$cliente,$cedula);
+$pdf->setHeader($id,$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$cliente,$cedula);
 $pdf->setDetalle($detalle);
 // $pdf->setFooter();
-$pdf->Output(utf8_decode("guia_" . $detalle[0]['nroguia'] . ".pdf"), 'D');
+$pdf->Output(utf8_decode("factura_" . $id . ".pdf"), 'D');
 
 ?>

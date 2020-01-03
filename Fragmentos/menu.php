@@ -895,19 +895,21 @@ $d=mt_rand(0,9999999999999999);
  
                                 ?>
                                 <?php
-echo "<a href='proforma.php'>Proforma</a>";
+echo "<a href='#'>Proforma</a>";
 ?>
+</li>
+                            <li class="nav-item">
                                 <a href="proforma.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Proforma</span>
                                     <span class="selected"></span>
-
                                 </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="listproforma.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Listado de Proformas</span>
                                     <span class="selected"></span>
-
                                 </a>
                             </li>
                             <li class="nav-item">
