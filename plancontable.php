@@ -28,7 +28,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
 
-<button class="btn btn-success" data-toggle="modal" data-target="#moperation" style="margin-bottom: 10px">Agregar Cuenta</button>
+<button class="btn btn-success" data-toggle="modal" data-target="#moperation" onclick="openmodal()" style="margin-bottom: 10px">Agregar Cuenta</button>
 
 <?php if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
@@ -67,24 +67,25 @@ $i = 1;
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
-                        <div class="col-sm-4">
+                            <div class="col-sm-4">
                                 <div class="form-group">
                                     <label class="control-label">Cuenta</label>
                                     <input type="text" required class="form-control" id="cuenta">
                                 </div>
                             </div>
-                            
+
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label class="control-label">Descripción</label>
                                     <input type="text" required class="form-control" id="descripcion">
                                 </div>
                             </div>
-
-
-                            
-
-
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Padre</label>
+                                    <select  id="padre"></select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,6 +104,9 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const openmodal = () => {
+        
+    }
     const guardar = e => {
         e.preventDefault();
         const data = {

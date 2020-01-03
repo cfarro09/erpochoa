@@ -4,6 +4,42 @@
 <script src="../assets/global/plugins/excanvas.min.js"></script> 
 <![endif]-->
        <!-- BEGIN CORE PLUGINS -->
+       <script>
+        function clearselect2(id) {
+		getSelector(id).innerHTML = "";
+		$(id).val(null).trigger('change');
+	}
+	const cargarselect2 = (id, arrayres, key, value, data = false) =>   {
+		getSelector(id).innerHTML = "<option>Seleccione</option>"
+		arrayres.forEach(xx => {
+			let datastr = "";
+			if(data){
+				data.forEach(yy => {
+					datastr += ` data-${yy}="${xx[yy]}"`
+				});
+			}
+			getSelector(id).innerHTML += `<option ${datastr} value="${xx[key]}">${xx[value]}</option>`
+		});
+		$(id).select2();
+	}
+	const get_data_dynamic = async (query) => {
+		var formData = new FormData();
+		formData.append("query", query)
+		const response = await fetch("get_data_dynamic2.php", {
+			method: 'POST',
+			body: formData,
+		});
+		if (response.ok) {
+			try {
+				return await response.json();
+			} catch (e) {
+				alert(e)
+			}
+		} else {
+			alert("hubo un problema")
+		}
+	};
+       </script>
         <script src="assets/global/plugins/jquery.min.js" type="text/javascript"></script>
         <script src="assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
         <script src="assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
