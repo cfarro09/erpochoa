@@ -22,7 +22,8 @@ $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Listado = "
 
-select 'natural' as tipo, sum(montoabono) as abonoproveedor, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono from ventas v
+select 'natural' as tipo, sum(montoabono) as abonoproveedor, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
+from ventas v
 inner join cnatural cn on v.codigoclienten = cn.codigoclienten 
 where 
     v.jsonpagos like '%porcobrar%' group by cn.codigoclienten and
