@@ -169,7 +169,7 @@ if ($totalRows_Listado == 0) : ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" aria-label="Close"
+                    <button type="button" class="btn btn-primary" aria-label="Close" id="btnimprimir"
                         onClick="imprimir()">Imprimir Guia</button>
                     <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
                         aria-label="Close">Cerrar</button>
@@ -188,7 +188,7 @@ include("Fragmentos/pie.php");
 
 <script>
 
-    const pagar = e => {
+    async function pagar(e) {
         $("#moperation").modal();
         codigoventa.value = e.dataset.id;
         detallebody.innerHTML = "";
@@ -199,7 +199,6 @@ include("Fragmentos/pie.php");
             .catch(error => console.error("error: ", error))
             .then(res => {
                 if (res) {
-
                     res.forEach(ix => {
                         detallebody.innerHTML += `
                         <tr class="producto">
@@ -228,6 +227,11 @@ include("Fragmentos/pie.php");
         despachado.value = e.dataset.despachado;
         inputrestante.value = e.dataset.restante;
         inputtotal.value = e.dataset.total;
+
+        var query = `select despachado from ventas where codigoventas = ${codigoventa.value}`;
+        const res = await get_data_dynamic(query).then(r => r);
+        despachado.value = res[0].despachado;
+        
         if (pagoefectivo) {
             historialbody.innerHTML += `
                 <tr>
@@ -291,6 +295,7 @@ include("Fragmentos/pie.php");
 	};
 
     async function imprimir(){
+        btnimprimir.setAttribute("disabled","disabled");
         const data = {};
         data.header = '';
         data.detalle = [];
@@ -298,7 +303,6 @@ include("Fragmentos/pie.php");
             const r = confirm("Se emitirá la guia y se descontará del kardex Almancen. ¿Está seguro que desea continuar");
             if (r) {
                 // Conseguimos el numero de guia para el despacho
-                var formData = new FormData();
                 var query = "select value from propiedades where `key` = 'despacho_guia'";
                 const res = await get_data_dynamic(query).then(r => r);
 
@@ -340,7 +344,7 @@ include("Fragmentos/pie.php");
                 var formData = new FormData();
                 formData.append("json", JSON.stringify(data));
 
-                fetch(`setVenta.php`, {
+                await fetch(`setVenta.php`, {
                     method: 'POST',
                     body: formData
                 })
@@ -348,16 +352,17 @@ include("Fragmentos/pie.php");
                 .catch(error => console.error("error: ", error))
                 .then(res => {
                     if (res.success) {
-                        alert("registro completo!");
+                        console.log("registro completo!");
                     }
                 });
-                console.log(data);
             } else {
                 alert('Debes aceptar el descuento para poder imprimir la guia');
                 return false;
             }
         }
-        window.location.assign('http://erpochoa.cn/Imprimir/guia_imprimir.php?id=5');
-        // location.reload()
+        var url = 'Imprimir/guia_imprimir.php?id='+parseInt(codigoventa.value,10);
+        window.location=url;
+        $("#moperation").modal('hide');
+        btnimprimir.removeAttribute("disabled");
     }
 </script>

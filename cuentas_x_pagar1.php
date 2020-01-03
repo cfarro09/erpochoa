@@ -69,14 +69,17 @@ $updateSQL = sprintf("DELETE FROM proveedor WHERE codigoproveedor=%s",
 //------------Fin Actualizar(Eliminar) Registro----------------
 //------------Inicio Juego de Registro "Listado"----------------
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT * FROM proveedor p
+$query_Listado = "SELECT p.codigoproveedor, p.ruc, p.razonsocial,
+  sum(rc.total) as totalrc, sum(e.precioestibador_soles) as totale, sum(preciotransp_soles) as totalt, sum(preciond_soles) as totalnd, sum(precionc_soles) as totalnc ,
+  sum(rc.montoochoa) as abonorc, sum(e.montoochoa) as abonoe, sum(t.montoochoa) as abonot, sum(nd.montoochoa) as abonond, sum(nc.precionc_soles) as abononc FROM proveedor p
+  LEFT JOIN registro_compras rc on rc.rucproveedor = p.ruc
   LEFT JOIN transporte_compra t on t.ructransporte = p.ruc
   LEFT JOIN estibador_compra e on e.rucestibador = p.ruc
   LEFT JOIN notadebito_compra nd on nd.rucnd = p.ruc
   LEFT JOIN notacredito_compra nc on nc.rucnotacredito = p.ruc
   WHERE estado = '0'";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row_Listado = mysql_fetch_assoc($Listado);
+$rr = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
 //------------Fin Juego de Registro "Listado"----------------
  //Enumerar filas de data tablas
@@ -125,19 +128,26 @@ include("Fragmentos/abrirpopupcentro.php");
         </tr>
       </thead>
     <tbody>
-      <?php do { ?>
+      <?php do { 
+        $totalx = $rr["totalrc"] + $rr["totale"] + $rr["totalt"] + $rr["totalnd"] + $rr["totalnc"];
+        $abono = $rr["abonorc"] + $rr["abonoe"] + $rr["abonot"] + $rr["abonond"] + $rr["abononc"];
+        $saldo = $totalx - $abono;
+        $cargo = number_format($totalx, 2, '.', '');
+        $saldo = number_format($saldo, 2, '.', '');
+        $abono = number_format($abono, 2, '.', '');
+        ?>
         <tr>
           <td> <?php echo $i; ?> </td>
-          <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoproveedor=<?php echo $row_Listado['codigoproveedor']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['ruc']; ?> </a>                                                          </td>
-          <td> <?php echo $row_Listado['razonsocial']; ?></td>
-          <td> 0 </td>
-          <td> 0 </td>
-          <td align="center"> 0 </td>
-          <td align="center"> <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $row_Listado['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
+          <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoproveedor=<?php echo $rr['codigoproveedor']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $rr['ruc']; ?> </a>                                                          </td>
+          <td> <?php echo $rr['razonsocial']; ?></td>
+          <td><?= $cargo ?></td>
+          <td><?= $abono ?></td>
+          <td><?= $saldo ?></td>
+          <td> <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $rr['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>
            
         </tr>
-        <?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+        <?php $i++; } while ($rr = mysql_fetch_assoc($Listado)); ?>
     </tbody>
   </table>
   <?php } // Show if recordset not empty ?>
