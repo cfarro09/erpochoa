@@ -20,7 +20,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select * from plancontable;";
+$query_Listado = "select p1.*, concat(p2.codigo, ' ', p2.descripcion) as padrexx from plancontable p1 left join plancontable p2 on p2.id = p1.padre";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -39,16 +39,19 @@ $i = 1;
         <thead>
             <tr>
                 <th>N°</th>
-                <th>Cuenta</th>
-                <th>SubCuenta</th>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th>Padre</th>
             </tr>
         </thead>
         <tbody>
             <?php do {  ?>
                 <tr>
                     <td><?= $i ?></td>
-                    <td><?= $row["cuenta"] ?></td>
+                    <td><?= $row["codigo"] ?></td>
                     <td><?= $row["descripcion"] ?></td>
+                    <td><?= $row["padrexx"] ?></td>
+
                 </tr>
             <?php
                 $i++;
@@ -69,7 +72,7 @@ $i = 1;
                         <div class="row">
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="control-label">Cuenta</label>
+                                    <label class="control-label">Codigo</label>
                                     <input type="text" required class="form-control" id="cuenta">
                                 </div>
                             </div>
@@ -104,8 +107,9 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
-    const openmodal = () => {
-        
+    const openmodal = async () => {
+        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where padre is null or padre = 0")
+        cargarselect2("#padre", res, 'id', 'descripcion')
     }
     const guardar = e => {
         e.preventDefault();
@@ -113,7 +117,8 @@ include("Fragmentos/pie.php");
             header: "",
             detalle: []
         }
-        data.header = `insert into plancontable (cuenta, descripcion) values ('${cuenta.value}', '${descripcion.value}')`
+        const padrex = padre.value == "Seleccione" ? "null" : padre.value;
+        data.header = `insert into plancontable (codigo, descripcion, padre) values ('${cuenta.value}', '${descripcion.value}', ${padrex})`;
 
         const formData = new FormData();
         formData.append("json", JSON.stringify(data))
@@ -129,6 +134,8 @@ include("Fragmentos/pie.php");
                 if (res.success) {
                     alert("registro completo!")
                     location.reload()
+                }else if(res.msg){
+                    alert(res.msg.includes("uplicate") ? "El codigo y la descripción que ingresó está duplicado." : "hubo un error, vuelva a intentarlo");
                 }
             });
     }
