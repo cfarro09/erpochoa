@@ -69,7 +69,7 @@ class PDF extends FPDF
       $cantidad = (isset($detalle[$i]) ? $detalle[$i]['cantidad']: '');
       $descripcion = (isset($detalle[$i]) ? $detalle[$i]['nombre_producto']: '');
       $precio = (isset($detalle[$i]) ? $detalle[$i]['pventa']: '');
-      $total = (isset($detalle[$i]) ? $detalle[$i]['total']: '');
+      $total = (isset($detalle[$i]) ? $cantidad*$precio: '');
       $this->Cell(20,8,$cantidad,'LB',0,'C');
       $this->Cell(100,8,utf8_decode($descripcion),'LB',0);
       $this->Cell(30,8,$precio,'LB',0,'R');
@@ -103,6 +103,6 @@ $pdf->AddPage();
 $pdf->setHeader($detalle[0]['nroguia'],$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$detalle[0]['ClienteNatural'],$detalle[0]['cedula']);
 $pdf->setDetalle($detalle);
 $pdf->setFooter();
-$pdf->Output(utf8_decode("reporte_proforma_" . $id . ".pdf"), 'D');
+$pdf->Output(utf8_decode("guia_" . $detalle[0]['nroguia'] . ".pdf"), 'D');
 
 ?>
