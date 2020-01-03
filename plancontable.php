@@ -41,17 +41,20 @@ $i = 1;
                 <th>N°</th>
                 <th>Codigo</th>
                 <th>Descripcion</th>
-                <th>Padre</th>
             </tr>
         </thead>
         <tbody>
             <?php do {  ?>
                 <tr>
-                    <td><?= $i ?></td>
-                    <td><?= $row["codigo"] ?></td>
-                    <td><?= $row["descripcion"] ?></td>
-                    <td><?= $row["padrexx"] ?></td>
-
+                    <?php if(!$row["padrexx"]): ?> 
+                        <td style="font-weight: bold"><?= $i ?></td>
+                        <td style="font-weight: bold"><?= $row["codigo"] ?></td>
+                        <td style="font-weight: bold"><?= $row["descripcion"] ?></td>
+                    <?php else: ?>
+                        <td><?= $i ?></td>
+                        <td><?= $row["codigo"] ?></td>
+                        <td><?= $row["descripcion"] ?></td>
+                    <?php endif ?>
                 </tr>
             <?php
                 $i++;
