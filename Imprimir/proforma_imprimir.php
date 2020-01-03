@@ -25,13 +25,14 @@ $querydetalle = "
         pro.codigoproformas as nro_proforma,
         pro.*,
         CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural,
-        c.cedula
+        c.cedula, cj.razonsocial, cj.ruc
     from
         detalle_proforma dpro
     inner join proforma pro on pro.codigoproformas = dpro.codigoproforma
     inner join producto p on p.codigoprod = dpro.codigoprod
     inner join marca m on m.codigomarca = p.codigomarca
-    inner join cnatural c on c.codigoclienten = pro.codigoclienten
+    left join cnatural c on c.codigoclienten = pro.codigoclienten
+    left join  cjuridico cj on cj.codigoclientej = pro.codigoclientej
     where
         dpro.codigoproforma = $id";
 
@@ -104,7 +105,9 @@ class PDF extends FPDF
 
 $pdf = new PDF();
 $pdf->AddPage();
-$pdf->setHeader($id,$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$detalle[0]['ClienteNatural'],$detalle[0]['cedula']);
+$cliente = (isset($detalle[0]['ClienteNatural']) ? $detalle[0]['ClienteNatural'] : $detalle[0]['razonsocial']);
+$cedula = (isset($detalle[0]['cedula']) ? $detalle[0]['cedula'] : $detalle[0]['ruc']);
+$pdf->setHeader($id,$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$cliente,$cedula);
 $pdf->setDetalle($detalle);
 $pdf->setFooter();
 $pdf->Output(utf8_decode("reporte_proforma_" . $id . ".pdf"), 'D');

@@ -21,7 +21,7 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 # Cargar lista proforma
-$query = "select pro.*,CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural,c.cedula from proforma pro left join cnatural c on c.codigoclienten = pro.codigoclienten";
+$query = "select pro.*,CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural,c.cedula,cj.razonsocial, cj.ruc from proforma pro left join cnatural c on c.codigoclienten = pro.codigoclienten left join  cjuridico cj on cj.codigoclientej = pro.codigoclientej";
 $listado = mysql_query($query, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($listado);
 $totalRows_Listado = mysql_num_rows($listado);
@@ -48,12 +48,12 @@ if ($totalRows_Listado == 0) : ?>
             <tr>
                 <td><?= $i ?></td>
                 <td><?= $row["fecha_emision"] ?></td>
-                <td><?= $row["ClienteNatural"] ?></td>
+                <td><?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?></td>
                 <td><?= $row["total"] ?></td>
                 <td><a href="#" 
                         data-id="<?= $row["codigoproformas"] ?>"
                         data-fecha="<?= $row["fecha_emision"] ?>"
-                        data-cliente="<?= $row["ClienteNatural"] ?>"
+                        data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>"
                         data-codigocomprobante="<?= $row["codigoproformas"] ?>"
                         data-total="<?= $row["total"] ?>"
                         onclick="detalle(this)">Detalle</a></td>

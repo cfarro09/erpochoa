@@ -3,7 +3,7 @@ require_once('Connections/Ventas.php');
 
 mysql_select_db($database_Ventas, $Ventas); //ALTER TABLE ventasochoa.ventas ADD despachado INT DEFAULT 0 NULL;
 //INSERT INTO propiedades (propiedades_id, `key`, value, datecreated, datechanged) VALUES(3, 'despacho_guia', '1', '2020-01-02 16:54:32', '2020-01-02 17:38:22');
-
+//ALTER TABLE ventasochoa.ventas ADD nroguia int(11) NULL;
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
@@ -23,7 +23,7 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 # Cargar lista ventas con guia
-$query = "select v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join cnatural c on  c.codigoclienten = v.codigoclienten where modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
+$query = "select v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,cj.razonsocial, cj.ruc from ventas v left join cnatural c on  c.codigoclienten = v.codigoclienten left join  cjuridico cj on cj.codigoclientej = v.codigoclientej where modalidadentrega = 'Entrega almacen C/G'";
 $listado = mysql_query($query, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($listado);
 $totalRows_Listado = mysql_num_rows($listado);
@@ -59,7 +59,7 @@ if ($totalRows_Listado == 0) : ?>
                 <td><?= $row["pagoacomulado"] ?></td>
                 <td><?= $row["tipocomprobante"] ?></td>
                 <td><?= $row["codigocomprobante"] ?></td>
-                <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>"
+                <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>"
                         data-codigocomprobante="<?= $row["codigocomprobante"] ?>"
                         data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>"
                         data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>"
@@ -314,7 +314,7 @@ include("Fragmentos/pie.php");
                     nguia: res[0].value,
                 }
 
-                data.header = `UPDATE ventas SET despachado=1 WHERE codigoventas=${h.codventa}`;
+                data.header = `UPDATE ventas SET despachado=1, nroguia=${h.nguia} WHERE codigoventas=${h.codventa}`;
                 
                 getSelectorAll(".producto").forEach(item => {
                     const d = {
@@ -357,6 +357,7 @@ include("Fragmentos/pie.php");
                 });
             } else {
                 alert('Debes aceptar el descuento para poder imprimir la guia');
+                btnimprimir.removeAttribute("disabled");
                 return false;
             }
         }
