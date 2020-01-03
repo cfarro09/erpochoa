@@ -420,24 +420,6 @@ include("Fragmentos/pie.php");
         $("#moperation").modal('hide');
     }
 
-    const get_data_dynamic = async (query) => {
-		var formData = new FormData();
-		formData.append("query", query)
-		const response = await fetch("get_data_dynamic2.php", {
-			method: 'POST',
-			body: formData,
-		});
-		if (response.ok) {
-			try {
-				return await response.json();
-			} catch (e) {
-				alert(e)
-			}
-		} else {
-			alert("hubo un problema")
-		}
-	};
-
     async function imprimir_guia()
     {
         if (!nroguia.value) {
