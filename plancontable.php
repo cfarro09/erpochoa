@@ -27,8 +27,42 @@ $row = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
+<style>
+    #containerplan{
+        overflow-y: auto;
+        height: 50vh
+    }
+</style>
+<div class="modal fade" id="mcontainerplan" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 900px">
+        <div class="modal-content m-auto">
+            <div class="modal-header">
+                <h2 class="modal-title">PLAN CONTABLE</h2>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div id="containerplan">
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <button class="btn btn-success" data-toggle="modal" data-target="#moperation" onclick="openmodal()" style="margin-bottom: 10px">Agregar Cuenta</button>
+<button class="btn btn-success" data-toggle="modal" data-target="#mcontainerplan" onclick="openmodalplan()" style="margin-bottom: 10px">Ver Plan Contable</button>
 
 <?php if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
@@ -40,20 +74,20 @@ $i = 1;
             <tr>
                 <th>N°</th>
                 <th>Codigo</th>
-                <th>Descripcion</th>
+                <th>Padre</th>
             </tr>
         </thead>
         <tbody>
             <?php do {  ?>
                 <tr>
-                    <?php if(!$row["padrexx"]): ?> 
+                    <?php if (!$row["padrexx"]) : ?>
                         <td style="font-weight: bold"><?= $i ?></td>
-                        <td style="font-weight: bold"><?= $row["codigo"] ?></td>
-                        <td style="font-weight: bold"><?= $row["descripcion"] ?></td>
-                    <?php else: ?>
+                        <td style="font-weight: bold"><?= $row["codigo"] . " - " . $row["descripcion"] ?></td>
+                        <td style="font-weight: bold"><?= $row["padrexx"] ?></td>
+                    <?php else : ?>
                         <td><?= $i ?></td>
-                        <td><?= $row["codigo"] ?></td>
-                        <td><?= $row["descripcion"] ?></td>
+                        <td><?= $row["codigo"] . " - " . $row["descripcion"] ?></td>
+                        <td><?= $row["padrexx"] ?></td>
                     <?php endif ?>
                 </tr>
             <?php
@@ -89,7 +123,7 @@ $i = 1;
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label class="control-label">Padre</label>
-                                    <select  id="padre"></select>
+                                    <select id="padre"></select>
                                 </div>
                             </div>
                         </div>
@@ -110,8 +144,44 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const openmodalplan = async () => {
+        const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
+        let parentsresult = res;
+        const parents = res;
+
+        containerplan.innerHTML = "";
+        
+        parents.forEach(ix => {
+            containerplan.innerHTML += gethtml(ix, ix.padre == null ? true : false)
+        })
+
+        parents.reverse().filter(ix => ix.padre != null).forEach(ix => {
+            const tmphtml = getSelector(`#plan_${ix.id}`);
+            getSelector(`#plan_${ix.id}`).remove()
+            getSelector(`#plan_${ix.padre} .hijos`).innerHTML += tmphtml.innerHTML;
+
+            // parentsresult.filter(xx =>  xx.id == ix.padre).map(oo => {
+            //     if(!oo.hijos)
+            //         oo.hijos = [];
+            //     oo.hijos.push(ix)
+            //     return oo;
+            // });
+            // parentsresult = parentsresult.filter(xx => xx.id != ix.id);
+        });
+
+        cargarselect2("#padre", res, 'id', 'descripcion')
+    }
+    const gethtml = (ix, parent = false) =>{
+        const ss = parent ? 'font-weight: bold;' : '';
+        return `
+            <div class="padre" id="plan_${ix.id}">
+                <div style="${ss} margin-bottom: 5px">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                <div style="margin-left: 20px" class="hijos"></div>
+            </div>
+        `
+    }
     const openmodal = async () => {
-        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where padre is null or padre = 0")
+        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable")
         cargarselect2("#padre", res, 'id', 'descripcion')
     }
     const guardar = e => {
@@ -121,7 +191,7 @@ include("Fragmentos/pie.php");
             detalle: []
         }
         const padrex = padre.value == "Seleccione" ? "null" : padre.value;
-        data.header = `insert into plancontable (codigo, descripcion, padre) values ('${cuenta.value}', '${descripcion.value}', ${padrex})`;
+        data.header = `insert into plancontable (codigo, descripcion, padre) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex})`;
 
         const formData = new FormData();
         formData.append("json", JSON.stringify(data))
@@ -137,7 +207,7 @@ include("Fragmentos/pie.php");
                 if (res.success) {
                     alert("registro completo!")
                     location.reload()
-                }else if(res.msg){
+                } else if (res.msg) {
                     alert(res.msg.includes("uplicate") ? "El codigo y la descripción que ingresó está duplicado." : "hubo un error, vuelva a intentarlo");
                 }
             });
