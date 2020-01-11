@@ -151,7 +151,8 @@ include("Fragmentos/abrirpopupcentro.php");
 					
 					<?php 
 					$sux = $row_Listado['codigoprod'];
-					$query_filtro_by_sucursal = "SELECT s.nombre_sucursal, s.cod_sucursal,  IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo, k.codigoprod, k.fecha from sucursal s left join kardex_alm k on k.codsucursal = s.cod_sucursal and k.fecha = ( SELECT MAX(fecha) FROM kardex_alm t2 WHERE k.codigoprod = t2.codigoprod and t2.codsucursal = s.cod_sucursal) and k.codigoprod =  $sux where s.cod_sucursal != 10 order by cod_sucursal asc";
+					$query_filtro_by_sucursal = "SELECT s.nombre_sucursal, s.cod_sucursal, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo, k.codigoprod, k.fecha from sucursal s left join kardex_alm k on k.codsucursal = s.cod_sucursal and k.id_kardex_alm = ( SELECT MAX(t2.id_kardex_alm) FROM kardex_alm t2 WHERE k.codigoprod = t2.codigoprod and t2.codsucursal = s.cod_sucursal) and k.codigoprod = $sux where s.cod_sucursal != 10 order by cod_sucursal asc
+					";
 					$auxx1 = mysql_query($query_filtro_by_sucursal, $Ventas) or die(mysql_error());
 					$row_aux = mysql_fetch_assoc($auxx1);
 					$total = 0 ;
