@@ -100,7 +100,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 				<div class="col-md-3">
 					<div class="form-group">
-						<label for="field-1" class="control-label">Tipo Comprobante</label>
+						<label for="field-1" class="control-label">Comprobante</label>
 						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
 							<option value="factura">Factura</option>
 							<option value="boleta">Boleta</option>
@@ -111,7 +111,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				</div>
 				<div class="col-md-3">
 					<div class="form-group">
-						<label for="field-1" class="control-label">Codigo Comprobante</label>
+						<label for="field-1" class="control-label">N° Comprobante</label>
 						<input type="text" class="form-control" id="codigocomprobante">
 					</div>
 				</div>
@@ -225,6 +225,7 @@ include("Fragmentos/pie.php");
 <script type="text/javascript">
 	$(document).ready(function() {
 		addPayExtra();
+		setcombocliente({value : "factura"})
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none"
 	});

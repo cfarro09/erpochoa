@@ -133,8 +133,8 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th width="20%"> FECHA REG </th>
 				<th width="15%"> TIPO - NUMERO </th>
 				<th width="10%"> DETALLE </th>
-				<th width="5%"> CARGO </th>
 				<th width="20%"> ABONOS </th>
+				<th width="5%"> CARGO </th>
 				<th width="5%"> SALDO </th>
 
 				<th width="5%"> VER </th>

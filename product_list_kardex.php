@@ -322,8 +322,11 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td>${item.detalle}</td>
 							<td>${item.tipodocumento}</td>
 							<td>${item.numero}</td>
-							<td>${item.cantidad}</td>
-							<td></td>
+
+							<td>${item.detalle.toLowerCase().includes("compras") || item.detalle.toLowerCase().includes("entra") ? item.cantidad : ""}</td>
+							<td>${item.detalle.toLowerCase().includes("ventas") || item.detalle.toLowerCase().includes("sale") ? item.cantidad : ""}</td>
+
+
 							<td>${item.saldo}</td>
 							</tr>
 							`;
