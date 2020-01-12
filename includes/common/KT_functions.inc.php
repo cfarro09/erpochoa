@@ -461,7 +461,7 @@ function KT_redir($url) {
 			header("Kt_location: ".$url);
 			echo "Redirecting to: " . $url;
 		} else {
-			header("Location: ".$url);
+			header("Location: ". $url);
 		}
 	}
 	exit;

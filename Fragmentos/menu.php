@@ -1087,7 +1087,9 @@ echo "<a href='#'>Proforma</a>";
 <!-- END SIDEBAR -->
 
 <!-- BEGIN CONTENT -->
-<?php if  ($nombre_archivo = "proveedor_cuentas.php") {
+<?php 
+$VarUrl2 = "";
+if  ($nombre_archivo = "proveedor_cuentas.php") {
 
     if(isset($TituloGeneral)){
         $VarUrl2 = $VarUrl;
