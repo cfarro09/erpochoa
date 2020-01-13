@@ -100,6 +100,18 @@
                 </select>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="" class="control-label">Asunto</label>
+                <input type="text" class="form-control" name="asunto" id="asunto" maxlength="80">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="" class="control-label">Referencia</label>
+                <input type="text" class="form-control" name="referencia" id="referencia" maxlength="220">
+            </div>
+        </div>
         <div class="col-sm-12">
             <label class="" style="font-weight: bold">Seleccione un producto</label>
             <select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
@@ -334,6 +346,8 @@ include("Fragmentos/pie.php");
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
 				// estadofact: 1,
 				codsucursal: <?= $_SESSION['cod_sucursal'] ?>,
+                asunto: $('#asunto').val(),
+                referencia: $('#referencia').val(),
 				// totalc: totalpreciocompra.value,
 				// pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
 			}
@@ -375,9 +389,9 @@ include("Fragmentos/pie.php");
 			// })
 
             data.header = `
-                INSERT INTO proforma (codigo,codigoclienten,codigoclientej,subtotal,igv,total,fecha_emision,hora_emision,codacceso,codigopersonal,sucursal)
+                INSERT INTO proforma (codigo,codigoclienten,codigoclientej,subtotal,igv,total,fecha_emision,hora_emision,codacceso,codigopersonal,sucursal,asunto,referencia)
                 VALUES
-                   ('',${h.codigoclienten}, ${h.codigoclientej}, ${h.subtotal}, ${h.igv},${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, ${h.codsucursal})`
+                   ('',${h.codigoclienten}, ${h.codigoclientej}, ${h.subtotal}, ${h.igv},${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, ${h.codsucursal}, '${h.asunto}', '${h.referencia}')`
 
 			getSelectorAll(".producto").forEach(item => {
 				const d = {
