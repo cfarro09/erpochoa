@@ -1,0 +1,204 @@
+<?php
+require_once('Connections/Ventas.php');
+
+mysql_select_db($database_Ventas, $Ventas);
+
+$Icono = "glyphicon glyphicon-shopping-cart";
+$Color = "font-blue";
+$Titulo = "Liquidación Caja";
+$NombreBotonAgregar = "Agregar";
+$EstadoBotonAgregar = "disabled";
+$popupAncho = 700;
+$popupAlto = 525;
+
+include("Fragmentos/archivo.php");
+include("Fragmentos/head.php");
+include("Fragmentos/top_menu.php");
+include("Fragmentos/menu.php");
+
+include("Fragmentos/abrirpopupcentro.php");
+
+$codpersonal = $_SESSION['kt_codigopersonal'];
+$codsucursal = $_SESSION['cod_sucursal'];
+$tmpcodsucursal = $_SESSION['cod_sucursal'];
+
+
+$querySucursales = "select * from sucursal where estado = 1 or estado = 999";
+$sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
+$r_suc = mysql_fetch_assoc($sucursales);
+$totalRows_sucursales = mysql_num_rows($sucursales);
+
+$query_personalx = "SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0";
+$l_per = mysql_query($query_personalx, $Ventas) or die(mysql_error());
+$r_per = mysql_fetch_assoc($l_per);
+$totalRows_personal = mysql_num_rows($l_per);
+
+?>
+<input type="hidden" value="<?= $tmpcodsucursal ?>" id="sucursalactive">
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="field-1" class="control-label">Sucursal</label>
+            <select name="sucursal" required id="sucursal-oc-new" class="form-control ">
+                <?php do {  ?>
+                    <option <?= $r_suc['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $r_suc['cod_sucursal'] ?>">
+                        <?php echo $r_suc['nombre_sucursal'] ?>
+                    </option>
+                <?php
+                } while ($r_suc = mysql_fetch_assoc($sucursales));
+                $rows = mysql_num_rows($sucursales);
+                if ($rows > 0) {
+                    mysql_data_seek($sucursales, 0);
+                    $r_suc = mysql_fetch_assoc($sucursales);
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <input type="hidden" name="cod_acceso_seguridad" value="0" id="cod_acceso_seguridad">
+            <label for="personalx" class="control-label">Personal</label>
+            <select name="personal" onchange="selectpersonalx()" id="personalx" required class="form-control select2 tooltips" data-placement="top" data-original-title="Seleccionar personal">
+                <?php do { ?>
+                    <option <?= $r_per['codigopersonal'] == $codpersonal ? 'selected' : '' ?> value="<?= $r_per['codigopersonal'] ?>">
+                        <?= $r_per['fullname'] ?>
+                    </option>
+                <?php
+                } while ($r_per = mysql_fetch_assoc($l_per)); ?>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="field-1" class="control-label">Fecha Inicio</label>
+            <input type="text" required readonly name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="field-1" class="control-label">Fecha termino</label>
+            <input type="text" name="fecha_termino" autocomplete="off" id="fecha_termino" required readonly class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 900px">
+        <div class="modal-content m-auto">
+            <form id="formoperacion" action="">
+                <div class="modal-header">
+                    <h2 class="modal-title">Registrar Cuenta</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Codigo</label>
+                                    <input type="text" required class="form-control" id="cuenta">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Descripción</label>
+                                    <input type="text" required class="form-control" id="descripcion">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Padre</label>
+                                    <select id="padre"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="modal_close btn btn-success">Guardar</button>
+                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<?php
+include("Fragmentos/footer.php");
+include("Fragmentos/pie.php");
+?>
+
+<script>
+    const openmodalplan = async () => {
+        const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
+        let parentsresult = res;
+        const parents = res;
+
+        containerplan.innerHTML = "";
+
+        parents.forEach(ix => {
+            containerplan.innerHTML += gethtml(ix, ix.padre == null ? true : false)
+        })
+
+        parents.reverse().filter(ix => ix.padre != null).forEach(ix => {
+            const tmphtml = getSelector(`#plan_${ix.id}`);
+            getSelector(`#plan_${ix.id}`).remove()
+            getSelector(`#plan_${ix.padre} .hijos`).innerHTML += tmphtml.innerHTML;
+
+            // parentsresult.filter(xx =>  xx.id == ix.padre).map(oo => {
+            //     if(!oo.hijos)
+            //         oo.hijos = [];
+            //     oo.hijos.push(ix)
+            //     return oo;
+            // });
+            // parentsresult = parentsresult.filter(xx => xx.id != ix.id);
+        });
+
+        cargarselect2("#padre", res, 'id', 'descripcion')
+    }
+    const gethtml = (ix, parent = false) => {
+        const ss = parent ? 'font-weight: bold;' : '';
+        return `
+            <div class="padre" id="plan_${ix.id}">
+                <div style="${ss} margin-bottom: 5px">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                <div style="margin-left: 20px" class="hijos"></div>
+            </div>
+        `
+    }
+    const openmodal = async () => {
+        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable")
+        cargarselect2("#padre", res, 'id', 'descripcion')
+    }
+    const guardar = e => {
+        e.preventDefault();
+        const data = {
+            header: "",
+            detalle: []
+        }
+        const padrex = padre.value == "Seleccione" ? "null" : padre.value;
+        data.header = `insert into plancontable (codigo, descripcion, padre) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex})`;
+
+        const formData = new FormData();
+        formData.append("json", JSON.stringify(data))
+
+        fetch(`setVenta.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                $("#mOrdenCompra").modal("hide");
+                if (res.success) {
+                    alert("registro completo!")
+                    location.reload()
+                } else if (res.msg) {
+                    alert(res.msg.includes("uplicate") ? "El codigo y la descripción que ingresó está duplicado." : "hubo un error, vuelva a intentarlo");
+                }
+            });
+    }
+    formoperacion.addEventListener("submit", guardar)
+</script>
