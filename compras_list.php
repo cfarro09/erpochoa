@@ -114,10 +114,8 @@ $i = 1;
                   <td> <?php echo $i; ?> </td>
                   <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
+                  <td> <?php echo round($row_Listado['precionc_soles']/1.18, 2);?> </td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?> </td>
-                  <td> <?php echo round($row_Listado['precioNC_soles']/1.18, 2);?> </td>
-                  <td> <?php echo $row_Listado['precionc_soles']-round($row_Listado['precionc_soles']/1.18,2); ?> </td>
-                  <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
                   <td align="center"> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
                   <td> NOTA CREDITO </td>
 
