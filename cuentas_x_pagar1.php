@@ -120,8 +120,8 @@ include("Fragmentos/abrirpopupcentro.php");
         <th width="5%"> N&deg; </th>
           <th  width="10%"> RUC </th>
           <th  width="30%"> RAZ�N SOCIAL </th>
-          <th  width="20%"> CARGOS </th>
           <th  width="20%"> ABONOS </th>
+          <th  width="20%"> CARGOS </th>
           <th  width="10%"> SALDO </th>
           <th  width="5%">  Est. Cuenta</th>
 
@@ -140,8 +140,8 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> <?php echo $i; ?> </td>
           <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoproveedor=<?php echo $rr['codigoproveedor']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $rr['ruc']; ?> </a>                                                          </td>
           <td> <?php echo $rr['razonsocial']; ?></td>
-          <td><?= $cargo ?></td>
           <td><?= $abono ?></td>
+          <td><?= $cargo ?></td>
           <td><?= $saldo ?></td>
           <td> <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $rr['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>
            </td>

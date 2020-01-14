@@ -165,8 +165,8 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td> <?php echo $row_Listado['fecha_registro']; ?></td>
 						<td> <?php echo $row_Listado['tipo_comprobante'] . ' - ' . $row_Listado['numerocomprobantec']; ?> </td>
 						<td> COMPRA </td>
-						<td> <?php echo $row_Listado['total']; ?> </td>
 						<td>0 </td>
+						<td> <?php echo $row_Listado['total']; ?> </td>
 						<td> <?= $auxiliar ?> </td>
 						<td class="text-center">
 							<a href="#" data-rc="<?= $row_Listado['codigorc']; ?>" data-codigoproveedor="<?= $row_Listado['rucproveedor']; ?>" onclick="mostrarModalRC(this)">Ver</a>
@@ -210,8 +210,8 @@ include("Fragmentos/abrirpopupcentro.php");
 							<?PHP echo $row_Listado['tipo_transporte']; ?>
 						</td>
 
-						<td> <?php echo round($row_Listado['preciotransp_soles'], 2); ?> </td>
 						<td> 0 </td>
+						<td> <?php echo round($row_Listado['preciotransp_soles'], 2); ?> </td>
 						<td> <?= $auxiliar ?> </td>
 
 
@@ -232,8 +232,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td><?= $abono->fechaxxx ?></td>
 								<td>ABONO</td>
 								<td><?= $abono->tipopago ?></td>
-								<td>0.00</td>
 								<td><?= number_format((float) $abono->montoextra, 2, '.', '') ?></td>
+								<td>0.00</td>
 								<td><?= $auxiliar ?></td>
 								<td></td>
 							</tr>
@@ -255,8 +255,8 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td> <?php echo $row_Listado['tipocomprobantee'] . ' - ' . $row_Listado['numerocomprobantee']; ?> </td>
 						<td> Estibador </td>
 
-						<td> <?php echo round($row_Listado['precioestibador_soles'], 2); ?> </td>
 						<td> 0 </td>
+						<td> <?php echo round($row_Listado['precioestibador_soles'], 2); ?> </td>
 						<td> <?= $auxiliar ?> </td>
 
 
@@ -277,8 +277,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td><?= $abono->fechaxxx ?></td>
 								<td>ABONO</td>
 								<td><?= $abono->tipopago ?></td>
-								<td>0.00</td>
 								<td><?= number_format((float) $abono->montoextra, 2, '.', '') ?></td>
+								<td>0.00</td>
 								<td><?= $auxiliar ?></td>
 								<td></td>
 							</tr>
@@ -299,9 +299,9 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td> <?php echo $row_Listado['tipocomprobantend'] . ' - ' . $row_Listado['numerocomprobantend']; ?> </td>
 						<td> NOTA DEBITO </td>
 
+						<td> 0 </td>
 						<td> <?php echo round($row_Listado['preciond_soles'], 2); ?> </td>
-						<td> <?= $row_Listado["pagoacumulado"]  ?> </td>
-						<td><?= $row_Listado["preciond_soles"] - $row_Listado["pagoacumulado"] ?></td>
+						<td><?= $acumulado ?></td>
 
 
 						<td class="text-center">
@@ -321,8 +321,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td><?= $abono->fechaxxx ?></td>
 								<td>ABONO</td>
 								<td><?= $abono->tipopago ?></td>
-								<td>0.00</td>
 								<td><?= number_format((float) $abono->montoextra, 2, '.', '') ?></td>
+								<td>0.00</td>
 								<td><?= $auxiliar ?></td>
 								<td></td>
 							</tr>
@@ -338,6 +338,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					$lastcodigo = $row_Listado["id_notacredito"];
 					$lastcodigo = $row_Listado["id_notacredito"];
 					$lasttipo = "notacredito_compra";
+					$lastidname = "id_notacredito";
 					$auxiliar = number_format($acumulado, 2, '.', '') ?>
 					<tr>
 
@@ -345,8 +346,8 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td> <?php echo $row_Listado['fecha_registro']; ?></td>
 						<td> <?php echo $row_Listado['tipocomprobantenc'] . ' - ' . $row_Listado['numerocomprobantenc']; ?> </td>
 						<td> NOTA CREDITO </td>
-						<td> <?php echo round($row_Listado['precionc_soles'], 2); ?> </td>
 						<td> 0</td>
+						<td> <?php echo round($row_Listado['precionc_soles'], 2); ?> </td>
 
 						<td> <?= $auxiliar ?></td>
 
@@ -368,8 +369,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td><?= $abono->fechaxxx ?></td>
 								<td>ABONO</td>
 								<td><?= $abono->tipopago ?></td>
-								<td>0.00</td>
 								<td><?= number_format((float) $abono->montoextra, 2, '.', '') ?></td>
+								<td>0.00</td>
 								<td><?= $auxiliar ?></td>
 								<td></td>
 							</tr>
