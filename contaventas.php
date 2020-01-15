@@ -182,17 +182,24 @@ include("Fragmentos/pie.php");
             </tr>`;
         const acumulated = [];
         res.forEach(iii => {
-            const tii = iii.tipocomprobante.toUpperCase();
-            acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
-            bodydata.innerHTML += `
-            <tr>
-                <td class="text-center">${iii.tipocomprobante.toUpperCase()}-${iii.codigocomprobante}-${iii.fullname}</td>
-                <td class="text-center">VENTA CONTADO</td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center">${iii.totalcargo}</td>
-            </tr>
-            `
+            const arraypagos = JSON.parse(iii.jsonpagos);
+            
+            arraypagos.forEach(ixx => {
+                const tii = iii.tipocomprobante.toUpperCase();
+                acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
+
+                bodydata.innerHTML += `
+                <tr>
+                    <td class="text-center">${iii.tipocomprobante.toUpperCase()}-${iii.codigocomprobante}-${iii.fullname}</td>
+                    <td class="text-center">${ixx.tipopago}</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center">${ixx.montoextra}</td>
+                </tr>
+                `
+            })
+            
+            
         });
         for (const [key, value] of Object.entries(acumulated)) {
             bodydata.innerHTML += `
