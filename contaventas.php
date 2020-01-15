@@ -114,6 +114,7 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const codigopersonal = <?= $codpersonal = $_SESSION['kt_codigopersonal']; ?>
     const searchconta = async e => {
         e.preventDefault();
         bodydata.innerHTML = "";
@@ -137,8 +138,13 @@ include("Fragmentos/pie.php");
             and v.sucursal = ${suc}
             and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}';
         `;
-
+        const queryabonos = `select v.abonoproveedor, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull from ventas v  left join cnatural cn on cn.codigoclienten = v.codigoclienten left join cjuridico cj on cj.codigoclientej = v.codigoclientej  
+        WHERE 
+            v.abonoproveedor is not null
+            and v.sucursal = ${suc}
+            and v.fecha_emision > '${f_ini}'`;
         const res = await get_data_dynamic(query);
+        const resabonos = await get_data_dynamic(queryabonos);
 
         const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
         const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
@@ -146,6 +152,7 @@ include("Fragmentos/pie.php");
         const pagoscontado = setventascredito(ventas_con_credito);
         ventas_contado.forEach(x => pagoscontado.push(x))
         setventascontado(pagoscontado);
+        setabonosproveedor(resabonos)
     }
     const setventascredito = res => {
         bodydata.innerHTML = `
@@ -220,6 +227,40 @@ include("Fragmentos/pie.php");
                 <td class="text-center"></td>
             </tr>`
         }
+    }
+    const setabonosproveedor = res => {
+        bodydata.innerHTML += `
+            <tr>
+                <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">COBRANZA A CLIENTES</td>
+            </tr>
+            `;
+        const acumulated = [];
+        
+        res.forEach(iii => {
+            const arraypagos = JSON.parse(iii.abonoproveedor);
+            arraypagos.filter(x => x.codigopersonal == codigopersonal).forEach(ixx => {
+                const tii = iii.tipocomprobante.toUpperCase();
+                // acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
+                bodydata.innerHTML += `
+                <tr>
+                    <td class="text-center">${iii.namefull}</td>
+                    <td class="text-center">${ixx.tipopago}</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center">${ixx.montoextra}</td>
+                </tr>`
+            })
+        });
+        // for (const [key, value] of Object.entries(acumulated)) {
+        //     bodydata.innerHTML += `
+        //     <tr>
+        //         <td class="text-center"></td>
+        //         <td class="text-center">${key}</td>
+        //         <td class="text-center"></td>
+        //         <td class="text-center">${value.toFixed(2)}</td>
+        //         <td class="text-center"></td>
+        //     </tr>`
+        // }
     }
     formoperacion.addEventListener("submit", searchconta)
 </script>

@@ -17,8 +17,9 @@ include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 
 include("Fragmentos/abrirpopupcentro.php");
-
+$codpersonal = $_SESSION['kt_codigopersonal'];
 $codsucursal = $_SESSION['cod_sucursal'];
+
 if (isset($_GET['codigo'])) {
     $codcliente = $_GET['codigo'];
     $tipo = $_GET['tipo'];
@@ -271,48 +272,6 @@ include("Fragmentos/pie.php");
                 }
             })
 
-        // if (pagoefectivo) {
-        //     historialbody.innerHTML += `
-        //     <tr>
-        //     <td>Pago Efectivo</td>
-        //     <td>${pagoefectivo}</td>
-        //     <td>-</td>
-        //     </tr>
-        //     `;
-        // }
-        // JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
-        //     let textt = "";
-        //     if (ix.tipopago == "depositobancario")
-        //         textt = `Numero Operacion: ${ix.numerooperacion} |
-        //     Fecha: ${ix.fechaextra} |
-        //     Cta. Abonada: ${ix.cuentaabonado} |
-        //     Ente: ${ix.bancoextra} |
-        //     Monto: ${ix.montoextra}`
-        //     else if (ix.tipopago == "cheque")
-        //         textt = `Numero: ${ix.numero} |
-        //     Ente: ${ix.bancoextra} |
-        //     Cta. Cte.: ${ix.cuentacorriente} |
-        //     Monto: ${ix.montoextra}`
-        //     else if (ix.tipopago == "tarjetacredito")
-        //         textt = `Numero: ${ix.numero} |
-        //     Ente: ${ix.bancoextra} |
-        //     Monto: ${ix.montoextra}`
-        //     else if (ix.tipopago == "tarjetadebito")
-        //         textt = `Numero: ${ix.numero} |
-        //     Ente: ${ix.bancoextra} | 
-        //     Monto: ${ix.montoextra}`
-        //     else if (ix.tipopago == "efectivo") {
-        //         textt = `Monto: ${ix.montoextra} `
-        //     }
-
-        //     historialbody.innerHTML += `
-        //     <tr>
-        //     <td>${ix.tipopago}</td>
-        //     <td>${ix.montoextra}</td>
-        //     <td>${textt}</td>
-        //     </tr>
-        //     `;
-        // });
     }
 
     function removecontainerpay(e) {
@@ -451,6 +410,7 @@ include("Fragmentos/pie.php");
                 numerooperacion,
                 fechaextra,
                 cuentaabonado,
+                codigopersonal: <?= $codpersonal ?>,
                 tipopago,
                 fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0,10)
             })
