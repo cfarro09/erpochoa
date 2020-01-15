@@ -102,9 +102,9 @@ $totalRows_personal = mysql_num_rows($l_per);
             <th class="text-center">Credito</th>
             <th class="text-center">Importe</th>
         </theady>
-            <tbody id="bodydata">
-                    
-            </tbody>
+        <tbody id="bodydata">
+
+        </tbody>
     </table>
 </div>
 
@@ -123,20 +123,22 @@ include("Fragmentos/pie.php");
         const f_fin = fecha_fin.value;
 
         const query = `
-        SELECT if(cn.cedula is null, 'juridico', 'natural') as tipo, sum(montoabono) as abonoproveedor,  
-        if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
-        if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
-        IFNULL(cn.cedula, cj.ruc) as identificacion, 
-        v.montofact as totalcargo, v.pagoacomulado as totalabono 
-        from ventas v
-        inner join cnatural cn on v.codigoclienten = cn.codigoclienten 
-        inner join cjuridico cj on v.codigoclientej = cj.codigoclientej 
-        where 
+        SELECT 
+            if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor,  
+            if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
+            if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
+            IFNULL(cn.cedula, cj.ruc) as identificacion, 
+            v.montofact as totalcargo, v.pagoacomulado as totalabono 
+        FROM ventas v
+        INNER join cnatural cn on v.codigoclienten = cn.codigoclienten 
+        INNER join cjuridico cj on v.codigoclientej = cj.codigoclientej 
+        WHERE 
             v.jsonpagos like '%porcobrar%' 
             and v.codigopersonal = ${per}
             and v.sucursal = ${suc}
             and v.fecha_emision BETWEEN ${f_ini} AND ${f_fin};
         `;
+        console.log(query)
         const res = await get_data_dynamic(query);
         res.filter(ii => ii.totalcargo != null).forEach(iii => {
             bodydata.innerHTML += `
@@ -150,7 +152,7 @@ include("Fragmentos/pie.php");
             `
         });
         console.log(res)
-        
+
     }
     const openmodalplan = async () => {
         const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
