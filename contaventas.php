@@ -124,7 +124,7 @@ include("Fragmentos/pie.php");
 
         const query = `
         SELECT 
-            if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante,
+            if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
             if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
             if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
             IFNULL(cn.cedula, cj.ruc) as identificacion, 
@@ -133,19 +133,24 @@ include("Fragmentos/pie.php");
         left join cnatural cn on v.codigoclienten = cn.codigoclienten 
         left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
         WHERE 
-            v.jsonpagos like '%porcobrar%' 
-            and v.codigopersonal = ${per}
+            v.codigopersonal = ${per}
             and v.sucursal = ${suc}
             and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}';
         `;
+        
+        const res = await get_data_dynamic(query);
+        
+        setventascredito(res.filter(ii => ii.jsonpagos.includes("porcobrar")));
+        
+        setventascontado(res.filter(ii => !ii.jsonpagos.includes("porcobrar")));
+    }
+    const setventascredito = res => {
         bodydata.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CREDITO</td>
-            </tr>
-        `
-        const res = await get_data_dynamic(query);
-        const acumulated = [];
-        res.filter(ii => ii.totalcargo != null).forEach(iii => {
+            </tr>`;
+        let acumulated = [];
+        res.forEach(iii => {
             const tii = iii.tipocomprobante.toUpperCase();
             acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
             bodydata.innerHTML += `
@@ -169,10 +174,37 @@ include("Fragmentos/pie.php");
             </tr>
             `
         }
-        
-        console.log(res)
-        console.log(acumulated)
-
+    }
+    const setventascontado = res => {
+        bodydata.innerHTML += `
+            <tr>
+                <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CONTADO</td>
+            </tr>`;
+        const acumulated = [];
+        res.forEach(iii => {
+            const tii = iii.tipocomprobante.toUpperCase();
+            acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
+            bodydata.innerHTML += `
+            <tr>
+                <td class="text-center">${iii.tipocomprobante.toUpperCase()}-${iii.codigocomprobante}-${iii.fullname}</td>
+                <td class="text-center">VENTA CONTADO</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center">${iii.totalcargo}</td>
+            </tr>
+            `
+        });
+        for (const [key, value] of Object.entries(acumulated)) {
+            bodydata.innerHTML += `
+            <tr>
+                <td class="text-center"></td>
+                <td class="text-center">${key}</td>
+                <td class="text-center"></td>
+                <td class="text-center">${value.toFixed(2)}</td>
+                <td class="text-center"></td>
+            </tr>
+            `
+        }
     }
     const openmodalplan = async () => {
         const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
