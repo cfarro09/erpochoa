@@ -11,7 +11,17 @@ $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
  //Enumerar filas de data tablas
 
-
+//Titulo e icono de la pagina
+$Icono="fa fa-magic";
+$Color="font-blue";
+$Titulo="Registro Compras";
+$NombreBotonAgregar="";
+//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
+//$EstadoBotonAgregar="disabled";
+$EstadoBotonAgregar="";
+//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
+$popupAncho= 700;
+$popupAlto= 545;
 
 include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
@@ -23,19 +33,20 @@ $i = 1;
 
 ?>
 
-
-<h2 align="center"><strong>REGISTRO COMPRAS</strong></h2>
-
-<!--  ----------------------------------------------------------------------------------------------------------------------------------->
+<div class="row">
+  <h1 style="font-weight: bold">REGITRO COMPRAS</h2>
+</div>
+<div class="row" style="margin-top: 20px">
+    <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
-	<div class="alert alert-danger" style="margin-top: 20px">
-		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
-	</div>
+  <div class="alert alert-danger" style="margin-top: 20px">
+    <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
+  </div>
 <?php } // Show if recordset empty ?>
 <?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
-	<table class="table table-bordered table-hover" id="sample_1">
-		<thead>
-			<tr>
+  <table class="table table-bordered table-hover" id="sample_1">
+    <thead>
+      <tr>
         <th width="5%"> N&deg; </th>
           <th  width="10%" > TIPO - NUM </th>
           <th  width="15%"> FECHA REG  </th>
@@ -124,13 +135,14 @@ $i = 1;
                   </td>
             </tr>
          <?php } ?>
-			<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+      <?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 
-		</tbody>
-	</table>
+    </tbody>
+  </table>
 
 <?php } // Show if recordset not empty ?>
 
+</div>
 <?php 
 
 //___________________________________________________________________________________________________________________
@@ -140,7 +152,6 @@ include("Fragmentos/pie.php");
 mysql_free_result($Listado);
 ?>
 <script type="text/javascript">
-
 getSelector(".caption").style.display = "none"
 
 </script>

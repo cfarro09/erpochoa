@@ -124,7 +124,7 @@ include("Fragmentos/pie.php");
 
         const query = `
         SELECT 
-            if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor,  
+            if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante,
             if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
             if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
             IFNULL(cn.cedula, cj.ruc) as identificacion, 
@@ -138,20 +138,40 @@ include("Fragmentos/pie.php");
             and v.sucursal = ${suc}
             and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}';
         `;
-        console.log(query)
+        bodydata.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CREDITO</td>
+            </tr>
+        `
         const res = await get_data_dynamic(query);
+        const acumulated = [];
         res.filter(ii => ii.totalcargo != null).forEach(iii => {
+            const tii = iii.tipocomprobante.toUpperCase();
+            acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
             bodydata.innerHTML += `
             <tr>
-                <td class="text-center">${iii.fullname}</td>
+                <td class="text-center">${iii.tipocomprobante.toUpperCase()}-${iii.codigocomprobante}-${iii.fullname}</td>
                 <td class="text-center">VENTA CREDITO</td>
-                <td class="text-center">Contado</td>
-                <td class="text-center">Credito</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
                 <td class="text-center">${iii.totalcargo}</td>
             </tr>
             `
         });
+        for (const [key, value] of Object.entries(acumulated)) {
+            bodydata.innerHTML += `
+            <tr>
+                <td class="text-center"></td>
+                <td class="text-center">${key}</td>
+                <td class="text-center"></td>
+                <td class="text-center">${value.toFixed(2)}</td>
+                <td class="text-center"></td>
+            </tr>
+            `
+        }
+        
         console.log(res)
+        console.log(acumulated)
 
     }
     const openmodalplan = async () => {
