@@ -1099,8 +1099,7 @@ if  ($nombre_archivo = "proveedor_cuentas.php") {
     }
    
 }
-else {
- $VarUrl2 = "";
+else { $VarUrl2 = "";
 }
 ?>
 <div class="page-content-wrapper">

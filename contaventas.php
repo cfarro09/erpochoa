@@ -35,95 +35,77 @@ $totalRows_personal = mysql_num_rows($l_per);
 
 ?>
 <input type="hidden" value="<?= $tmpcodsucursal ?>" id="sucursalactive">
-<div class="row">
-    <div class="col-md-4">
-        <div class="form-group">
-            <label for="field-1" class="control-label">Sucursal</label>
-            <select name="sucursal" required id="sucursal-oc-new" class="form-control ">
-                <?php do {  ?>
-                    <option <?= $r_suc['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $r_suc['cod_sucursal'] ?>">
-                        <?php echo $r_suc['nombre_sucursal'] ?>
-                    </option>
-                <?php
-                } while ($r_suc = mysql_fetch_assoc($sucursales));
-                $rows = mysql_num_rows($sucursales);
-                if ($rows > 0) {
-                    mysql_data_seek($sucursales, 0);
-                    $r_suc = mysql_fetch_assoc($sucursales);
-                }
-                ?>
-            </select>
+<form id="formoperacion">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="field-1" class="control-label">Sucursal</label>
+                <select name="sucursal" required id="sucursalconta" class="form-control ">
+                    <?php do {  ?>
+                        <option <?= $r_suc['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $r_suc['cod_sucursal'] ?>">
+                            <?php echo $r_suc['nombre_sucursal'] ?>
+                        </option>
+                    <?php
+                    } while ($r_suc = mysql_fetch_assoc($sucursales));
+                    $rows = mysql_num_rows($sucursales);
+                    if ($rows > 0) {
+                        mysql_data_seek($sucursales, 0);
+                        $r_suc = mysql_fetch_assoc($sucursales);
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="hidden" name="cod_acceso_seguridad" value="0" id="cod_acceso_seguridad">
+                <label for="personalconta" class="control-label">Personal</label>
+                <select name="personal" id="personalconta" required class="form-control select2 tooltips" data-placement="top" data-original-title="Seleccionar personal">
+                    <?php do { ?>
+                        <option <?= $r_per['codigopersonal'] == $codpersonal ? 'selected' : '' ?> value="<?= $r_per['codigopersonal'] ?>">
+                            <?= $r_per['fullname'] ?>
+                        </option>
+                    <?php
+                    } while ($r_per = mysql_fetch_assoc($l_per)); ?>
+                </select>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="form-group">
-            <input type="hidden" name="cod_acceso_seguridad" value="0" id="cod_acceso_seguridad">
-            <label for="personalx" class="control-label">Personal</label>
-            <select name="personal" onchange="selectpersonalx()" id="personalx" required class="form-control select2 tooltips" data-placement="top" data-original-title="Seleccionar personal">
-                <?php do { ?>
-                    <option <?= $r_per['codigopersonal'] == $codpersonal ? 'selected' : '' ?> value="<?= $r_per['codigopersonal'] ?>">
-                        <?= $r_per['fullname'] ?>
-                    </option>
-                <?php
-                } while ($r_per = mysql_fetch_assoc($l_per)); ?>
-            </select>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <div class="form-group">
-            <label for="field-1" class="control-label">Fecha Inicio</label>
-            <input type="text" required readonly name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="form-group">
-            <label for="field-1" class="control-label">Fecha termino</label>
-            <input type="text" name="fecha_termino" autocomplete="off" id="fecha_termino" required readonly class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document" style="width: 900px">
-        <div class="modal-content m-auto">
-            <form id="formoperacion" action="">
-                <div class="modal-header">
-                    <h2 class="modal-title">Registrar Cuenta</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <label class="control-label">Codigo</label>
-                                    <input type="text" required class="form-control" id="cuenta">
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Descripción</label>
-                                    <input type="text" required class="form-control" id="descripcion">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Padre</label>
-                                    <select id="padre"></select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="modal_close btn btn-success">Guardar</button>
-                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
-                </div>
-            </form>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="field-1" class="control-label">Fecha Inicio</label>
+                <input type="text" required name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="field-1" class="control-label">Fecha termino</label>
+                <input type="text" name="fecha_fin" autocomplete="off" id="fecha_fin" required class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+            </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success btn-block">Buscar</button>
+        </div>
+    </div>
+</form>
+<div class="row">
+    <table class="table table-bordered">
+        <theady>
+            <th class="text-center">Proveedor/Cliente</th>
+            <th class="text-center">Detalle</th>
+            <th class="text-center">Contado</th>
+            <th class="text-center">Credito</th>
+            <th class="text-center">Importe</th>
+        </theady>
+            <tbody id="bodydata">
+                    
+            </tbody>
+    </table>
 </div>
 
 <?php
@@ -132,6 +114,44 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const searchconta = async e => {
+        e.preventDefault();
+        bodydata.innerHTML = "";
+        const suc = sucursalconta.value;
+        const per = personalconta.value;
+        const f_ini = fecha_inicio.value;
+        const f_fin = fecha_fin.value;
+
+        const query = `
+        SELECT if(cn.cedula is null, 'juridico', 'natural') as tipo, sum(montoabono) as abonoproveedor,  
+        if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
+        if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
+        IFNULL(cn.cedula, cj.ruc) as identificacion, 
+        v.montofact as totalcargo, v.pagoacomulado as totalabono 
+        from ventas v
+        inner join cnatural cn on v.codigoclienten = cn.codigoclienten 
+        inner join cjuridico cj on v.codigoclientej = cj.codigoclientej 
+        where 
+            v.jsonpagos like '%porcobrar%' 
+            and v.codigopersonal = ${per}
+            and v.sucursal = ${suc}
+            and v.fecha_emision BETWEEN ${f_ini} AND ${f_fin};
+        `;
+        const res = await get_data_dynamic(query);
+        res.filter(ii => ii.totalcargo != null).forEach(iii => {
+            bodydata.innerHTML += `
+            <tr>
+                <td class="text-center">${iii.fullname}</td>
+                <td class="text-center">VENTA CREDITO</td>
+                <td class="text-center">Contado</td>
+                <td class="text-center">Credito</td>
+                <td class="text-center">${iii.totalcargo}</td>
+            </tr>
+            `
+        });
+        console.log(res)
+        
+    }
     const openmodalplan = async () => {
         const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
         let parentsresult = res;
@@ -200,5 +220,5 @@ include("Fragmentos/pie.php");
                 }
             });
     }
-    formoperacion.addEventListener("submit", guardar)
+    formoperacion.addEventListener("submit", searchconta)
 </script>
