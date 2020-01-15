@@ -186,8 +186,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								<td><?= $abono->fechaxxx ?></td>
 								<td>ABONO</td>
 								<td><?= $abono->tipopago ?></td>
-								<td>0.00</td>
 								<td><?= number_format((float) $abono->montoextra, 2, '.', '') ?></td>
+								<td>0.00</td>
 								<td><?= $auxiliar ?></td>
 								<td></td>
 							</tr>
