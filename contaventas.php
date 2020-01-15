@@ -114,7 +114,7 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
-    const codigopersonal = <?= $codpersonal = $_SESSION['kt_codigopersonal']; ?>
+    const codigopersonal = <?= $codpersonal ?>;
     const searchconta = async e => {
         e.preventDefault();
         bodydata.innerHTML = "";
@@ -237,9 +237,10 @@ include("Fragmentos/pie.php");
         const acumulated = [];
         
         res.forEach(iii => {
+            debugger
             const arraypagos = JSON.parse(iii.abonoproveedor);
             arraypagos.filter(x => x.codigopersonal == codigopersonal).forEach(ixx => {
-                const tii = iii.tipocomprobante.toUpperCase();
+                //const tii = iii.tipocomprobante.toUpperCase();
                 // acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
                 bodydata.innerHTML += `
                 <tr>
