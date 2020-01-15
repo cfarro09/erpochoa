@@ -109,6 +109,8 @@ include("Fragmentos/head.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 include("Fragmentos/abrirpopupcentro.php");
+
+$codpersonal = $_SESSION['kt_codigopersonal'];
 //________________________________________________________________________________________________________________
 ?>
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
@@ -844,6 +846,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					numerooperacion,
 					fechaextra,
 					cuentaabonado,
+					codigopersonal: <?= $codpersonal ?>,
 					tipopago,
 					fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 				})

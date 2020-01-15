@@ -124,35 +124,83 @@ include("Fragmentos/pie.php");
         const f_fin = fecha_fin.value;
 
         const query = `
-        SELECT 
-            if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
-            if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
-            if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
-            IFNULL(cn.cedula, cj.ruc) as identificacion, 
-            v.montofact as totalcargo, v.pagoacomulado as totalabono 
-        FROM ventas v
-        left join cnatural cn on v.codigoclienten = cn.codigoclienten 
-        left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
-        WHERE 
-            v.codigopersonal = ${per}
-            and v.sucursal = ${suc}
-            and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}';
-        `;
-        const queryabonos = `select v.abonoproveedor, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull from ventas v  left join cnatural cn on cn.codigoclienten = v.codigoclienten left join cjuridico cj on cj.codigoclientej = v.codigoclientej  
-        WHERE 
-            v.abonoproveedor is not null
-            and v.sucursal = ${suc}
-            and v.fecha_emision > '${f_ini}'`;
+            SELECT 
+                if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
+                if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
+                if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname,
+                IFNULL(cn.cedula, cj.ruc) as identificacion, 
+                v.montofact as totalcargo, v.pagoacomulado as totalabono 
+            FROM ventas v
+            left join cnatural cn on v.codigoclienten = cn.codigoclienten 
+            left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
+            WHERE 
+                v.codigopersonal = ${per}
+                and v.sucursal = ${suc}
+                and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}'`;
+
+        const queryabonos = `
+            SELECT v.abonoproveedor, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull 
+            FROM ventas v  
+            LEFT JOIN cnatural cn on cn.codigoclienten = v.codigoclienten 
+            LEFT JOIN cjuridico cj on cj.codigoclientej = v.codigoclientej  
+            WHERE 
+                v.abonoproveedor is not null
+                and v.sucursal = ${suc}
+                and v.fecha_emision >= '${f_ini}'`;
+        
+        const queryabonosproveedor = `
+                SELECT 
+                    'compra' as tipo, r.abonoochoa as abono, p.razonsocial
+                FROM registro_compras r
+                LEFT JOIN proveedor p on p.ruc = r.rucproveedor
+                WHERE
+                    r.fecha >= '${f_ini}' and r.codigosuc = ${suc} and r.abonoochoa is not null
+            UNION
+                SELECT 
+                    'transporte' as tipo, t.abonoochoa as abono, p.razonsocial
+                FROM transporte_compra t
+                LEFT JOIN proveedor p on p.ruc = t.ructransporte
+                INNER JOIN registro_compras r on r.codigorc = t.codigocompras
+                WHERE
+                    t.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and t.abonoochoa is not null
+            UNION
+                SELECT 
+                    'estibador' as tipo, e.abonoochoa as abono, p.razonsocial
+                FROM estibador_compra e
+                LEFT JOIN proveedor p on p.ruc = e.rucestibador
+                INNER JOIN registro_compras r on r.codigorc = e.codigocompras
+                WHERE
+                    e.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and e.abonoochoa is not null
+            UNION
+                SELECT 
+                    'notadebito' as tipo, nd.abonoochoa as abono, p.razonsocial
+                FROM notadebito_compra nd
+                LEFT JOIN proveedor p on p.ruc = nd.rucnd
+                INNER JOIN registro_compras r on r.codigorc = nd.codigocompras
+                WHERE
+                    nd.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and nd.abonoochoa is not null
+            UNION
+                SELECT 
+                    'notacredito' as tipo, nc.abonoochoa as abono, p.razonsocial
+                FROM notacredito_compra nc
+                LEFT JOIN proveedor p on p.ruc = nc.rucnotacredito
+                INNER JOIN registro_compras r on r.codigorc = nc.codigocompras
+                WHERE
+                    nc.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and nc.abonoochoa is not null
+                `;
+
         const res = await get_data_dynamic(query);
         const resabonos = await get_data_dynamic(queryabonos);
-
+        const abonosproveedor = await get_data_dynamic(queryabonosproveedor);
+        // console.log(abonosproveedor)
         const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
         const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
 
         const pagoscontado = setventascredito(ventas_con_credito);
         ventas_contado.forEach(x => pagoscontado.push(x))
         setventascontado(pagoscontado);
-        setabonosproveedor(resabonos)
+        setabonocliente(resabonos)
+        setabonoproveedor(abonosproveedor)
     }
     const setventascredito = res => {
         bodydata.innerHTML = `
@@ -228,7 +276,7 @@ include("Fragmentos/pie.php");
             </tr>`
         }
     }
-    const setabonosproveedor = res => {
+    const setabonocliente = res => {
         bodydata.innerHTML += `
             <tr>
                 <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">COBRANZA A CLIENTES</td>
@@ -240,8 +288,6 @@ include("Fragmentos/pie.php");
             debugger
             const arraypagos = JSON.parse(iii.abonoproveedor);
             arraypagos.filter(x => x.codigopersonal == codigopersonal).forEach(ixx => {
-                //const tii = iii.tipocomprobante.toUpperCase();
-                // acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${iii.namefull}</td>
@@ -252,16 +298,29 @@ include("Fragmentos/pie.php");
                 </tr>`
             })
         });
-        // for (const [key, value] of Object.entries(acumulated)) {
-        //     bodydata.innerHTML += `
-        //     <tr>
-        //         <td class="text-center"></td>
-        //         <td class="text-center">${key}</td>
-        //         <td class="text-center"></td>
-        //         <td class="text-center">${value.toFixed(2)}</td>
-        //         <td class="text-center"></td>
-        //     </tr>`
-        // }
+    }
+    const setabonoproveedor = res => {
+        bodydata.innerHTML += `
+            <tr>
+                <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
+            </tr>
+            `;
+        const acumulated = [];
+        
+        res.forEach(iii => {
+            debugger
+            const arraypagos = JSON.parse(iii.abono);
+            arraypagos.filter(x => x.codigopersonal == codigopersonal).forEach(ixx => {
+                bodydata.innerHTML += `
+                <tr>
+                    <td class="text-center">${iii.razonsocial}</td>
+                    <td class="text-center">ABONO</td>
+                    <td class="text-center">${ixx.tipopago}</td>
+                    <td class="text-center"></td>
+                    <td class="text-center">${ixx.montoextra}</td>
+                </tr>`
+            })
+        });
     }
     formoperacion.addEventListener("submit", searchconta)
 </script>
