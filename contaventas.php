@@ -130,13 +130,13 @@ include("Fragmentos/pie.php");
             IFNULL(cn.cedula, cj.ruc) as identificacion, 
             v.montofact as totalcargo, v.pagoacomulado as totalabono 
         FROM ventas v
-        INNER join cnatural cn on v.codigoclienten = cn.codigoclienten 
-        INNER join cjuridico cj on v.codigoclientej = cj.codigoclientej 
+        left join cnatural cn on v.codigoclienten = cn.codigoclienten 
+        left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
         WHERE 
             v.jsonpagos like '%porcobrar%' 
             and v.codigopersonal = ${per}
             and v.sucursal = ${suc}
-            and v.fecha_emision BETWEEN ${f_ini} AND ${f_fin};
+            and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}';
         `;
         console.log(query)
         const res = await get_data_dynamic(query);
