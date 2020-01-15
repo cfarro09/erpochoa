@@ -137,32 +137,45 @@ include("Fragmentos/pie.php");
             and v.sucursal = ${suc}
             and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}';
         `;
-        
+
         const res = await get_data_dynamic(query);
-        
-        setventascredito(res.filter(ii => ii.jsonpagos.includes("porcobrar")));
-        
-        setventascontado(res.filter(ii => !ii.jsonpagos.includes("porcobrar")));
+
+        const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
+        const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
+
+        const pagoscontado = setventascredito(ventas_con_credito);
+        ventas_contado.forEach(x => pagoscontado.push(x))
+        setventascontado(pagoscontado);
     }
     const setventascredito = res => {
         bodydata.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CREDITO</td>
             </tr>`;
+        const ventas_con_pagos_contado = [];
         let acumulated = [];
         res.forEach(iii => {
-            const tii = iii.tipocomprobante.toUpperCase();
-            acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
-            bodydata.innerHTML += `
-            <tr>
-                <td class="text-center">${iii.tipocomprobante.toUpperCase()}-${iii.codigocomprobante}-${iii.fullname}</td>
-                <td class="text-center">VENTA CREDITO</td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center">${iii.totalcargo}</td>
-            </tr>
-            `
+            
+            const arraypagos = JSON.parse(iii.jsonpagos);
+            arraypagos.filter(x => x.tipopago == "porcobrar").forEach(ixx => {
+                const tii = iii.tipocomprobante.toUpperCase();
+                acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
+                bodydata.innerHTML += `
+                    <tr>
+                        <td class="text-center">${iii.tipocomprobante.toUpperCase()}-${iii.codigocomprobante}-${iii.fullname}</td>
+                        <td class="text-center">VENTA CREDITO</td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center">${ixx.montoextra}</td>
+                    </tr>`
+            });
+            const pagoscontado = arraypagos.filter(x => x.tipopago != "porcobrar");
+            if(pagoscontado.length > 0){
+                iii.jsonpagos = JSON.stringify(pagoscontado);
+                ventas_con_pagos_contado.push(iii)
+            }
         });
+
         for (const [key, value] of Object.entries(acumulated)) {
             bodydata.innerHTML += `
             <tr>
@@ -171,9 +184,9 @@ include("Fragmentos/pie.php");
                 <td class="text-center"></td>
                 <td class="text-center">${value.toFixed(2)}</td>
                 <td class="text-center"></td>
-            </tr>
-            `
+            </tr>`
         }
+        return ventas_con_pagos_contado;
     }
     const setventascontado = res => {
         bodydata.innerHTML += `
@@ -183,10 +196,9 @@ include("Fragmentos/pie.php");
         const acumulated = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
-            
             arraypagos.forEach(ixx => {
                 const tii = iii.tipocomprobante.toUpperCase();
-                acumulated[tii] =  parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
+                acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
 
                 bodydata.innerHTML += `
                 <tr>
@@ -195,11 +207,8 @@ include("Fragmentos/pie.php");
                     <td class="text-center"></td>
                     <td class="text-center"></td>
                     <td class="text-center">${ixx.montoextra}</td>
-                </tr>
-                `
+                </tr>`
             })
-            
-            
         });
         for (const [key, value] of Object.entries(acumulated)) {
             bodydata.innerHTML += `
@@ -209,77 +218,8 @@ include("Fragmentos/pie.php");
                 <td class="text-center"></td>
                 <td class="text-center">${value.toFixed(2)}</td>
                 <td class="text-center"></td>
-            </tr>
-            `
+            </tr>`
         }
-    }
-    const openmodalplan = async () => {
-        const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
-        let parentsresult = res;
-        const parents = res;
-
-        containerplan.innerHTML = "";
-
-        parents.forEach(ix => {
-            containerplan.innerHTML += gethtml(ix, ix.padre == null ? true : false)
-        })
-
-        parents.reverse().filter(ix => ix.padre != null).forEach(ix => {
-            const tmphtml = getSelector(`#plan_${ix.id}`);
-            getSelector(`#plan_${ix.id}`).remove()
-            getSelector(`#plan_${ix.padre} .hijos`).innerHTML += tmphtml.innerHTML;
-
-            // parentsresult.filter(xx =>  xx.id == ix.padre).map(oo => {
-            //     if(!oo.hijos)
-            //         oo.hijos = [];
-            //     oo.hijos.push(ix)
-            //     return oo;
-            // });
-            // parentsresult = parentsresult.filter(xx => xx.id != ix.id);
-        });
-
-        cargarselect2("#padre", res, 'id', 'descripcion')
-    }
-    const gethtml = (ix, parent = false) => {
-        const ss = parent ? 'font-weight: bold;' : '';
-        return `
-            <div class="padre" id="plan_${ix.id}">
-                <div style="${ss} margin-bottom: 5px">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
-                <div style="margin-left: 20px" class="hijos"></div>
-            </div>
-        `
-    }
-    const openmodal = async () => {
-        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable")
-        cargarselect2("#padre", res, 'id', 'descripcion')
-    }
-    const guardar = e => {
-        e.preventDefault();
-        const data = {
-            header: "",
-            detalle: []
-        }
-        const padrex = padre.value == "Seleccione" ? "null" : padre.value;
-        data.header = `insert into plancontable (codigo, descripcion, padre) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex})`;
-
-        const formData = new FormData();
-        formData.append("json", JSON.stringify(data))
-
-        fetch(`setVenta.php`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .catch(error => console.error("error: ", error))
-            .then(res => {
-                $("#mOrdenCompra").modal("hide");
-                if (res.success) {
-                    alert("registro completo!")
-                    location.reload()
-                } else if (res.msg) {
-                    alert(res.msg.includes("uplicate") ? "El codigo y la descripción que ingresó está duplicado." : "hubo un error, vuelva a intentarlo");
-                }
-            });
     }
     formoperacion.addEventListener("submit", searchconta)
 </script>
