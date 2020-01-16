@@ -585,6 +585,7 @@ include("Fragmentos/pie.php");
 					fechaextra: ix.querySelector(".fechaextra").value,
 					cuentaabonado: ix.querySelector(".cuentaabonado").value,
 					tipopago: ix.querySelector(".tipopago").value,
+					fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 				}
 
 				if (pay.tipopago == "depositobancario" && (!pay.bancoextra || !pay.montoextra || !pay.cuentacorriente || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)) {

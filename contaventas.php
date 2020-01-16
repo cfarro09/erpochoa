@@ -137,7 +137,13 @@ include("Fragmentos/pie.php");
                 v.codigopersonal = ${per}
                 and v.sucursal = ${suc}
                 and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}'`;
-
+        const queryotrosegresos = `
+            SELECT 
+                * from serviciosporpagar
+            WHERE 
+                codpersonal = ${per}
+                and codsucursal = ${suc}
+                and fecharegistro BETWEEN '${f_ini}' AND '${f_fin}'`;
         const queryabonos = `
             SELECT v.abonoproveedor, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull 
             FROM ventas v  
@@ -192,6 +198,7 @@ include("Fragmentos/pie.php");
         const res = await get_data_dynamic(query);
         const resabonos = await get_data_dynamic(queryabonos);
         const abonosproveedor = await get_data_dynamic(queryabonosproveedor);
+        const otrosegresos = await get_data_dynamic(queryotrosegresos);
         // console.log(abonosproveedor)
         const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
         const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
@@ -201,8 +208,11 @@ include("Fragmentos/pie.php");
         setventascontado(pagoscontado);
         setabonocliente(resabonos)
         setabonoproveedor(abonosproveedor)
+        setotroegresos(otrosegresos)
     }
     const setventascredito = res => {
+        const f_ini = fecha_inicio.value;
+        const f_fin = fecha_fin.value;
         bodydata.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CREDITO</td>
@@ -251,6 +261,7 @@ include("Fragmentos/pie.php");
         const acumulated = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
+            console.log(arraypagos)
             arraypagos.forEach(ixx => {
                 const tii = iii.tipocomprobante.toUpperCase();
                 acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
@@ -277,6 +288,8 @@ include("Fragmentos/pie.php");
         }
     }
     const setabonocliente = res => {
+        const f_ini = fecha_inicio.value;
+        const f_fin = fecha_fin.value;
         bodydata.innerHTML += `
             <tr>
                 <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">COBRANZA A CLIENTES</td>
@@ -285,9 +298,8 @@ include("Fragmentos/pie.php");
         const acumulated = [];
         
         res.forEach(iii => {
-            debugger
             const arraypagos = JSON.parse(iii.abonoproveedor);
-            arraypagos.filter(x => x.codigopersonal == codigopersonal).forEach(ixx => {
+            arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${iii.namefull}</td>
@@ -300,17 +312,17 @@ include("Fragmentos/pie.php");
         });
     }
     const setabonoproveedor = res => {
+        const f_ini = fecha_inicio.value;
+        const f_fin = fecha_fin.value;
         bodydata.innerHTML += `
             <tr>
                 <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
             </tr>
             `;
         const acumulated = [];
-        
         res.forEach(iii => {
-            debugger
             const arraypagos = JSON.parse(iii.abono);
-            arraypagos.filter(x => x.codigopersonal == codigopersonal).forEach(ixx => {
+            arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${iii.razonsocial}</td>
@@ -321,6 +333,24 @@ include("Fragmentos/pie.php");
                 </tr>`
             })
         });
+    }
+    const setotroegresos = res => {
+        bodydata.innerHTML += `
+            <tr>
+                <td colspan="5" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
+            </tr>
+            `;
+        const acumulated = [];
+        res.forEach(iii => {
+            bodydata.innerHTML += `
+            <tr>
+                <td class="text-center">${iii.concepto}</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center">${iii.precio}</td>
+            </tr>`
+        })
     }
     formoperacion.addEventListener("submit", searchconta)
 </script>

@@ -18,6 +18,8 @@ include("Fragmentos/menu.php");
 
 include("Fragmentos/abrirpopupcentro.php");
 
+
+$codpersonal = $_SESSION['kt_codigopersonal'];
 $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Listado = "select sp.*, s.nombre_sucursal from serviciosporpagar sp left join sucursal s on s.cod_sucursal = sp.codsucursal";
@@ -165,9 +167,11 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    
     const guardar = e => {
         e.preventDefault();
-        const query = `insert into serviciosporpagar (fechafacturacion, concepto, numerorecibo, mespago, aniopago, precio, codsucursal) values ('${fechafacturacion.value}', '${concepto.value}', '${numerorecibo.value}', '${mespago.value}', '${aniopago.value}', ${preciopago.value}, ${codsucursal.value})`
+        const codpersonal = <?= $codpersonal ?>;
+        const query = `insert into serviciosporpagar (fechafacturacion, concepto, numerorecibo, mespago, aniopago, precio, codsucursal, codpersonal) values ('${fechafacturacion.value}', '${concepto.value}', '${numerorecibo.value}', '${mespago.value}', '${aniopago.value}', ${preciopago.value}, ${codsucursal.value}, ${codpersonal})`
         const detalle = [];
         detalle.push(query);
         const formData = new FormData();
