@@ -1006,6 +1006,14 @@ echo "<a href='#'>Proforma</a>";
 
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="contaventas.php" id="" class="nav-link font-blue-ebonyclay">
+                                    <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                    <span class="title">Liquidacion de Caja</span>
+                                    <span class="selected"></span>
+
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <?php endif ?>
@@ -1066,6 +1074,14 @@ echo "<a href='#'>Proforma</a>";
                             <a href="eepp.php" class="nav-link font-blue-steel">
                                 <i class="glyphicon glyphicon-user font-blue-steel"></i>
                                 <span class="title">EEPP y GG</span>
+                                <span class="selected"></span>
+                                <span class="arrow open"></span>
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a href="plancontable.php" class="nav-link font-blue-steel">
+                                <i class="glyphicon glyphicon-user font-blue-steel"></i>
+                                <span class="title">Plan Contable</span>
                                 <span class="selected"></span>
                                 <span class="arrow open"></span>
                             </a>
