@@ -368,12 +368,14 @@ include("Fragmentos/pie.php");
 		<label class="control-label">Tipo Pago</label>
 		<select onchange="changetypepago(this)" class="form-control tipopago">
 		<option value="">[Seleccione]</option>
+		
 		<option value="efectivo">Efectivo</option>
+		<option value="cheque">Cheque</option>
 		<option value="depositobancario">Deposito Bancario</option>
 		<option value="tarjetadebito">Tarjeta Debito</option>
 		<option value="tarjetacredito">Tarjeta Credito</option>
-		<option value="cheque">Cheque</option>
 		<option value="porcobrar">Por cobrar</option>
+		
 		</select>
 		</div>
 		</div>
