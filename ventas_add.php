@@ -117,10 +117,10 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				</div>
 				<div class="col-md-3">
 					<div class="form-group">
-						<label for="field-1" class="control-label">Modalidad Entrega</label>
+						<label for="field-1" class="control-label">Entrega</label>
 						<select required class="form-control" id="modalidadentrega">
-							<option value="Entrega inmediata S/G">Entrega Inmediata S/G</option>
-							<option value="Entrega inmediata C/G">Entrega Inmediata C/G</option>
+							<option value="Entrega inmediata S/G">Inmediata S/G</option>
+							<option value="Entrega inmediata C/G">Inmediata C/G</option>
 							<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
 						</select>
 					</div>
@@ -365,7 +365,7 @@ include("Fragmentos/pie.php");
 
 		<div class="col-md-2">
 		<div class="form-group">
-		<label class="control-label">Tipo Pago</label>
+		<label class="control-label">Medio de Pago</label>
 		<select onchange="changetypepago(this)" class="form-control tipopago">
 		<option value="">[Seleccione]</option>
 		
