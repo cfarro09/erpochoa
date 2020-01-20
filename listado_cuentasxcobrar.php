@@ -25,9 +25,9 @@ if (isset($_GET['codigo'])) {
     $tipo = $_GET['tipo'];
 }
 if($tipo == "juridico"){
-    $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and porpagar = 1 order by v.codigoventas asc";
+    $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 }else{
-    $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and porpagar = 1 order by v.codigoventas asc";
+    $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 }
 
 // $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where porpagar = 1";
@@ -37,6 +37,11 @@ $row = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
+<style type="text/css">
+    #sample_1 td, th{
+        text-align: center
+    }
+</style>
 <h3>Cliente <?= $row["ClienteNatural"] . " - " . $row["cedula"] ?></h3>
 <button class="btn btn-success" style="margin: 10px 0" data-toggle="modal" data-target="#mpagar">PAGAR ACUMULADO</button>
 <?php if ($totalRows_Listado == 0) : ?>
@@ -59,8 +64,14 @@ $i = 1;
         <tbody>
             <?php $acumulado = 0; $lastcodigoventa = 0; $abonoproveedor = ""?>
             <?php do {
-                $restante = $row["total"] - $row["pagoacomulado"];
-                $acumulado += $row["total"] - $row["pagoacomulado"];
+                if($row["tipocomprobante"] == "notacredito"){
+                    $restante = 0;
+                    $acumulado -= $row["total"];
+                }else{
+                    $restante = $row["total"] - $row["pagoacomulado"];
+                    $acumulado += $row["total"] - $row["pagoacomulado"];    
+                }
+                
                 $lastcodigoventa = $row["codigoventas"];
                 $abonoproveedor = $row["abonoproveedor"];
 
@@ -71,19 +82,25 @@ $i = 1;
                     <td><?= $row["fecha_emision"] ?></td>
                     <td><?= $row["tipocomprobante"] ?></td>
                     <td><?= $row["codigocomprobante"] ?></td>
-                    <td><?= number_format($row["total"], 2, '.', '') ?></td>
-                    <td><?= number_format($row["pagoacomulado"], 2, '.', '') ?></td>
+
+                    <?php if ($row["tipocomprobante"] == "notacredito"): ?>
+                        <td>0.00</td>
+                        <td><?= number_format($row["total"], 2, '.', '') ?></td>
+                    <?php else: ?>
+                        <td><?= number_format($row["total"], 2, '.', '') ?></td>
+                        <td><?= number_format($row["pagoacomulado"], 2, '.', '') ?></td>
+                    <?php endif ?>
+
                     <td><?= $auxiliar ?></td>
-                    
                 </tr>
+                    
+                    
                 <?php if($row["abonoproveedor"] != null): ?>
                     <?php $arrayabonoproveedor = json_decode($row["abonoproveedor"]) ?>
                     <?php foreach ($arrayabonoproveedor as $abono): ?>
                         <?php 
                             $acumulado = $acumulado - $abono->montoextra;
-
                             $auxiliar = number_format($acumulado, 2, '.', '');
-
                             $i++;
                         ?>
                         <tr>

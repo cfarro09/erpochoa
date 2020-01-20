@@ -931,7 +931,15 @@ echo "<a href='#'>Proforma</a>";
                             <li class="nav-item">
                                 <a href="ventas_add.php" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                    <span class="title">Ventas</span>
+                                    <span class="title">Ventas Ordinarias</span>
+                                    <span class="selected"></span>
+
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="ventas_add1.php" class="nav-link font-blue-ebonyclay">
+                                    <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                    <span class="title">Ventas No Ordinarias</span>
                                     <span class="selected"></span>
 
                                 </a>

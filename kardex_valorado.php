@@ -279,10 +279,10 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td>${item.tipocomprobante}</td>
 							<td>${item.numero}</td>
 							<td>${item.precio}</td>
-							<td>${item.detalle.includes("Compras") || item.detalle.includes("Entra") ? item.cantidad : ""}</td>
-							<td>${item.detalle.includes("Compras") || item.detalle.includes("Entra") ? item.preciototal : ""}</td>
-							<td>${item.detalle.includes("Ventas") || item.detalle.includes("Sale") ? item.cantidad : ""}</td>
-							<td>${item.detalle.includes("Ventas") || item.detalle.includes("Sale") ? item.preciototal : ""}</td>
+							<td>${(item.detalle.includes("Compras") || (item.detalle.includes("Ventas") && item.tipocomprobante == "notacredito")) || item.detalle.includes("Entra") ? item.cantidad : ""}</td>
+							<td>${(item.detalle.includes("Compras") || (item.detalle.includes("Ventas") && item.tipocomprobante == "notacredito")) || item.detalle.includes("Entra") ? item.preciototal : ""}</td>
+							<td>${(item.detalle.includes("Ventas") && item.tipocomprobante != "notacredito") || item.detalle.includes("Sale") ? item.cantidad : ""}</td>
+							<td>${(item.detalle.includes("Ventas") && item.tipocomprobante != "notacredito") || item.detalle.includes("Sale") ? item.preciototal : ""}</td>
 							<td>${item.saldo}</td>
 							<td>${(item.precio * item.saldo / item.cantidad).toFixed(3)}</td>
 							</tr>
