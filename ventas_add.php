@@ -563,34 +563,65 @@ include("Fragmentos/pie.php");
 			codigoprod.closest(".col-sm-12").style.display = "";
 			detalleFormProducto.innerHTML = "";
 		} else {
-			codigoprod.closest(".col-sm-12").style.display = "none";
-			detalleFormProducto.innerHTML = `
-			<tr class="producto">
-				<input type="hidden" class="pcompra" value="1">
+			if(e.value == "notacredito"){
+				codigoprod.closest(".col-sm-12").style.display = "";
 				
-				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}
-				</td>
-				<td class="indexproducto">1</td>
-				<td>
-					<input type="number" data-type="cantidad" data-stock="0" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="1" disabled style="width: 80px">
-				</td>
-				<td style="display: none">
-					<select class="form-control unidad_medida" name="unidad_medida"  required>
-						<option selected value="unidad">unidad</option>
-						<option value="kilo">kilo</option>
-						<option value="tonelada">tonelada</option>
-					</select>
-				</td>
-				<td colspan="3">
-					<input type="text" placeholder="Detalle" class="form-control" id="detallenotadebito">
-				</td>
-				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="0" class="precio form-control">
-				</td>
-				<td class="importe">0</td>
-				<td>
-				</td>
-			</tr>
-			`;
+				detalleFormProducto.innerHTML = `
+					<tr class="producto" data-type="notacredito">
+						<input type="hidden" class="pcompra" value="1">
+						
+						<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}
+						</td>
+						<td class="indexproducto">1</td>
+						<td>
+							<input type="number" data-type="cantidad" data-stock="0" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="1" disabled style="width: 80px">
+						</td>
+						<td style="display: none">
+							<select class="form-control unidad_medida" name="unidad_medida"  required>
+								<option selected value="unidad">unidad</option>
+								<option value="kilo">kilo</option>
+								<option value="tonelada">tonelada</option>
+							</select>
+						</td>
+						<td colspan="3">
+							<input type="text" placeholder="Detalle" class="form-control" id="detallenotaaux">
+						</td>
+						<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="0" class="precio form-control">
+						</td>
+						<td class="importe">0</td>
+						<td>
+						</td>
+					</tr>`;
+			}else{
+				codigoprod.closest(".col-sm-12").style.display = "none";
+				detalleFormProducto.innerHTML = `
+				<tr class="producto" data-type="notadebito">
+					<input type="hidden" class="pcompra" value="1">
+					
+					<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}
+					</td>
+					<td class="indexproducto">1</td>
+					<td>
+						<input type="number" data-type="cantidad" data-stock="0" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="1" disabled style="width: 80px">
+					</td>
+					<td style="display: none">
+						<select class="form-control unidad_medida" name="unidad_medida"  required>
+							<option selected value="unidad">unidad</option>
+							<option value="kilo">kilo</option>
+							<option value="tonelada">tonelada</option>
+						</select>
+					</td>
+					<td colspan="3">
+						<input type="text" placeholder="Detalle" class="form-control" id="detallenotaaux">
+					</td>
+					<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="0" class="precio form-control">
+					</td>
+					<td class="importe">0</td>
+					<td>
+					</td>
+				</tr>`;
+			}
+			
 			queryselected = query + " UNION " + query2;
 		}
 
@@ -704,27 +735,55 @@ include("Fragmentos/pie.php");
 					data.detalle.push(`
 					insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
 					values
-					(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotadebito.value}')
+					(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
 					`);
+				}else if(tipocomprobante.value == "notacredito") {
+					if(item.dataset.type == "notacredito"){
+						data.detalle.push(`
+							insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
+							values
+							(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
+							`);
+					}else{
+						data.detalle.push(`
+							insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
+							values (${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
+						`);
+
+						data.detalle.push(`
+							insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
+							values
+							(${d.codigoprod}, '${h.fecha_emision}', ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad}, ${d.pventa}, 
+							(select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) + ${d.cantidad}
+							, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
+						`);
+
+						if (modalidadentrega.value != "Entrega almacen C/G") {
+							data.detalle.push(`
+							insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
+							values
+							(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
+							(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) + ${d.cantidad}
+							, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+						}
+					}
 				} else {
 					data.detalle.push(`
-					insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa)
-					values
-					(${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###)
+						insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa)
+						values (${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###)
 					`);
 
 					data.detalle.push(`
-					insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
-					values
-					(${d.codigoprod}, '${h.fecha_emision}', ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad}, ${d.pventa}, 
-					(select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad}
-					, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
+						insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
+						values
+						(${d.codigoprod}, '${h.fecha_emision}', ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad}, ${d.pventa}, 
+						(select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad}
+						, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
 					`);
 
 					if (modalidadentrega.value != "Entrega almacen C/G") {
 						data.detalle.push(`
 						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
-
 						values
 						(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
 						(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad}
