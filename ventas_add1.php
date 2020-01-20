@@ -74,10 +74,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					<div class="form-group">
 						<label for="field-1" class="control-label">Comprobante</label>
 						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
-							<option value="factura">Factura</option>
-							<option value="boleta">Boleta</option>
-							<option value="notadebito">Nota Debito</option>
-							<option value="notacredito">Nota Credito</option>
+							<option value="ventasxconfirmar">Ventas x Confirmar</option>
+							<option value="ventasxordensalida">Ventas por orden Salida</option>
 						</select>
 					</div>
 				</div>
@@ -592,7 +590,7 @@ include("Fragmentos/pie.php");
 						<td>
 						</td>
 					</tr>`;
-			}else{
+			}else if(e.value == "notadebito"){
 				codigoprod.closest(".col-sm-12").style.display = "none";
 				detalleFormProducto.innerHTML = `
 				<tr class="producto" data-type="notadebito">
@@ -621,11 +619,8 @@ include("Fragmentos/pie.php");
 					</td>
 				</tr>`;
 			}
-			
 			queryselected = query + " UNION " + query2;
 		}
-
-
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 	}
