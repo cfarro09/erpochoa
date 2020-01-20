@@ -641,10 +641,13 @@ include("Fragmentos/pie.php");
 				alert("Los montos no coinciden");
 				return;
 			}
-			if(pay.tipopago == "depositobancario"){
+			pagosextras.filter(x => x.tipopago == "depositobancario").forEach(x => {
+				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO', ${x.montoextra}, 
+				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
 
-			}
-
+				data.detalle.push(querydepbancario)
+			})
+			
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
