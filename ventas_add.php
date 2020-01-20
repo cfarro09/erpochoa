@@ -76,8 +76,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
 							<option value="factura">Factura</option>
 							<option value="boleta">Boleta</option>
-							<option value="recibo">Recibo</option>
-							<option value="otros">Otros</option>
+							<option value="notadebito">Nota Debito</option>
+							<option value="notacredito">Nota Credito</option>
 						</select>
 					</div>
 				</div>
@@ -224,13 +224,26 @@ include("Fragmentos/pie.php");
 ?>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(onloadxx());
+	let htmlcuentaabonado = "";
+	async function getcuentaabonados(){
+		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
+		const arraycuentaabonado = await get_data_dynamic(query);
+		arraycuentaabonado.forEach(x => {
+			htmlcuentaabonado1 += `
+				<option value="${x.id_cuenta}">${x.description}</option>
+			`;
+		});
+		return htmlcuentaabonado1;
+	}
+	const onloadxx = async () => {
+		htmlcuentaabonado = await getcuentaabonados()
 		addPayExtra();
 		setcombocliente({value : "factura"})
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none"
-	});
-
+	}
+	
 	function changemodopago(e) {
 		if (e.value == "unico") {
 			getSelector(".montoextra").value = 0;
@@ -242,8 +255,10 @@ include("Fragmentos/pie.php");
 				}
 				ii++;
 			});
+			getSelectorAll(".montoextra").forEach(x => x.disabled = true)
 		} else {
 			divparentpayextra.style.display = "";
+			getSelectorAll(".montoextra").forEach(x => x.disabled = false)
 		}
 	}
 
@@ -444,7 +459,9 @@ include("Fragmentos/pie.php");
 		<div style="display: none" class="col-md-2 inputxxx depositobancario">
 		<div class="form-group">
 		<label class="control-label">Cta Abonado</label>
-		<input type="text" class="form-control cuentaabonado">
+		<select class="form-control cuentaabonado">
+		${htmlcuentaabonado}
+		</select>
 		</div>
 		</div>
 
@@ -464,6 +481,9 @@ include("Fragmentos/pie.php");
 	}
 
 	function changetypepago(e) {
+
+		getSelectorAll(".montoextra").forEach(x => x.disabled = formpago.value == "unico" ? true : false)
+
 		e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
 		e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
 
