@@ -228,7 +228,7 @@ include("Fragmentos/pie.php");
 		htmlcuentaabonado = await getcuentaabonados()
 		addPayExtra();
 		setcombocliente({
-			value: "factura"
+			value: "xxxxxxxxxxx"
 		})
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none"
