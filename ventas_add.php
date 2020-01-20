@@ -224,9 +224,18 @@ include("Fragmentos/pie.php");
 ?>
 
 <script type="text/javascript">
-	$(document).ready(onloadxx());
 	let htmlcuentaabonado = "";
+	
+	const onloadxx = async () => {
+		htmlcuentaabonado = await getcuentaabonados()
+		addPayExtra();
+		setcombocliente({value : "factura"})
+		getSelector(".containerx").firstElementChild.style.display = "none"
+		getSelector(".containerx").style.border = "none"
+	}
+	$(document).ready(onloadxx());
 	async function getcuentaabonados(){
+		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
 		const arraycuentaabonado = await get_data_dynamic(query);
 		arraycuentaabonado.forEach(x => {
@@ -235,13 +244,6 @@ include("Fragmentos/pie.php");
 			`;
 		});
 		return htmlcuentaabonado1;
-	}
-	const onloadxx = async () => {
-		htmlcuentaabonado = await getcuentaabonados()
-		addPayExtra();
-		setcombocliente({value : "factura"})
-		getSelector(".containerx").firstElementChild.style.display = "none"
-		getSelector(".containerx").style.border = "none"
 	}
 	
 	function changemodopago(e) {
@@ -640,7 +642,7 @@ include("Fragmentos/pie.php");
 				return;
 			}
 			if(pay.tipopago == "depositobancario"){
-				
+
 			}
 
 			data.header = `insert into ventas 
