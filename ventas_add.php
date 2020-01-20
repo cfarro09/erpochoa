@@ -87,7 +87,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						<input type="text" class="form-control" id="codigocomprobante">
 					</div>
 				</div>
-				
+
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Sucursal</label>
@@ -111,11 +111,11 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					<div class="form-group">
 						<label for="field-1" class="control-label">Cliente</label>
 						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
-							
+
 						</select>
 					</div>
 				</div>
-				
+
 				<div class="col-md-3">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Entrega</label>
@@ -225,16 +225,18 @@ include("Fragmentos/pie.php");
 
 <script type="text/javascript">
 	let htmlcuentaabonado = "";
-	
+
 	const onloadxx = async () => {
 		htmlcuentaabonado = await getcuentaabonados()
 		addPayExtra();
-		setcombocliente({value : "factura"})
+		setcombocliente({
+			value: "factura"
+		})
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none"
 	}
 	$(document).ready(onloadxx());
-	async function getcuentaabonados(){
+	async function getcuentaabonados() {
 		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
 		const arraycuentaabonado = await get_data_dynamic(query);
@@ -245,7 +247,7 @@ include("Fragmentos/pie.php");
 		});
 		return htmlcuentaabonado1;
 	}
-	
+
 	function changemodopago(e) {
 		if (e.value == "unico") {
 			getSelector(".montoextra").value = 0;
@@ -552,13 +554,47 @@ include("Fragmentos/pie.php");
 		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
 		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
 		let queryselected = "";
-		if(e.value == "boleta")
+		if (e.value == "boleta") {
 			queryselected = query
-		else if(e.value == "factura")
+			codigoprod.closest(".col-sm-12").style.display = "";
+			detalleFormProducto.innerHTML = "";
+		} else if (e.value == "factura") {
 			queryselected = query2
-		else
-			queryselected = query + " UNION " + query2
-		
+			codigoprod.closest(".col-sm-12").style.display = "";
+			detalleFormProducto.innerHTML = "";
+		} else {
+			codigoprod.closest(".col-sm-12").style.display = "none";
+			detalleFormProducto.innerHTML = `
+			<tr class="producto">
+				<input type="hidden" class="pcompra" value="1">
+				
+				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}
+				</td>
+				<td class="indexproducto">1</td>
+				<td>
+					<input type="number" data-type="cantidad" data-stock="0" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="1" disabled style="width: 80px">
+				</td>
+				<td style="display: none">
+					<select class="form-control unidad_medida" name="unidad_medida"  required>
+						<option selected value="unidad">unidad</option>
+						<option value="kilo">kilo</option>
+						<option value="tonelada">tonelada</option>
+					</select>
+				</td>
+				<td colspan="3">
+					<input type="text" placeholder="Detalle" class="form-control" id="detallenotadebito">
+				</td>
+				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="0" class="precio form-control">
+				</td>
+				<td class="importe">0</td>
+				<td>
+				</td>
+			</tr>
+			`;
+			queryselected = query + " UNION " + query2;
+		}
+
+
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 	}
@@ -647,12 +683,13 @@ include("Fragmentos/pie.php");
 
 				data.detalle.push(querydepbancario)
 			})
-			
+
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
 			('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
 			`
+
 			getSelectorAll(".producto").forEach(item => {
 				const d = {
 					codigoprod: item.querySelector(".codigopro").dataset.codigo,
@@ -663,13 +700,20 @@ include("Fragmentos/pie.php");
 					igv: parseFloat(item.querySelector(".precio").value) * 0.18,
 					totalventa: (parseInt(item.querySelector(".cantidad").value) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
 				}
-				data.detalle.push(`
+				if (tipocomprobante.value == "notadebito") {
+					data.detalle.push(`
+					insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
+					values
+					(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotadebito.value}')
+					`);
+				} else {
+					data.detalle.push(`
 					insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa)
 					values
 					(${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###)
 					`);
 
-				data.detalle.push(`
+					data.detalle.push(`
 					insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
 					values
 					(${d.codigoprod}, '${h.fecha_emision}', ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad}, ${d.pventa}, 
@@ -677,16 +721,16 @@ include("Fragmentos/pie.php");
 					, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
 					`);
 
-				if (modalidadentrega.value != "Entrega almacen C/G") {
-					data.detalle.push(`
+					if (modalidadentrega.value != "Entrega almacen C/G") {
+						data.detalle.push(`
 						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
 
 						values
 						(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
 						(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad}
 						, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+					}
 				}
-
 			})
 			var formData = new FormData();
 			formData.append("json", JSON.stringify(data))
