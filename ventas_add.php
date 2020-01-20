@@ -70,14 +70,24 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 	<div class="row">
 		<div class="col-sm-12">
 			<div class="row" style="margin-top: 10px">
-				<div class="col-md-6">
+				<div class="col-md-3">
 					<div class="form-group">
-						<label for="field-1" class="control-label">Cliente</label>
-						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
-							<option value="">Seleccione tipo de comprobante</option>
+						<label for="field-1" class="control-label">Comprobante</label>
+						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
+							<option value="factura">Factura</option>
+							<option value="boleta">Boleta</option>
+							<option value="recibo">Recibo</option>
+							<option value="otros">Otros</option>
 						</select>
 					</div>
 				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="field-1" class="control-label">N° Comprobante</label>
+						<input type="text" class="form-control" id="codigocomprobante">
+					</div>
+				</div>
+				
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Sucursal</label>
@@ -97,24 +107,15 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						</select>
 					</div>
 				</div>
-
-				<div class="col-md-3">
+				<div class="col-md-6">
 					<div class="form-group">
-						<label for="field-1" class="control-label">Comprobante</label>
-						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
-							<option value="factura">Factura</option>
-							<option value="boleta">Boleta</option>
-							<option value="recibo">Recibo</option>
-							<option value="otros">Otros</option>
+						<label for="field-1" class="control-label">Cliente</label>
+						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
+							
 						</select>
 					</div>
 				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-						<label for="field-1" class="control-label">N° Comprobante</label>
-						<input type="text" class="form-control" id="codigocomprobante">
-					</div>
-				</div>
+				
 				<div class="col-md-3">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Entrega</label>
@@ -409,12 +410,7 @@ include("Fragmentos/pie.php");
 		</div>
 		</div>
 
-		<div style="display: none" class="efectivo col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
-		<div class="form-group">
-		<label class="control-label">Monto</label>
-		<input type="number" step="any" oninput="calcularmontopagado()" class="form-control montoextra">
-		</div>
-		</div>
+		
 
 		<div style="display: none" class="col-md-2 inputxxx cheque tarjetacredito tarjetadebito">
 		<div class="form-group">
@@ -450,6 +446,13 @@ include("Fragmentos/pie.php");
 		<label class="control-label">Cta Abonado</label>
 		<input type="text" class="form-control cuentaabonado">
 		</div>
+		</div>
+
+		<div style="display: none" class="efectivo col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
+			<div class="form-group">
+				<label class="control-label">Monto</label>
+				<input type="number" step="any" oninput="calcularmontopagado()" class="form-control montoextra">
+			</div>
 		</div>
 		`;
 		containerpayextra.appendChild(newxx);
