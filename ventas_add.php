@@ -639,6 +639,9 @@ include("Fragmentos/pie.php");
 				alert("Los montos no coinciden");
 				return;
 			}
+			if(pay.tipopago == "depositobancario"){
+				
+			}
 
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
