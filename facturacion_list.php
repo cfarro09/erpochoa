@@ -259,7 +259,7 @@ include("Fragmentos/abrirpopupcentro.php");
 									RUC : <span id="mruc1"></span><BR>
 									SUCURSAL: <span id="msucursal1"></span> <BR>
 									DOC ALMACEN : <span id="mcodref11"></span> <br>
-									DOC REF 2:  <span id="mcodref21"></span> <br>
+									<span id="auxmodref">DOC REF 2:</span>  <span id="mcodref21"></span> <br>
 									GENERADA POR: : <span id="mgeneradapor1"></span> <br>
 
 								</b>
@@ -1169,7 +1169,13 @@ mysql_free_result($Listado);
 					$("#mfechaemision1").text(res.headerx.fecha_emision)
 					$("#mvalortotal1").text(res.headerx.montofact)
 					$("#mcodref11").text(res.headerx.numero_guia)
-					$("#mcodref21").text(res.headerx.codigoref2 ? res.headerx.codigoref2 : "No tiene")
+					if(res.header.codigoref2){
+						$("#mcodref21").text(res.header.codigoref2)
+						auxmodref.style.display = "";
+					}else{
+						auxmodref.style.display = "none";
+						mcodref21.style.display = "none";
+					}
 					$("#mgeneradapor1").text(res.headerx.usuario)
 					$("#mruc1").text(res.headerx.ruc)
 
@@ -1180,9 +1186,17 @@ mysql_free_result($Listado);
 					$("#codigosucursal").val(res.headerx.sucursal)
 					$("#msucursal1").text(res.headerx.nombre_sucursal)
 
-					const { fecha_registro, descuentocompras, tipo_comprobante, numerocomprobante, tipomoneda } = res.header;
+					let { fecha_registro, descuentocompras, tipo_comprobante, numerocomprobante, tipomoneda } = res.header;
 					facturafechaemision.value = fecha_registro.substring(0, 10)
 					descuento.value = descuentocompras.substring(0, 10)
+					if(tipo_comprobante == "fac")
+						tipo_comprobante = "factura"
+					else if(tipo_comprobante == "bol")
+						tipo_comprobante = "boleta"
+					else if(tipo_comprobante == "rec")
+						tipo_comprobante = "recibo"
+					else if(tipo_comprobante == "otr")
+						tipo_comprobante = "otros"
 					$("#tipocomprobantefactura").val(tipo_comprobante)
 					moneda.value = tipomoneda
 					nrocomprobante.value = numerocomprobante
@@ -1286,7 +1300,13 @@ mysql_free_result($Listado);
 					$("#mvalortotal").text(res.header.montofact)
 					$("#msucursal").text(res.header.nombre_sucursal)
 					$("#mcodref1").text(res.header.codigoref1)
-					$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
+					if(res.header.codigoref2){
+						$("#mcodref21").text(res.header.codigoref2)
+						auxmodref.style.display = "";
+					}else{
+						auxmodref.style.display = "none";
+						mcodref21.style.display = "none";
+					}
 					$("#mgeneradapor").text(res.header.usuario)
 					$("#mruc").text(res.header.ruc)
 
@@ -1491,7 +1511,14 @@ mysql_free_result($Listado);
 					$("#mfechaemision1").text(res.header.fecha_emision)
 					$("#mvalortotal1").text(res.header.montofact)
 					$("#mcodref11").text(res.header.numero_guia)
-					$("#mcodref21").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
+					if(res.header.codigoref2){
+						$("#mcodref21").text(res.header.codigoref2)
+						auxmodref.style.display = "";
+					}else{
+						auxmodref.style.display = "none";
+						mcodref21.style.display = "none";
+					}
+
 					$("#mgeneradapor1").text(res.header.usuario)
 					$("#mruc1").text(res.header.ruc)
 
