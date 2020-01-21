@@ -77,7 +77,8 @@ $query_Listado = "SELECT p.codigoproveedor, p.ruc, p.razonsocial,
   LEFT JOIN estibador_compra e on e.rucestibador = p.ruc
   LEFT JOIN notadebito_compra nd on nd.rucnd = p.ruc
   LEFT JOIN notacredito_compra nc on nc.rucnotacredito = p.ruc
-  WHERE estado = '0'";
+  WHERE estado = '0' and rc.total is not null 
+  GROUP BY p.ruc ";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $rr = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
