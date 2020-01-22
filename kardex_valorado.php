@@ -90,6 +90,11 @@ include("Fragmentos/abrirpopupcentro.php");
 	</div>
 <?php } // Show if recordset empty ?>
 <?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
+	<style>
+		#historydata th,td{
+			text-align: center
+		}
+	</style>
 	<table class="table table-striped table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
@@ -178,7 +183,7 @@ include("Fragmentos/abrirpopupcentro.php");
 												</div>
 											</div>
 											<div class="col-md-12">
-												<table class="table table-striped table-bordered table-hover" id="">
+												<table class="table table-striped table-bordered table-hover" id="historydata">
 													<thead>
 														<tr>
 															<th colspan="5" id="headerKardex"></th>
@@ -271,6 +276,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					console.log(res)
 					let i = 0;
 					res.forEach(item => {
+						item.preciototal = parseFloat(item.preciototal).toFixed(2)
 						if(item.cantidad != "0"){
 							getSelector("#detalleKardexAlmProd").innerHTML += `
 							<tr>
@@ -279,12 +285,12 @@ include("Fragmentos/abrirpopupcentro.php");
 							<td>${item.tipocomprobante}</td>
 							<td>${item.numero}</td>
 							<td>${item.precio}</td>
-							<td>${item.detalle.includes("Compras") || item.detalle.includes("Entra") ? item.cantidad : ""}</td>
-							<td>${item.detalle.includes("Compras") || item.detalle.includes("Entra") ? item.preciototal : ""}</td>
-							<td>${item.detalle.includes("Ventas") || item.detalle.includes("Sale") ? item.cantidad : ""}</td>
-							<td>${item.detalle.includes("Ventas") || item.detalle.includes("Sale") ? item.preciototal : ""}</td>
+							<td>${(item.detalle.includes("Compras") || (item.detalle.includes("Ventas") && item.tipocomprobante == "notacredito")) || item.detalle.includes("Entra") ? item.cantidad : ""}</td>
+							<td>${(item.detalle.includes("Compras") || (item.detalle.includes("Ventas") && item.tipocomprobante == "notacredito")) || item.detalle.includes("Entra") ? item.preciototal : ""}</td>
+							<td>${(item.detalle.includes("Ventas") && item.tipocomprobante != "notacredito") || item.detalle.includes("Sale") ? item.cantidad : ""}</td>
+							<td>${(item.detalle.includes("Ventas") && item.tipocomprobante != "notacredito") || item.detalle.includes("Sale") ? item.preciototal : ""}</td>
 							<td>${item.saldo}</td>
-							<td>${(item.precio * item.saldo / item.cantidad).toFixed(3)}</td>
+							<td>${(item.precio * item.saldo / item.cantidad).toFixed(2)}</td>
 							</tr>
 							`;
 						}

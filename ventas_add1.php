@@ -74,17 +74,15 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					<div class="form-group">
 						<label for="field-1" class="control-label">Comprobante</label>
 						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
-							<option value="factura">Factura</option>
-							<option value="boleta">Boleta</option>
-							<option value="notadebito">Nota Debito</option>
-							<option value="notacredito">Nota Credito</option>
+							<option value="ventasxconfirmar">Ventas x Confirmar</option>
+							<option value="ventasxordensalida">Ventas por orden Salida</option>
 						</select>
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class="form-group">
 						<label for="field-1" class="control-label">N° Comprobante</label>
-						<input type="text" class="form-control" disabled id="codigocomprobante">
+						<input type="text" class="form-control" id="codigocomprobante">
 					</div>
 				</div>
 
@@ -230,7 +228,7 @@ include("Fragmentos/pie.php");
 		htmlcuentaabonado = await getcuentaabonados()
 		addPayExtra();
 		setcombocliente({
-			value: "factura"
+			value: "xxxxxxxxxxx"
 		})
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none"
@@ -592,7 +590,7 @@ include("Fragmentos/pie.php");
 						<td>
 						</td>
 					</tr>`;
-			}else{
+			}else if(e.value == "notadebito"){
 				codigoprod.closest(".col-sm-12").style.display = "none";
 				detalleFormProducto.innerHTML = `
 				<tr class="producto" data-type="notadebito">
@@ -621,11 +619,8 @@ include("Fragmentos/pie.php");
 					</td>
 				</tr>`;
 			}
-			
 			queryselected = query + " UNION " + query2;
 		}
-
-
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 	}
@@ -718,7 +713,7 @@ include("Fragmentos/pie.php");
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
-			('${h.tipocomprobante}', (select IFNULL(max(v1.codigocomprobante), 0) + 1 from ventas v1), ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
+			('${h.tipocomprobante}', '${h.codigocomprobante}', ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
 			`
 
 			getSelectorAll(".producto").forEach(item => {
