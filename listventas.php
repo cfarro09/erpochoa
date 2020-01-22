@@ -63,18 +63,16 @@ $i = 1;
             <td><?= $row["pagoacomulado"] ?></td>
             <td><?= $row["tipocomprobante"] ?></td>
             <td><?= $row["codigocomprobante"] ?></td>
-            <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>"
-                    data-codigocomprobante="<?= $row["codigocomprobante"] ?>"
-                    data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>"
-                    data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>"
-                    data-modoentrega="<?= $row['modalidadentrega'] ?>"
-                    data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>"
-                    data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>'
-                    onclick="pagar(this)">Detalle</a></td>
+            <td><a href="#" data-fecha='<?= $row["fecha_emision"] ?>' data-cliente='<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>'
+                    data-codigocomprobante='<?= $row["codigocomprobante"] ?>'
+                    data-tipocomprobante='<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>'
+                    data-restante='<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>'
+                    data-modoentrega='<?= $row["modalidadentrega"] ?>'
+                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)">Detalle</a></td>
         </tr>
         <?php
-                    $i++;
-                } while ($row = mysql_fetch_assoc($Listado)); ?>
+            $i++;
+        } while ($row = mysql_fetch_assoc($Listado)); ?>
     </tbody>
 </table>
 <?php endif ?>

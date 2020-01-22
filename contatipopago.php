@@ -230,10 +230,11 @@ include("Fragmentos/pie.php");
                 <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CREDITO</td>
             </tr>`;
         const ventas_con_pagos_contado = [];
+        let acumulatedpay = 0;
         let acumulated = [];
         res.forEach(iii => {
-
             const arraypagos = JSON.parse(iii.jsonpagos);
+            acumulatedpay += parseFloat(iii.totalcargo)
             arraypagos.filter(x => x.tipopago == "porcobrar").forEach(ixx => {
                 const tii = iii.tipocomprobante.toUpperCase();
                 acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
@@ -258,7 +259,20 @@ include("Fragmentos/pie.php");
                 ventas_con_pagos_contado.push(iii)
             }
         });
-
+        bodydata.innerHTML += `
+            <tr>
+                <td class="text-center"></td>
+                <td class="text-center">toUpperCase()}</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center">Total</td>
+                <td class="text-center">${acumulatedpay}</td>
+            </tr>`
         // for (const [key, value] of Object.entries(acumulated)) {
         //     bodydata.innerHTML += `
         //     <tr>
@@ -279,7 +293,6 @@ include("Fragmentos/pie.php");
                     <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS</td>
                 </tr>`;
         const acumulated = [];
-        
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             let suma = 0;
@@ -307,19 +320,14 @@ include("Fragmentos/pie.php");
                     <td class="text-center">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
                     <td class="text-center">${suma}</td>
                 </tr>`
-
-
         });
-        // for (const [key, value] of Object.entries(acumulated)) {
-        //     bodydata.innerHTML += `
-        //     <tr>
-        //         <td class="text-center"></td>
-        //         <td class="text-center">${key}</td>
-        //         <td class="text-center"></td>
-        //         <td class="text-center">${value.toFixed(2)}</td>
-        //         <td class="text-center"></td>
-        //     </tr>`
-        // }
+        for (const [key, value] of Object.entries(acumulated)) {
+            bodydata.innerHTML += `
+            <tr>
+                <td style="font-weight: bold" class="text-right" colspan="10">TOTAL ${key}</td>
+                <td style="font-weight: bold" class="text-center">${value.toFixed(2)}</td>
+            </tr>`
+        }
     }
     const setabonocliente = res => {
         const f_ini = fecha_inicio.value;
@@ -330,11 +338,11 @@ include("Fragmentos/pie.php");
             </tr>
             `;
         const acumulated = [];
-
+        let acumulatedpey = 0;
         res.forEach(iii => {
-            console.log(iii);
             const arraypagos = JSON.parse(iii.abonoproveedor);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
+                acumulatedpey += parseFloat(ixx.montoextra);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -346,6 +354,11 @@ include("Fragmentos/pie.php");
                 </tr>`
             })
         });
+        bodydata.innerHTML += `
+            <tr>
+                <td style="font-weight: bold" class="text-right" colspan="10">TOTAL</td>
+                <td style="font-weight: bold" class="text-center">${acumulatedpey.toFixed(2)}</td>
+            </tr>`
     }
     const setabonoproveedor = res => {
         const f_ini = fecha_inicio.value;
@@ -355,10 +368,11 @@ include("Fragmentos/pie.php");
                 <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
             </tr>
             `;
-        const acumulated = [];
+            let acumulatedpey = 0;const acumulated = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.abono);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
+                acumulatedpey += parseFloat(ixx.montoextra);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -370,6 +384,11 @@ include("Fragmentos/pie.php");
                 </tr>`
             })
         });
+        bodydata.innerHTML += `
+            <tr>
+                <td style="font-weight: bold" class="text-right" colspan="10">TOTAL</td>
+                <td style="font-weight: bold" class="text-center">${acumulatedpey.toFixed(2)}</td>
+            </tr>`
     }
     const setotroegresos = res => {
         bodydata.innerHTML += `
