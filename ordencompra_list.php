@@ -148,8 +148,8 @@ $totalRows_Listado = mysql_num_rows($Listado);
 				$preciocompra=$row_Listado['valor_compra'];
 				echo number_format($row_Listado['valor_compra'],2); ?></td>
 				<td><?php  echo "&#36; ".number_format($row_Listado['valor_compra'],2); ?> </td>
-				<td> <?php echo "&#36; ".number_format($row_Listado['valor_compra']/1.18,2); ?></td>
-				<td> <?php echo "&#36; ".number_format(($row_Listado['valor_compra']-number_format($row_Listado['valor_compra']/1.18,2)),2); ?></td>
+				<td> <?php echo "&#36; ".number_format($row_Listado['valor_compra']/$IGV1,2); ?></td>
+				<td> <?php echo "&#36; ".number_format(($row_Listado['valor_compra']-number_format($row_Listado['valor_compra']/$IGV1,2)),2); ?></td>
 				<td> <?php echo $row_Listado['razonsocial']; ?></td>
 				<td> <?php echo $row_Listado['fecha_emision']; ?></td>
 

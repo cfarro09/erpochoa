@@ -349,11 +349,11 @@ include("Fragmentos/pie.php");
 				totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
 			})
 			if (total != 0) {
-				totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
+				totalpreciocompra.value = (totalpc * IGV1).toFixed(3);
 				total = parseFloat(total)
-				getSelector("#subtotal-header").textContent = (total / 1.18).toFixed(3);
+				getSelector("#subtotal-header").textContent = (total / IGV1).toFixed(3);
 				getSelector("#total-header").textContent = (total).toFixed(3);
-				getSelector("#igv-header").textContent = (total - total / 1.18).toFixed(3);
+				getSelector("#igv-header").textContent = (total - total / IGV1).toFixed(3);
 
 				if (formpago.value == "unico") {
 					getSelector(".montoextra").value = (total).toFixed(3);
@@ -517,11 +517,11 @@ include("Fragmentos/pie.php");
 			totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
 		})
 		if (total != 0) {
-			totalpreciocompra.value = (totalpc * 1.18).toFixed(3);
+			totalpreciocompra.value = (totalpc * IGV1).toFixed(3);
 			total = parseFloat(total)
-			getSelector("#subtotal-header").textContent = (total / 1.18).toFixed(3);
+			getSelector("#subtotal-header").textContent = (total / IGV1).toFixed(3);
 			getSelector("#total-header").textContent = (total).toFixed(3);
-			getSelector("#igv-header").textContent = (total - total / 1.18).toFixed(3);
+			getSelector("#igv-header").textContent = (total - total / IGV1).toFixed(3);
 
 			if (formpago.value == "unico") {
 				getSelector(".montoextra").value = (total).toFixed(3);
@@ -723,7 +723,7 @@ include("Fragmentos/pie.php");
 					unidad_medida: item.querySelector(".unidad_medida").value,
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pventa: item.querySelector(".precio").value,
-					igv: parseFloat(item.querySelector(".precio").value) * 0.18,
+					igv: parseFloat(item.querySelector(".precio").value) * IGV,
 					totalventa: (parseInt(item.querySelector(".cantidad").value) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
 				}
 				if (tipocomprobante.value == "notadebito") {

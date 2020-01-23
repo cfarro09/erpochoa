@@ -4,7 +4,7 @@
 	{
 		var pcsiniva = Ingresar.precio_compra.value;
 		
-		iva=(parseFloat(pcsiniva)*0.18).toFixed(2);
+		iva=(parseFloat(pcsiniva)*$IGV1).toFixed(2);
 		precioc=(parseFloat(pcsiniva)+parseFloat(iva)).toFixed(2);
 	
 		document.getElementsByName("test")[0].value = iva;
@@ -74,7 +74,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Ingresar")) {
 
 //captura el ultimo elemento de la bd
 $colname_Producto = $_GET['codigoprod'];
-$precio_compra=number_format(($_POST['precio_compra']+($_POST['precio_compra']*0.18)),2);
+$precio_compra=number_format(($_POST['precio_compra']+($_POST['precio_compra']*$IGV1)),2);
 $precio_venta=$_POST['precio_venta'];
 $codigosucursal=$_POST['codigosuc'];
 	if($codigosucursal==1){
