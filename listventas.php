@@ -48,7 +48,7 @@ $i = 1;
             <th>Total Pago</th>
             <th>Tipo Comp.</th>
             <th>Cod. Comp</th>
-            <th>Acciones</th>
+            <th class="text-center">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -63,12 +63,22 @@ $i = 1;
             <td><?= $row["pagoacomulado"] ?></td>
             <td><?= $row["tipocomprobante"] ?></td>
             <td><?= $row["codigocomprobante"] ?></td>
-            <td><a href="#" data-fecha='<?= $row["fecha_emision"] ?>' data-cliente='<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>'
+            <td class="text-center" style="font-weight: bold">
+                <a href="#" data-tipomodal="detalle" data-fecha='<?= $row["fecha_emision"] ?>' data-cliente='<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>'
                     data-codigocomprobante='<?= $row["codigocomprobante"] ?>'
-                    data-tipocomprobante='<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>'
-                    data-restante='<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>'
+                    data-tipocomprobante='<?= $row["tipocomprobante"] ?>' data-total='<?= $row["total"] ?>'
+                    data-restante='<?= $restante ?>' data-pagoefectivo='<?= $row["pagoefectivo"] ?>'
                     data-modoentrega='<?= $row["modalidadentrega"] ?>'
-                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)">Detalle</a></td>
+                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)">DETALLE</a>
+
+                <a href="#" data-tipomodal="devolucion" data-fecha='<?= $row["fecha_emision"] ?>' data-cliente='<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>'
+                    data-codigocomprobante='<?= $row["codigocomprobante"] ?>'
+                    data-tipocomprobante='<?= $row["tipocomprobante"] ?>' data-total='<?= $row["total"] ?>'
+                    data-restante='<?= $restante ?>' data-pagoefectivo='<?= $row["pagoefectivo"] ?>'
+                    data-modoentrega='<?= $row["modalidadentrega"] ?>'
+                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)" style="margin-left: 10px">DEVOLUCION</a>
+            </td>
+                
         </tr>
         <?php
             $i++;
@@ -82,7 +92,7 @@ $i = 1;
         <div class="modal-content m-auto">
             <form id="formoperacion" action="">
                 <div class="modal-header">
-                    <h2 class="modal-title">Detalle Venta</h2>
+                    <h2 class="modal-title" id="titulo_modal">Detalle Venta</h2>
                 </div>
                 <input type="hidden" id="codigoventa">
                 <input type="hidden" id="jsonpagos">
@@ -146,7 +156,7 @@ $i = 1;
                                             <td><b>CANTIDAD</b></td>
                                             <td><b>P VENTA</b></td>
                                             <td><b>UNIDAD MEDIDA</b></td>
-                                            <td><b>DEVOLUCION</b></td>
+                                            <td class="columndevolucion"><b>DEVOLUCION</b></td>
                                         </tr>
                                     </thead>
                                     <tbody id="detallebody">
@@ -169,7 +179,7 @@ $i = 1;
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-sm-12" id="">
+                            <div class="divparent col-sm-12" id="">
                                 <label>Motivo Devolución</label>
                                 <textarea class="form-control" id="motivodevolucion"></textarea>
                             </div>
@@ -185,7 +195,7 @@ $i = 1;
                                 onClick="imprimir_guia()">Imprimir Guia</button>
                         </div>
                         <div class="col-sm-6 col-md-8 mr-auto">
-                            <button type="button" class="btn btn-primary" aria-label="Close"
+                            <button type="button" id="buttondevolver" class="btn btn-primary" aria-label="Close"
                                 onClick="devolver()">Guardar</button>
                             <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
                                 aria-label="Close">Cerrar</button>
@@ -309,8 +319,25 @@ include("Fragmentos/pie.php");
                 });
         }
     }
+    const validatetipomodal = tipo => {
+        if(tipo == "detalle"){
+            buttondevolver.style.display = "none";
+            motivodevolucion.closest(".divparent").style.display = "none";
+            btnimprimirfactura.style.display = "";
+            getSelectorAll(".columndevolucion").forEach(x => x.style.display = "none");
+            titulo_modal.textContent = "DETALLE VENTA";
+        }else{
+            titulo_modal.textContent = "DEVOLUCIÓN PRODUCTOS";
+            motivodevolucion.closest(".divparent").style.display = "";
+            buttondevolver.style.display = "";
+            btnimprimirfactura.style.display = "none";
+            getSelectorAll(".columndevolucion").forEach(x => x.style.display = "");
+        }
+    }
     async function pagar(e) {
         $("#moperation").modal();
+        const tipomodal = e.dataset.tipomodal;
+        
         codigoventa.value = e.dataset.id;
         motivodevolucion.value = "";
         detallebody.innerHTML = "";
@@ -325,35 +352,36 @@ include("Fragmentos/pie.php");
             $('#btnimprimirguia').hide();
         }
 
-        fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
+        await fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
             .then(res => res.json())
             .catch(error => console.error("error: ", error))
             .then(res => {
                 if (res) {
-
                     res.forEach(ix => {
                         let devoler = "";
-                        if (ix.devolucion && parseInt(ix.devolucion) > 0) {
-                            devoler =
-                                `<span class="btn btn-danger" data-historial='${ix.historialdevolucion}' data-iddetalle="${ix.codigodetalleproducto}" onClick="cancelardevolucion(this)" data-idventa="${e.dataset.id}">${ix.cantdevolucion} Cancelar</span>`
-                        } else {
-                            devoler =
-                                `<input type="number" data-historial='${ix.historialdevolucion}' data-iddetalle="${ix.codigodetalleproducto}" data-idventa="${e.dataset.id}" class="form-control inputdevo" oninput="validatenumber(this)" data-max="${ix.cantidad}" style="width: 100px">`
+                        if(tipomodal == "devolucion"){
+                            if (ix.devolucion && parseInt(ix.devolucion) > 0) {
+                                devoler =
+                                    `<span class="btn btn-danger" data-historial='${ix.historialdevolucion}' data-iddetalle="${ix.codigodetalleproducto}" onClick="cancelardevolucion(this)" data-idventa="${e.dataset.id}">${ix.cantdevolucion} Cancelar</span>`
+                            } else {
+                                devoler =
+                                    `<input type="number" data-historial='${ix.historialdevolucion}' data-iddetalle="${ix.codigodetalleproducto}" data-idventa="${e.dataset.id}" class="form-control inputdevo" oninput="validatenumber(this)" data-max="${ix.cantidad}" style="width: 100px">`
+                            }
                         }
                         detallebody.innerHTML += `
-                        <tr>
-                        <td>${ix.nombre_producto}</td>
-                        <td>${ix.marca}</td>
-                        <td>${ix.cantidad}</td>
-                        <td>${ix.pventa}</td>
-                        <td>${ix.unidad_medida}</td>
-                        <td>${devoler}</td>
-                        </tr>
-                        `;
+                            <tr>
+                                <td>${ix.nombre_producto}</td>
+                                <td>${ix.marca}</td>
+                                <td>${ix.cantidad}</td>
+                                <td>${ix.pventa}</td>
+                                <td>${ix.unidad_medida}</td>
+                                <td class="columndevolucion">${devoler}</td>
+                            </tr>
+                            `;
                     })
                 }
             })
-
+        validatetipomodal(tipomodal)
         const pagoefectivo = parseFloat(e.dataset.pagoefectivo);
         historialbody.innerHTML = "";
 
@@ -362,16 +390,15 @@ include("Fragmentos/pie.php");
         inputcliente.value = e.dataset.cliente;
         inputtipocomprobante.value = e.dataset.tipocomprobante;
 
-
         jsonpagos.value = e.dataset.json;
         inputrestante.value = e.dataset.restante;
         inputtotal.value = e.dataset.total;
         if (pagoefectivo) {
             historialbody.innerHTML += `
                 <tr>
-                <td>Pago Efectivo</td>
-                <td>${pagoefectivo}</td>
-                <td>-</td>
+                    <td>Pago Efectivo</td>
+                    <td>${pagoefectivo}</td>
+                    <td>-</td>
                 </tr>
                 `;
         }
@@ -402,9 +429,9 @@ include("Fragmentos/pie.php");
 
             historialbody.innerHTML += `
                 <tr>
-                <td>${ix.tipopago}</td>
-                <td>${ix.montoextra}</td>
-                <td>${textt}</td>
+                    <td>${ix.tipopago}</td>
+                    <td>${ix.montoextra}</td>
+                    <td>${textt}</td>
                 </tr>
                 `;
         });
