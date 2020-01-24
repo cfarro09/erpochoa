@@ -811,11 +811,13 @@ include("Fragmentos/pie.php");
 						getSelector("#detalleFormProducto").innerHTML = "";
 
 						var opcion = confirm("¿Desea imprimir factura?");
-						if(opcion){
+						if(opcion)
+						{
 							imprimir_factura(res.id)
-						}else{
 							location.reload();
 						}
+						else
+							location.reload();
 					}
 				});
 		}
