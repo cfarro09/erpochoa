@@ -222,69 +222,7 @@ include("Fragmentos/pie.php");
         setabonoproveedor(abonosproveedor)
         // setotroegresos(otrosegresos)
     }
-    const setventascredito = res => {
-        const f_ini = fecha_inicio.value;
-        const f_fin = fecha_fin.value;
-        bodydata.innerHTML = `
-            <tr>
-                <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS/CREDITO</td>
-            </tr>`;
-        const ventas_con_pagos_contado = [];
-        let acumulatedpay = 0;
-        let acumulated = [];
-        res.forEach(iii => {
-            const arraypagos = JSON.parse(iii.jsonpagos);
-            acumulatedpay += parseFloat(iii.totalcargo)
-            arraypagos.filter(x => x.tipopago == "porcobrar").forEach(ixx => {
-                const tii = iii.tipocomprobante.toUpperCase();
-                acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
-                bodydata.innerHTML += `
-                    <tr>
-                        <td class="text-center">${iii.fecha_emision}</td>
-                        <td class="text-center">${iii.tipocomprobante.toUpperCase()}</td>
-                        <td class="text-center">${iii.codigocomprobante}</td>
-                        <td class="text-center">${iii.fullname}</td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
-                        <td class="text-center">${ixx.montoextra}</td>
-                        <td class="text-center">${ixx.montoextra}</td>
-                    </tr>`
-            });
-            const pagoscontado = arraypagos.filter(x => x.tipopago != "porcobrar");
-            if (pagoscontado.length > 0) {
-                iii.jsonpagos = JSON.stringify(pagoscontado);
-                ventas_con_pagos_contado.push(iii)
-            }
-        });
-        bodydata.innerHTML += `
-            <tr>
-                <td class="text-center"></td>
-                <td class="text-center">toUpperCase()}</td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center">Total</td>
-                <td class="text-center">${acumulatedpay}</td>
-            </tr>`
-        // for (const [key, value] of Object.entries(acumulated)) {
-        //     bodydata.innerHTML += `
-        //     <tr>
-        //         <td class="text-center"></td>
-        //         <td class="text-center">${key}</td>
-        //         <td class="text-center"></td>
-        //         <td class="text-center">${value.toFixed(2)}</td>
-        //         <td class="text-center"></td>
-        //     </tr>`
-        // }
-        return ventas_con_pagos_contado;
-    }
+   
     
     const setventascontado = (res, header = false) => {
         if(header)
@@ -293,6 +231,7 @@ include("Fragmentos/pie.php");
                     <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS</td>
                 </tr>`;
         const acumulated = [];
+        let totalgroup = 0;
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             let suma = 0;
@@ -302,6 +241,7 @@ include("Fragmentos/pie.php");
                 acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
                 acumulatedtipos[ixx.tipopago] = parseFloat(ixx.montoextra) + (acumulatedtipos[ixx.tipopago] ? acumulatedtipos[ixx.tipopago] : 0);
                 suma += parseFloat(ixx.montoextra);
+                totalgroup += parseFloat(ixx.montoextra);
             })
             suma = suma.toFixed(2);
             for (const [key, value] of Object.entries(acumulatedtipos)) 
@@ -321,6 +261,7 @@ include("Fragmentos/pie.php");
                     <td class="text-center">${suma}</td>
                 </tr>`
         });
+        acumulated[""] = totalgroup;
         for (const [key, value] of Object.entries(acumulated)) {
             bodydata.innerHTML += `
             <tr>

@@ -8,9 +8,14 @@ mysql_select_db($database_Ventas, $Ventas);
 $query_personal = "select acceso_seguridad.acceso, sucursal.cod_sucursal, sucursal.nombre_sucursal from acceso_seguridad left join sucursal on acceso_seguridad.cod_sucursal = sucursal.cod_sucursal  where personal = $pp";
 $listado_personal = mysql_query($query_personal, $Ventas) or die(mysql_error());
 $row_personal = mysql_fetch_assoc($listado_personal);
-
-
 $totalRows_personal = mysql_num_rows($listado_personal);
+
+$q_igv = "select `value` from propiedades where `key` = 'igv'";
+$result = mysql_query($q_igv, $Ventas) or die(mysql_error());
+$IGV = (float) mysql_fetch_object($result)->value;
+$IGV1 = 1 + $IGV;
+
+
 ?>
 <!-- BEGIN HEADER & CONTENT DIVIDER -->
 
@@ -1167,6 +1172,8 @@ else { $VarUrl2 = "";
 
 
                             <script>
+                                const IGV = <?= $IGV ?>;
+                                const IGV1 = <?= $IGV1 ?>;
                                 const getSelector = (tag) => document.querySelector(tag)
                                 const getSelectorAll = (tag) => document.querySelectorAll(tag)
 

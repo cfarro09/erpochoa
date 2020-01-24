@@ -11,7 +11,6 @@ $totalRows_Listado = mysql_num_rows($Listado);
  //Enumerar filas de data tablas
 $i = 1;
 
-
 mysql_select_db($database_Ventas, $Ventas);
 $query_Clientes = "SELECT codigoproveedor as codigoclienten, razonsocial, ruc FROM proveedor  WHERE estado = 0 order by razonsocial";
 $Clientes = mysql_query($query_Clientes, $Ventas) or die(mysql_error());
@@ -87,18 +86,18 @@ include("Fragmentos/abrirpopupcentro.php");
 				$color1 = $row_Listado['subtotal'] ? "#45f300" : "#fff100"
 				?>
 		<tr style="background-color: <?= $color1 ?>">
-			<td> <?php echo $i; ?> </td>
-			<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+			<td> <?= $i; ?> </td>
+			<td><a onClick="abre_ventana('Emergentes/<?= $editar?>?codigoprod=<?= $row_Listado['codigoprod']; ?>',<?= $popupAncho?>,<?= $popupAlto?>)"
 					data-toggle="modal">
 					<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
 			</td>
 
-			<td><?php  echo "&#36; ".number_format($row_Listado['subtotal'],2)*1.18; ?> </td>
-			<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
-			<td> <?php echo "&#36; ".number_format($row_Listado['subtotal'],2)*0.18; ?>
+			<td><?= "&#36; ".number_format($row_Listado['subtotal'],2) * $igv; ?> </td>
+			<td> <?= "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
+			<td> <?= "&#36; ".number_format($row_Listado['subtotal'],2) * $igv; ?>
 			</td>
-			<td> <?php echo $row_Listado['razonsocial']; ?></td>
-			<td> <?php echo $row_Listado['fecha_emision']; ?></td>
+			<td> <?= $row_Listado['razonsocial']; ?></td>
+			<td> <?= $row_Listado['fecha_emision']; ?></td>
 			<?php if($row_Listado['subtotal']): ?>
 			<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>"
 					onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Procesado</a>
@@ -109,7 +108,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<?php endif ?>
 			<td>
 				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-					href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
+					href="Imprimir/orden_compra.php?codigocompras=<?= $row_Listado['codigo']; ?>&codigo=<?= $row_Listado['codigoref1']; ?>"
 					target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
 			</td>
 			<td>Orden Compra</td>
@@ -128,15 +127,15 @@ include("Fragmentos/abrirpopupcentro.php");
 				$color = $row_listaguiasinoc['subtotal'] == 0 ? "#f3c200" : "#029128"
 				?>
 		<tr style="background-color: <?= $color ?>">
-			<td> <?php echo $i; ?> </td>
-			<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_listaguiasinoc['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
+			<td> <?= $i; ?> </td>
+			<td><a onClick="abre_ventana('Emergentes/<?= $editar?>?codigoprod=<?= $row_listaguiasinoc['codigoprod']; ?>',<?= $popupAncho?>,<?= $popupAlto?>)"
 					data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
 			<td><?php  echo "&#36; ".number_format($row_listaguiasinoc['subtotal'],2); ?> </td>
-			<td> <?php echo "&#36; ".number_format($row_listaguiasinoc['subtotal']/1.18,2); ?></td>
-			<td> <?php echo "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/1.18,2)),2); ?>
+			<td> <?= "&#36; ".number_format($row_listaguiasinoc['subtotal']/$IGV1,2); ?></td>
+			<td> <?= "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/$IGV1,2)),2); ?>
 			</td>
-			<td> <?php echo $row_listaguiasinoc['razonsocial']; ?></td>
-			<td> <?php echo $row_listaguiasinoc['fecha']; ?></td>
+			<td> <?= $row_listaguiasinoc['razonsocial']; ?></td>
+			<td> <?= $row_listaguiasinoc['fecha']; ?></td>
 			<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
 			<td>
 				<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)"
@@ -150,7 +149,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<?php endif ?>
 			<td>
 				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-					href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_listaguiasinoc['codigo']; ?>&codigo=<?php echo $row_listaguiasinoc['codigoref1']; ?>"
+					href="Imprimir/orden_compra.php?codigocompras=<?= $row_listaguiasinoc['codigo']; ?>&codigo=<?= $row_listaguiasinoc['codigoref1']; ?>"
 					target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
 			</td>
 			<td>Guia sin OC</td>
@@ -1764,8 +1763,8 @@ mysql_free_result($Listado);
 
 		calcularFila(aa, "preciocompra")
 		calcularTotalSinExtras();
-		document.querySelector(".tooltip-inner").textContent = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
-		e.dataset.originalTitle = `${e.value} - ${(e.value * 1.18).toFixed(4)}`
+		document.querySelector(".tooltip-inner").textContent = `${e.value} - ${(e.value * IGV1).toFixed(4)}`
+		e.dataset.originalTitle = `${e.value} - ${(e.value * IGV1).toFixed(4)}`
 		updateColumns();
 
 	}
@@ -1786,8 +1785,8 @@ mysql_free_result($Listado);
 
 		tr.querySelector(".descuentocantidad").value = (parseFloat(importe) * descuento / 100).toFixed(2)
 		tr.querySelector(".vcf").value = (importe * (100 - descuento) / 100).toFixed(2)
-		tr.querySelector(".valorcompra2").value = (importe * 1.18 * (100 - descuento) / 100).toFixed(2)
-		tr.querySelector(".igvrow").value = (importe * 0.18 * (100 - descuento) / 100).toFixed(2)
+		tr.querySelector(".valorcompra2").value = (importe * IGV1 * (100 - descuento) / 100).toFixed(2)
+		tr.querySelector(".igvrow").value = (importe * IGV * (100 - descuento) / 100).toFixed(2)
 
 		tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 	}

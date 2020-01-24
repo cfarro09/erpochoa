@@ -59,118 +59,6 @@ if ((isset($_POST["MM_EliminarVenta"])) && ($_POST["MM_EliminarVenta"] == "Elimi
 	$Result1 = mysql_query($deleteSQL, $Ventas) or die(mysql_error());
 }
 
-//grabar factura venta
-if ((isset($_POST["MM_GuardarVenta"])) && ($_POST["MM_GuardarVenta"] == "GuardarVenta")) {  
-	if($_POST['codigoproveedor']==NULL){
-		?>
-<script type="text/javascript">
-	alert("INGRESE CODIGO DE PROVEEDOR, NUMERO DE FACTURA Y SUCURSAL, O PRECIO DE COMPRA O VENTA ESTA EN CERO");
-</script>
-<?php 
-	}
-	else {
-		$insertSQL = sprintf("insert into ordencompra values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-			GetSQLValueString(NULL, "text"),
-			GetSQLValueString($_POST['codigo'], "text"),
-
-			GetSQLValueString($_POST['codigoproveedor'], "int"),
-			GetSQLValueString($_POST['fecha_emision'], "date"),
-			GetSQLValueString($_POST['hora_emision'], "date"),
-			GetSQLValueString($_POST['codacceso'], "int"),
-			GetSQLValueString($_POST['codigopersonal'], "int"),
-			GetSQLValueString(round($_POST['montopagar']/1.18,2), "double"),
-			GetSQLValueString(round($_POST['montopagar']-$_POST['montopagar']/1.18,2), "double"),
-			GetSQLValueString($_POST['montopagar'], "double"),
-			GetSQLValueString(1, "int"),
-			GetSQLValueString($_POST['codigosuc'], "int"),
-			GetSQLValueString($_POST['docref1'], "text"),
-			GetSQLValueString($_POST['docref2'], "text"),
-			GetSQLValueString(1, "int"),
-			GetSQLValueString($_POST['direccion'], "text"));
-
-		mysql_select_db($database_Ventas, $Ventas);
-		$Result1 = mysql_query($insertSQL, $Ventas) or die(mysql_error());
-
-		?>
-<script type="text/javascript">
-	window.location = "product_list.php";
-</script>
-
-<?php } 
-}
-
-
-
-if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "IngresarProducto")) {
-
-
-	mysql_select_db($database_Ventas, $Ventas);
-	$codigoproducto10=$_POST['codigoprod'];
-	$query_Productos = "SELECT codigoprod, precio_venta, round(precio_compra/1.18,2) as precio_compra FROM producto_stock WHERE codigoprod = $codigoproducto10 ORDER BY codigoprod desc";
-	$Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
-	$row_Productos = mysql_fetch_assoc($Productos);
-	$totalRows_Productos = mysql_num_rows($Productos);
-
-	$concatenacion=$_POST['CodigoProducto'].$_POST['codigoprod'];
-
-
-	$query_Contador_Clientes = "SELECT count(*) AS Contador FROM detalle_compras where concatenacion='$concatenacion'";
-	$Contador_Clientes = mysql_query($query_Contador_Clientes, $Ventas) or die(mysql_error());
-	$row_Contador_Clientes = mysql_fetch_assoc($Contador_Clientes);
-	$totalRows_Contador_Clientes = mysql_num_rows($Contador_Clientes);
-	if($row_Contador_Clientes['Contador']==0)
-	{
-
-		$concatenacion=$_POST['CodigoProducto'].$_POST['codigoprod'];
-
-
-		$insertSQL = sprintf("INSERT INTO detalle_compras_oc (codigo, codigoprod, concatenacion, pcompra, igv, totalcompras) VALUES (%s, %s, %s, %s, %s, %s)",
-			GetSQLValueString($_POST['CodigoProducto'], "text"),
-			GetSQLValueString($_POST['codigoprod'], "int"),
-			GetSQLValueString($concatenacion,"text"),
-			GetSQLValueString(0, "double"),
-			GetSQLValueString($row_Productos['precio_compra'], "double"),
-			GetSQLValueString(round($row_Productos['precio_compra']*0.18,2), "double"),
-			GetSQLValueString(round($row_Productos['precio_compra']+$row_Productos['precio_compra']*0.18,2), "double"));
-
-		mysql_select_db($database_Ventas, $Ventas);
-		$Result1 = mysql_query($insertSQL, $Ventas) or die(mysql_error());
-	}
-	else
-	{
-		echo "<script language='JavaScript'>alert('Grabacion Correcta');</script>";  
-	}
-
-	$insertGoTo = "ordencompra_add.php?codigo=" . $_GET['codigo'] . "";
-	if (isset($_SERVER['QUERY_STRING'])) {
-		$insertGoTo .= (strpos($insertGoTo, '?')) ? "&" : "?";
-		$insertGoTo .= $_SERVER['QUERY_STRING'];
-	}
-	header(sprintf("Location: %s", $insertGoTo));
-}
-
-//actualiza stock
-if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Cantidad")) {
-	$updateSQL = sprintf("UPDATE detalle_compras_oc SET cantidad=%s WHERE codigodetalleproducto=%s",
-		GetSQLValueString($_POST['cantidad'], "int"),
-		GetSQLValueString($_POST['codigodetalleproducto'], "int"));
-
-	mysql_select_db($database_Ventas, $Ventas);
-	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
-}
-//actualiza precio
-if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Precio_compra")) {
-
-	$updateSQL = sprintf("UPDATE detalle_compras_oc SET pcompra=%s, igv=%s, totalcompras=%s WHERE codigodetalleproducto=%s",
-		GetSQLValueString($_POST['pcompra'], "double"),
-		GetSQLValueString(round($_POST['pcompra']*0.18,2), "double"),
-		GetSQLValueString(($_POST['pcompra']*0.18)+$_POST['pcompra'], "double"),
-		GetSQLValueString($_POST['codigodetalleproducto'], "int"));
-
-	mysql_select_db($database_Ventas, $Ventas);
-	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
-}
-
 
 mysql_select_db($database_Ventas, $Ventas);
 $query_Productos = "SELECT * FROM vt_producto_compra";
@@ -461,8 +349,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			if (total != 0) {
 				total = parseFloat(total)
 				getSelector("#subtotal-header").textContent = total.toFixed(3);
-				getSelector("#total-header").textContent = (total * 1.18).toFixed(3);
-				getSelector("#igv-header").textContent = (total * 0.18).toFixed(3);
+				getSelector("#total-header").textContent = (total * IGV1).toFixed(3);
+				getSelector("#igv-header").textContent = (total * IGV).toFixed(3);
 			} else {
 				getSelector("#subtotal-header").textContent = 0;
 				getSelector("#total-header").textContent = 0;
@@ -523,8 +411,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					unidad_medida: item.querySelector(".unidad_medida").value,
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pcompra: item.querySelector(".precio").value,
-					igv: parseFloat(item.querySelector(".precio").value) * 0.18,
-					totalcompras: parseFloat(item.querySelector(".precio").value) * 1.18
+					igv: parseFloat(item.querySelector(".precio").value) * IGV,
+					totalcompras: parseFloat(item.querySelector(".precio").value) * IGV1
 				})
 			})
 			var formData = new FormData();

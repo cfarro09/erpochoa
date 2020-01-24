@@ -125,7 +125,7 @@ $i = 1;
                   <td> <?php echo $i; ?> </td>
                   <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo round($row_Listado['precionc_soles']/1.18, 2);?> </td>
+                  <td> <?php echo round($row_Listado['precionc_soles']/$IGV1, 2);?> </td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?> </td>
                   <td align="center"> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
                   <td> NOTA CREDITO </td>
