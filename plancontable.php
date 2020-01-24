@@ -20,82 +20,17 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select p1.*, concat(p2.codigo, ' ', p2.descripcion) as padrexx from plancontable p1 left join plancontable p2 on p2.id = p1.padre";
-
-$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row = mysql_fetch_assoc($Listado);
-$totalRows_Listado = mysql_num_rows($Listado);
-$i = 1;
 ?>
 <style>
-    #containerplan{
+    #containerplan {
         overflow-y: auto;
         height: 50vh
     }
 </style>
-<div class="modal fade" id="mcontainerplan" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document" style="width: 900px">
-        <div class="modal-content m-auto">
-            <div class="modal-header">
-                <h2 class="modal-title">PLAN CONTABLE</h2>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-12">
-
-                            <div id="containerplan">
-
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-
-                <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <button class="btn btn-success" data-toggle="modal" data-target="#moperation" onclick="openmodal()" style="margin-bottom: 10px">Agregar Cuenta</button>
-<button class="btn btn-success" data-toggle="modal" data-target="#mcontainerplan" onclick="openmodalplan()" style="margin-bottom: 10px">Ver Plan Contable</button>
 
-<?php if ($totalRows_Listado == 0) : ?>
-    <div class="alert alert-danger">
-        <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
-    </div>
-<?php else : ?>
-    <table class="table table-bordered table-hover" id="sample_1">
-        <thead>
-            <tr>
-                <th>N°</th>
-                <th>Codigo</th>
-                <th>Padre</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php do {  ?>
-                <tr>
-                    <?php if (!$row["padrexx"]) : ?>
-                        <td style="font-weight: bold"><?= $i ?></td>
-                        <td style="font-weight: bold"><?= $row["codigo"] . " - " . $row["descripcion"] ?></td>
-                        <td style="font-weight: bold"><?= $row["padrexx"] ?></td>
-                    <?php else : ?>
-                        <td><?= $i ?></td>
-                        <td><?= $row["codigo"] . " - " . $row["descripcion"] ?></td>
-                        <td><?= $row["padrexx"] ?></td>
-                    <?php endif ?>
-                </tr>
-            <?php
-                $i++;
-            } while ($row = mysql_fetch_assoc($Listado)); ?>
-        </tbody>
-    </table>
-<?php endif ?>
+<div id="containerplan"></div>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document" style="width: 900px">
@@ -127,6 +62,20 @@ $i = 1;
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Subcuenta 1</label>
+                                    <select id="subcuenta1"></select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Subcuenta 2</label>
+                                    <select id="subcuenta2"></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -144,13 +93,16 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    $(function() {
+        openmodalplan()
+    });
     const openmodalplan = async () => {
         const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
         let parentsresult = res;
         const parents = res;
 
         containerplan.innerHTML = "";
-        
+
         parents.forEach(ix => {
             containerplan.innerHTML += gethtml(ix, ix.padre == null ? true : false)
         })
@@ -159,19 +111,11 @@ include("Fragmentos/pie.php");
             const tmphtml = getSelector(`#plan_${ix.id}`);
             getSelector(`#plan_${ix.id}`).remove()
             getSelector(`#plan_${ix.padre} .hijos`).innerHTML += tmphtml.innerHTML;
-
-            // parentsresult.filter(xx =>  xx.id == ix.padre).map(oo => {
-            //     if(!oo.hijos)
-            //         oo.hijos = [];
-            //     oo.hijos.push(ix)
-            //     return oo;
-            // });
-            // parentsresult = parentsresult.filter(xx => xx.id != ix.id);
         });
 
         cargarselect2("#padre", res, 'id', 'descripcion')
     }
-    const gethtml = (ix, parent = false) =>{
+    const gethtml = (ix, parent = false) => {
         const ss = parent ? 'font-weight: bold;' : '';
         return `
             <div class="padre" id="plan_${ix.id}">
@@ -181,8 +125,10 @@ include("Fragmentos/pie.php");
         `
     }
     const openmodal = async () => {
-        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable")
-        cargarselect2("#padre", res, 'id', 'descripcion')
+        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable");
+        cargarselect2("#padre", res, 'id', 'descripcion');
+        cargarselect2("#subcuenta1", res, 'id', 'descripcion');
+        cargarselect2("#subcuenta2", res, 'id', 'descripcion');
     }
     const guardar = e => {
         e.preventDefault();
