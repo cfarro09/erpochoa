@@ -1015,7 +1015,7 @@ echo "<a href='#'>Proforma</a>";
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="contaventas.php" id="" class="nav-link font-blue-ebonyclay">
+                                <a href="contatipopago.php" id="" class="nav-link font-blue-ebonyclay">
                                     <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                     <span class="title">Liquidacion de Caja</span>
                                     <span class="selected"></span>
