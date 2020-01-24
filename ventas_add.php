@@ -629,7 +629,11 @@ include("Fragmentos/pie.php");
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 	}
-
+	function imprimir_factura(id)
+    {
+        var url = `Imprimir/facturaventa_imprimir.php?id=${id}`;
+        window.location=url;
+    }
 	getSelector("#form-generate-venta").addEventListener("submit", e => {
 		e.preventDefault();
 		if (getSelectorAll(".producto").length < 1) {
@@ -804,8 +808,14 @@ include("Fragmentos/pie.php");
 					if (res.success) {
 						alert("registro completo!")
 						getSelector("#form-generate-venta").reset();
-						getSelector("#detalleFormProducto").innerHTML = ""
-						location.reload()
+						getSelector("#detalleFormProducto").innerHTML = "";
+
+						var opcion = confirm("¿Desea imprimir factura?");
+						if(opcion){
+							imprimir_factura(res.id)
+						}else{
+							location.reload();
+						}
 					}
 				});
 		}

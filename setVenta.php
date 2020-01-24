@@ -4,7 +4,7 @@ mysql_select_db($database_Ventas, $Ventas);
 if (isset($_POST['json'])) {
 	$json = $_POST['json'];
 }
-$lastId = "";
+$lastId = 0;
 $queryheader = json_decode($json)->header;
 $detalleArray = json_decode($json)->detalle;
 
@@ -19,4 +19,4 @@ foreach ($detalleArray as $querydetalle) {
 	mysql_query($querydetalle, $Ventas) or die(json_encode(array("success" => false, "msg" => json_encode(mysql_error()) . "  " . $querydetalle)));
 }
 
-die(json_encode(array("success" => true), 128));
+die(json_encode(array("success" => true, "id" => $lastId), 128));
