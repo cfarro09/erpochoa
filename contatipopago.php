@@ -232,6 +232,7 @@ include("Fragmentos/pie.php");
                 </tr>`;
         const acumulated = [];
         let totalgroup = 0;
+        const ttp = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             let suma = 0;
@@ -240,12 +241,14 @@ include("Fragmentos/pie.php");
                 const tii = iii.tipocomprobante.toUpperCase();
                 acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
                 acumulatedtipos[ixx.tipopago] = parseFloat(ixx.montoextra) + (acumulatedtipos[ixx.tipopago] ? acumulatedtipos[ixx.tipopago] : 0);
+                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 suma += parseFloat(ixx.montoextra);
                 totalgroup += parseFloat(ixx.montoextra);
             })
             suma = suma.toFixed(2);
             for (const [key, value] of Object.entries(acumulatedtipos)) 
                 acumulatedtipos[key] = parseFloat(value).toFixed(2);
+
             bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${iii.fecha_emision}</td>
@@ -259,9 +262,22 @@ include("Fragmentos/pie.php");
                     <td class="text-center">${acumulatedtipos["tarjetacredito"] ? acumulatedtipos["tarjetacredito"] : "" }</td>
                     <td class="text-center">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
                     <td class="text-center">${suma}</td>
-                </tr>`
+                </tr>`;
         });
-        acumulated[""] = totalgroup;
+        for (const [key, value] of Object.entries(ttp)) 
+                ttp[key] = parseFloat(value).toFixed(2);
+        bodydata.innerHTML += `
+            <tr style="font-weight: bold">
+                <td class="text-right" colspan="4">TOTALES</td>
+                <td class="text-center">${ttp["efectivo"] ? ttp["efectivo"] : "0.00" }</td>
+                <td class="text-center">${ttp["cheque"] ? ttp["cheque"] : "0.00" }</td>
+                <td class="text-center">${ttp["depositobancario"] ? ttp["depositobancario"] : "0.00" }</td>
+                <td class="text-center">${ttp["tarjetadebito"] ? ttp["tarjetadebito"] : "0.00" }</td>
+                <td class="text-center">${ttp["tarjetacredito"] ? ttp["tarjetacredito"] : "0.00" }</td>
+                <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
+                <td class="text-center">${totalgroup.toFixed(2)}</td>
+            </tr>`;
+        // acumulated[""] = totalgroup;
         for (const [key, value] of Object.entries(acumulated)) {
             bodydata.innerHTML += `
             <tr>
@@ -279,11 +295,13 @@ include("Fragmentos/pie.php");
             </tr>
             `;
         const acumulated = [];
+        const ttp = [];
         let acumulatedpey = 0;
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.abonoproveedor);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 acumulatedpey += parseFloat(ixx.montoextra);
+                ttp[ixx.tipopago] =  parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -296,10 +314,17 @@ include("Fragmentos/pie.php");
             })
         });
         bodydata.innerHTML += `
-            <tr>
-                <td style="font-weight: bold" class="text-right" colspan="10">TOTAL</td>
-                <td style="font-weight: bold" class="text-center">${acumulatedpey.toFixed(2)}</td>
-            </tr>`
+            <tr style="font-weight: bold">
+                <td class="text-right" colspan="4">TOTALES</td>
+                <td class="text-center">${ttp["efectivo"] ? ttp["efectivo"] : "0.00" }</td>
+                <td class="text-center">${ttp["cheque"] ? ttp["cheque"] : "0.00" }</td>
+                <td class="text-center">${ttp["depositobancario"] ? ttp["depositobancario"] : "0.00" }</td>
+                <td class="text-center">${ttp["tarjetadebito"] ? ttp["tarjetadebito"] : "0.00" }</td>
+                <td class="text-center">${ttp["tarjetacredito"] ? ttp["tarjetacredito"] : "0.00" }</td>
+                <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
+                <td class="text-center">${acumulatedpey.toFixed(2)}</td>
+            </tr>`;
+        
     }
     const setabonoproveedor = res => {
         const f_ini = fecha_inicio.value;
@@ -309,11 +334,13 @@ include("Fragmentos/pie.php");
                 <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
             </tr>
             `;
-            let acumulatedpey = 0;const acumulated = [];
+        let acumulatedpey = 0;const acumulated = [];
+        const ttp = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.abono);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 acumulatedpey += parseFloat(ixx.montoextra);
+                ttp[ixx.tipopago] =  parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -326,10 +353,16 @@ include("Fragmentos/pie.php");
             })
         });
         bodydata.innerHTML += `
-            <tr>
-                <td style="font-weight: bold" class="text-right" colspan="10">TOTAL</td>
-                <td style="font-weight: bold" class="text-center">${acumulatedpey.toFixed(2)}</td>
-            </tr>`
+            <tr style="font-weight: bold">
+                <td class="text-right" colspan="4">TOTALES</td>
+                <td class="text-center">${ttp["efectivo"] ? ttp["efectivo"] : "0.00" }</td>
+                <td class="text-center">${ttp["cheque"] ? ttp["cheque"] : "0.00" }</td>
+                <td class="text-center">${ttp["depositobancario"] ? ttp["depositobancario"] : "0.00" }</td>
+                <td class="text-center">${ttp["tarjetadebito"] ? ttp["tarjetadebito"] : "0.00" }</td>
+                <td class="text-center">${ttp["tarjetacredito"] ? ttp["tarjetacredito"] : "0.00" }</td>
+                <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
+                <td class="text-center">${acumulatedpey.toFixed(2)}</td>
+            </tr>`;
     }
     const setotroegresos = res => {
         bodydata.innerHTML += `
