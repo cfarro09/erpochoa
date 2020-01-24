@@ -1909,7 +1909,8 @@ mysql_free_result($Listado);
 			fecha_registro: facturafechaemision.value,
 			valorcambio: tipocambio,
 			descuentocompras: descuento.value ? descuento.value : 0,
-			codigomesconta: `${nowx.getFullYear()}${nowx.getMonth() + 1}` 
+			codigomesconta: `${nowx.getFullYear()}${nowx.getMonth() + 1}`,
+			firstday: `${nowx.getFullYear()}-${nowx.getMonth() + 1}-1`
 
 		}
 		getSelectorAll("#detalleFacturar-list tr").forEach(item => {

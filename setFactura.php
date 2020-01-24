@@ -56,8 +56,12 @@ if($h->codigocompras){
   // die(json_encode(array("success" => true), 128));
 
 }else{
-  
-  $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras, codigoproveedor, codigomesconta) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras, $h->codigoproveedor, CONCAT('$h->codigomesconta', ))";
+  $q_igv = "SELECT IFNULL(max(contamesincrement), 0) maxcodigo FROM registro_compras WHERE fecha BETWEEN '$h->firstday' and LAST_DAY('$h->firstday')";
+  $result = mysql_query($q_igv, $Ventas) or die(mysql_error());
+  $maxcodigo = (int) mysql_fetch_object($result)->maxcodigo + 1;
+
+  $contamaxcodigo = $h->codigomesconta.$maxcodigo
+  $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras, codigoproveedor, codigomesconta) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras, $h->codigoproveedor, '$contamaxcodigo')";
 
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
