@@ -98,7 +98,7 @@ include("Fragmentos/pie.php");
         openmodalplan()
     });
     const openmodalplan = async () => {
-        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable order by codigo asc");
+        const res = await get_data_dynamic("select p.id, p.codigo, p.descripcion, p.padre, p.level, IFNULL(CONCAT(p1.codigo, ' ', p1.descripcion), '') subcuenta1 , IFNULL(CONCAT(p2.codigo, ' ', p2.descripcion), '')  subcuenta2 from plancontable p left join plancontable p1 on p1.id = p.subcuenta1 left join plancontable p2 on p2.id = p.subcuenta2 order by p.codigo asc");
         let parentsresult = res;
         const parents = res;
 
@@ -172,7 +172,12 @@ include("Fragmentos/pie.php");
         const ss = parent ? 'font-weight: bold;' : '';
         return `
             <div class="padre" data-codigo="${ix.codigo.toUpperCase()}" id="plan_${ix.id}">
-                    <div onclick="edit(${ix.id}, ${ix.level})" style="${ss} margin-bottom: 5px; cursor: pointer">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                    <div onclick="edit(${ix.id}, ${ix.level})" style="${ss} margin-bottom: 5px; cursor: pointer" class="row">
+                        <div class="col-sm-4">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                        <div class="col-sm-4">${ix.subcuenta1}</div>
+                        <div class="col-sm-4">${ix.subcuenta2}</div>
+                        
+                    </div>
                     <div style="margin-left: 20px" class="hijos"></div>
             </div>`;
     }
