@@ -1891,6 +1891,8 @@ mysql_free_result($Listado);
 		}
 		const typepay = moneda.value == "dolares" ? "dolar" : "";
 		const nowx = new Date()
+		let month = nowx.getMonth() + 1;
+		month = month < 10 ? "0"+month : ""+month;
 		data.header = {
 			codigocompras: 0,
 			tipomoneda: moneda.value,
@@ -1909,7 +1911,7 @@ mysql_free_result($Listado);
 			fecha_registro: facturafechaemision.value,
 			valorcambio: tipocambio,
 			descuentocompras: descuento.value ? descuento.value : 0,
-			codigomesconta: `${nowx.getFullYear()}${nowx.getMonth() + 1}`,
+			codigomesconta: `${nowx.getFullYear()}${month}-`,
 			firstday: `${nowx.getFullYear()}-${nowx.getMonth() + 1}-1`
 
 		}
