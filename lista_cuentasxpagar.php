@@ -156,8 +156,8 @@ include("Fragmentos/abrirpopupcentro.php");
                   <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
-                  <td> <?php echo round($row_Listado['preciotransp_soles']/1.18, 2);?> </td>
-                  <td> <?php echo $row_Listado['preciotransp_soles']-round($row_Listado['preciotransp_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['preciotransp_soles']/$IGV1, 2);?> </td>
+                  <td> <?php echo $row_Listado['preciotransp_soles']-round($row_Listado['preciotransp_soles']/$IGV1,2); ?> </td>
                   <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
                   <td> 0 </td>
                   <td> TRANSPORTE - <?PHP echo $row_Listado['tipo_transporte']; ?> </td>
@@ -175,8 +175,8 @@ include("Fragmentos/abrirpopupcentro.php");
                   <td> <?php echo $row_Listado['tipocomprobantee'].' - '.$row_Listado['numerocomprobantee']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
-                  <td> <?php echo round($row_Listado['precioestibador_soles']/1.18, 2);?> </td>
-                  <td> <?php echo $row_Listado['precioestibador_soles']-round($row_Listado['precioestibador_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['precioestibador_soles']/$IGV1, 2);?> </td>
+                  <td> <?php echo $row_Listado['precioestibador_soles']-round($row_Listado['precioestibador_soles']/$IGV1,2); ?> </td>
                   <td> <?php echo round($row_Listado['precioestibador_soles'],2); ?> </td>
                   <td> 0 </td>
                   <td> Estibador </td>
@@ -193,8 +193,8 @@ include("Fragmentos/abrirpopupcentro.php");
                   <td> <?php echo $row_Listado['tipocomprobantend'].' - '.$row_Listado['numerocomprobantend']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
-                  <td> <?php echo round($row_Listado['preciond_soles']/1.18, 2);?> </td>
-                  <td> <?php echo $row_Listado['preciond_soles']-round($row_Listado['preciond_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['preciond_soles']/$IGV1, 2);?> </td>
+                  <td> <?php echo $row_Listado['preciond_soles']-round($row_Listado['preciond_soles']/$IGV1,2); ?> </td>
                   <td> <?php echo round($row_Listado['preciond_soles'],2); ?> </td>
                   <td> 0 </td>
                   <td> NOTA DEBITO </td>
@@ -214,8 +214,8 @@ include("Fragmentos/abrirpopupcentro.php");
                   <td> <?php echo $row_Listado['tipocomprobantenc'].' - '.$row_Listado['numerocomprobantenc']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?> </td>
-                  <td> <?php echo round($row_Listado['precioNC_soles']/1.18, 2);?> </td>
-                  <td> <?php echo $row_Listado['precionc_soles']-round($row_Listado['precionc_soles']/1.18,2); ?> </td>
+                  <td> <?php echo round($row_Listado['precioNC_soles']/$IGV1, 2);?> </td>
+                  <td> <?php echo $row_Listado['precionc_soles']-round($row_Listado['precionc_soles']/$IGV1,2); ?> </td>
                   <td> <?php echo round($row_Listado['precionc_soles'],2); ?> </td>
                   <td> 0 </td>
                   <td> NOTA CREDITO </td>
