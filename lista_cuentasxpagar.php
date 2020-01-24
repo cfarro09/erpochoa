@@ -119,7 +119,7 @@ include("Fragmentos/abrirpopupcentro.php");
           <th  width="20%"> FECHA REG  </th>
           <th  width="20%"> SUCURSAL </th>
           <th  width="10%" > SUB TOTAL </th>
-          <th  width="5%"> IGV</th>
+          <th  width="5%"> <?= $nombreigv ?></th>
           <th  width="5%"> TOTAL </th>
           <th  width="5%" > SALDO  </th>
           <th  width="10%"> DETALLE  </th>

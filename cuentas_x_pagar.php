@@ -104,7 +104,7 @@ $i = 1;
 				<th>RUC P</th>
 				<th>RAZON SOCIAL</th>
 				<th>SUBTOTAL</th>
-				<th>IGV</th>
+				<th><?= $nombreigv ?></th>
 				<th>TOTAL</th>
 				<th>ACCIONES</th>
 			</tr>

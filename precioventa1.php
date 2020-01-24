@@ -114,7 +114,7 @@ include("Fragmentos/abrirpopupcentro.php");
 													<th>Marca</th>
 													<!-- <th>Precio UND</th> -->
 													<th>VCU</th>
-													<th>IGV</th>
+													<th><?= $nombreigv ?></th>
 													<th>PCU</th>
 													<th class="text-center">% V 1</th>
 													<th class="text-center">P V 1</th>
@@ -214,7 +214,7 @@ include("Fragmentos/abrirpopupcentro.php");
 													<th class="costeosinchecked" width=" 120px">VCI</th>
 													<th class="costeosinchecked" width="120px">DSCTO</th>
 													<th width="120px">VCF</th>
-													<th class="costeosinchecked" width=" 120px">IGV</th>
+													<th class="costeosinchecked" width=" 120px"><?= $nombreigv ?></th>
 													<th class="costeosinchecked" width=" 120px">Total</th>
 													<th width="60px" class="costeochecked" style="display: none">Transporte</th>
 													<th width="60px" class="costeochecked" style="display: none">Estibador</th>

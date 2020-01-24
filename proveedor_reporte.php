@@ -167,7 +167,7 @@ if ($totalRows_Listado == 0) { // Show if recordset empty ?>
       <td><?php echo $row_Listado['numero']; ?></td>
       <td>SUB TOTAL</td>
       <td><?php echo number_format($row_Listado['sub_total'],2); ?></td>
-      <td>IGV</td>
+      <td><?= $nombreigv ?></td>
       <td><?php echo number_format($row_Listado['igv'],2); ?></td>
       <td>TOTAL</td>
       <td><?php echo number_format($row_Listado['total'],2); ?></td>

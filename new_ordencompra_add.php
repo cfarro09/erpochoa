@@ -238,7 +238,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			SubTotal: <span id="subtotal-header"></span>
 		</div>
 		<div class="col-sm-4">
-			IGV: <span id="igv-header"></span>
+			<?= $nombreigv ?>: <span id="igv-header"></span>
 		</div>
 	</div>
 </form>

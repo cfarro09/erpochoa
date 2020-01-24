@@ -15,6 +15,9 @@ $result = mysql_query($q_igv, $Ventas) or die(mysql_error());
 $IGV = (float) mysql_fetch_object($result)->value;
 $IGV1 = 1 + $IGV;
 
+$q_igv = "select `value` from propiedades where `key` = 'nombreigv'";
+$result = mysql_query($q_igv, $Ventas) or die(mysql_error());
+$nombreigv = mysql_fetch_object($result)->value;
 
 ?>
 <!-- BEGIN HEADER & CONTENT DIVIDER -->

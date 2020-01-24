@@ -135,12 +135,7 @@ include("Fragmentos/pie.php");
                 });
                 
                 const indexpreview = listhijos.map(ii => ii.id).indexOf(tomove.id)
-                if(indexpreview){
-                    const idpreview = listhijos[indexpreview - 1].id;
-                        getSelector(`#${idpreview}`).after(tomove)
-                }else{
-                    getSelector(`#${listhijos[1].id}`).before(tomove)
-                }
+                getSelector(`#${listhijos[indexpreview + 1].id}`).before(tomove)
             }
         });
     }

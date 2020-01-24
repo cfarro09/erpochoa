@@ -329,7 +329,7 @@ if ((isset($_POST["MM_GuardarVenta"])) && ($_POST["MM_GuardarVenta"] == "Guardar
 									<th width="7%"> Cant </th>
 									<th width="30%"> Producto </th>
 									<th width="10%"> Marca </th>
-									<th width="10%">Precio Compra S/IGV</th>
+									<th width="10%">Precio Compra S/<?= $nombreigv ?></th>
 									<th width="10%"> Importe </th>
 									<th width="5%"> </th>
 								</tr>

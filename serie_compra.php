@@ -146,7 +146,7 @@ if ($totalRows_Listado == 0) { // Show if recordset empty ?>
       <td><?php echo $row_Listado['numero']; ?></td>
       <td>SUB TOTAL</td>
       <td><?php echo number_format($colname_preciocompra/$IGV1,2); ?></td>
-      <td>IGV</td>
+      <td><?= $nombreigv ?></td>
       <td><?php echo number_format($colname_preciocompra-$colname_preciocompra/$IGV1,2); ?></td>
       <td>TOTAL</td>
       <td><?php echo $colname_preciocompra; ?></td>

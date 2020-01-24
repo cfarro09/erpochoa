@@ -343,7 +343,7 @@ include("Fragmentos/abrirpopupcentro.php");
 										<th class="costeosinchecked" width=" 120px">VCI</th>
 										<th class="costeosinchecked" width="120px">DSCTO</th>
 										<th width="120px">VCF</th>
-										<th class="costeosinchecked" width=" 120px">IGV</th>
+										<th class="costeosinchecked" width=" 120px"><?= $nombreigv ?></th>
 										<th class="costeosinchecked" width=" 120px">Total</th>
 										<th width="60px" class="costeochecked" style="display: none">Transporte</th>
 										<th width="60px" class="costeochecked" style="display: none">Estibador</th>
