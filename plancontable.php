@@ -98,7 +98,7 @@ include("Fragmentos/pie.php");
         openmodalplan()
     });
     const openmodalplan = async () => {
-        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable");
+        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable order by codigo asc");
         let parentsresult = res;
         const parents = res;
 
@@ -118,9 +118,10 @@ include("Fragmentos/pie.php");
     }
     const edit = async (id, level) => {
         codigocontable.value = id;
-        
-        const rescombo = await get_data_dynamic(`select id, level, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where level <= ${level} and id <> ${id}`);
-        cargarselect2("#padre", rescombo, 'id', 'descripcion', ["level"]);
+
+        const rescombo = await get_data_dynamic(`select id, level, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where id <> ${id}`);
+
+        cargarselect2("#padre", rescombo.filter(x => x.level <= level), 'id', 'descripcion', ["level"]);
         cargarselect2("#subcuenta1", rescombo, 'id', 'descripcion');
         cargarselect2("#subcuenta2", rescombo, 'id', 'descripcion');
 
