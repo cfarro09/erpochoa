@@ -1890,16 +1890,15 @@ mysql_free_result($Listado);
 				data.gastos.push(query1)
 			}
 		}
-		const typepay = moneda.value == "dolares" ? "dolar" : ""
+		const typepay = moneda.value == "dolares" ? "dolar" : "";
+		const nowx = new Date()
 		data.header = {
 			codigocompras: 0,
 			tipomoneda: moneda.value,
 			tipo_comprobante: tipocomprobantefactura.value,
 			numerocomprobante: nrocomprobante.value,
 			codacceso: <?= $_SESSION['kt_login_id'] ?>,
-
 			ruc_proveedor: mruc1.textContent,
-
 			subtotal: getSelector(".sumavcf" + typepay).value,
 			igv: getSelector(".sumaigvrow" + typepay).value,
 			total: getSelector(".sumavalorcompra2" + typepay).value,
@@ -1910,7 +1909,8 @@ mysql_free_result($Listado);
 			codigo_guia_sin_oc: codigo_guia_sin_oc.value,
 			fecha_registro: facturafechaemision.value,
 			valorcambio: tipocambio,
-			descuentocompras: descuento.value ? descuento.value : 0
+			descuentocompras: descuento.value ? descuento.value : 0,
+			codigomesconta: `${nowx.getFullYear()}${nowx.getMonth() + 1}` 
 
 		}
 		getSelectorAll("#detalleFacturar-list tr").forEach(item => {

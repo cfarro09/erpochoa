@@ -56,7 +56,8 @@ if($h->codigocompras){
   // die(json_encode(array("success" => true), 128));
 
 }else{
-  $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras, codigoproveedor) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras, $h->codigoproveedor)";
+  
+  $insertCabecera = "insert into registro_compras(tipomoneda, tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, codigo_orden_compra, codigo_guia_sin_oc, fecha_registro, valorcambio, descuentocompras, codigoproveedor, codigomesconta) values ('$h->tipomoneda', '$h->tipo_comprobante', '$h->ruc_proveedor', '$h->numerocomprobante', $h->codacceso, $h->subtotal, $h->igv, $h->total, $h->estadofact, $h->codigosuc, $h->codigo_orden_compra, $h->codigo_guia_sin_oc, '$h->fecha_registro', $h->valorcambio, $h->descuentocompras, $h->codigoproveedor, CONCAT('$h->codigomesconta', ))";
 
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
