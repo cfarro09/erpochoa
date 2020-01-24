@@ -215,35 +215,43 @@ include("Fragmentos/pie.php");
         const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
 
         // const pagoscontado = 
-        setventascontado(ventas_con_credito, true);
+        const totales = setventascontado(ventas_con_credito, true);
         // ventas_contado.forEach(x => pagoscontado.push(x))
-        setventascontado(ventas_contado);
+        setventascontado(ventas_contado, false, totales);
         setabonocliente(resabonos)
         setabonoproveedor(abonosproveedor)
         // setotroegresos(otrosegresos)
     }
    
     
-    const setventascontado = (res, header = false) => {
+    const setventascontado = (res, header = false, data) => {
         if(header)
             bodydata.innerHTML += `
                 <tr>
                     <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS</td>
                 </tr>`;
-        const acumulated = [];
-        let totalgroup = 0;
-        const ttp = [];
+        if(!data){
+            data = {
+                acumulated: [],
+                totalgroup: 0,
+                ttp: []
+            }
+        }
+        
+        // const acumulated = [];
+        // let totalgroup = 0;
+        // const ttp = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             let suma = 0;
             const acumulatedtipos = [];
             arraypagos.forEach(ixx => {
                 const tii = iii.tipocomprobante.toUpperCase();
-                acumulated[tii] = parseFloat(iii.totalcargo) + (acumulated[tii] ? acumulated[tii] : 0);
+                data.acumulated[tii] = parseFloat(iii.totalcargo) + (data.acumulated[tii] ? data.acumulated[tii] : 0);
                 acumulatedtipos[ixx.tipopago] = parseFloat(ixx.montoextra) + (acumulatedtipos[ixx.tipopago] ? acumulatedtipos[ixx.tipopago] : 0);
-                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
+                data.ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (data.ttp[ixx.tipopago] ? data.ttp[ixx.tipopago] : 0);
                 suma += parseFloat(ixx.montoextra);
-                totalgroup += parseFloat(ixx.montoextra);
+                data.totalgroup += parseFloat(ixx.montoextra);
             })
             suma = suma.toFixed(2);
             for (const [key, value] of Object.entries(acumulatedtipos)) 
@@ -264,27 +272,31 @@ include("Fragmentos/pie.php");
                     <td class="text-center">${suma}</td>
                 </tr>`;
         });
-        for (const [key, value] of Object.entries(ttp)) 
-                ttp[key] = parseFloat(value).toFixed(2);
-        bodydata.innerHTML += `
-            <tr style="font-weight: bold">
-                <td class="text-right" colspan="4">TOTALES</td>
-                <td class="text-center">${ttp["efectivo"] ? ttp["efectivo"] : "0.00" }</td>
-                <td class="text-center">${ttp["cheque"] ? ttp["cheque"] : "0.00" }</td>
-                <td class="text-center">${ttp["depositobancario"] ? ttp["depositobancario"] : "0.00" }</td>
-                <td class="text-center">${ttp["tarjetadebito"] ? ttp["tarjetadebito"] : "0.00" }</td>
-                <td class="text-center">${ttp["tarjetacredito"] ? ttp["tarjetacredito"] : "0.00" }</td>
-                <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
-                <td class="text-center">${totalgroup.toFixed(2)}</td>
-            </tr>`;
-        // acumulated[""] = totalgroup;
-        for (const [key, value] of Object.entries(acumulated)) {
+        for (const [key, value] of Object.entries(data.ttp)) 
+                data.ttp[key] = parseFloat(value).toFixed(2);
+
+        if(!header){
             bodydata.innerHTML += `
-            <tr>
-                <td style="font-weight: bold" class="text-right" colspan="10">TOTAL ${key}</td>
-                <td style="font-weight: bold" class="text-center">${value.toFixed(2)}</td>
-            </tr>`
+                <tr style="font-weight: bold">
+                    <td class="text-right" colspan="4">TOTALES</td>
+                    <td class="text-center">${data.ttp["efectivo"] ? data.ttp["efectivo"] : "0.00" }</td>
+                    <td class="text-center">${data.ttp["cheque"] ? data.ttp["cheque"] : "0.00" }</td>
+                    <td class="text-center">${data.ttp["depositobancario"] ? data.ttp["depositobancario"] : "0.00" }</td>
+                    <td class="text-center">${data.ttp["tarjetadebito"] ? data.ttp["tarjetadebito"] : "0.00" }</td>
+                    <td class="text-center">${data.ttp["tarjetacredito"] ? data.ttp["tarjetacredito"] : "0.00" }</td>
+                    <td class="text-center">${data.ttp["porcobrar"] ? data.ttp["porcobrar"] : "0.00" }</td>
+                    <td class="text-center">${data.totalgroup.toFixed(2)}</td>
+                </tr>`;
+            // acumulated[""] = totalgroup;
+            for (const [key, value] of Object.entries(data.acumulated)) {
+                bodydata.innerHTML += `
+                <tr>
+                    <td style="font-weight: bold" class="text-right" colspan="10">TOTAL ${key}</td>
+                    <td style="font-weight: bold" class="text-center">${value.toFixed(2)}</td>
+                </tr>`
+            }
         }
+        return data;
     }
     const setabonocliente = res => {
         const f_ini = fecha_inicio.value;
