@@ -39,6 +39,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
                 <div class="modal-header">
                     <h2 class="modal-title">Registrar Cuenta</h2>
                 </div>
+                <input type="hidden" id="codigocontable">
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
@@ -115,16 +116,47 @@ include("Fragmentos/pie.php");
 
         cargarselect2("#padre", res, 'id', 'descripcion')
     }
+    const edit = async id => {
+        codigocontable.value = id;
+        
+        const rescombo = await get_data_dynamic(`select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where padre <> ${id}`);
+        cargarselect2("#padre", rescombo, 'id', 'descripcion');
+        cargarselect2("#subcuenta1", rescombo, 'id', 'descripcion');
+        cargarselect2("#subcuenta2", rescombo, 'id', 'descripcion');
+
+        const res = await get_data_dynamic(`select * from plancontable where id = ${id}`);
+        $("#moperation").modal()
+        if(res){
+            const data = res[0];
+            cuenta.value = data.codigo;
+            descripcion.value = data.descripcion;
+            if(data.padre){
+                $("#padre").val(data.padre)
+                $('#padre').trigger('change')
+            }
+            if(data.subcuenta1){
+                $("#subcuenta1").val(data.subcuenta1)
+                $('#subcuenta1').trigger('change')
+            }
+            if(data.subcuenta2){
+                $("#subcuenta2").val(data.subcuenta2)
+                $('#subcuenta2').trigger('change')
+            }
+        }
+    }
     const gethtml = (ix, parent = false) => {
         const ss = parent ? 'font-weight: bold;' : '';
         return `
             <div class="padre" id="plan_${ix.id}">
-                <div style="${ss} margin-bottom: 5px">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                <div onclick="edit(${ix.id})" style="${ss} margin-bottom: 5px; cursor: pointer">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
                 <div style="margin-left: 20px" class="hijos"></div>
             </div>
         `
     }
     const openmodal = async () => {
+        codigocontable.value = 0;
+        cuenta.value = "";
+        descripcion.value = "";
         const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable");
         cargarselect2("#padre", res, 'id', 'descripcion');
         cargarselect2("#subcuenta1", res, 'id', 'descripcion');
@@ -137,7 +169,20 @@ include("Fragmentos/pie.php");
             detalle: []
         }
         const padrex = padre.value == "Seleccione" ? "null" : padre.value;
-        data.header = `insert into plancontable (codigo, descripcion, padre) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex})`;
+        const subcuentax1 = subcuenta1.value == "Seleccione" ? "null" : subcuenta1.value;
+        const subcuentax2 = subcuenta2.value == "Seleccione" ? "null" : subcuenta2.value;
+        if(parseInt(codigocontable.value) == 0){
+            data.header = `insert into plancontable (codigo, descripcion, padre, subcuenta1, subcuenta2) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex}, ${subcuentax1}, ${subcuentax2})`;
+        }else{
+            data.header = `
+                        UPDATE plancontable set 
+                            codigo = '${cuenta.value.toUpperCase()}',
+                            descripcion = '${descripcion.value.toUpperCase()}',
+                            padre = ${padrex},
+                            subcuenta1 = ${subcuentax1},
+                            subcuenta2 = ${subcuentax2}
+                        WHERE id = ${codigocontable.value}`
+        }
 
         const formData = new FormData();
         formData.append("json", JSON.stringify(data))
