@@ -98,7 +98,7 @@ include("Fragmentos/pie.php");
         openmodalplan()
     });
     const openmodalplan = async () => {
-        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable ");
+        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable order by codigo asc");
         let parentsresult = res;
         const parents = res;
 
