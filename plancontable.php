@@ -98,7 +98,7 @@ include("Fragmentos/pie.php");
         openmodalplan()
     });
     const openmodalplan = async () => {
-        const res = await get_data_dynamic("select id, codigo, descripcion, padre from plancontable");
+        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable");
         let parentsresult = res;
         const parents = res;
 
@@ -116,10 +116,10 @@ include("Fragmentos/pie.php");
 
         cargarselect2("#padre", res, 'id', 'descripcion')
     }
-    const edit = async id => {
+    const edit = async (id, level) => {
         codigocontable.value = id;
         
-        const rescombo = await get_data_dynamic(`select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where padre <> ${id}`);
+        const rescombo = await get_data_dynamic(`select CONCAT(id, '-', level) as id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable where level <= ${level} and id <> ${id}`);
         cargarselect2("#padre", rescombo, 'id', 'descripcion');
         cargarselect2("#subcuenta1", rescombo, 'id', 'descripcion');
         cargarselect2("#subcuenta2", rescombo, 'id', 'descripcion');
@@ -148,7 +148,7 @@ include("Fragmentos/pie.php");
         const ss = parent ? 'font-weight: bold;' : '';
         return `
             <div class="padre" id="plan_${ix.id}">
-                <div onclick="edit(${ix.id})" style="${ss} margin-bottom: 5px; cursor: pointer">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                <div onclick="edit(${ix.id}, ${ix.level})" style="${ss} margin-bottom: 5px; cursor: pointer">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
                 <div style="margin-left: 20px" class="hijos"></div>
             </div>
         `
@@ -157,7 +157,7 @@ include("Fragmentos/pie.php");
         codigocontable.value = 0;
         cuenta.value = "";
         descripcion.value = "";
-        const res = await get_data_dynamic("select id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable");
+        const res = await get_data_dynamic("select CONCAT(id, '-', level) as id, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable");
         cargarselect2("#padre", res, 'id', 'descripcion');
         cargarselect2("#subcuenta1", res, 'id', 'descripcion');
         cargarselect2("#subcuenta2", res, 'id', 'descripcion');
@@ -168,11 +168,13 @@ include("Fragmentos/pie.php");
             header: "",
             detalle: []
         }
-        const padrex = padre.value == "Seleccione" ? "null" : padre.value;
-        const subcuentax1 = subcuenta1.value == "Seleccione" ? "null" : subcuenta1.value;
-        const subcuentax2 = subcuenta2.value == "Seleccione" ? "null" : subcuenta2.value;
+        const padrex = padre.value == "Seleccione" ? "null" : padre.value.split("-")[0];
+        const levelcurrent = padre.value == "Seleccione" ? 0 : (parseInt(padre.value.split("-")[1]) + 1);
+
+        const subcuentax1 = subcuenta1.value == "Seleccione" ? "null" : subcuenta1.value.split("-")[0];
+        const subcuentax2 = subcuenta2.value == "Seleccione" ? "null" : subcuenta2.value.split("-")[0];
         if(parseInt(codigocontable.value) == 0){
-            data.header = `insert into plancontable (codigo, descripcion, padre, subcuenta1, subcuenta2) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex}, ${subcuentax1}, ${subcuentax2})`;
+            data.header = `insert into plancontable (codigo, descripcion, padre, subcuenta1, subcuenta2, level) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex}, ${subcuentax1}, ${subcuentax2}, ${levelcurrent})`;
         }else{
             data.header = `
                         UPDATE plancontable set 
