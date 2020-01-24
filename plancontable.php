@@ -98,7 +98,7 @@ include("Fragmentos/pie.php");
         openmodalplan()
     });
     const openmodalplan = async () => {
-        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable order by codigo asc");
+        const res = await get_data_dynamic("select id, codigo, descripcion, padre, level from plancontable ");
         let parentsresult = res;
         const parents = res;
 
@@ -109,12 +109,40 @@ include("Fragmentos/pie.php");
         })
 
         parents.reverse().filter(ix => ix.padre != null).forEach(ix => {
-            const tmphtml = getSelector(`#plan_${ix.id}`);
+            const tomove = getSelector(`#plan_${ix.id}`);
             getSelector(`#plan_${ix.id}`).remove()
-            getSelector(`#plan_${ix.padre} .hijos`).innerHTML += tmphtml.innerHTML;
+            
+            const listpadres =  getSelectorAll(`#plan_${ix.padre} .hijos .padre`);
+            
+            if(listpadres.length == 0) {
+                getSelector(`#plan_${ix.padre} .hijos`).append(tomove)
+            }else{
+                const listhijos = [];
+                listpadres.forEach(x => {
+                    listhijos.push({
+                        id: x.id,
+                        codigo: x.dataset.codigo
+                    })
+                })
+                listhijos.push({
+                    id: tomove.id,
+                    codigo: tomove.dataset.codigo
+                })
+                listhijos.sort(function(a, b) {
+                    var textA = a.codigo;
+                    var textB = b.codigo;
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                });
+                
+                const indexpreview = listhijos.map(ii => ii.id).indexOf(tomove.id)
+                if(indexpreview){
+                    const idpreview = listhijos[indexpreview - 1].id;
+                        getSelector(`#${idpreview}`).after(tomove)
+                }else{
+                    getSelector(`#${listhijos[1].id}`).before(tomove)
+                }
+            }
         });
-
-        cargarselect2("#padre", res, 'id', 'descripcion')
     }
     const edit = async (id, level) => {
         codigocontable.value = id;
@@ -148,11 +176,10 @@ include("Fragmentos/pie.php");
     const gethtml = (ix, parent = false) => {
         const ss = parent ? 'font-weight: bold;' : '';
         return `
-            <div class="padre" id="plan_${ix.id}">
-                <div onclick="edit(${ix.id}, ${ix.level})" style="${ss} margin-bottom: 5px; cursor: pointer">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
-                <div style="margin-left: 20px" class="hijos"></div>
-            </div>
-        `
+            <div class="padre" data-codigo="${ix.codigo.toUpperCase()}" id="plan_${ix.id}">
+                    <div onclick="edit(${ix.id}, ${ix.level})" style="${ss} margin-bottom: 5px; cursor: pointer">${ix.codigo.toUpperCase()} - ${ix.descripcion.toUpperCase()}</div>
+                    <div style="margin-left: 20px" class="hijos"></div>
+            </div>`;
     }
     const openmodal = async () => {
         codigocontable.value = 0;
