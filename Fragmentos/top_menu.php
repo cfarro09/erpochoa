@@ -80,10 +80,7 @@ $rscustom = $tNGs->getRecordset("custom");
 $row_rscustom = mysql_fetch_assoc($rscustom);
 $totalRows_rscustom = mysql_num_rows($rscustom);
 ?><head>
-<link href="../includes/skins/mxkollection3.css" rel="stylesheet" type="text/css" media="all" />
-<script src="../includes/common/js/base.js" type="text/javascript"></script>
-<script src="../includes/common/js/utility.js" type="text/javascript"></script>
-<script src="../includes/skins/style.js" type="text/javascript"></script>
+
 </head>
 <body>
 <body class="page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-md">

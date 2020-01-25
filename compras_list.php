@@ -2,7 +2,14 @@
 <?php
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select *, p.ruc, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, count(t.codigocompras) as counttransporte, count(e.codigocompras) as countestibador, count(nd.codigocompras) as countnotadebito, count(nc.codigocompras) as countnotacredito, p.ruc, s.nombre_sucursal from registro_compras r left join transporte_compra t on t.codigocompras = r.codigorc left join estibador_compra e on e.codigocompras = r.codigorc left join notadebito_compra nd on nd.codigocompras = r.codigorc left join notacredito_compra nc on nc.codigocompras = r.codigorc left join sucursal s on s.cod_sucursal=r.codigosuc LEFT JOIN proveedor p on p.ruc=r.rucproveedor";
+$query_Listado = "
+SELECT *, p.ruc, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, count(t.codigocompras) as counttransporte, count(e.codigocompras) as countestibador, count(nd.codigocompras) as countnotadebito, count(nc.codigocompras) as countnotacredito, p.ruc, s.nombre_sucursal from registro_compras r 
+left join transporte_compra t on t.codigocompras = r.codigorc 
+left join estibador_compra e on e.codigocompras = r.codigorc 
+left join notadebito_compra nd on nd.codigocompras = r.codigorc 
+left join notacredito_compra nc on nc.codigocompras = r.codigorc 
+left join sucursal s on s.cod_sucursal=r.codigosuc 
+LEFT JOIN proveedor p on p.ruc=r.rucproveedor";
 
 
 
