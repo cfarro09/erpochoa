@@ -100,8 +100,7 @@ include("Fragmentos/pie.php");
     });
     const initTable = async () => {
         const query = `
-            SELECT date(r.fecha_registro) as fecha_registro, CONCAT(r.tipo_comprobante,'-', r.numerocomprobante) as documento, r.tipo_comprobante, s.nombre_sucursal as sucursal, r.rucproveedor, p.razonsocial,
-            subtotal, total, igv 
+            SELECT date(r.fecha_registro) as fecha_registro, CONCAT(r.tipo_comprobante,'-', r.numerocomprobante) as documento, r.tipo_comprobante, s.nombre_sucursal as sucursal, r.rucproveedor, p.razonsocial, subtotal, total, igv, r.codigomesconta
             FROM registro_compras r
             LEFT JOIN sucursal s on s.cod_sucursal = r.codigosuc 
             LEFT JOIN proveedor p on p.ruc = r.rucproveedor
@@ -130,7 +129,6 @@ include("Fragmentos/pie.php");
                 ...x,
                 ["tipo"]: tipox
             }
-
         })
         $('#maintable').DataTable({
             data: data,
@@ -148,6 +146,10 @@ include("Fragmentos/pie.php");
                     data: 'documento'
                 },
                 {
+                    title: 'N° Reg',
+                    data: 'codigomesconta'
+                },
+                {
                     title: 'RUC',
                     data: 'rucproveedor'
                 },
@@ -162,6 +164,14 @@ include("Fragmentos/pie.php");
                 {
                     title: 'VALOR COMPRA',
                     data: 'subtotal'
+                },
+                {
+                    title: 'AFECTO',
+                    data: 'subtotal'
+                },
+                {
+                    title: 'INAFECTO',
+                    defaultContent: ""
                 },
                 {
                     title: 'IGV',
