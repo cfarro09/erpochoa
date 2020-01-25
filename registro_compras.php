@@ -100,16 +100,45 @@ include("Fragmentos/pie.php");
     });
     const initTable = async () => {
         const query = `
-            SELECT date(r.fecha_registro) as fecha_registro, CONCAT(r.tipo_comprobante,'-', r.numerocomprobante) as documento, s.nombre_sucursal as sucursal, r.rucproveedor, p.razonsocial,
+            SELECT date(r.fecha_registro) as fecha_registro, CONCAT(r.tipo_comprobante,'-', r.numerocomprobante) as documento, r.tipo_comprobante, s.nombre_sucursal as sucursal, r.rucproveedor, p.razonsocial,
             subtotal, total, igv 
             FROM registro_compras r
             LEFT JOIN sucursal s on s.cod_sucursal = r.codigosuc 
             LEFT JOIN proveedor p on p.ruc = r.rucproveedor
         `;
-        const data1 = await get_data_dynamic(query);
+        let data = await get_data_dynamic(query);
+        
+        data = data.map(x => {
+            let tipox = "";
+            switch (x.tipo_comprobante) {
+                case "otros":
+                    tipox = 0;
+                    break;
+                case "fac":
+                case "factura":
+                    tipox = 1;
+                    break;
+                case "bol":
+                case "boleta":
+                    tipox = 3;
+                    break;
+                case "notacredito":
+                    tipox = 14
+                    break;
+            }
+            return {
+                ...x,
+                ["tipo"]: tipox
+            }
+
+        })
         $('#maintable').DataTable({
-            data: data1,
+            data: data,
             columns: [
+                {
+                    title: 'T/D',
+                    data: 'tipo'
+                },
                 {
                     title: 'FECHA',
                     data: 'fecha_registro'
@@ -117,10 +146,6 @@ include("Fragmentos/pie.php");
                 {
                     title: 'N° DOC',
                     data: 'documento'
-                },
-                {
-                    title: 'SUCURSAL',
-                    data: 'sucursal'
                 },
                 {
                     title: 'RUC',
@@ -131,7 +156,11 @@ include("Fragmentos/pie.php");
                     data: 'razonsocial'
                 },
                 {
-                    title: 'SUBTOTAL',
+                    title: 'ARTICULO',
+                    defaultContent: "Articulos Varios"
+                }, 
+                {
+                    title: 'VALOR COMPRA',
                     data: 'subtotal'
                 },
                 {
