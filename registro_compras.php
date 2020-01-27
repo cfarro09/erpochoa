@@ -31,6 +31,23 @@ $codsucursal = $_SESSION['cod_sucursal'];
         background: url('../resources/details_close.png') no-repeat center center;
     }
 </style>
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="field-1" class="control-label">Fecha Inicio</label>
+            <input type="text" required name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="field-1" class="control-label">Fecha termino</label>
+            <input type="text" name="fecha_fin" autocomplete="off" id="fecha_fin" required class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <button type="button" onclick="initTable()" class="btn btn-primary" style="margin-top: 10px; padding: 10px 40px">Buscar</button>
+    </div>
+</div>
 <table id="maintable" class="display" width="100%"></table>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -96,7 +113,7 @@ include("Fragmentos/pie.php");
 
 <script>
     $(function() {
-        initTable()
+        // initTable()
     });
     const initTable = async () => {
         const query = `
@@ -104,9 +121,10 @@ include("Fragmentos/pie.php");
             FROM registro_compras r
             LEFT JOIN sucursal s on s.cod_sucursal = r.codigosuc 
             LEFT JOIN proveedor p on p.ruc = r.rucproveedor
+            WHERE r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
         `;
         let data = await get_data_dynamic(query);
-        
+
         data = data.map(x => {
             let tipox = "";
             switch (x.tipo_comprobante) {
@@ -132,8 +150,8 @@ include("Fragmentos/pie.php");
         })
         $('#maintable').DataTable({
             data: data,
-            columns: [
-                {
+            destroy: true,
+            columns: [{
                     title: 'T/D',
                     data: 'tipo'
                 },
@@ -160,7 +178,7 @@ include("Fragmentos/pie.php");
                 {
                     title: 'ARTICULO',
                     defaultContent: "Articulos Varios"
-                }, 
+                },
                 {
                     title: 'VALOR COMPRA',
                     data: 'subtotal'
