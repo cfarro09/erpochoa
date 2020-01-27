@@ -145,7 +145,7 @@ include("Fragmentos/pie.php");
             }
             return {
                 ...x,
-                ["codigomesconta"]: x.codigomesconta ? x.codigomesconta.Split("-")[1] : "";
+                ["codigomesconta"]: x.codigomesconta ? x.codigomesconta.Split("-")[1] : "",
                 ["tipo"]: tipox
             }
         })
