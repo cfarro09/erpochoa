@@ -24,7 +24,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 <style>
     #containerplan {
         overflow-y: auto;
-        height: 50vh
+        height: 70vh
     }
 </style>
 
@@ -93,10 +93,11 @@ include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
 ?>
 
-<script>
-    $(function() {
-        openmodalplan()
+<script type="text/javascript">
+    $(document).ready(function (){
+        openmodalplan();
     });
+    
     const openmodalplan = async () => {
         const res = await get_data_dynamic("select p.id, p.codigo, p.descripcion, p.padre, p.level, IFNULL(CONCAT(p1.codigo, ' ', p1.descripcion), '') subcuenta1 , IFNULL(CONCAT(p2.codigo, ' ', p2.descripcion), '')  subcuenta2 from plancontable p left join plancontable p1 on p1.id = p.subcuenta1 left join plancontable p2 on p2.id = p.subcuenta2 order by p.codigo asc");
         let parentsresult = res;
