@@ -1053,7 +1053,39 @@ echo "<a href='#'>Proforma</a>";
                                 <span class="selected"></span>
                                 <span class="arrow open"></span>
                             </a>
+                        
+
+
+
+                      
+                            <ul class="sub-menu">
+                                <li class="nav-item">
+                                    <a href="registro_compras.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">Listado Compras</span>
+                                        <span class="selected"></span>
+
+
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="compras_insumos.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                        <span class="title">Registrar Compras</span>
+                                        <span class="selected"></span>
+
+                                    </a>
+                                </li>
+                       
+                              
+                            </ul>
                         </li>
+
+
+
+
+
+
                         <li class="nav-item">
                             <a href="registro_ventas.php" class="nav-link font-blue-steel">
                                 <i class="glyphicon glyphicon-user font-blue-steel"></i>
@@ -1098,6 +1130,14 @@ echo "<a href='#'>Proforma</a>";
                             <a href="plancontable.php" class="nav-link font-blue-steel">
                                 <i class="glyphicon glyphicon-user font-blue-steel"></i>
                                 <span class="title">Plan Contable</span>
+                                <span class="selected"></span>
+                                <span class="arrow open"></span>
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a href="gestioncheque.php" class="nav-link font-blue-steel">
+                                <i class="glyphicon glyphicon-user font-blue-steel"></i>
+                                <span class="title">Gestion Cheques</span>
                                 <span class="selected"></span>
                                 <span class="arrow open"></span>
                             </a>
