@@ -117,7 +117,7 @@ include("Fragmentos/pie.php");
             list.forEach(y => {
                 arrayxx.push({
                     ...x,
-                ["fecha_emision"]: y.fechaxxx,
+                ["fecha_emision"]: y.fechaextra,
                 ["montoextra"]: y.montoextra,
                 ["documento"]: x.cedula ? x.cedula : x.ruc,
                 ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial

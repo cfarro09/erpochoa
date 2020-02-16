@@ -731,7 +731,7 @@ $codpersonal = $_SESSION['kt_codigopersonal'];
 				</div>
 				</div>
 
-				<div style="display: none" class="col-md-3 inputxxx depositobancario">
+				<div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
 				<div class="form-group">
 				<label class="control-label">Fecha</label>
 				<input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">

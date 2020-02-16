@@ -364,7 +364,7 @@ include("Fragmentos/pie.php");
         </div>
         </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario">
+        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
         <div class="form-group">
         <label class="control-label">Fecha</label>
         <input type="text" class="form-control form-control-inline input-medium date-picker fechaextra" data-date-format="yyyy-mm-dd" readonly autocomplete="off">
@@ -411,6 +411,7 @@ include("Fragmentos/pie.php");
                 fechaextra,
                 cuentaabonado,
                 tipopago,
+                fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0,10)
             })
             totalpagando += parseFloat(montoextra);
             if (tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)) {
