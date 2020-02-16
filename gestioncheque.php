@@ -45,7 +45,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
         <div class="modal-content m-auto">
             <form id="formoperacion" action="">
                 <div class="modal-header">
-                    <h2 class="modal-title">Registrar Cuenta</h2>
+                    <h2 class="modal-title">Cobro cheque</h2>
                 </div>
                 <input type="hidden" id="codigocontable">
                 <div class="modal-body">
@@ -53,37 +53,27 @@ $codsucursal = $_SESSION['cod_sucursal'];
                         <div class="row">
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="control-label">Codigo</label>
-                                    <input type="text" required class="form-control" id="cuenta">
+                                    <label class="control-label">Monto</label>
+                                    <input type="text" required class="form-control" id="montoextra" readonly>
                                 </div>
                             </div>
-
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Descripción</label>
-                                    <input type="text" required class="form-control" id="descripcion">
-                                </div>
+                            <div class="col-sm-4" id="divparentpayextra" style="margin-top: 15px">
+                                <button class="btn btn-success" type="button" onclick="addpaylocal()">Agregar Pago</button>
                             </div>
-                            <div class="col-sm-6">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label class="control-label">Padre</label>
-                                    <select id="padre"></select>
+                                    <label for="field-1" class="control-label">Forma Pago</label>
+                                    <select required onchange="changemodopago(this)" class="form-control" id="formpago">
+                                        <option value="unico">Unico</option>
+                                        <option value="compuesto">Compuesto</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Subcuenta 1</label>
-                                    <select id="subcuenta1"></select>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Subcuenta 2</label>
-                                    <select id="subcuenta2"></select>
-                                </div>
-                            </div>
+                            <div style="margin-bottom: 10px" id="containerpayextraG"></div>
                         </div>
                     </div>
                 </div>
@@ -105,41 +95,80 @@ include("Fragmentos/pie.php");
     $(function() {
         initTable()
     });
+    const cobrarcheque = (id, monto) => {
+        montoextra.value = monto;
+        $("#moperation").modal()
+    }
+    function addpaylocal(){
+        if(formpago.value == "unico")
+            divparentpayextra.style.display = "none";
+        addPayExtraG(containerpayextraG)
+    }
+    function changetypepagoG(e) {
+
+        getSelectorAll(".montoextra").forEach(x => x.disabled = formpago.value == "unico" ? true : false)
+        
+
+        e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
+        e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
+        getSelector(".montoextra").value = formpago.value == "unico" ? montoextra.value : 0;
+    }
+
+    function changemodopago(e) {
+        if (e.value == "unico") {
+            getSelector(".montoextra").value = montoextra.value;
+            divparentpayextra.style.display = "none";
+            let ii = 0;
+            getSelectorAll(".containerx").forEach(ix => {
+                if (ii != 0) {
+                    ix.remove();
+                }
+                ii++;
+            });
+            getSelectorAll(".montoextra").forEach(x => x.disabled = true)
+        } else {
+            divparentpayextra.style.display = "";
+            getSelectorAll(".montoextra").forEach(x => x.disabled = false)
+        }
+    }
     const initTable = async () => {
         const query = `
-        SELECT v.tipocomprobante,v.jsonpagos, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial FROM ventas v left join cnatural c on c.codigoclienten=v.codigoclienten left join cjuridico j on j.codigoclientej=v.codigoclientej where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"`
+        SELECT v.codigoventas, v.tipocomprobante,v.jsonpagos, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial FROM ventas v left join cnatural c on c.codigoclienten=v.codigoclienten left join cjuridico j on j.codigoclientej=v.codigoclientej where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"`
         //     WHERE r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
         // `;
         let data = await get_data_dynamic(query);
         const arrayxx = [];
         data = data.forEach(x => {
             const list = JSON.parse(x.jsonpagos);
-            list.forEach(y => {
+            list.filter(o => o.tipopago == "cheque").forEach(y => {
                 const dateemited = new Date(y.fechaextra);
                 const current = new Date();
-
-                const days = (current.getTime() - current.getTime())/(1000 * 3600 * 24) ;
+                const days = (current.getTime() - current.getTime()) / (1000 * 3600 * 24);
                 arrayxx.push({
                     ...x,
-                ["daysto"]: days,
-                ["fecha_emision"]: y.fechaextra,
-                ["montoextra"]: y.montoextra,
-                ["documento"]: x.cedula ? x.cedula : x.ruc,
-                ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
+                    ["daysto"]: days,
+                    ["tipopago"]: y.tipopago,
+                    ["fecha_emision"]: y.fechaextra,
+                    ["montoextra"]: y.montoextra,
+                    ["documento"]: x.cedula ? x.cedula : x.ruc,
+                    ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
                 })
             })
         })
         $('#maintable').DataTable({
             data: arrayxx,
             destroy: true,
-            columns: [
-                {
+            columns: [{
                     title: 'FECHAEMISION',
                     data: 'fecha_emision'
                 },
                 {
                     title: 'DAYSTO',
                     data: 'daysto'
+                },
+                {
+                    title: 'tipopago',
+                    data: 'tipopago'
                 },
                 {
                     title: 'DOCUMENTO',
@@ -164,6 +193,13 @@ include("Fragmentos/pie.php");
                 {
                     title: 'ESTADO',
                     defaultContent: "CARTERA"
+                },
+                {
+                    title: 'ACCIONES',
+                    sortable: false,
+                    render: function(data, type, row, meta) {
+                        return `<button class="btn btn-primary" onclick="cobrarcheque(${row.codigoventas},${row.montoextra})">Cobrar Cheque</button>`;
+                    }
                 },
             ]
         });
