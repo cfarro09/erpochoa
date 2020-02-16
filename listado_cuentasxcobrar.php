@@ -52,7 +52,7 @@ $i = 1;
     <table class="table table-bordered table-hover" id="sample_1">
         <thead>
             <tr>
-                <th>N°</th>
+                <th>N°</th> 
                 <th>Fecha</th>
                 <th>Tipo Comp.</th>
                 <th>Cod. Comp</th>
