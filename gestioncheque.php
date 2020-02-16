@@ -134,32 +134,36 @@ include("Fragmentos/pie.php");
             destroy: true,
             columns: [
                 {
-                    title: 'fechaemision',
+                    title: 'FECHAEMISION',
                     data: 'fecha_emision'
                 },
                 {
-                    title: 'daysto',
+                    title: 'DAYSTO',
                     data: 'daysto'
                 },
                 {
-                    title: 'documento',
+                    title: 'DOCUMENTO',
                     data: 'documento'
                 },
                 {
-                    title: 'identificacion',
+                    title: 'IDENTIFICACION',
                     data: 'identificacion'
                 },
                 {
-                    title: 'tipocomprobante',
+                    title: 'TIPOCOMPROBANTE',
                     data: 'tipocomprobante'
                 },
                 {
-                    title: 'codigocomprobante',
+                    title: 'CODIGOCOMPROBANTE',
                     data: 'codigocomprobante'
                 },
                 {
-                    title: 'montoextra',
+                    title: 'MONTOEXTRA',
                     data: 'montoextra'
+                },
+                {
+                    title: 'ESTADO',
+                    defaultContent: "CARTERA"
                 },
             ]
         });
