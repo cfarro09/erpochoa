@@ -115,8 +115,13 @@ include("Fragmentos/pie.php");
         data = data.forEach(x => {
             const list = JSON.parse(x.jsonpagos);
             list.forEach(y => {
+                const dateemited = new Date(y.fechaextra);
+                const current = new Date();
+
+                const days = (current.getTime() - current.getTime())/(1000 * 3600 * 24) ;
                 arrayxx.push({
                     ...x,
+                ["daysto"]: days,
                 ["fecha_emision"]: y.fechaextra,
                 ["montoextra"]: y.montoextra,
                 ["documento"]: x.cedula ? x.cedula : x.ruc,
@@ -131,6 +136,10 @@ include("Fragmentos/pie.php");
                 {
                     title: 'fechaemision',
                     data: 'fecha_emision'
+                },
+                {
+                    title: 'daysto',
+                    data: 'daysto'
                 },
                 {
                     title: 'documento',
