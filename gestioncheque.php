@@ -281,7 +281,7 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'tipopago',
-                    data: 'tipopago
+                    data: 'tipopago'
                 },
                 {
                     title: 'DOCUMENTO',
