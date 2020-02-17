@@ -92,16 +92,17 @@ include("Fragmentos/pie.php");
 <script>
     let codventas = 0;
     let chequeselected = {};
-    let indexselected = 0;
+    let indexselected = -1;
     $(function() {
         initTable();
     });
     const cobrarcheque = (id, monto, indexcheque, json) => {
+        debugger
+        codventas = id;
         montoextra.value = monto;
         chequeselected = JSON.parse(json);
         indexselected = indexcheque;
         $("#moperation").modal();
-        codventas = id;
     }
 
     function addpaylocal() {
@@ -158,7 +159,7 @@ include("Fragmentos/pie.php");
             }
 
             totalpagando += pay.montoextra;
-            // pagosextras.push(pay)
+            pagosextras.push(pay)
         })
         if (errorxxx) {
             alert(errorxxx);
@@ -175,15 +176,17 @@ include("Fragmentos/pie.php");
                 `
             );
         })
-        chequeselected.forEach(x => {
+        chequeselected = chequeselected.map(x => {
             let ix = 0;
             if (x.tipopago == "cheque" && ix == indexselected) {
                 x.estado  = "COBRADO";
                 x.cobrocheque = pagosextras;
                 ix++;
-            }
+            };
+            return x;
         });
-
+        console.log(chequeselected);
+        
         data.header = `
             update ventas set jsonpagos = '${JSON.stringify(chequeselected)}' where codigoventas = ${codventas}
             `;
@@ -247,7 +250,9 @@ include("Fragmentos/pie.php");
         const arrayxx = [];
         data = data.forEach(x => {
             const list = JSON.parse(x.jsonpagos);
-            console.log(list);
+            console.log(x.codigoventas);
+            console.log(x.jsonpagos);
+
             
             let indexcheque = 0;
             list.filter(o => o.tipopago == "cheque").forEach(y => {
