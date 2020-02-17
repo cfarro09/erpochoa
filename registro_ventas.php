@@ -103,8 +103,8 @@ include("Fragmentos/pie.php");
         data = data.map(x => {
             return {
                 ...x,
-                ["igv"]: parseFloat(x.igv).toFixed(2),
-                ["subtotal"]: parseFloat(x.subtotal).toFixed(2),
+                ["igv"]: x.tipocomprobante == "boleta" ? 0 : parseFloat(x.igv).toFixed(2),
+                ["subtotal"]: x.tipocomprobante == "boleta" ? parseFloat(x.total).toFixed(2) : parseFloat(x.subtotal).toFixed(2),
                 ["total"]: parseFloat(x.total).toFixed(2),
                 ["identificacion"]: x.ClienteNatural ? x.ClienteNatural : x.razonsocial,
                 ["documento"]: x.cedula ? x.cedula : x.ruc,
