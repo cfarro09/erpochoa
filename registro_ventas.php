@@ -21,7 +21,7 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 ?>
-<div class="row" >
+<div class="row" style="margin-bottom: 70px;">
     <div class="col-md-4">
         <div class="form-group">
             <label for="field-1" class="control-label">Fecha Inicio</label>
@@ -91,7 +91,7 @@ include("Fragmentos/pie.php");
 
 <script>
     $(function() {
-        initTable();
+        // initTable();
     });
 
     const initTable = async () => {
@@ -100,9 +100,12 @@ include("Fragmentos/pie.php");
             WHERE v.fecha_emision BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
         `;
         let data = await get_data_dynamic(query);
-        data = data.map( x => {
+        data = data.map(x => {
             return {
                 ...x,
+                ["igv"]: parseFloat(x.igv).toFixed(2),
+                ["subtotal"]: parseFloat(x.subtotal).toFixed(2),
+                ["total"]: parseFloat(x.total).toFixed(2),
                 ["identificacion"]: x.ClienteNatural ? x.ClienteNatural : x.razonsocial,
                 ["documento"]: x.cedula ? x.cedula : x.ruc,
             }
@@ -110,40 +113,80 @@ include("Fragmentos/pie.php");
         $('#maintable').DataTable({
             data,
             destroy: true,
-            columns: [
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+            buttons: [{
+                    extend: 'print',
+                    className: 'btn dark btn-outline'
+                },
                 {
+                    extend: 'copy',
+                    className: 'btn red btn-outline'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn green btn-outline'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn yellow btn-outline '
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn purple btn-outline '
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn dark btn-outline',
+                    text: 'Columns'
+                }
+            ],
+            columns: [{
                     title: 'FECHAEMISION',
-                    data: 'fecha_emision'
+                    data: 'fecha_emision',
+                    width: "10%"
                 },
                 {
                     title: 'tipocomprobante',
-                    data: 'tipocomprobante'
+                    data: 'tipocomprobante',
+                    width: "10%"
                 },
                 {
                     title: 'codigocomprobante',
-                    data: 'codigocomprobante'
+                    data: 'codigocomprobante',
+                    width: "10%"
                 },
                 {
                     title: 'documento',
-                    data: 'documento'
+                    data: 'documento',
+                    width: "30%"
                 },
                 {
                     title: 'identificacion',
-                    data: 'identificacion'
+                    data: 'identificacion',
+                    width: "40%"
                 },
                 {
-                    title: 'subtotal',
-                    data: 'subtotal'
+                    title: 'BASE IMPONIBLE DE LA OPERACION GRAVADA',
+                    data: 'subtotal',
+                    width: "10%",
+                    className: 'dt-body-right'
+
                 },
                 {
-                    title: 'igv',
-                    data: 'igv'
+                    title: 'IMPUESTO GENERAL A LAS VENTAS Y/O IPM',
+                    data: 'igv',
+                    width: "10%",
+                    className: 'dt-body-right'
+
                 },
                 {
-                    title: 'total',
-                    data: 'total'
+                    title: 'IMPROTE TOTAL DEL COMPROBANTE DE PAGO',
+                    data: 'total',
+                    width: "10%",
+                    className: 'dt-body-right'
+
                 },
-                
+
             ]
         });
     }
