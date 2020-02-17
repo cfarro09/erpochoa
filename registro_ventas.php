@@ -38,7 +38,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
         <button type="button" onclick="initTable()" class="btn btn-primary" style="margin-top: 10px; padding: 10px 40px">Buscar</button>
     </div>
 </div>
-<table id="maintable" class="display" width="100%"></table>
+<table id="maintable" class="display table table-bordered" width="100%"></table>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document" style="width: 900px">
