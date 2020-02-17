@@ -106,19 +106,23 @@ include("Fragmentos/pie.php");
             destroy: true,
             columns: [
                 {
-                    title: 'tipo_mov',
+                    title: 'TIPO MOV',
                     data: 'tipo_mov'
                 },
                 {
-                    title: 'detalle',
+                    title: 'DETALLE',
                     data: 'detalle'
                 },
                 {
-                    title: 'monto',
+                    title: 'CARGO',
+                    defaultContent: ''
+                },
+                {
+                    title: 'ABONO',
                     data: 'monto'
                 },
                 {
-                    title: 'saldo',
+                    title: 'SALDO',
                     data: 'saldo'
                 },
             ]
