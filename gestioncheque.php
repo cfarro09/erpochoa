@@ -276,9 +276,14 @@ include("Fragmentos/pie.php");
         $('#maintable').DataTable({
             data: arrayxx,
             destroy: true,
-            columns: [{
+            columns: [
+                {
                     title: 'FECHAEMISION',
                     data: 'fecha_emision'
+                },
+                {
+                    title: 'codigoventas',
+                    data: 'codigoventas'
                 },
                 {
                     title: 'DAYSTO',
@@ -314,10 +319,9 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'ACCIONES',
-                    sortable: false,
                     render: function(data, type, row, meta) {
                         if(row.estado != "COBRADO")
-                            return `<button class="btn btn-primary" onclick='cobrarcheque(${row.codigoventas}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonpagos + "`)'>Cobrar Cheque</button>";
+                            return `<button class="btn btn-primary" onclick='cobrarcheque(${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonpagos + "`)'>Cobrar Cheque</button>";
                         else
                             return '';
                     }
