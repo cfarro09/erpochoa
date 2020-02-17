@@ -1206,13 +1206,30 @@ $nombreigv = mysql_fetch_object($result)->value;
                                 return htmlcuentaabonado1;
                             }
 
-                            async function addPayExtraG(id) {
+                            async function addPayExtraG(id, ...ffoptions) {
                                 const htmlcuentaabonado = await getcuentaabonadosG()
 
 
                                 const newxx = document.createElement("div");
                                 newxx.className = "col-md-12 containerx";
                                 newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
+                                
+                                let options = "";
+                                ffoptions.forEach(xx => {
+                                    if(xx == "efectivo"){
+                                        options += '<option value="efectivo">Efectivo</option>';
+                                    }else if(xx == "cheque"){
+                                        options += '<option value="cheque">Cheque</option>';
+                                    }else if(xx == "depositobancario"){
+                                        options += '<option value="depositobancario">Deposito Bancario</option>';
+                                    }else if(xx == "tarjetadebito"){
+                                        options += '<option value="tarjetadebito">Tarjeta Debito</option>';
+                                    }else if(xx == "tarjetacredito"){
+                                        options += '<option value="tarjetacredito">Tarjeta Credito</option>';
+                                    }else if(xx == "porcobrar"){
+                                        options += '<option value="porcobrar">Por cobrar</option>';
+                                    }
+                                })
 
                                 newxx.innerHTML += `
                                     <div class="text-right">
@@ -1223,15 +1240,8 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     <div class="form-group">
                                     <label class="control-label">Medio de Pago</label>
                                     <select onchange="changetypepagoG(this)" class="form-control tipopago">
-                                    <option value="">[Seleccione]</option>
-                                    
-                                    <option value="efectivo">Efectivo</option>
-                                    <option value="cheque">Cheque</option>
-                                    <option value="depositobancario">Deposito Bancario</option>
-                                    <option value="tarjetadebito">Tarjeta Debito</option>
-                                    <option value="tarjetacredito">Tarjeta Credito</option>
-                                    <option value="porcobrar">Por cobrar</option>
-                                    
+                                        <option value="">[Seleccione]</option>
+                                        ${options}
                                     </select>
                                     </div>
                                     </div>
@@ -1284,7 +1294,7 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                     <div style="display: none" class="col-md-2 inputxxx depositobancario">
                                     <div class="form-group">
-                                    <label class="control-label">Numero Operacion</label>
+                                    <label class="control-label">N° Operacion</label>
                                     <input type="text"  class="form-control numerooperacion">
                                     </div>
                                     </div>
@@ -1308,7 +1318,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     <div style="display: none" class="efectivo col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito porcobrar">
                                         <div class="form-group">
                                             <label class="control-label">Monto</label>
-                                            <input type="number" step="any" oninput="calcularmontopagado()" class="form-control montoextra">
+                                            <input type="number" step="any" oninput="calcularmontopagado(this)" class="form-control montoextra">
                                         </div>
                                     </div>
                                     `;
