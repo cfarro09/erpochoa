@@ -46,6 +46,7 @@ $i = 1;
                 <th>Sectorista</th>
                 <th>Celular</th>
                 <th>Saldo Inicial</th>
+                <th>d</th>
             </tr>
         </thead>
         <tbody>
@@ -59,6 +60,7 @@ $i = 1;
                     <td><?= $row["nombre_sectorista"] ?></td>
                     <td><?= $row["cel_sectorista"] ?></td>
                     <td><?= $row['saldoinicial'] ?></td>
+                    <td><a <?= "href='detallecaja.php?id=".$row['id_cuenta']."'" ?> class="btn btn-primary">DETALLE</a></td>
                 </tr>
             <?php
                 $i++;
