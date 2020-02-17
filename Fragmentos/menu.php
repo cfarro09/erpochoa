@@ -1246,7 +1246,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     </div>
                                     </div>
 
-                                    <div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
+                                    <div style="display: none" class="col-md-2 inputxxx  cheque tarjetacredito tarjetadebito">
                                     <div class="form-group">
                                     <label class="control-label">Banco</label>
                                     <select class="form-control bancoextra">
@@ -1284,7 +1284,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     </div>
                                     </div>
 
-                                    <div style="display: none" class="col-md-2 inputxxx depositobancario cheque">
+                                    <div style="display: none" class="col-md-2 inputxxx  cheque">
                                     <div class="form-group">
                                     <label class="control-label">Cuenta Corriente</label>
                                     <input type="text" class="form-control cuentacorriente">

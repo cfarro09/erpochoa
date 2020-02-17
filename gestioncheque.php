@@ -146,7 +146,7 @@ include("Fragmentos/pie.php");
                 fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0, 10)
             }
 
-            if (pay.tipopago == "depositobancario" && (!pay.bancoextra || !pay.montoextra || !pay.cuentacorriente || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)) {
+            if (pay.tipopago == "depositobancario" && (!pay.montoextra || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)) {
                 errorxxx = "Llena todos los datos de deposito bancario";
                 return;
             } else if (pay.tipopago == "cheque" && (!pay.bancoextra || !pay.montoextra || !pay.numero || !pay.cuentacorriente)) {
@@ -158,7 +158,7 @@ include("Fragmentos/pie.php");
             }
 
             totalpagando += pay.montoextra;
-            pagosextras.push(pay)
+            // pagosextras.push(pay)
         })
         if (errorxxx) {
             alert(errorxxx);
@@ -168,6 +168,13 @@ include("Fragmentos/pie.php");
             alert("Los montos no coinciden");
             return;
         }
+        pagosextras.filter(y => y.tipopago == "depositobancario").forEach(xx => {
+            data.detalle.push(
+                `
+                insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${xx.cuentaabonado}, '${xx.fechaextra}', 'CHEQUE N° ${xx.numero}', 'DEPOSITO EN CHEQUE', '${xx.montoextra}', (select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${xx.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${xx.montoextra})
+                `
+            );
+        })
         chequeselected.forEach(x => {
             let ix = 0;
             if (x.tipopago == "cheque" && ix == indexselected) {
@@ -240,6 +247,8 @@ include("Fragmentos/pie.php");
         const arrayxx = [];
         data = data.forEach(x => {
             const list = JSON.parse(x.jsonpagos);
+            console.log(list);
+            
             let indexcheque = 0;
             list.filter(o => o.tipopago == "cheque").forEach(y => {
                 const dateemited = new Date(y.fechaextra);
