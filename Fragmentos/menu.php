@@ -905,9 +905,9 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="listventas.php" class="nav-link font-blue-ebonyclay">
+                                            <a href="contaventas.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                                <span class="title">Listado de Ventas</span>
+                                                <span class="title">Reporte de Ventas</span>
                                                 <span class="selected"></span>
 
                                             </a>

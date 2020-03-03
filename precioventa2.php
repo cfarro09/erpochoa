@@ -7,7 +7,7 @@ $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select p.codigo_pv, a.codigoprod AS codigoprod,a.nombre_producto AS nombre_producto,b.nombre AS Marca,c.nombre AS Categoria,k.saldo AS stock,k.precio AS precio_compra,p.precioventa1 AS precio_venta1,p.precioventa1 AS precio_venta2,p.precioventa3 AS precio_venta3,p.porcpv1 AS porc1,p.porcpv2 AS porc2,p.porcpv3 AS porc3,a.minicodigo AS minicodigo,k.saldo AS saldo from ((((ventasochoa.producto a join ventasochoa.marca b on((a.codigomarca = b.codigomarca))) join ventasochoa.categoria c on((a.codigocat = c.codigocat))) join ventasochoa.kardex_contable k on((k.codigoprod = a.codigoprod))) join ventasochoa.precio_venta p on((p.codigoprod = k.codigoprod))) where (a.estado = 0) group by a.codigoprod order by k.fecha desc";
+$query_Listado = "select p.codigo_pv, a.codigoprod AS codigoprod,a.nombre_producto AS nombre_producto,b.nombre AS Marca,c.nombre AS Categoria,k.saldo AS stock,k.precio AS precio_compra,p.precioventa1 AS precio_venta1,p.precioventa1 AS precio_venta2,p.precioventa3 AS precio_venta3,p.porcpv1 AS porc1,p.porcpv2 AS porc2,p.porcpv3 AS porc3,a.minicodigo AS minicodigo,k.saldo AS saldo from ((((producto a join marca b on((a.codigomarca = b.codigomarca))) join categoria c on((a.codigocat = c.codigocat))) join kardex_contable k on((k.codigoprod = a.codigoprod))) join precio_venta p on((p.codigoprod = k.codigoprod))) where (a.estado = 0) group by a.codigoprod order by k.fecha desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
