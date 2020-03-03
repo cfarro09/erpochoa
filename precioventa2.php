@@ -7,7 +7,8 @@ $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select * from vt_listaproducto1";
+$query_Listado = "select p.codigo_pv, a.codigoprod AS codigoprod,a.nombre_producto AS nombre_producto,b.nombre AS Marca,c.nombre AS Categoria,k.saldo AS stock,k.precio AS precio_compra,p.precioventa1 AS precio_venta1,p.precioventa1 AS precio_venta2,p.precioventa3 AS precio_venta3,p.porcpv1 AS porc1,p.porcpv2 AS porc2,p.porcpv3 AS porc3,a.minicodigo AS minicodigo,k.saldo AS saldo from ((((ventasochoa.producto a join ventasochoa.marca b on((a.codigomarca = b.codigomarca))) join ventasochoa.categoria c on((a.codigocat = c.codigocat))) join ventasochoa.kardex_contable k on((k.codigoprod = a.codigoprod))) join ventasochoa.precio_venta p on((p.codigoprod = k.codigoprod))) where (a.estado = 0) group by a.codigoprod order by k.fecha desc";
+
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -56,6 +57,7 @@ include("Fragmentos/abrirpopupcentro.php");
 								<div class="col-xs-12 col-md-12">
 									<input type="hidden" id="codproducto">
 									<input type="hidden" id="codigodetalleproducto">
+									<input type="hidden" id="codigo_pv">
 									<table class="table">
 										<thead>
 											<th>Producto</th>
@@ -132,7 +134,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td align="right"> <?= $row_Listado['precio_compra']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_venta1']; ?></td>
 					<td align="center"> <?= $row_Listado['saldo'];?></td>
-					<td><a href="#" data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" data-marca="<?= $row_Listado['Marca']; ?>" data-preciocompra="<?= $row_Listado['precio_compra']; ?>" data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" data-precioventa="<?= $row_Listado['precio_venta1']; ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" onClick="asignarprecioventa(this)" >Asignar</a></td>
+					<td><a href="#" data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" data-marca="<?= $row_Listado['Marca']; ?>" data-codigo_pv="<?= $row_Listado['codigo_pv']; ?>"  data-preciocompra="<?= $row_Listado['precio_compra']; ?>" data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" data-precioventa="<?= $row_Listado['precio_venta1']; ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" onClick="asignarprecioventa(this)" >Asignar</a></td>
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 			</tbody>
@@ -152,6 +154,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			btn_save_precioventa1.style.display = ""
 			preciocomprapv2.textContent = e.dataset.preciocompra
 			precioventapv2.textContent = e.dataset.precioventa
+			codigo_pv.value = e.dataset.codigo_pv
 			marcapv2.textContent = e.dataset.marca
 			productopv2.textContent = e.dataset.nombreproducto
 			codproducto.textContent = e.dataset.codproducto
@@ -177,27 +180,15 @@ include("Fragmentos/abrirpopupcentro.php");
 		
 		const guardar = e => {
 			e.preventDefault();
+
+			const idpv = parseInt(codigo_pv.value);
+
 			const codacceso = <?= $_SESSION['kt_login_id'] ?>;
 			const detalle = [];
 			detalle.push(
-				`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3, codigocompras)
-				values
-				(
-					${codacceso},
-					1,
-					${codigodetalleproducto.value},
-					${codproducto.value},
-					${preciocomprapv2},
-					${precioventapv2},
-					${porcentaje1.value},
-					${precio1.value},
-					${porcentaje2.value},
-					${precio2.value},
-					${porcentaje3.value},
-					${precio2.value},
-					${codigorc.value}
-				);
-				`
+				`update precio_venta
+					set porcpv1 = ${porcentaje1.value}, porcpv2 = ${porcentaje2.value}, porcpv3= ${porcentaje3.value}, precioventa1 = ${precio1.value}, precioventa2 = ${precio2.value}, precioventa3 = ${precio3.value}
+				where codigo_pv = ${idpv}`
 			)
 			var formData = new FormData();
 				formData.append("exearray", JSON.stringify(detalle))
@@ -206,7 +197,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				.then(res => res.json())
 				.catch(error => console.error("error: ", error))
 				.then(res => {
-					$("#mOrdenCompra").modal("hide");
+					$("#mSetPrecioVenta").modal("hide");
 					if (res.success) {
 						alert("registro completo!")
 						location.reload()
