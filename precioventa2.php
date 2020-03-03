@@ -54,7 +54,8 @@ include("Fragmentos/abrirpopupcentro.php");
 						<div class="container-fluid">
 							<div class="row" style="margin-top:20px">
 								<div class="col-xs-12 col-md-12">
-
+									<input type="hidden" id="codproducto">
+									<input type="hidden" id="codigodetalleproducto">
 									<table class="table">
 										<thead>
 											<th>Producto</th>
@@ -75,22 +76,22 @@ include("Fragmentos/abrirpopupcentro.php");
 												<td id="preciocomprapv2"></td>
 												<td id="precioventapv2"></td>
 												<td >
-													<input type="number" oninput="inputdynamic(this)" data-index="1" data-type="porcentaje" id="porcentaje1" class="form-control">
+													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="1" data-type="porcentaje" id="porcentaje1" class="form-control">
 												</td>
 												<td >
-													<input type="number" oninput="inputdynamic(this)" data-index="1" data-type="precio" id="precio1" class="form-control">
+													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="1" data-type="precio" id="precio1" class="form-control">
 												</td>
 												<td >
-													<input type="number" oninput="inputdynamic(this)" data-index="2" data-type="porcentaje" id="porcentaje2" class="form-control">
+													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="2" data-type="porcentaje" id="porcentaje2" class="form-control">
 												</td>
 												<td >
-													<input type="number" oninput="inputdynamic(this)" data-index="2" data-type="precio" id="precio2" class="form-control">
+													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="2" data-type="precio" id="precio2" class="form-control">
 												</td>
 												<td >
-													<input type="number" oninput="inputdynamic(this)" data-index="3" data-type="porcentaje" id="porcentaje3" class="form-control">
+													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="3" data-type="porcentaje" id="porcentaje3" class="form-control">
 												</td>
 												<td >
-													<input type="number" oninput="inputdynamic(this)" data-index="3" data-type="precio" id="precio3" class="form-control">
+													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="3" data-type="precio" id="precio3" class="form-control">
 												</td>
 												
 
@@ -131,7 +132,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td align="right"> <?= $row_Listado['precio_compra']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_venta1']; ?></td>
 					<td align="center"> <?= $row_Listado['saldo'];?></td>
-					<td><a href="#" data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" data-marca="<?= $row_Listado['Marca']; ?>" data-preciocompra="<?= $row_Listado['precio_compra']; ?>" data-precioventa="<?= $row_Listado['precio_venta1']; ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" onClick="asignarprecioventa(this)" >Asignar</a></td>
+					<td><a href="#" data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" data-marca="<?= $row_Listado['Marca']; ?>" data-preciocompra="<?= $row_Listado['precio_compra']; ?>" data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" data-precioventa="<?= $row_Listado['precio_venta1']; ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" onClick="asignarprecioventa(this)" >Asignar</a></td>
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 			</tbody>
@@ -153,9 +154,10 @@ include("Fragmentos/abrirpopupcentro.php");
 			precioventapv2.textContent = e.dataset.precioventa
 			marcapv2.textContent = e.dataset.marca
 			productopv2.textContent = e.dataset.nombreproducto
+			codproducto.textContent = e.dataset.codproducto
+			codigodetalleproducto.textContent = e.dataset.codigodetalleproducto
 		}
 		function inputdynamic(e){
-			debugger
 			if(e.value < 0){
 				e.value = 0;
 				return;
@@ -172,4 +174,44 @@ include("Fragmentos/abrirpopupcentro.php");
 			else
 				getSelector(`#${towrite}${i}`).value = (currentvalue*100/preciocompra).toFixed(2)
 		}
+		
+		const guardar = e => {
+			e.preventDefault();
+			const codacceso = <?= $_SESSION['kt_login_id'] ?>;
+			const detalle = [];
+			detalle.push(
+				`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3, codigocompras)
+				values
+				(
+					${codacceso},
+					1,
+					${codigodetalleproducto.value},
+					${codproducto.value},
+					${preciocomprapv2},
+					${precioventapv2},
+					${porcentaje1.value},
+					${precio1.value},
+					${porcentaje2.value},
+					${precio2.value},
+					${porcentaje3.value},
+					${precio2.value},
+					${codigorc.value}
+				);
+				`
+			)
+			var formData = new FormData();
+				formData.append("exearray", JSON.stringify(detalle))
+
+				fetch(`setPrecioVenta.php`, { method: 'POST', body: formData })
+				.then(res => res.json())
+				.catch(error => console.error("error: ", error))
+				.then(res => {
+					$("#mOrdenCompra").modal("hide");
+					if (res.success) {
+						alert("registro completo!")
+						location.reload()
+					}
+				});
+		}
+		getSelector("#saveOrdenCompra").addEventListener("submit", guardar)
 	</script>
