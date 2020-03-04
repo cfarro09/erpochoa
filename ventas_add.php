@@ -309,7 +309,7 @@ include("Fragmentos/pie.php");
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
 				<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
-				<td>
+				<td class="unidad_medida">
 				${option.dataset.namexx}
 				
 				</td>
@@ -729,7 +729,7 @@ include("Fragmentos/pie.php");
 				const d = {
 					codigoprod: item.querySelector(".codigopro").dataset.codigo,
 					cantidad: item.querySelector(".cantidad").value,
-					unidad_medida: item.querySelector(".unidad_medida").value,
+					unidad_medida: item.querySelector(".unidad_medida").textContent,
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pventa: item.querySelector(".precio").value,
 					igv: parseFloat(item.querySelector(".precio").value) * IGV,
