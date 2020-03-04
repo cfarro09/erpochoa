@@ -77,12 +77,16 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
         </div>
     </div>
 </form>
+<div class="row" style="margin-bottom: 10px">
+    <div class="col-sm-4">
+        <button class="btn btn-success" onclick='tableToExcel("tableconta", sucursalconta.options[sucursalconta.selectedIndex].text)'>Descargar</button>
+    </div>
+</div>
 <div class="row">
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="tableconta">
         <theady>
 
             <th class="text-center">Fecha</th>
-            <th class="text-center">Comprobante</th>
             <th class="text-center">Numero</th>
             <th class="text-center">Cliente</th>
 
@@ -128,99 +132,61 @@ include("Fragmentos/pie.php");
             left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
             WHERE v.sucursal = ${suc}
                 and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}'`;
-        // const queryotrosegresos = `
-        //     SELECT 
-        //         * from serviciosporpagar
-        //     WHERE 
-        //         codpersonal = ${per}
-        //         and codsucursal = ${suc}
-        //         and fecharegistro BETWEEN '${f_ini}' AND '${f_fin}'`;
-        // const queryabonos = `
-        //     SELECT v.abonoproveedor, v.fecha_emision, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull 
-        //     FROM ventas v  
-        //     LEFT JOIN cnatural cn on cn.codigoclienten = v.codigoclienten 
-        //     LEFT JOIN cjuridico cj on cj.codigoclientej = v.codigoclientej  
-        //     WHERE 
-        //         v.abonoproveedor is not null
-        //         and v.sucursal = ${suc}
-        //         and v.fecha_emision >= '${f_ini}'`;
-
-        // const queryabonosproveedor = `
-        //         SELECT 
-        //             'compra' as tipo, r.abonoochoa as abono, p.razonsocial
-        //         FROM registro_compras r
-        //         LEFT JOIN proveedor p on p.ruc = r.rucproveedor
-        //         WHERE
-        //             r.fecha >= '${f_ini}' and r.codigosuc = ${suc} and r.abonoochoa is not null
-        //     UNION
-        //         SELECT 
-        //             'transporte' as tipo, t.abonoochoa as abono, p.razonsocial
-        //         FROM transporte_compra t
-        //         LEFT JOIN proveedor p on p.ruc = t.ructransporte
-        //         INNER JOIN registro_compras r on r.codigorc = t.codigocompras
-        //         WHERE
-        //             t.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and t.abonoochoa is not null
-        //     UNION
-        //         SELECT 
-        //             'estibador' as tipo, e.abonoochoa as abono, p.razonsocial
-        //         FROM estibador_compra e
-        //         LEFT JOIN proveedor p on p.ruc = e.rucestibador
-        //         INNER JOIN registro_compras r on r.codigorc = e.codigocompras
-        //         WHERE
-        //             e.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and e.abonoochoa is not null
-        //     UNION
-        //         SELECT 
-        //             'notadebito' as tipo, nd.abonoochoa as abono, p.razonsocial
-        //         FROM notadebito_compra nd
-        //         LEFT JOIN proveedor p on p.ruc = nd.rucnd
-        //         INNER JOIN registro_compras r on r.codigorc = nd.codigocompras
-        //         WHERE
-        //             nd.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and nd.abonoochoa is not null
-        //     UNION
-        //         SELECT 
-        //             'notacredito' as tipo, nc.abonoochoa as abono, p.razonsocial
-        //         FROM notacredito_compra nc
-        //         LEFT JOIN proveedor p on p.ruc = nc.rucnotacredito
-        //         INNER JOIN registro_compras r on r.codigorc = nc.codigocompras
-        //         WHERE
-        //             nc.fecharegistro >= '${f_ini}' and r.codigosuc = ${suc} and nc.abonoochoa is not null
-        //         `;
 
         const res = await get_data_dynamic(query);
-        // const resabonos = await get_data_dynamic(queryabonos);
-        // const abonosproveedor = await get_data_dynamic(queryabonosproveedor);
-        // const otrosegresos = await get_data_dynamic(queryotrosegresos);
-        // console.log(abonosproveedor)
-        const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
-        const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
 
-        // const pagoscontado = 
-        const totales = setventascontado(ventas_con_credito, true);
-        // ventas_contado.forEach(x => pagoscontado.push(x))
-        setventascontado(ventas_contado, false, totales);
-        // setabonocliente(resabonos)
-        // setabonoproveedor(abonosproveedor)
-        // setotroegresos(otrosegresos)
+        const typelist = {};
+
+        res.forEach(xx => {
+            if (!typelist[xx.tipocomprobante])
+                typelist[xx.tipocomprobante] = []
+            typelist[xx.tipocomprobante].push(xx)
+        })
+        for (const [key, datatmp1] of Object.entries(typelist)) {
+            setventascontado(datatmp1, true, null, key);
+        }
+        // $('#tableconta').dataTable()
+
+        // const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
+        // const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
+        // let totales = setventascontado(ventas_con_credito, true);
+        // setventascontado(ventas_contado, false, totales);
     }
-   
-    
-    const setventascontado = (res, header = false, data) => {
-        if(header)
+    var tableToExcel = (function() {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>',
+            base64 = function(s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function(s, c) {
+                return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+                })
+            }
+        return function(table, name) {
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = {
+                worksheet: name || 'Worksheet',
+                table: table.innerHTML
+            }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+
+
+    const setventascontado = (res, header = false, data, key) => {
+        if (header)
             bodydata.innerHTML += `
                 <tr>
-                    <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS</td>
+                    <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">${key.toUpperCase()}</td>
                 </tr>`;
-        if(!data){
+        if (!data) {
             data = {
                 acumulated: [],
                 totalgroup: 0,
                 ttp: []
             }
         }
-        
-        // const acumulated = [];
-        // let totalgroup = 0;
-        // const ttp = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             let suma = 0;
@@ -234,13 +200,12 @@ include("Fragmentos/pie.php");
                 data.totalgroup += parseFloat(ixx.montoextra);
             })
             suma = suma.toFixed(2);
-            for (const [key, value] of Object.entries(acumulatedtipos)) 
+            for (const [key, value] of Object.entries(acumulatedtipos))
                 acumulatedtipos[key] = parseFloat(value).toFixed(2);
 
             bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${iii.fecha_emision}</td>
-                    <td class="text-center">${iii.tipocomprobante.toUpperCase()}</td>
                     <td class="text-center">${iii.codigocomprobante}</td>
                     <td class="text-center">${iii.fullname}</td>
                     <td class="text-center">${acumulatedtipos["efectivo"] ? acumulatedtipos["efectivo"] : "" }</td>
@@ -252,13 +217,13 @@ include("Fragmentos/pie.php");
                     <td class="text-center">${suma}</td>
                 </tr>`;
         });
-        for (const [key, value] of Object.entries(data.ttp)) 
-                data.ttp[key] = parseFloat(value).toFixed(2);
+        for (const [key, value] of Object.entries(data.ttp))
+            data.ttp[key] = parseFloat(value).toFixed(2);
 
-        if(!header){
+        if (true) {
             bodydata.innerHTML += `
                 <tr style="font-weight: bold">
-                    <td class="text-right" colspan="4">TOTALES</td>
+                    <td class="text-right" colspan="3">TOTALES</td>
                     <td class="text-center">${data.ttp["efectivo"] ? data.ttp["efectivo"] : "0.00" }</td>
                     <td class="text-center">${data.ttp["cheque"] ? data.ttp["cheque"] : "0.00" }</td>
                     <td class="text-center">${data.ttp["depositobancario"] ? data.ttp["depositobancario"] : "0.00" }</td>
@@ -271,7 +236,7 @@ include("Fragmentos/pie.php");
             for (const [key, value] of Object.entries(data.acumulated)) {
                 bodydata.innerHTML += `
                 <tr>
-                    <td style="font-weight: bold" class="text-right" colspan="10">TOTAL ${key}</td>
+                    <td style="font-weight: bold" class="text-right" colspan="9">TOTAL ${key}</td>
                     <td style="font-weight: bold" class="text-center">${value.toFixed(2)}</td>
                 </tr>`
             }
@@ -293,7 +258,7 @@ include("Fragmentos/pie.php");
             const arraypagos = JSON.parse(iii.abonoproveedor);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 acumulatedpey += parseFloat(ixx.montoextra);
-                ttp[ixx.tipopago] =  parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
+                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -316,7 +281,7 @@ include("Fragmentos/pie.php");
                 <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
                 <td class="text-center">${acumulatedpey.toFixed(2)}</td>
             </tr>`;
-        
+
     }
     const setabonoproveedor = res => {
         const f_ini = fecha_inicio.value;
@@ -326,13 +291,14 @@ include("Fragmentos/pie.php");
                 <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
             </tr>
             `;
-        let acumulatedpey = 0;const acumulated = [];
+        let acumulatedpey = 0;
+        const acumulated = [];
         const ttp = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.abono);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 acumulatedpey += parseFloat(ixx.montoextra);
-                ttp[ixx.tipopago] =  parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
+                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
