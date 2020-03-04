@@ -51,7 +51,8 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
 
 mysql_select_db($database_Ventas, $Ventas);
 //$query_Listado = "SELECT * FROM cnatural WHERE estado = '0'";
-$query_Listado = "SELECT n.codigoclienten, n.cedula, n.nombre, n.paterno, n.materno, n.celular, v.codigoclienten as cliente1, s.codigoclienten as cliente2 FROM cnatural n left join serviciosaofrecer s on s.codigoclienten=n.codigoclienten left join ventas v on v.codigoclienten=n.codigoclienten";
+$query_Listado = "SELECT n.codigoclienten, n.codigoclienten as cliente1, n.cedula, n.nombre, n.paterno, n.materno, n.celular, s.codigoclienten as cliente2 FROM cnatural n left join serviciosaofrecer s on s.codigoclienten=n.codigoclienten";
+//left join ventas v on v.codigoclienten=n.codigoclienten";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
