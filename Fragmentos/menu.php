@@ -532,28 +532,62 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
 
                                         <li class="nav-item">
-                                            <a href="ventas_cg_list.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
-                                                <span class="title">Entrega Venta C/G</span>
+                                            <a href="javascript:;" class="nav-link font-blue-steel">
+
+                                                <span class="title">ENTRADA MERCADERA</span>
                                                 <span class="selected"></span>
+                                                <span class="arrow open"></span>
                                             </a>
+                                            <ul class="sub-menu">
+                                                <li class="nav-item">
+                                                    <a href="ordencompra_alm_list.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                        <span class="title">Mercaderias - PR</span>
+                                                        <span class="selected"></span>
+
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="auto_guia_sin_oc.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                        <span class="title">Mercaderias - NPR</span>
+                                                        <span class="selected"></span>
+
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="cambiosucursal.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                        <span class="title">Traslado/ Sucursales</span>
+                                                        <span class="selected"></span>
+
+                                                    </a>
+                                                </li>
+                                            </ul>
                                         </li>
-
                                         <li class="nav-item">
-                                            <a href="ordencompra_alm_list.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Mercaderias - PR</span>
+                                            <a href="javascript:;" class="nav-link font-blue-steel">
+                                                <span class="title">SALIDA MERCADERIA</span>
                                                 <span class="selected"></span>
-
+                                                <span class="arrow open"></span>
                                             </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="auto_guia_sin_oc.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Mercaderias - NPR</span>
-                                                <span class="selected"></span>
+                                            <ul class="sub-menu">
+                                                <li class="nav-item">
+                                                    <a href="ventas_cg_list.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                        <span class="title">Entrega Venta C/G</span>
+                                                        <span class="selected"></span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="cambio_mercancia.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                        <span class="title">Traslado Sucursal</span>
+                                                        <span class="selected"></span>
 
-                                            </a>
+                                                    </a>
+                                                </li>
+                                            </ul>
                                         </li>
                                     </ul>
                                 </li>
@@ -886,9 +920,6 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             $d = mt_rand(0, 9999999999999999);
 
                                             ?>
-                                            <?php
-                                            echo "<a href='#'>Proforma</a>";
-                                            ?>
                                         </li>
                                         <li class="nav-item">
                                             <a href="proforma.php" class="nav-link font-blue-ebonyclay">
@@ -912,10 +943,10 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
-                                        <li class="nav-item">
+                                        <li class="nav-item" style="display: none">
                                             <a href="cambio_mercancia.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                                <span class="title">Cambio de Mercancia</span>
+                                                <span class="title">Traslado de Mercaderia</span>
                                                 <span class="selected"></span>
 
                                             </a>
@@ -1213,20 +1244,20 @@ $nombreigv = mysql_fetch_object($result)->value;
                                 const newxx = document.createElement("div");
                                 newxx.className = "col-md-12 containerx";
                                 newxx.style = "border: 1px solid #cdcdcd; padding: 5px; margin-bottom: 5px";
-                                
+
                                 let options = "";
                                 ffoptions.forEach(xx => {
-                                    if(xx == "efectivo"){
+                                    if (xx == "efectivo") {
                                         options += '<option value="efectivo">Efectivo</option>';
-                                    }else if(xx == "cheque"){
+                                    } else if (xx == "cheque") {
                                         options += '<option value="cheque">Cheque</option>';
-                                    }else if(xx == "depositobancario"){
+                                    } else if (xx == "depositobancario") {
                                         options += '<option value="depositobancario">Deposito Bancario</option>';
-                                    }else if(xx == "tarjetadebito"){
+                                    } else if (xx == "tarjetadebito") {
                                         options += '<option value="tarjetadebito">Tarjeta Debito</option>';
-                                    }else if(xx == "tarjetacredito"){
+                                    } else if (xx == "tarjetacredito") {
                                         options += '<option value="tarjetacredito">Tarjeta Credito</option>';
-                                    }else if(xx == "porcobrar"){
+                                    } else if (xx == "porcobrar") {
                                         options += '<option value="porcobrar">Por cobrar</option>';
                                     }
                                 })
@@ -1328,6 +1359,12 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     rtl: App.isRTL(),
                                     autoclose: true
                                 });
+                            }
+
+                            function uuidv4() {
+                                return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                                );
                             }
 
                             const IGV = <?= $IGV ?>;

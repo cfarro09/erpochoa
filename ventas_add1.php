@@ -139,6 +139,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						<input type="number" readonly step="any" class="form-control" id="montopagado">
 					</div>
 				</div>
+				<input type="hidden" id="tmpcodigoventas">
 				<div class="col-md-12 text-center" id="divparentpayextra" style="margin-top: 10px; margin-bottom: 10px; display: none">
 					<button class="btn btn-success" type="button" onclick="addPayExtra()">Agregar Pago</button>
 				</div>
@@ -213,6 +214,47 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 		</div>
 	</div>
 </form>
+<div class="modal fade" id="mguia" role="dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog" role="document" style="width: 900px">
+		<div class="modal-content m-auto">
+			<form id="formdataguia" action="">
+				<div class="modal-header">
+					<h2 class="modal-title">Datos de la Guia Inmediata</h2>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="puntollegada" class="control-label">Punto de Llegada</label>
+										<input required type="text" class="form-control" id="puntollegada">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecibe" class="control-label">Quien Recibe</label>
+										<input required type="text" class="form-control" id="quienrecibe">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">Quien recoge</label>
+										<input required type="text" class="form-control" id="quienrecoge">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" aria-label="Close" id="btnguardarguiainmediata">Guardar Guia</button>
+					<button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 <?php
 //___________________________________________________________________________________________________________________
 include("Fragmentos/footer.php");
@@ -223,7 +265,7 @@ include("Fragmentos/pie.php");
 
 <script type="text/javascript">
 	let htmlcuentaabonado = "";
-
+	let h = {};
 	const onloadxx = async () => {
 		htmlcuentaabonado = await getcuentaabonados()
 		addPayExtra();
@@ -623,6 +665,22 @@ include("Fragmentos/pie.php");
 		}
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
+
+		if(e.value == "ventasxordensalida"){
+			modalidadentrega.innerHTML = `
+				<option value="Entrega inmediata S/G">Inmediata S/G</option>
+				<option value="Entrega inmediata C/G">Inmediata C/G</option>
+				<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
+			`;
+			modalidadentrega.value = "Entrega inmediata S/G";
+			modalidadentrega.disabled =  true;
+		}else{
+			modalidadentrega.innerHTML = `
+				<option value="Entrega inmediata C/G">Inmediata C/G</option>
+				<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
+			`;
+			modalidadentrega.disabled =  false;
+		}
 	}
 
 	getSelector("#form-generate-venta").addEventListener("submit", e => {
@@ -640,7 +698,7 @@ include("Fragmentos/pie.php");
 			conpayextra = [];
 
 			const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
-			const h = {
+			h = {
 				tipocomprobante: tipocomprobante.value,
 				codigocomprobante: codigocomprobante.value,
 				codigoclienten: tipocliente == "natural" ? cliente.value : "null",
@@ -798,11 +856,81 @@ include("Fragmentos/pie.php");
 				.then(res => {
 					if (res.success) {
 						alert("registro completo!")
-						getSelector("#form-generate-venta").reset();
-						getSelector("#detalleFormProducto").innerHTML = ""
-						location.reload()
+						if (modalidadentrega.value == "Entrega inmediata C/G") {
+							$("#mguia").modal()
+							tmpcodigoventas.value = res.id;
+						} else {
+							location.reload();
+						}
+						// getSelector("#form-generate-venta").reset();
+						// getSelector("#detalleFormProducto").innerHTML = ""
+						// location.reload()
 					}
 				});
 		}
 	})
+	async function guardarguiainmediata(e) {
+		e.preventDefault()
+		const data = {};
+		data.header = '';
+		data.detalle = [];
+
+		const idguia = uuidv4();
+
+		var query = "select value from propiedades where `key` = 'despacho_guia'";
+		const resguia = await get_data_dynamic(query).then(r => r);
+		const h1 = {
+			id: idguia,
+			fecha: h.fecha_emision,
+			sucursal: h.codsucursal,
+			codventa: tmpcodigoventas.value,
+			nguia: resguia[0].value,
+			puntollegada: puntollegada.value,
+			quienrecibe: quienrecibe.value,
+			quienrecoge: quienrecoge.value,
+			productos: []
+		}
+		let isdespachado = 1;
+		getSelectorAll(".producto").forEach(item => {
+			const d = {
+				codigoprod: item.querySelector(".codigopro").textContent,
+				cantidad: item.querySelector(".cantidad").value,
+				canttotal: item.querySelector(".cantidad").value,
+				nombre_producto: item.querySelector(".nombre").textContent,
+				pventa: item.querySelector(".precio").value,
+			};
+			h1.productos.push(d)
+		});
+		const dataguia = [];
+		dataguia.push(h1);
+		data.header = `
+                UPDATE ventas SET 
+                    despachado = ${isdespachado}, 
+                    nroguia = ${h1.nguia},
+                    dataguia = '${JSON.stringify(dataguia)}'
+                WHERE codigoventas=${h1.codventa}`;
+
+		data.detalle.push("UPDATE propiedades SET value = (" + h1.nguia + "+1) where `key` = 'despacho_guia'");
+		var formData = new FormData();
+		formData.append("json", JSON.stringify(data));
+
+		const res = await fetch(`setVenta.php`, {
+				method: 'POST',
+				body: formData
+			})
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => res);
+		if (res.success) {
+			alert("registro completo!");
+			var url = `Imprimir/guia_imprimir.php?idventas=${parseInt(h1.codventa)}&idguia=${h1.id}`;
+			window.location = url;
+			getSelector("#form-generate-venta").reset();
+			getSelector("#detalleFormProducto").innerHTML = "";
+			buttonsaveventa.disabled = false
+			$("#mguia").modal("hide")
+			// location.reload();
+		}
+	}
+	formdataguia.addEventListener('submit', guardarguiainmediata)
 </script>

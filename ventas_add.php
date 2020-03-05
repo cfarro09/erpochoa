@@ -57,11 +57,53 @@ $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
 
 ?>
+<div class="modal fade" id="mguia" role="dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog" role="document" style="width: 900px">
+		<div class="modal-content m-auto">
+			<form id="formdataguia" action="">
+				<div class="modal-header">
+					<h2 class="modal-title">Datos de la Guia Inmediata</h2>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="puntollegada" class="control-label">Punto de Llegada</label>
+										<input required type="text" class="form-control" id="puntollegada">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecibe" class="control-label">Quien Recibe</label>
+										<input required type="text" class="form-control" id="quienrecibe">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">Quien recoge</label>
+										<input required type="text" class="form-control" id="quienrecoge">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" aria-label="Close" id="btnguardarguiainmediata">Guardar Guia</button>
+					<button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
 
 <form id="form-generate-venta">
 	<div class="row">
 		<div class="col-sm-12 text-center">
-			<button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
+			<button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px" id="buttonsaveventa">VENTA<br>
 				<H5><STRONG>
 						(CONFIRMAR)
 					</STRONG></H5>
@@ -136,6 +178,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						</select>
 					</div>
 				</div>
+
 				<div class="col-md-4" style="display: none">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Monto Pagado</label>
@@ -151,6 +194,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			</div>
 		</div>
 	</div>
+	<input type="hidden" id="tmpcodigoventas">
 	<div class="row" style="display: none">
 		<div class="col-sm-12 text-center">
 			<button class="btn btn-success" type="submit" id="generateCompra" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA</button>
@@ -301,7 +345,7 @@ include("Fragmentos/pie.php");
 		} else {
 			const option = this.options[this.selectedIndex]
 
-			
+
 			const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
 			$("#detalleFormProducto").append(`
 				<tr class="producto">
@@ -539,6 +583,7 @@ include("Fragmentos/pie.php");
 		}
 	}
 
+
 	function makeid(length) {
 		var result = '';
 		var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -563,9 +608,9 @@ include("Fragmentos/pie.php");
 			codigoprod.closest(".col-sm-12").style.display = "";
 			detalleFormProducto.innerHTML = "";
 		} else {
-			if(e.value == "notacredito"){
+			if (e.value == "notacredito") {
 				codigoprod.closest(".col-sm-12").style.display = "";
-				
+
 				detalleFormProducto.innerHTML = `
 					<tr class="producto" data-type="notacredito">
 						<input type="hidden" class="pcompra" value="1">
@@ -592,7 +637,7 @@ include("Fragmentos/pie.php");
 						<td>
 						</td>
 					</tr>`;
-			}else{
+			} else {
 				codigoprod.closest(".col-sm-12").style.display = "none";
 				detalleFormProducto.innerHTML = `
 				<tr class="producto" data-type="notadebito">
@@ -621,20 +666,26 @@ include("Fragmentos/pie.php");
 					</td>
 				</tr>`;
 			}
-			
 			queryselected = query + " UNION " + query2;
 		}
-
-
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
+
+		if (e.value == "notadebito" || e.value == "notacredito") {
+			modalidadentrega.value = "Entrega inmediata S/G";
+			modalidadentrega.disabled = true;
+		} else
+			modalidadentrega.disabled = false;
 	}
-	function imprimir_factura(id)
-    {
-        var url = `Imprimir/facturaventa_imprimir.php?id=${id}`;
-        window.location=url;
-    }
+
+	function imprimir_factura(id) {
+		var url = `Imprimir/facturaventa_imprimir.php?id=${id}`;
+		window.location = url;
+	}
+	let h = {};
 	getSelector("#form-generate-venta").addEventListener("submit", e => {
+
+		buttonsaveventa.disabled = true;
 		e.preventDefault();
 		if (getSelectorAll(".producto").length < 1) {
 			alert("Debes agregar almenos un producto")
@@ -649,7 +700,7 @@ include("Fragmentos/pie.php");
 			conpayextra = [];
 
 			const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
-			const h = {
+			h = {
 				tipocomprobante: tipocomprobante.value,
 				codigocomprobante: codigocomprobante.value,
 				codigoclienten: tipocliente == "natural" ? cliente.value : "null",
@@ -741,14 +792,14 @@ include("Fragmentos/pie.php");
 					values
 					(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
 					`);
-				}else if(tipocomprobante.value == "notacredito") {
-					if(item.dataset.type == "notacredito"){
+				} else if (tipocomprobante.value == "notacredito") {
+					if (item.dataset.type == "notacredito") {
 						data.detalle.push(`
 							insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
 							values
 							(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
 							`);
-					}else{
+					} else {
 						data.detalle.push(`
 							insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
 							values (${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
@@ -807,19 +858,87 @@ include("Fragmentos/pie.php");
 				.then(res => {
 					if (res.success) {
 						alert("registro completo!")
-						getSelector("#form-generate-venta").reset();
-						getSelector("#detalleFormProducto").innerHTML = "";
+
 
 						var opcion = confirm("¿Desea imprimir factura?");
-						if(opcion)
-						{
-							imprimir_factura(res.id)
+						if (opcion)
+							imprimir_factura(res.id);
+						debugger
+						if (modalidadentrega.value == "Entrega inmediata C/G") {
+							$("#mguia").modal()
+							tmpcodigoventas.value = res.id;
+						} else {
 							location.reload();
 						}
-						else
-							location.reload();
 					}
 				});
 		}
 	})
+
+	async function guardarguiainmediata(e) {
+		e.preventDefault()
+		const data = {};
+		data.header = '';
+		data.detalle = [];
+
+		const idguia = uuidv4();
+
+		var query = "select value from propiedades where `key` = 'despacho_guia_"+h.codsucursal+"'";
+		const resguia = await get_data_dynamic(query).then(r => r);
+
+		const h1 = {
+			id: idguia,
+			fecha: h.fecha_emision,
+			sucursal: h.codsucursal,
+			codventa: tmpcodigoventas.value,
+			nguia: resguia[0].value,
+			puntollegada: puntollegada.value,
+			quienrecibe: quienrecibe.value,
+			quienrecoge: quienrecoge.value,
+			productos: []
+		}
+		let isdespachado = 1;
+		getSelectorAll(".producto").forEach(item => {
+			const d = {
+				codigoprod: item.querySelector(".codigopro").textContent,
+				cantidad: item.querySelector(".cantidad").value,
+				canttotal: item.querySelector(".cantidad").value,
+				nombre_producto: item.querySelector(".nombre").textContent,
+				pventa: item.querySelector(".precio").value,
+			};
+			h1.productos.push(d)
+		});
+		const dataguia = [];
+		dataguia.push(h1);
+		data.header = `
+                UPDATE ventas SET 
+                    despachado = ${isdespachado}, 
+                    nroguia = ${h1.nguia},
+                    dataguia = '${JSON.stringify(dataguia)}'
+                WHERE codigoventas=${h1.codventa}`;
+
+		data.detalle.push("UPDATE propiedades SET value = (" + h1.nguia + "+1) where `key` = 'despacho_guia_"+h.sucursal+"'");
+		var formData = new FormData();
+		formData.append("json", JSON.stringify(data));
+
+		const res = await fetch(`setVenta.php`, {
+				method: 'POST',
+				body: formData
+			})
+			.then(res => res.json())
+			.catch(error => console.error("error: ", error))
+			.then(res => res);
+		if (res.success) {
+			alert("registro completo!");
+			var url = `Imprimir/guia_imprimir.php?idventas=${parseInt(h1.codventa)}&idguia=${h1.id}`;
+			window.location = url;
+			getSelector("#form-generate-venta").reset();
+			getSelector("#detalleFormProducto").innerHTML = "";
+			buttonsaveventa.disabled = false
+			$("#mguia").modal("hide")
+			// location.reload();
+		}
+	}
+
+	formdataguia.addEventListener('submit', guardarguiainmediata)
 </script>

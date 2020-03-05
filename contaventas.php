@@ -30,6 +30,29 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 
 ?>
+<style>
+    .textright {
+        text-align: right
+    }
+
+    .textleft {
+        text-align: left
+    }
+
+    .textcenter {
+        text-align: center
+    }
+
+    @media print {
+        * {
+            display: none;
+        }
+
+        #printableTable {
+            display: block;
+        }
+    }
+</style>
 <input type="hidden" value="<?= $tmpcodsucursal ?>" id="sucursalactive">
 <form id="formoperacion">
     <div class="row">
@@ -78,37 +101,40 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
     </div>
 </form>
 <div class="row" style="margin-bottom: 10px">
-    <div class="col-sm-4">
-        <button class="btn btn-success" onclick='tableToExcel("tableconta", sucursalconta.options[sucursalconta.selectedIndex].text)'>Descargar</button>
+    <div class="col-sm-6">
+        <button class="btn btn-success" onclick='tableToExcel("tableconta", sucursalconta.options[sucursalconta.selectedIndex].text)'>Descargar excel</button>
+
+        <button class="btn btn-success" onclick='printDiv()'>Imprimir</button>
     </div>
 </div>
 <div class="row">
-    <table class="table table-bordered" id="tableconta">
-        <theady>
+    <div id="printableTable">
+        <table class="table table-bordered" id="tableconta">
+            <thead>
+                <th class="text-center">Fecha</th>
+                <th class="text-center">Numero</th>
+                <th class="text-center">Cliente</th>
+                <th class="text-center">Efectivo</th>
+                <th class="text-center">Cheque</th>
+                <th class="text-center">D. Bancario</th>
+                <th class="text-center">T. Debito</th>
+                <th class="text-center">T. Credito</th>
+                <th class="text-center">Por cobrar</th>
+                <th class="text-center">Total</th>
+            </thead>
+            <tbody id="bodydata">
 
-            <th class="text-center">Fecha</th>
-            <th class="text-center">Numero</th>
-            <th class="text-center">Cliente</th>
+            </tbody>
+        </table>
+    </div>
 
-            <th class="text-center">Efectivo</th>
-            <th class="text-center">Cheque</th>
-            <th class="text-center">D. Bancario</th>
-            <th class="text-center">T. Debito</th>
-            <th class="text-center">T. Credito</th>
-            <th class="text-center">Por cobrar</th>
-
-            <th class="text-center">Total</th>
-        </theady>
-        <tbody id="bodydata">
-
-        </tbody>
-    </table>
 </div>
 
 <?php
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
 ?>
+<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
 
 <script>
     const codigopersonal = <?= $codpersonal ?>;
@@ -122,7 +148,7 @@ include("Fragmentos/pie.php");
 
         const query = `
             SELECT 
-                if(cn.cedula is null, 'juridico', 'natural') as tipo, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
+                if(cn.cedula is null, 'juridico', 'natural') as tipo, v.codigoventas, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
                 if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
                 if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname, v.fecha_emision,
                 IFNULL(cn.cedula, cj.ruc) as identificacion, 
@@ -142,15 +168,41 @@ include("Fragmentos/pie.php");
                 typelist[xx.tipocomprobante] = []
             typelist[xx.tipocomprobante].push(xx)
         })
-        for (const [key, datatmp1] of Object.entries(typelist)) {
-            setventascontado(datatmp1, true, null, key);
+        let sumatotal = 0;
+        let datatt = {};
+        for (let [key, datatmp1] of Object.entries(typelist)) {
+            key = key == "boleta" ? "boleta de ventas" : key;
+            const dtx = setventascontado(datatmp1, true, null, key);
+            sumatotal += dtx.totalgroup;
+            if (!datatt) {
+                datatt = dtx.ttp;
+            } else {
+                for (const [key, value] of Object.entries(dtx.ttp)) {
+                    datatt[key] = datatt[key] ? datatt[key] : 0;
+                    datatt[key] = parseFloat(datatt[key]) + parseFloat(value);
+                }
+            }
         }
-        // $('#tableconta').dataTable()
+        for (const [key, value] of Object.entries(datatt)) {
+            datatt[key] = datatt[key].toFixed(2);
+        }
+        bodydata.innerHTML += `
+                <tr style="font-weight: bold">
+                    <td class="text-right" colspan="3">TOTALES </td>
+                    <td class="text-right">${datatt["efectivo"] ? datatt["efectivo"] : "0.00" }</td>
+                    <td class="text-right">${datatt["cheque"] ? datatt["cheque"] : "0.00" }</td>
+                    <td class="text-right">${datatt["depositobancario"] ? datatt["depositobancario"] : "0.00" }</td>
+                    <td class="text-right">${datatt["tarjetadebito"] ? datatt["tarjetadebito"] : "0.00" }</td>
+                    <td class="text-right">${datatt["tarjetacredito"] ? datatt["tarjetacredito"] : "0.00" }</td>
+                    <td class="text-right">${datatt["porcobrar"] ? datatt["porcobrar"] : "0.00" }</td>
+                    <td class="text-right">${sumatotal.toFixed(2)}</td>
+                </tr>`;
+    }
 
-        // const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
-        // const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
-        // let totales = setventascontado(ventas_con_credito, true);
-        // setventascontado(ventas_contado, false, totales);
+    function printDiv() {
+        window.frames["print_frame"].document.body.innerHTML = document.getElementById("printableTable").innerHTML;
+        window.frames["print_frame"].window.focus();
+        window.frames["print_frame"].window.print();
     }
     var tableToExcel = (function() {
         var uri = 'data:application/vnd.ms-excel;base64,',
@@ -178,7 +230,7 @@ include("Fragmentos/pie.php");
         if (header)
             bodydata.innerHTML += `
                 <tr>
-                    <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">${key.toUpperCase()}</td>
+                    <td colspan="3" class="text-center" style="font-weight: bold; background-color: #b7e1ff">${key.toUpperCase()}</td>
                 </tr>`;
         if (!data) {
             data = {
@@ -200,21 +252,22 @@ include("Fragmentos/pie.php");
                 data.totalgroup += parseFloat(ixx.montoextra);
             })
             suma = suma.toFixed(2);
-            for (const [key, value] of Object.entries(acumulatedtipos))
+            for (const [key, value] of Object.entries(acumulatedtipos)) {
                 acumulatedtipos[key] = parseFloat(value).toFixed(2);
+            }
 
             bodydata.innerHTML += `
                 <tr>
-                    <td class="text-center">${iii.fecha_emision}</td>
-                    <td class="text-center">${iii.codigocomprobante}</td>
-                    <td class="text-center">${iii.fullname}</td>
-                    <td class="text-center">${acumulatedtipos["efectivo"] ? acumulatedtipos["efectivo"] : "" }</td>
-                    <td class="text-center">${acumulatedtipos["cheque"] ? acumulatedtipos["cheque"] : "" }</td>
-                    <td class="text-center">${acumulatedtipos["depositobancario"] ? acumulatedtipos["depositobancario"] : "" }</td>
-                    <td class="text-center">${acumulatedtipos["tarjetadebito"] ? acumulatedtipos["tarjetadebito"] : "" }</td>
-                    <td class="text-center">${acumulatedtipos["tarjetacredito"] ? acumulatedtipos["tarjetacredito"] : "" }</td>
-                    <td class="text-center">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
-                    <td class="text-center">${suma}</td>
+                    <td class="textleft">${iii.fecha_emision}</td>
+                    <td class="textleft"><a href="Imprimir/facturaventa_imprimir.php?id=${iii.codigoventas}">${iii.codigocomprobante}</a></td>
+                    <td class="textleft">${iii.fullname}</td>
+                    <td class="textright">${acumulatedtipos["efectivo"] ? acumulatedtipos["efectivo"] : "" }</td>
+                    <td class="textright">${acumulatedtipos["cheque"] ? acumulatedtipos["cheque"] : "" }</td>
+                    <td class="textright">${acumulatedtipos["depositobancario"] ? acumulatedtipos["depositobancario"] : "" }</td>
+                    <td class="textright">${acumulatedtipos["tarjetadebito"] ? acumulatedtipos["tarjetadebito"] : "" }</td>
+                    <td class="textright">${acumulatedtipos["tarjetacredito"] ? acumulatedtipos["tarjetacredito"] : "" }</td>
+                    <td class="textright">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
+                    <td class="textright">${suma}</td>
                 </tr>`;
         });
         for (const [key, value] of Object.entries(data.ttp))
@@ -223,23 +276,15 @@ include("Fragmentos/pie.php");
         if (true) {
             bodydata.innerHTML += `
                 <tr style="font-weight: bold">
-                    <td class="text-right" colspan="3">TOTALES</td>
-                    <td class="text-center">${data.ttp["efectivo"] ? data.ttp["efectivo"] : "0.00" }</td>
-                    <td class="text-center">${data.ttp["cheque"] ? data.ttp["cheque"] : "0.00" }</td>
-                    <td class="text-center">${data.ttp["depositobancario"] ? data.ttp["depositobancario"] : "0.00" }</td>
-                    <td class="text-center">${data.ttp["tarjetadebito"] ? data.ttp["tarjetadebito"] : "0.00" }</td>
-                    <td class="text-center">${data.ttp["tarjetacredito"] ? data.ttp["tarjetacredito"] : "0.00" }</td>
-                    <td class="text-center">${data.ttp["porcobrar"] ? data.ttp["porcobrar"] : "0.00" }</td>
-                    <td class="text-center">${data.totalgroup.toFixed(2)}</td>
+                    <td class="text-right" colspan="3">TOTAL ${key.toUpperCase()}</td>
+                    <td class="text-right">${data.ttp["efectivo"] ? data.ttp["efectivo"] : "0.00" }</td>
+                    <td class="text-right">${data.ttp["cheque"] ? data.ttp["cheque"] : "0.00" }</td>
+                    <td class="text-right">${data.ttp["depositobancario"] ? data.ttp["depositobancario"] : "0.00" }</td>
+                    <td class="text-right">${data.ttp["tarjetadebito"] ? data.ttp["tarjetadebito"] : "0.00" }</td>
+                    <td class="text-right">${data.ttp["tarjetacredito"] ? data.ttp["tarjetacredito"] : "0.00" }</td>
+                    <td class="text-right">${data.ttp["porcobrar"] ? data.ttp["porcobrar"] : "0.00" }</td>
+                    <td class="text-right">${data.totalgroup.toFixed(2)}</td>
                 </tr>`;
-            // acumulated[""] = totalgroup;
-            for (const [key, value] of Object.entries(data.acumulated)) {
-                bodydata.innerHTML += `
-                <tr>
-                    <td style="font-weight: bold" class="text-right" colspan="9">TOTAL ${key}</td>
-                    <td style="font-weight: bold" class="text-center">${value.toFixed(2)}</td>
-                </tr>`
-            }
         }
         return data;
     }

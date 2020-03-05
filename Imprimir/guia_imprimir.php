@@ -16,27 +16,36 @@ while($razsocial = mysql_fetch_assoc($resultquery)){
   array_push($datos, $razsocial);
 }
 
-if (isset($_GET['id'])) {
-  $id = $_GET['id'];
+if (isset($_GET['idventas'])) {
+  $idventas = $_GET['idventas'];
+}
+if (isset($_GET['idguia'])) {
+  $idguia = $_GET['idguia'];
 }
 $querydetalle = "
     select 
-    dv.*, v.*, p.nombre_producto, m.nombre as marca, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,
-    cj.razonsocial, cj.ruc
-    from detalle_ventas dv
-    inner join ventas v on v.codigoventas = dv.codigoventa
-    inner join producto p on p.codigoprod = dv.codigoprod
-    inner join marca m on m.codigomarca = p.codigomarca
+      v.dataguia, v.subtotal, v.igv, v.total, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula, cj.razonsocial, cj.ruc
+    from ventas v
     left join cnatural c on c.codigoclienten = v.codigoclienten
     left join  cjuridico cj on cj.codigoclientej = v.codigoclientej
-    where dv.codigoventa = $id";
+    where v.codigoventas = $idventas";
 
 $resultquery = mysql_query($querydetalle, $Ventas) or die(mysql_error());
-while($res = mysql_fetch_assoc($resultquery)){
-  array_push($detalle, $res);
-}
 
-// var_dump($detalle[15]);die();
+$headerventa = mysql_fetch_assoc($resultquery); 
+
+$guias = json_decode($headerventa["dataguia"]);
+
+for ($i=0; $i < count($guias); $i++) { 
+  if($guias[$i]->id == $idguia){
+    $guiatoshow = $guias[$i];
+    break;
+  }
+}
+$guiatoshow->productos[0]->igv = $headerventa["igv"];
+$guiatoshow->productos[0]->total = $headerventa["total"];
+$guiatoshow->productos[0]->subtotal = $headerventa["subtotal"];
+
 class PDF extends FPDF
 {
   function setHeader($id,$ruc,$razon_social,$fecha_emision,$cliente,$cedula)
@@ -66,9 +75,9 @@ class PDF extends FPDF
     $this->Cell(30,8,'TOTAL',1,1,'C',true);
     $this->SetFont('Arial','',9);
     for ($i=0; $i < 17; $i++) {
-      $cantidad = (isset($detalle[$i]) ? $detalle[$i]['cantidad']: '');
-      $descripcion = (isset($detalle[$i]) ? $detalle[$i]['nombre_producto']: '');
-      $precio = (isset($detalle[$i]) ? $detalle[$i]['pventa']: '');
+      $cantidad = (isset($detalle[$i]) ? $detalle[$i]->cantidad: '');
+      $descripcion = (isset($detalle[$i]) ? $detalle[$i]->nombre_producto: '');
+      $precio = (isset($detalle[$i]) ? $detalle[$i]->pventa : '');
       $total = (isset($detalle[$i]) ? $cantidad*$precio: '');
       $this->Cell(20,8,$cantidad,'LB',0,'C');
       $this->Cell(100,8,utf8_decode($descripcion),'LB',0);
@@ -80,13 +89,13 @@ class PDF extends FPDF
     $this->Ln(4);
     $this->Cell(120,8,'',0,0);
     $this->Cell(30,8,'SUB-TOTAL: ',0,0,'R');
-    $this->Cell(30,8,$detalle[0]['subtotal'],0,1,'R');
+    $this->Cell(30,8,$detalle[0]->subtotal,0,1,'R');
     $this->Cell(120,8,'',0,0);
     $this->Cell(30,8,'IGV: ',0,0,'R');
-    $this->Cell(30,8,$detalle[0]['igv'],0,1,'R');
+    $this->Cell(30,8,$detalle[0]->igv,0,1,'R');
     $this->Cell(120,8,'',0,0);
     $this->Cell(30,8,'TOTAL: ',0,0,'R');
-    $this->Cell(30,8,$detalle[0]['total'],0,1,'R');
+    $this->Cell(30,8,$detalle[0]->total,0,1,'R');
     
   }
   
@@ -100,11 +109,9 @@ class PDF extends FPDF
 
 $pdf = new PDF();
 $pdf->AddPage();
-$cliente = (isset($detalle[0]['ClienteNatural']) ? $detalle[0]['ClienteNatural'] : $detalle[0]['razonsocial']);
-$cedula = (isset($detalle[0]['cedula']) ? $detalle[0]['cedula'] : $detalle[0]['ruc']);
-$pdf->setHeader($detalle[0]['nroguia'],$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$cliente,$cedula);
-$pdf->setDetalle($detalle);
+$cliente = (isset($headerventa['ClienteNatural']) ? $headerventa['ClienteNatural'] : $headerventa['razonsocial']);
+$cedula = (isset($headerventa['cedula']) ? $headerventa['cedula'] : $headerventa['ruc']);
+$pdf->setHeader($guiatoshow->nguia, $datos[0]['value'],$datos[1]['value'],$guiatoshow->fecha, $cliente, $cedula);
+$pdf->setDetalle($guiatoshow->productos);
 // $pdf->setFooter();
-$pdf->Output(utf8_decode("guia_" . $detalle[0]['nroguia'] . ".pdf"), 'D');
-
-?>
+$pdf->Output(utf8_decode("guia_" . $guiatoshow->nguia . ".pdf"), 'D');

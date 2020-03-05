@@ -103,9 +103,9 @@ $pdf = new PDF();
 $pdf->AddPage();
 $cliente = (isset($detalle[0]['ClienteNatural']) ? $detalle[0]['ClienteNatural'] : $detalle[0]['razonsocial']);
 $cedula = (isset($detalle[0]['cedula']) ? $detalle[0]['cedula'] : $detalle[0]['ruc']);
-$pdf->setHeader($id,$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$cliente,$cedula);
+$pdf->setHeader($detalle[0]["codigocomprobante"],$datos[0]['value'],$datos[1]['value'],$detalle[0]['fecha_emision'],$cliente,$cedula);
 $pdf->setDetalle($detalle);
 // $pdf->setFooter();
-$pdf->Output(utf8_decode("factura_" . $id . ".pdf"), 'D');
+$pdf->Output(utf8_decode("factura_" . $detalle[0]["codigocomprobante"] . ".pdf"), 'D');
 
 ?>

@@ -58,7 +58,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="sucursal_origen">Sucursal Origen:</label>
-                <select name="sucursal_origen" id="sucursal_origen" class="form-control">
+                <select name="sucursal_origen" id="sucursal_origen" class="form-control" disabled>
                     <?php
                         foreach ($sucursales as $sucursal) { ?>
                             <option 
@@ -85,10 +85,10 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="form-group">
                 <label for="sucursal_destino">Numero de Guia:</label>
-                <input type="text" name="numero_guia" id="numero_guia" class="form-control" required>
+                <input type="text" name="numero_guia" disabled id="numero_guia" class="form-control" required>
             </div>
         </div>
         <div class="col-md-12">
@@ -144,6 +144,13 @@
     include("Fragmentos/pie.php");
 ?>
     <script>
+        $(function() {
+            var query = "select value from propiedades where `key` = 'despacho_guia_"+sucursal_origen.value+"'";
+            get_data_dynamic(query).then(resguia => {
+                numero_guia.value = resguia[0].value
+            });
+        });
+        
         // Inicializando elementos
         $('#sucursal_destino option[value='+<?=$sucursal_actual?>+']').hide();
         
@@ -203,10 +210,14 @@
             return validar;
         }
 
-        $('#sucursal_origen').on('change',function(e){
+        $('#sucursal_origen').on('change', async function(e){
             var actual = $(this).val();
             cambiar_sucursal(actual);
             limpiar_productos();
+
+            var query = "select value from propiedades where `key` = 'despacho_guia_"+actual+"'";
+            const resguia = await get_data_dynamic(query).then(r => r);
+            numero_guia.value = resguia[0].value
 
             var formData = new FormData();
             var query = "select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad "+
@@ -286,103 +297,72 @@
                 const h = {
                     fecha: '<?php echo date("Y-m-d"); ?>',
                     sucursal_origen: $('#sucursal_origen').val(),
+                    personal_origen: "<?= $_SESSION['kt_login_id']; ?>",
                     sucursal_destino: $('#sucursal_destino').val(),
                     nro_guia: $('#numero_guia').val(),
+                    productos: ""
                 }
                 
-                data.header = `insert into cambio_mercancia (fecha,sucursal_origen,sucursal_destino,nro_guia) `+
-                              `values ('${h.fecha}','${h.sucursal_origen}','${h.sucursal_destino}','${h.nro_guia}')`;
-            
+                
+                const productos = [];
                 getSelectorAll(".producto").forEach(item => {
                     const d = {
                         codigoprod: item.querySelector(".codigopro").dataset.codigo,
                         cantidad: item.querySelector(".cantidad").value,
                         unidad_medida: item.querySelector(".unidad_medida").value,
                         concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
+                        nombreproducto: item.querySelector(".nombre").textContent,
                         pventa: item.querySelector(".precio").value,
-                        stock: item.querySelector(".cantidad").dataset.stock,
                     }
-                    
-                    // Se registra la salida kardex_contable
                     data.detalle.push(`
-                        INSERT INTO kardex_contable (codigoprod, fecha, codigocompras, numero, tipo_comprobante, detalle, cantidad, precio, saldo, sucursal, preciodolar, preciototal, tipocomprobante,codigoproveedor)
-                        VALUES
-                        (
-                            ${d.codigoprod},
-                            '${h.fecha}',
-                            ###ID###,
-                            '${h.nro_guia}',
-                            '',
-                            'Cambio mercancia - Sale',
-                            ${d.cantidad}, 
-                            0,
-                            (select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.sucursal_origen} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad},
-                            ${h.sucursal_origen},
-                            0, 
-                            0, 
-                            'guia',
-                            0
-                        )
-                    `)
-
-                    // Se registra la entrada kardex_contable
-                    data.detalle.push(`
-                        INSERT INTO kardex_contable (codigoprod, fecha, codigocompras, numero, tipo_comprobante, detalle, cantidad, precio, saldo, sucursal, preciodolar, preciototal, tipocomprobante,codigoproveedor)
-                        VALUES
-                        (
-                            ${d.codigoprod},
-                            '${h.fecha}',
-                            ###ID###,
-                            '${h.nro_guia}',
-                            '',
-                            'Cambio mercancia - Entra',
-                            ${d.cantidad}, 
-                            0,
-                            (select ifnull((SELECT saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.sucursal_destino} order by kc.id_kardex_contable desc limit 1), 0 )) + ${d.cantidad},
-                            ${h.sucursal_destino}, 
-                            0, 
-                            0, 
-                            'guia',
-                            0
-                        )
-                    `)
-
-                    // Se registra la salida en kardex_almacen
-                    data.detalle.push(`
-                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
-                        VALUES 
-                        (
-                            ${d.codigoprod},
-                            ###ID###,
-                            '${h.nro_guia}',
-                            'Cambio mercancia - Sale',
-                            ${d.cantidad},
-                            (select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.sucursal_origen} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad},
-                            '${h.fecha}',
-                            ${h.sucursal_origen},
-                            '',
-                            'guia'
-                        )
-                    `)
-
-                    // Se registra la entrada en kardex_almacen
-                    data.detalle.push(`
-                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
-                        VALUES 
-                        (
-                            ${d.codigoprod},
-                            ###ID###,
-                            '${h.nro_guia}',
-                            'Cambio mercancia - Entra',
-                            ${d.cantidad},
-                            (select ifnull((SELECT saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.sucursal_destino} order by kc.id_kardex_alm desc limit 1), 0 )) + ${d.cantidad},
-                            '${h.fecha}',
-                            ${h.sucursal_destino},
-                            '',
-                            'guia'
-                        )
-                    `)
+                    INSERT INTO kardex_contable (codigoprod, fecha, codigocompras, numero, tipo_comprobante, detalle, cantidad, precio, saldo, sucursal, preciodolar, preciototal, tipocomprobante,codigoproveedor)
+                    VALUES
+                    (
+                        ${d.codigoprod},
+                        '${h.fecha}',
+                        ###ID###,
+                        '${h.nro_guia}',
+                        '',
+                        'Cambio mercancia - Sale',
+                        ${d.cantidad}, 
+                        0,
+                        (select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.sucursal_origen} order by kc.id_kardex_contable desc limit 1) - ${d.cantidad},
+                        ${h.sucursal_origen},
+                        0, 
+                        0, 
+                        'guia',
+                        0
+                    )
+                `)
+                // Se registra la salida en kardex_almacen
+                data.detalle.push(`
+                    INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
+                    VALUES 
+                    (
+                        ${d.codigoprod},
+                        ###ID###,
+                        '${h.nro_guia}',
+                        'Cambio mercancia - Sale',
+                        ${d.cantidad},
+                        (select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.sucursal_origen} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad},
+                        '${h.fecha}',
+                        ${h.sucursal_origen},
+                        '',
+                        'guia'
+                    )
+                `)
+                    productos.push(d);
                 })
+                h.productos = JSON.stringify(productos);
+                data.header = `
+                insert into guiasucursal (sucursalorigen, personalorigen, sucursaldestino, nroguia, estado, productos) `+
+                `values ('${h.sucursal_origen}', ${h.personal_origen}, '${h.sucursal_destino}','${h.nro_guia}', 'PENDIENTE','${h.productos}')`;
+
+                data.detalle.push("UPDATE propiedades SET value = (" + h.nro_guia + "+1) where `key` = 'despacho_guia_"+h.sucursal_origen+"'");
+
+
+                // Se registra la salida kardex_contable
+         
 
                 var formData = new FormData();
                 formData.append("json", JSON.stringify(data))
@@ -396,8 +376,8 @@
                 .then(res => {
                     if (res.success) {
                         alert("registro completo!")
-                        getSelector("#form-cambio-mercancia").reset();
-                        getSelector("#detalleFormProducto").innerHTML = ""
+                        // getSelector("#form-cambio-mercancia").reset();
+                        // getSelector("#detalleFormProducto").innerHTML = ""
                         location.reload()
                     }
                 });

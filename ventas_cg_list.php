@@ -23,7 +23,7 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 # Cargar lista ventas con guia
-$query = "select v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,cj.razonsocial, cj.ruc from ventas v left join cnatural c on  c.codigoclienten = v.codigoclienten left join  cjuridico cj on cj.codigoclientej = v.codigoclientej where modalidadentrega = 'Entrega almacen C/G'";
+$query = "select v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,cj.razonsocial, cj.ruc from ventas v left join cnatural c on  c.codigoclienten = v.codigoclienten left join  cjuridico cj on cj.codigoclientej = v.codigoclientej where modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
 $listado = mysql_query($query, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($listado);
 $totalRows_Listado = mysql_num_rows($listado);
@@ -33,43 +33,52 @@ if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
         <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
     </div>
-<?php else: ?>
+<?php else : ?>
     <table class="table table-bordered table-hover" id="sample_1">
         <thead>
             <tr>
                 <th>N°</th>
                 <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Total Venta</th>
-                <th>Total Pago</th>
                 <th>Tipo Comp.</th>
                 <th>Cod. Comp</th>
+                <th>Cliente</th>
+                <th>Total Venta</th>
+                <th>Despachado</th>
+                <!-- <th style="display: none">Total Pago</th> -->
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <?php do {
-                        $restante = $row["total"] - $row["pagoacomulado"];
-                        ?>
-            <tr>
-                <td><?= $i ?></td>
-                <td><?= $row["fecha_emision"] ?></td>
-                <td><?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?></td>
-                <td><?= $row["total"] ?></td>
-                <td><?= $row["pagoacomulado"] ?></td>
-                <td><?= $row["tipocomprobante"] ?></td>
-                <td><?= $row["codigocomprobante"] ?></td>
-                <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>"
-                        data-codigocomprobante="<?= $row["codigocomprobante"] ?>"
-                        data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>"
-                        data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>"
-                        data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>"
-                        data-despachado='<?= $row["despachado"] ?>' data-sucursal='<?= $codsucursal ?>'
-                        onclick="pagar(this)">Detalle</a></td>
-            </tr>
             <?php
-                        $i++;
-                    } while ($row = mysql_fetch_assoc($listado)); ?>
+            do {
+                $restante = $row["total"] - $row["pagoacomulado"];
+                $despachado = "";
+                if ($row["modalidadentrega"] == "Entrega inmediata C/G") {
+                    $despachado = "ENTREGADO INMEDIATAMENTE";
+                } else {
+                    if ($row["despachado"] == "0") {
+                        $despachado = "SIN ENTREGAR";
+                    } else if ($row["despachado"] == "1") {
+                        $despachado = "ENTREGADO TOTALMENTE";
+                    } else if ($row["despachado"] == "2") {
+                        $despachado = "ENTREGADO PARCIALMENTE";
+                    }
+                }
+            ?>
+                <tr>
+                    <td><?= $i ?></td>
+                    <td><?= $row["fecha_emision"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
+                    <td><?= $row["codigocomprobante"] ?></td>
+                    <td><?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?></td>
+                    <td><?= $row["total"] ?></td>
+                    <td><?= $despachado ?></td>
+                    <!-- <td style="display: none"><?= $row["pagoacomulado"] ?></td> -->
+                    <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" data-modentrega='<?= $row["modalidadentrega"] ?>' data-despachado='<?= $row["despachado"] ?>' data-sucursal='<?= $codsucursal ?>' data-dataguia='<?= $row["dataguia"] ?>' onclick="pagar(this)">Detalle</a></td>
+                </tr>
+            <?php
+                $i++;
+            } while ($row = mysql_fetch_assoc($listado)); ?>
         </tbody>
     </table>
 <?php endif ?>
@@ -83,6 +92,7 @@ if ($totalRows_Listado == 0) : ?>
                 </div>
                 <input type="hidden" id="codigoventa">
                 <input type="hidden" id="despachado">
+                <input type="hidden" id="modentrega">
                 <input type="hidden" id="jsonpagos">
                 <input type="hidden" id="codsucursal">
                 <div class="modal-body">
@@ -91,56 +101,52 @@ if ($totalRows_Listado == 0) : ?>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputfecha" class="control-label">Fecha</label>
-                                    <input type="text" readonly autocomplete="off" id="inputfecha"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputfecha" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputtipocomprobante" class="control-label">Tipo Comp</label>
-                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputnumerocomprobante" class="control-label">N° Comprobante</label>
-                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante" class="form-control" />
                                 </div>
                             </div>
 
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputcliente" class="control-label">Cliente</label>
-                                    <input type="text" readonly autocomplete="off" id="inputcliente"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputcliente" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputrestante" class="control-label">Falta Pagar</label>
-                                    <input type="number" readonly autocomplete="off" id="inputrestante"
-                                        class="form-control" required />
+                                    <input type="number" readonly autocomplete="off" id="inputrestante" class="form-control" required />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputtotal" class="control-label">Total Venta</label>
-                                    <input type="number" readonly autocomplete="off" id="inputtotal"
-                                        class="form-control" required />
+                                    <input type="number" readonly autocomplete="off" id="inputtotal" class="form-control" required />
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <td class="text-center" colspan="5"><b>DEALLE PRODUCTOS</b></td>
+                                            <td class="text-center" colspan="7"><b>DEALLE PRODUCTOS</b></td>
                                         </tr>
                                         <tr>
                                             <td><b>PRODUCTO</b></td>
                                             <td><b>MARCA</b></td>
-                                            <td><b>CANTIDAD</b></td>
+                                            <td><b>CANT TOTAL</b></td>
+                                            <td><b>CANT ENTREGADA</b></td>
+                                            <td><b>CANT A ENTREGAR</b></td>
                                             <td><b>P VENTA</b></td>
                                             <td><b>UNIDAD MEDIDA</b></td>
                                         </tr>
@@ -149,15 +155,40 @@ if ($totalRows_Listado == 0) : ?>
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="row" id="dataguiainput">
+                                <div class="col-sm-12">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="field-1" class="control-label">Punto de Llegada</label>
+                                            <input type="text" class="form-control" id="puntollegada">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="field-1" class="control-label">Quien Recibe</label>
+                                            <input type="text" class="form-control" id="quienrecibe">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="field-1" class="control-label">Quien recoge</label>
+                                            <input type="text" class="form-control" id="quienrecoge">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-12">
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <td class="text-center" colspan="3"><b>HISTORIAL DE PAGOS</b></td>
+                                            <td class="text-center" colspan="6"><b>HISTORIAL GUIA REMISION</b></td>
                                         </tr>
                                         <tr>
-                                            <td><b>TIPO PAGO</b></td>
-                                            <td><b>MONTO</b></td>
+                                            <td><b>FECHA</b></td>
+                                            <td><b>N° GUIA</b></td>
+                                            <td><b>PUNTO DEST</b></td>
+                                            <td><b>QUIEN RECOJIÓ</b></td>
+                                            <td><b>QUIEN RECIBIÓ</b></td>
                                             <td><b>DETALLE</b></td>
                                         </tr>
                                     </thead>
@@ -169,10 +200,8 @@ if ($totalRows_Listado == 0) : ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" aria-label="Close" id="btnimprimir"
-                        onClick="imprimir()">Imprimir Guia</button>
-                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
-                        aria-label="Close">Cerrar</button>
+                    <button type="button" class="btn btn-primary" aria-label="Close" id="btnimprimir" onClick="imprimir()">Imprimir Guia</button>
+                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
                 </div>
             </form>
         </div>
@@ -187,26 +216,40 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
-
+    function changecantidad(e) {
+        const limit = parseFloat(e.dataset.limit);
+        const value = parseFloat(e.value);
+        if (value < 0) {
+            e.value = 0;
+            return;
+        }
+        if (value > limit) {
+            e.value = 0
+        }
+    }
+    let dataguia = [];
     async function pagar(e) {
         $("#moperation").modal();
         codigoventa.value = e.dataset.id;
         detallebody.innerHTML = "";
         codsucursal.value = e.dataset.sucursal;
-
-        fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
+        dataguia = e.dataset.dataguia ? JSON.parse(e.dataset.dataguia) : [];
+        await fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
             .then(res => res.json())
             .catch(error => console.error("error: ", error))
             .then(res => {
                 if (res) {
                     res.forEach(ix => {
+                        ix.codigoprod = ""+parseInt(ix.codigoprod)
                         detallebody.innerHTML += `
                         <tr class="producto">
                             <input type="hidden" class="codigoprod" value="${ix.codigoprod}">
-                            <td>${ix.nombre_producto}</td>
+                            <td class="descripcion">${ix.nombre_producto}</td>
                             <td>${ix.marca}</td>
-                            <td><span class="cantidad">${ix.cantidad}</span></td>
-                            <td>${ix.pventa}</td>
+                            <td>${ix.cantidad}</td>
+                            <td id="prodto_${ix.codigoprod}" >0</td>
+                            <td><input type="number" class="form-control cantidad" style="width: 100px" id="prod_${ix.codigoprod}" oninput="changecantidad(this)" data-limit="${ix.cantidad}" value="${ix.cantidad}"></td>
+                            <td class="pventa">${ix.pventa}</td>
                             <td>${ix.unidad_medida}</td>
                         </tr>
                         `;
@@ -215,96 +258,103 @@ include("Fragmentos/pie.php");
             })
 
         const pagoefectivo = parseFloat(e.dataset.pagoefectivo);
-        historialbody.innerHTML = "";
+        // historialbody.innerHTML = "";
 
         inputfecha.value = e.dataset.fecha;
         inputnumerocomprobante.value = e.dataset.codigocomprobante;
         inputcliente.value = e.dataset.cliente;
         inputtipocomprobante.value = e.dataset.tipocomprobante;
+        modentrega.value = e.dataset.modentrega;
 
 
         jsonpagos.value = e.dataset.json;
         despachado.value = e.dataset.despachado;
         inputrestante.value = e.dataset.restante;
         inputtotal.value = e.dataset.total;
+        
+        if(e.dataset.despachado == 1){
+            dataguiainput.style.display = "none";
+            btnimprimir.style.display = "none";
+            getSelectorAll(".producto .cantidad").forEach(x1 => x1.disabled = true)
+        }else{
+            btnimprimir.style.display = "";
+            dataguiainput.style.display = "";
+            getSelectorAll(".producto .cantidad").forEach(x1 => x1.disabled = false)
+        }
+
 
         var query = `select despachado from ventas where codigoventas = ${codigoventa.value}`;
         const res = await get_data_dynamic(query).then(r => r);
         despachado.value = res[0].despachado;
-        
-        if (pagoefectivo) {
+        historialbody.innerHTML = "";
+        const cantproductos = {};
+        dataguia.forEach(x => {
+            x.productos.forEach(yy => {
+                yy.codigoprod = ""+parseInt(yy.codigoprod)
+                if(!cantproductos[yy.codigoprod])
+                    cantproductos[yy.codigoprod] = 0;
+                cantproductos[yy.codigoprod] += parseFloat(yy.cantidad);
+            })
             historialbody.innerHTML += `
-                <tr>
-                <td>Pago Efectivo</td>
-                <td>${pagoefectivo}</td>
-                <td>-</td>
-                </tr>
-                `;
+                 <tr>
+                 <td>${x.fecha}</td>
+                 <td>${x.nguia}</td>
+                 <td>${x.puntollegada}</td>
+                 <td>${x.quienrecoge}</td>
+                 <td>${x.quienrecibe}</td>
+                 <td><a href="Imprimir/guia_imprimir.php?idventas=${codigoventa.value}&idguia=${x.id}">Ver Guia</a></td>
+                 </tr>
+                 `;
+        })
+        for (const [key, value] of Object.entries(cantproductos)) {
+            const pp = getSelector(`#prod_${key}`);
+            const ppto = getSelector(`#prodto_${key}`);
+            pp.dataset.limit = parseFloat(pp.dataset.limit) - value;
+            pp.value = pp.dataset.limit
+            ppto.textContent = value
         }
-        JSON.parse(e.dataset.json).filter(iy => iy.tipopago != "porcobrar").forEach(ix => {
-            let textt = "";
-            if (ix.tipopago == "depositobancario")
-                textt = `Numero Operacion: ${ix.numerooperacion} |
-                Fecha: ${ix.fechaextra} |
-                Cta. Abonada: ${ix.cuentaabonado} |
-                Ente: ${ix.bancoextra} |
-                Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "cheque")
-                textt = `Numero: ${ix.numero} |
-                Ente: ${ix.bancoextra} |
-                Cta. Cte.: ${ix.cuentacorriente} |
-                Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "tarjetacredito")
-                textt = `Numero: ${ix.numero} |
-                Ente: ${ix.bancoextra} |
-                Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "tarjetadebito")
-                textt = `Numero: ${ix.numero} |
-                Ente: ${ix.bancoextra} | 
-                Monto: ${ix.montoextra}`
-            else if (ix.tipopago == "efectivo") {
-                textt = `Monto: ${ix.montoextra} `
-            }
-
-            historialbody.innerHTML += `
-                <tr>
-                <td>${ix.tipopago}</td>
-                <td>${ix.montoextra}</td>
-                <td>${textt}</td>
-                </tr>
-                `;
-        });
     }
 
-    async function imprimir(){
-        btnimprimir.setAttribute("disabled","disabled");
+    async function imprimir() {
+        btnimprimir.setAttribute("disabled", "disabled");
         const data = {};
         data.header = '';
         data.detalle = [];
-        if (despachado.value == 0) {
+        const id =  uuidv4();
+        if ((despachado.value == 2 || despachado.value == 0) && modentrega != "Entrega inmediata C/G") {
             const r = confirm("Se emitirá la guia y se descontará del kardex Almancen. ¿Está seguro que desea continuar");
             if (r) {
                 // Conseguimos el numero de guia para el despacho
-                var query = "select value from propiedades where `key` = 'despacho_guia'";
+                var query = "select value from propiedades where `key` = 'despacho_guia_"+codsucursal.value+"'";
                 const res = await get_data_dynamic(query).then(r => r);
 
                 // Descontar producto del almacen de la sucursal
                 const h = {
+                    id,
                     fecha: '<?php echo date("Y-m-d"); ?>',
                     sucursal: codsucursal.value,
                     codventa: codigoventa.value,
                     nguia: res[0].value,
+                    puntollegada: puntollegada.value,
+                    quienrecibe: quienrecibe.value,
+                    quienrecoge: quienrecoge.value,
+                    productos: []
                 }
-
-                data.header = `UPDATE ventas SET despachado=1, nroguia=${h.nguia} WHERE codigoventas=${h.codventa}`;
-                
+                let isdespachado = 1;
                 getSelectorAll(".producto").forEach(item => {
                     const d = {
                         codigoprod: item.querySelector(".codigoprod").value,
-                        cantidad: item.querySelector(".cantidad").innerHTML,
+                        cantidad: item.querySelector(".cantidad").value,
+                        canttotal: item.querySelector(".cantidad").dataset.limit,
+                        nombre_producto: item.querySelector(".descripcion").textContent,
+                        pventa: item.querySelector(".pventa").textContent,
                     }
+                    h.productos.push(d)
+                    if (d.canttotal != d.cantidad)
+                        isdespachado = 2;
 
-                    data.detalle.push(`
+                    if (d.cantidad != 0) {
+                        data.detalle.push(`
                         INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
                         VALUES 
                         (
@@ -317,35 +367,49 @@ include("Fragmentos/pie.php");
                             '${h.fecha}',
                             ${h.sucursal},
                             '',
-                            'guia'
-                        )
-                    `)
+                            'guia')
+                        `);
+                            debugger
+                    }
                 })
+                dataguia.push(h);
+                data.header = `
+                UPDATE ventas SET 
+                    despachado = ${isdespachado}, 
+                    nroguia = ${h.nguia},
+                    dataguia = '${JSON.stringify(dataguia)}'
+                WHERE codigoventas=${h.codventa}`;
 
-                data.detalle.push("UPDATE propiedades SET value = ("+h.nguia+"+1) where `key` = 'despacho_guia'")
+                data.detalle.push("UPDATE propiedades SET value = (" + h.nguia + "+1) where `key` = 'despacho_guia_"+codsucursal.value+"'")
                 var formData = new FormData();
                 formData.append("json", JSON.stringify(data));
 
                 await fetch(`setVenta.php`, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(res => res.json())
-                .catch(error => console.error("error: ", error))
-                .then(res => {
-                    if (res.success) {
-                        console.log("registro completo!");
-                    }
-                });
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .catch(error => console.error("error: ", error))
+                    .then(res => {
+                        if (res.success) {
+                            alert("registro completo!");
+                            
+                        }
+                    });
             } else {
                 alert('Debes aceptar el descuento para poder imprimir la guia');
                 btnimprimir.removeAttribute("disabled");
                 return false;
             }
         }
-        var url = 'Imprimir/guia_imprimir.php?id='+parseInt(codigoventa.value,10);
-        window.location=url;
+        id
+        var url = `Imprimir/guia_imprimir.php?idventas=${parseInt(codigoventa.value, 10)}&idguia=${id}`;
+        window.location = url;
         $("#moperation").modal('hide');
         btnimprimir.removeAttribute("disabled");
+        
+        setTimeout(() => {
+            location.reload()
+        }, 1500);
     }
 </script>
