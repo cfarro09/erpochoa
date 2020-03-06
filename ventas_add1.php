@@ -734,7 +734,9 @@ include("Fragmentos/pie.php");
 			data.detalle = [];
 			conpayextra = [];
 
-			const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${h.tipocomprobante}' and v1.sucursal = ${h.codsucursal})`
+			const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
+
+			const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
 			const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
 			const ccff = rcodigocomp[0].codcc;
 
