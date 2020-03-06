@@ -320,11 +320,7 @@ include("Fragmentos/pie.php");
 		getSelector(".containerx").firstElementChild.style.display = "none"
 		getSelector(".containerx").style.border = "none";
 
-		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
-		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
-		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
-		codigocomprobante.value = rcodigocomp[0].codcc;
-		console.log("DDDDDD");
+		changencomprobantebytype();
 	}
 	$(document).ready(onloadxx());
 	async function getcuentaabonados() {
@@ -722,8 +718,15 @@ include("Fragmentos/pie.php");
 			modalidadentrega.disabled = true;
 		} else
 			modalidadentrega.disabled = false;
+		
+		changencomprobantebytype();
 	}
-
+	async function changencomprobantebytype(){
+		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
+		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
+		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
+		codigocomprobante.value = rcodigocomp[0].codcc;
+	}
 	function imprimir_factura(id) {
 		var url = `Imprimir/facturaventa_imprimir.php?id=${id}`;
 		window.location = url;

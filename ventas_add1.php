@@ -316,12 +316,13 @@ include("Fragmentos/pie.php");
 		getSelector(".containerx").firstElementChild.style.display = "none";
 		getSelector(".containerx").style.border = "none";
 
+		changencomprobantebytype();
+	}
+	async  function changencomprobantebytype(){
 		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
 		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
 		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
 		codigocomprobante.value = rcodigocomp[0].codcc;
-		console.log("DDDDDD");
-		
 	}
 	$(document).ready(onloadxx());
 	async function getcuentaabonados() {
@@ -725,6 +726,7 @@ include("Fragmentos/pie.php");
 			`;
 			modalidadentrega.disabled = false;
 		}
+		changencomprobantebytype();
 	}
 
 	getSelector("#form-generate-venta").addEventListener("submit", async (e) => {
