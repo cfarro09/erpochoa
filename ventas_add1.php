@@ -938,6 +938,14 @@ include("Fragmentos/pie.php");
 			puntollegada: puntollegada.value,
 			quienrecibe: quienrecibe.value,
 			quienrecoge: quienrecoge.value,
+
+			nombretransportista: nombretransportista.value,
+			ructransportista: ructransportista.value,
+			marcatransporte: marcatransporte.value,
+			nroplaca: nroplaca.value,
+			nlicencia: nlicencia.value,
+			certinscripcion: certinscripcion.value,
+
 			productos: []
 		}
 		let isdespachado = 1;
