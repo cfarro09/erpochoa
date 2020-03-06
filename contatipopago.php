@@ -164,7 +164,19 @@ include("Fragmentos/pie.php");
             LEFT JOIN sucursal s1 on s1.cod_sucursal = gs.sucursalorigen
             LEFT JOIN sucursal s2 on s2.cod_sucursal = gs.sucursaldestino
             WHERE 
+                gs.sucursalorigen = ${suc} AND
                 fechainicio BETWEEN '${f_ini}' AND '${f_fin}'`;
+
+        const queryentradaproductos = `
+            SELECT 
+                s1.nombre_sucursal sori, s2.nombre_sucursal sdes, gs.nroguia, gs.fechainicio
+            from guiasucursal gs
+            LEFT JOIN sucursal s1 on s1.cod_sucursal = gs.sucursalorigen
+            LEFT JOIN sucursal s2 on s2.cod_sucursal = gs.sucursaldestino
+            WHERE 
+                gs.sucursaldestino = ${suc} AND
+                fechainicio BETWEEN '${f_ini}' AND '${f_fin}'`;
+
 
         const queryabonos = `
             SELECT v.abonoproveedor, v.fecha_emision, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull 
@@ -222,16 +234,19 @@ include("Fragmentos/pie.php");
         const abonosproveedor = await get_data_dynamic(queryabonosproveedor);
         const otrosegresos = await get_data_dynamic(queryotrosegresos);
         const guiasucursal = await get_data_dynamic(queryguiasucursal);
+        const resentradaproductos = await get_data_dynamic(queryentradaproductos);
         // console.log(abonosproveedor)
         const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
         const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
 
         // const pagoscontado = 
+        setentradas(resentradaproductos)
         const totales = setventascontado(ventas_con_credito, true);
-        // ventas_contado.forEach(x => pagoscontado.push(x))
         setventascontado(ventas_contado, false, totales, guiasucursal);
         setabonocliente(resabonos)
         setabonoproveedor(abonosproveedor)
+
+        
         // setotroegresos(otrosegresos)
     }
 
@@ -415,13 +430,13 @@ include("Fragmentos/pie.php");
                 <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">ENTRADA DE PRODUCTOS</td>
             </tr>
             `;
-        res.forEach(iii => {
+        res.forEach(xx => {
             bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${xx.fechainicio.substring(0, 10)}</td>
                     <td class="text-center">GUIA</td>
                     <td class="text-center">${xx.nroguia.toString().padStart(4, '0')}</td>
-                    <td class="text-center">${xx.sdes}</td>
+                    <td class="text-center">${xx.sori}</td>
                     <td class="text-center"></td>
                     <td class="text-center"></td>
                     <td class="text-center"></td>
