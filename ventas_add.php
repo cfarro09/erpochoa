@@ -318,7 +318,13 @@ include("Fragmentos/pie.php");
 			value: "factura"
 		})
 		getSelector(".containerx").firstElementChild.style.display = "none"
-		getSelector(".containerx").style.border = "none"
+		getSelector(".containerx").style.border = "none";
+
+		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
+		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
+		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
+		codigocomprobante.value = rcodigocomp[0].codcc;
+		console.log("DDDDDD");
 	}
 	$(document).ready(onloadxx());
 	async function getcuentaabonados() {
@@ -738,15 +744,16 @@ include("Fragmentos/pie.php");
 			const pagosextras = [];
 			data.detalle = [];
 			conpayextra = [];
-			const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
-			const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
-			const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
-			const ccff = rcodigocomp[0].codcc;
+
+			// const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
+			// const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
+			// const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
+			// const ccff = rcodigocomp[0].codcc;
 
 			const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
 			h = {
 				tipocomprobante: tipocomprobante.value,
-				codigocomprobante: ccff,
+				codigocomprobante: codigocomprobante.value,
 				codigoclienten: tipocliente == "natural" ? cliente.value : "null",
 				codigoclientej: tipocliente == "juridico" ? cliente.value : "null",
 				subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
@@ -818,7 +825,7 @@ include("Fragmentos/pie.php");
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
-			('${h.tipocomprobante}', ${ccff}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
+			('${h.tipocomprobante}', ${codigocomprobante.value}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
 			`
 
 			getSelectorAll(".producto").forEach(item => {
@@ -829,7 +836,7 @@ include("Fragmentos/pie.php");
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pventa: item.querySelector(".precio").value,
 					igv: parseFloat(item.querySelector(".precio").value) * IGV,
-					totalventa: (parseInt(item.querySelector(".cantidad").value) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
+					totalventa: (parseInt(item.querySelector(".cantidad").vaonloadlue) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
 				}
 				if (tipocomprobante.value == "notadebito") {
 					data.detalle.push(`

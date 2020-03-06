@@ -313,8 +313,15 @@ include("Fragmentos/pie.php");
 		setcombocliente({
 			value: "xxxxxxxxxxx"
 		})
-		getSelector(".containerx").firstElementChild.style.display = "none"
-		getSelector(".containerx").style.border = "none"
+		getSelector(".containerx").firstElementChild.style.display = "none";
+		getSelector(".containerx").style.border = "none";
+
+		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
+		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
+		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
+		codigocomprobante.value = rcodigocomp[0].codcc;
+		console.log("DDDDDD");
+		
 	}
 	$(document).ready(onloadxx());
 	async function getcuentaabonados() {
@@ -720,7 +727,7 @@ include("Fragmentos/pie.php");
 		}
 	}
 
-	getSelector("#form-generate-venta").addEventListener("submit", e => {
+	getSelector("#form-generate-venta").addEventListener("submit", async (e) => {
 		e.preventDefault();
 		if (getSelectorAll(".producto").length < 1) {
 			alert("Debes agregar almenos un producto")
