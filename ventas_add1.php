@@ -734,10 +734,14 @@ include("Fragmentos/pie.php");
 			data.detalle = [];
 			conpayextra = [];
 
+			const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${h.tipocomprobante}' and v1.sucursal = ${h.codsucursal})`
+			const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
+			const ccff = rcodigocomp[0].codcc;
+
 			const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
 			h = {
 				tipocomprobante: tipocomprobante.value,
-				codigocomprobante: codigocomprobante.value,
+				codigocomprobante: ccff,
 				codigoclienten: tipocliente == "natural" ? cliente.value : "null",
 				codigoclientej: tipocliente == "juridico" ? cliente.value : "null",
 				subtotal: getSelector("#subtotal-header").textContent ? getSelector("#subtotal-header").textContent : 0,
@@ -808,7 +812,7 @@ include("Fragmentos/pie.php");
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
-			('${h.tipocomprobante}', (select IFNULL(max(v1.codigocomprobante), 0) + 1 from ventas v1 where v1.tipocomprobante = '${h.tipocomprobante}' and v1.sucursal = ${h.codsucursal}), ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
+			('${h.tipocomprobante}', ${ccff}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
 			`
 
 			getSelectorAll(".producto").forEach(item => {
