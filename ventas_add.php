@@ -87,6 +87,46 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 									</div>
 								</div>
 							</div>
+							<div class="col-sm-12">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">Nombre Transportista</label>
+										<input required type="text" class="form-control" id="nombretransportista">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">RUC transportista</label>
+										<input required type="text" class="form-control" id="ructransportista">
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">Marca U. Transporte</label>
+										<input required type="text" class="form-control" id="marcatransporte">
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">N° Placa</label>
+										<input required type="text" class="form-control" id="nroplaca">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">N° Licencia conducir</label>
+										<input required type="text" class="form-control" id="nlicencia">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="quienrecoge" class="control-label">Certificado Inscripcion</label>
+										<input required type="text" class="form-control" id="certinscripcion">
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -883,7 +923,7 @@ include("Fragmentos/pie.php");
 
 		const idguia = uuidv4();
 
-		var query = "select value from propiedades where `key` = 'despacho_guia_"+h.codsucursal+"'";
+		var query = "select value from propiedades where `key` = 'despacho_guia_" + h.codsucursal + "'";
 		const resguia = await get_data_dynamic(query).then(r => r);
 
 		const h1 = {
@@ -892,9 +932,18 @@ include("Fragmentos/pie.php");
 			sucursal: h.codsucursal,
 			codventa: tmpcodigoventas.value,
 			nguia: resguia[0].value,
+
 			puntollegada: puntollegada.value,
 			quienrecibe: quienrecibe.value,
 			quienrecoge: quienrecoge.value,
+			nombretransportista: nombretransportista.value,
+			ructransportista: ructransportista.value,
+			marcatransporte: marcatransporte.value,
+			nroplaca: nroplaca.value,
+			nlicencia: nlicencia.value,
+			certinscripcion: certinscripcion.value,
+
+
 			productos: []
 		}
 		let isdespachado = 1;
@@ -917,7 +966,7 @@ include("Fragmentos/pie.php");
                     dataguia = '${JSON.stringify(dataguia)}'
                 WHERE codigoventas=${h1.codventa}`;
 
-		data.detalle.push("UPDATE propiedades SET value = (" + h1.nguia + "+1) where `key` = 'despacho_guia_"+h.sucursal+"'");
+		data.detalle.push("UPDATE propiedades SET value = (" + h1.nguia + "+1) where `key` = 'despacho_guia_" + h.codsucursal + "'");
 		var formData = new FormData();
 		formData.append("json", JSON.stringify(data));
 
@@ -932,10 +981,26 @@ include("Fragmentos/pie.php");
 			alert("registro completo!");
 			var url = `Imprimir/guia_imprimir.php?idventas=${parseInt(h1.codventa)}&idguia=${h1.id}`;
 			window.location = url;
+			getSelector("#formdataguia").reset();
 			getSelector("#form-generate-venta").reset();
 			getSelector("#detalleFormProducto").innerHTML = "";
-			buttonsaveventa.disabled = false
+			buttonsaveventa.disabled = false;
+
+			puntollegada.value = "";
+			quienrecibe.value = "";
+			quienrecoge.value = "";
+			nombretransportista.value = "";
+			ructransportista.value = "";
+			marcatransporte.value = "";
+			nroplaca.value = "";
+			nlicencia.value = "";
+			certinscripcion.value = "";
+
+
 			$("#mguia").modal("hide")
+			// setTimeout(() => {
+			// 	location.reload()
+			// }, 1500);
 			// location.reload();
 		}
 	}

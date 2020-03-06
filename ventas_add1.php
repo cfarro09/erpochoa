@@ -60,7 +60,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 <form id="form-generate-venta">
 	<div class="row">
 		<div class="col-sm-12 text-center">
-			<button class="btn btn-success" type="submit" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
+			<button class="btn btn-success" type="submit" id="buttonsaveventa" style="margin-top:10px;margin-bottom: 10px; font-size: 20px">VENTA<br>
 				<H5><STRONG>
 						(CONFIRMAR)
 					</STRONG></H5>
@@ -207,7 +207,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 			SUBTOTAL: <span id="subtotal-header"></span>
 		</div>
 		<div class="col-sm-4">
-		<?= $nombreigv ?>: <span id="igv-header"></span>
+			<?= $nombreigv ?>: <span id="igv-header"></span>
 		</div>
 		<div class="col-sm-4">
 			TOTAL: <span id="total-header"></span>
@@ -241,6 +241,46 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 									<div class="form-group">
 										<label for="quienrecoge" class="control-label">Quien recoge</label>
 										<input required type="text" class="form-control" id="quienrecoge">
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label for="quienrecoge" class="control-label">Nombre Transportista</label>
+											<input required type="text" class="form-control" id="nombretransportista">
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label for="quienrecoge" class="control-label">RUC transportista</label>
+											<input required type="text" class="form-control" id="ructransportista">
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label for="quienrecoge" class="control-label">Marca U. Transporte</label>
+											<input required type="text" class="form-control" id="marcatransporte">
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<div class="form-group">
+											<label for="quienrecoge" class="control-label">N° Placa</label>
+											<input required type="text" class="form-control" id="nroplaca">
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label for="quienrecoge" class="control-label">N° Licencia conducir</label>
+											<input required type="text" class="form-control" id="nlicencia">
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label for="quienrecoge" class="control-label">Certificado Inscripcion</label>
+											<input required type="text" class="form-control" id="certinscripcion">
+										</div>
 									</div>
 								</div>
 							</div>
@@ -603,9 +643,9 @@ include("Fragmentos/pie.php");
 			codigoprod.closest(".col-sm-12").style.display = "";
 			detalleFormProducto.innerHTML = "";
 		} else {
-			if(e.value == "notacredito"){
+			if (e.value == "notacredito") {
 				codigoprod.closest(".col-sm-12").style.display = "";
-				
+
 				detalleFormProducto.innerHTML = `
 					<tr class="producto" data-type="notacredito">
 						<input type="hidden" class="pcompra" value="1">
@@ -632,7 +672,7 @@ include("Fragmentos/pie.php");
 						<td>
 						</td>
 					</tr>`;
-			}else if(e.value == "notadebito"){
+			} else if (e.value == "notadebito") {
 				codigoprod.closest(".col-sm-12").style.display = "none";
 				detalleFormProducto.innerHTML = `
 				<tr class="producto" data-type="notadebito">
@@ -666,20 +706,20 @@ include("Fragmentos/pie.php");
 		const res = await get_data_dynamic(queryselected).then(r => r);
 		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 
-		if(e.value == "ventasxordensalida"){
+		if (e.value == "ventasxordensalida") {
 			modalidadentrega.innerHTML = `
 				<option value="Entrega inmediata S/G">Inmediata S/G</option>
 				<option value="Entrega inmediata C/G">Inmediata C/G</option>
 				<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
 			`;
 			modalidadentrega.value = "Entrega inmediata S/G";
-			modalidadentrega.disabled =  true;
-		}else{
+			modalidadentrega.disabled = true;
+		} else {
 			modalidadentrega.innerHTML = `
 				<option value="Entrega inmediata C/G">Inmediata C/G</option>
 				<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
 			`;
-			modalidadentrega.disabled =  false;
+			modalidadentrega.disabled = false;
 		}
 	}
 
@@ -790,14 +830,14 @@ include("Fragmentos/pie.php");
 					values
 					(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
 					`);
-				}else if(tipocomprobante.value == "notacredito") {
-					if(item.dataset.type == "notacredito"){
+				} else if (tipocomprobante.value == "notacredito") {
+					if (item.dataset.type == "notacredito") {
 						data.detalle.push(`
 							insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
 							values
 							(0, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
 							`);
-					}else{
+					} else {
 						data.detalle.push(`
 							insert into detalle_ventas (codigoprod, cantidad, unidad_medida, pventa, codcomprobante, pcompra, codigoventa, detalleauxiliar)
 							values (${d.codigoprod}, ${d.cantidad}, '${d.unidad_medida}', ${d.pventa}, '${h.codigocomprobante}', 0, ###ID###, '${detallenotaaux.value}')
@@ -877,7 +917,7 @@ include("Fragmentos/pie.php");
 
 		const idguia = uuidv4();
 
-		var query = "select value from propiedades where `key` = 'despacho_guia'";
+		var query = "select value from propiedades where `key` = 'despacho_guia_" + h.codsucursal + "'";
 		const resguia = await get_data_dynamic(query).then(r => r);
 		const h1 = {
 			id: idguia,
@@ -910,7 +950,7 @@ include("Fragmentos/pie.php");
                     dataguia = '${JSON.stringify(dataguia)}'
                 WHERE codigoventas=${h1.codventa}`;
 
-		data.detalle.push("UPDATE propiedades SET value = (" + h1.nguia + "+1) where `key` = 'despacho_guia'");
+		data.detalle.push("UPDATE propiedades SET value = (" + (parseInt(h1.nguia) +1) + ") where `key` = 'despacho_guia_" + h.codsucursal + "'");
 		var formData = new FormData();
 		formData.append("json", JSON.stringify(data));
 
@@ -928,6 +968,16 @@ include("Fragmentos/pie.php");
 			getSelector("#form-generate-venta").reset();
 			getSelector("#detalleFormProducto").innerHTML = "";
 			buttonsaveventa.disabled = false
+
+			puntollegada.value = "";
+			quienrecibe.value = "";
+			quienrecoge.value = "";
+			nombretransportista.value = "";
+			ructransportista.value = "";
+			marcatransporte.value = "";
+			nroplaca.value = "";
+			nlicencia.value = "";
+			certinscripcion.value = "";
 			$("#mguia").modal("hide")
 			// location.reload();
 		}
