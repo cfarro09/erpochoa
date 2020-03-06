@@ -7,9 +7,10 @@ if (isset($_GET['id'])) {
   $id = $_GET['id'];
 }
 $querydetalle = "
-  select dv.*, p.nombre_producto, m.nombre as marca from detalle_ventas dv
+  select dv.*, p.nombre_producto, prr.nombre_presentacion, m.nombre as marca from detalle_ventas dv
   inner join producto p on p.codigoprod = dv.codigoprod
   inner join marca m on m.codigomarca = p.codigomarca
+  inner join presentacion prr on prr.codigopresent = p.codigopresent
   where codigoventa = $id
 ";
 

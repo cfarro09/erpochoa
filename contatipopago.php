@@ -148,6 +148,7 @@ include("Fragmentos/pie.php");
                 v.codigopersonal = ${per}
                 and v.sucursal = ${suc}
                 and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}'`;
+
         const queryotrosegresos = `
             SELECT 
                 * from serviciosporpagar
@@ -155,6 +156,16 @@ include("Fragmentos/pie.php");
                 codpersonal = ${per}
                 and codsucursal = ${suc}
                 and fecharegistro BETWEEN '${f_ini}' AND '${f_fin}'`;
+
+        const queryguiasucursal = `
+            SELECT 
+                s1.nombre_sucursal sori, s2.nombre_sucursal sdes, gs.nroguia, gs.fechainicio
+            from guiasucursal gs
+            LEFT JOIN sucursal s1 on s1.cod_sucursal = gs.sucursalorigen
+            LEFT JOIN sucursal s2 on s2.cod_sucursal = gs.sucursaldestino
+            WHERE 
+                fechainicio BETWEEN '${f_ini}' AND '${f_fin}'`;
+
         const queryabonos = `
             SELECT v.abonoproveedor, v.fecha_emision, if(cj.razonsocial is null, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre), cj.razonsocial) as namefull 
             FROM ventas v  
@@ -210,6 +221,7 @@ include("Fragmentos/pie.php");
         const resabonos = await get_data_dynamic(queryabonos);
         const abonosproveedor = await get_data_dynamic(queryabonosproveedor);
         const otrosegresos = await get_data_dynamic(queryotrosegresos);
+        const guiasucursal = await get_data_dynamic(queryguiasucursal);
         // console.log(abonosproveedor)
         const ventas_con_credito = res.filter(ii => ii.jsonpagos.includes("porcobrar"));
         const ventas_contado = res.filter(ii => !ii.jsonpagos.includes("porcobrar"));
@@ -217,27 +229,27 @@ include("Fragmentos/pie.php");
         // const pagoscontado = 
         const totales = setventascontado(ventas_con_credito, true);
         // ventas_contado.forEach(x => pagoscontado.push(x))
-        setventascontado(ventas_contado, false, totales);
+        setventascontado(ventas_contado, false, totales, guiasucursal);
         setabonocliente(resabonos)
         setabonoproveedor(abonosproveedor)
         // setotroegresos(otrosegresos)
     }
-   
-    
-    const setventascontado = (res, header = false, data) => {
-        if(header)
+
+
+    const setventascontado = (res, header = false, data, guiasucursal = null) => {
+        if (header)
             bodydata.innerHTML += `
                 <tr>
-                    <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">VENTAS</td>
+                    <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">SALIDAS DE PRODUCTOS</td>
                 </tr>`;
-        if(!data){
+        if (!data) {
             data = {
                 acumulated: [],
                 totalgroup: 0,
                 ttp: []
             }
         }
-        
+
         // const acumulated = [];
         // let totalgroup = 0;
         // const ttp = [];
@@ -254,7 +266,7 @@ include("Fragmentos/pie.php");
                 data.totalgroup += parseFloat(ixx.montoextra);
             })
             suma = suma.toFixed(2);
-            for (const [key, value] of Object.entries(acumulatedtipos)) 
+            for (const [key, value] of Object.entries(acumulatedtipos))
                 acumulatedtipos[key] = parseFloat(value).toFixed(2);
 
             bodydata.innerHTML += `
@@ -272,10 +284,29 @@ include("Fragmentos/pie.php");
                     <td class="text-center">${suma}</td>
                 </tr>`;
         });
-        for (const [key, value] of Object.entries(data.ttp)) 
-                data.ttp[key] = parseFloat(value).toFixed(2);
+        for (const [key, value] of Object.entries(data.ttp))
+            data.ttp[key] = parseFloat(value).toFixed(2);
 
-        if(!header){
+        if (guiasucursal) {
+            guiasucursal.forEach(xx => {
+                bodydata.innerHTML += `
+                <tr>
+                    <td class="text-center">${xx.fechainicio.substring(0, 10)}</td>
+                    <td class="text-center">GUIA</td>
+                    <td class="text-center">${xx.nroguia.toString().padStart(4, '0')}</td>
+                    <td class="text-center">${xx.sdes}</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                </tr>`;
+            })
+        }
+
+        if (!header) {
             bodydata.innerHTML += `
                 <tr style="font-weight: bold">
                     <td class="text-right" colspan="4">TOTALES</td>
@@ -313,7 +344,7 @@ include("Fragmentos/pie.php");
             const arraypagos = JSON.parse(iii.abonoproveedor);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 acumulatedpey += parseFloat(ixx.montoextra);
-                ttp[ixx.tipopago] =  parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
+                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -336,7 +367,7 @@ include("Fragmentos/pie.php");
                 <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
                 <td class="text-center">${acumulatedpey.toFixed(2)}</td>
             </tr>`;
-        
+
     }
     const setabonoproveedor = res => {
         const f_ini = fecha_inicio.value;
@@ -346,13 +377,14 @@ include("Fragmentos/pie.php");
                 <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
             </tr>
             `;
-        let acumulatedpey = 0;const acumulated = [];
+        let acumulatedpey = 0;
+        const acumulated = [];
         const ttp = [];
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.abono);
             arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
                 acumulatedpey += parseFloat(ixx.montoextra);
-                ttp[ixx.tipopago] =  parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
+                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
                 bodydata.innerHTML += `
                 <tr>
                     <td class="text-center">${ixx.fechaxxx}</td>
@@ -376,6 +408,31 @@ include("Fragmentos/pie.php");
                 <td class="text-center">${acumulatedpey.toFixed(2)}</td>
             </tr>`;
     }
+
+    const setentradas = res => {
+        bodydata.innerHTML += `
+            <tr>
+                <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">ENTRADA DE PRODUCTOS</td>
+            </tr>
+            `;
+        res.forEach(iii => {
+            bodydata.innerHTML += `
+                <tr>
+                    <td class="text-center">${xx.fechainicio.substring(0, 10)}</td>
+                    <td class="text-center">GUIA</td>
+                    <td class="text-center">${xx.nroguia.toString().padStart(4, '0')}</td>
+                    <td class="text-center">${xx.sdes}</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                </tr>`;
+        })
+    }
+
     const setotroegresos = res => {
         bodydata.innerHTML += `
             <tr>

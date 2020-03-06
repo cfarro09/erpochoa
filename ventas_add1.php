@@ -35,11 +35,12 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Productos = "
-select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+select pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
 from kardex_contable k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
 inner join `color` `c` on(p.codigocolor = c.codigocolor)
+left join `presentacion` `pre` on (pre.codigopresent = p.codigopresent)
 inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
 where k.sucursal = $codsucursal and saldo > 0
 and k.id_kardex_contable in
@@ -165,7 +166,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				<?php
 				do {
 				?>
-					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
+					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
 						<?php echo $row_Productos['nombre_producto'] ?> -
 						<?php echo $row_Productos['Marca']; ?> -
 						<?php echo $row_Productos['nombre_color']; ?> -
@@ -386,12 +387,8 @@ include("Fragmentos/pie.php");
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
 				<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
-				<td>
-				<select class="form-control unidad_medida" name="unidad_medida" required>
-				<option value="unidad">unidad</option>
-				<option value="kilo">kilo</option>
-				<option value="tonelada">tonelada</option>
-				</select>
+				<td class="unidad_medida">
+				${option.dataset.namexx}
 				</td>
 				<td class="nombre">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
@@ -818,7 +815,7 @@ include("Fragmentos/pie.php");
 				const d = {
 					codigoprod: item.querySelector(".codigopro").dataset.codigo,
 					cantidad: item.querySelector(".cantidad").value,
-					unidad_medida: item.querySelector(".unidad_medida").value,
+					unidad_medida: item.querySelector(".unidad_medida").textContent,
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pventa: item.querySelector(".precio").value,
 					igv: parseFloat(item.querySelector(".precio").value) * IGV,
@@ -979,7 +976,9 @@ include("Fragmentos/pie.php");
 			nlicencia.value = "";
 			certinscripcion.value = "";
 			$("#mguia").modal("hide")
-			// location.reload();
+			setTimeout(() => {
+				location.reload()
+			}, 1500);
 		}
 	}
 	formdataguia.addEventListener('submit', guardarguiainmediata)

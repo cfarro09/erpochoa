@@ -953,6 +953,7 @@ include("Fragmentos/pie.php");
 				cantidad: item.querySelector(".cantidad").value,
 				canttotal: item.querySelector(".cantidad").value,
 				nombre_producto: item.querySelector(".nombre").textContent,
+				unidad_medida: item.querySelector(".unidad_medida").textContent.trim(),
 				pventa: item.querySelector(".precio").value,
 			};
 			h1.productos.push(d)
@@ -998,9 +999,9 @@ include("Fragmentos/pie.php");
 
 
 			$("#mguia").modal("hide")
-			// setTimeout(() => {
-			// 	location.reload()
-			// }, 1500);
+			setTimeout(() => {
+				location.reload()
+			}, 1500);
 			// location.reload();
 		}
 	}

@@ -136,31 +136,31 @@ class PDF extends FPDF
     $this->SetDrawColor(147,147,147);
     $this->Cell(20,8,'CANTIDAD',1,0,'C',true);
     $this->Cell(100,8,'DESCRIPCION',1,0,'C',true);
-    $this->Cell(30,8,'P. UNIDAD',1,0,'C',true);
-    $this->Cell(30,8,'TOTAL',1,1,'C',true);
+    $this->Cell(30,8,'UNIDAD MEDIDA',1,0,'C',true);
+    $this->Cell(30,8,'PESO TOTAL',1,1,'C',true);
     $this->SetFont('Arial','',9);
-    for ($i=0; $i < 20; $i++) {
+    for ($i=0; $i < 10; $i++) {
       $cantidad = (isset($detalle[$i]) ? $detalle[$i]->cantidad: '');
       $descripcion = (isset($detalle[$i]) ? $detalle[$i]->nombre_producto: '');
       $precio = (isset($detalle[$i]) ? $detalle[$i]->pventa : '');
       $total = (isset($detalle[$i]) ? $cantidad*$precio: '');
       $this->Cell(20,7,$cantidad,'LB',0,'C');
       $this->Cell(100,7,utf8_decode($descripcion),'LB',0);
-      $this->Cell(30,7,$precio,'LB',0,'R');
-      $this->Cell(30,7,$total,'LBR',1,'R');
+      $this->Cell(30,7,isset($detalle[$i]->unidad_medida) ? $detalle[$i]->unidad_medida : "",'LB',0,'R');
+      $this->Cell(30,7,'','LBR',1,'R');
       $this->Ln(0);
     }
-    $this->SetFont('Arial','B',9);
-    $this->Ln(2);
-    $this->Cell(120,5,'',0,0);
-    $this->Cell(30,5,'SUB-TOTAL: ',0,0,'R');
-    $this->Cell(30,5,$detalle[0]->subtotal,0,1,'R');
-    $this->Cell(120,5,'',0,0);
-    $this->Cell(30,5,'IGV: ',0,0,'R');
-    $this->Cell(30,5,$detalle[0]->igv,0,1,'R');
-    $this->Cell(120,5,'',0,0);
-    $this->Cell(30,5,'TOTAL: ',0,0,'R');
-    $this->Cell(30,5,$detalle[0]->total,0,1,'R');
+    // $this->SetFont('Arial','B',9);
+    // $this->Ln(2);
+    // $this->Cell(120,5,'',0,0);
+    // $this->Cell(30,5,'SUB-TOTAL: ',0,0,'R');
+    // $this->Cell(30,5,$detalle[0]->subtotal,0,1,'R');
+    // $this->Cell(120,5,'',0,0);
+    // $this->Cell(30,5,'IGV: ',0,0,'R');
+    // $this->Cell(30,5,$detalle[0]->igv,0,1,'R');
+    // $this->Cell(120,5,'',0,0);
+    // $this->Cell(30,5,'TOTAL: ',0,0,'R');
+    // $this->Cell(30,5,$detalle[0]->total,0,1,'R');
     
   }
   
