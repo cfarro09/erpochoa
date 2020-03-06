@@ -954,6 +954,7 @@ include("Fragmentos/pie.php");
 				codigoprod: item.querySelector(".codigopro").textContent,
 				cantidad: item.querySelector(".cantidad").value,
 				canttotal: item.querySelector(".cantidad").value,
+				unidad_medida: item.querySelector(".unidad_medida").textContent.trim(),
 				nombre_producto: item.querySelector(".nombre").textContent,
 				pventa: item.querySelector(".precio").value,
 			};
