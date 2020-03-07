@@ -1371,10 +1371,12 @@ $nombreigv = mysql_fetch_object($result)->value;
                             const IGV1 = <?= $IGV1 ?>;
                             const getSelector = (tag) => document.querySelector(tag)
                             const getSelectorAll = (tag) => document.querySelectorAll(tag)
+                            if (getSelector("#showFrases")) {
+                                getSelector("#showFrases").addEventListener("click", e => {
+                                    $("#mFrases").modal()
+                                })
+                            }
 
-                            getSelector("#showFrases").addEventListener("click", e => {
-                                $("#mFrases").modal()
-                            })
                             getSelectorAll(".select-frase").forEach(i => {
                                 i.addEventListener("click", e => {
                                     e.preventDefault();
@@ -1416,10 +1418,13 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         }
                                     });
                             })
-                            getSelector("#showSucursales").addEventListener("click", e => {
-                                e.preventDefault();
-                                $("#mSucursal").modal();
-                            })
+                            if(getSelector("#showSucursales")){
+
+                                getSelector("#showSucursales").addEventListener("click", e => {
+                                    e.preventDefault();
+                                    $("#mSucursal").modal();
+                                })
+                            }
                             getSelectorAll(".changeEstado").forEach(item => {
                                 item.addEventListener("click", e => {
                                     e.preventDefault();
@@ -1458,10 +1463,13 @@ $nombreigv = mysql_fetch_object($result)->value;
                             })
                         </script>
                         <script>
-                            document.querySelector("#manageUsuarios").addEventListener("click", e => {
-                                e.preventDefault();
-                                $("#mManageUsuario").modal();
-                            });
+                            if (document.querySelector("#manageUsuarios")) {
+                                document.querySelector("#manageUsuarios").addEventListener("click", e => {
+                                    e.preventDefault();
+                                    $("#mManageUsuario").modal();
+                                });
+                            }
+
 
                             function selectpersonalx() {
                                 var formData = new FormData();

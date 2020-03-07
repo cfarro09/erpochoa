@@ -839,7 +839,7 @@ include("Fragmentos/pie.php");
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pventa: item.querySelector(".precio").value,
 					igv: parseFloat(item.querySelector(".precio").value) * IGV,
-					totalventa: (parseInt(item.querySelector(".cantidad").vaonloadlue) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
+					totalventa: (parseInt(item.querySelector(".cantidad").value) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
 				}
 				if (tipocomprobante.value == "notadebito") {
 					data.detalle.push(`
@@ -867,7 +867,7 @@ include("Fragmentos/pie.php");
 							(select saldo from kardex_contable kc where kc.codigoprod = ${d.codigoprod} and kc.sucursal = ${h.codsucursal} order by kc.id_kardex_contable desc limit 1) + ${d.cantidad}
 							, ${h.codsucursal}, ${d.totalventa}, '${h.tipocomprobante}', '${h.codigoclienten}')
 						`);
-
+						debugger
 						if (modalidadentrega.value != "Entrega almacen C/G") {
 							data.detalle.push(`
 							insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
