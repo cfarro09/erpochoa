@@ -221,7 +221,7 @@ include("Fragmentos/pie.php");
                 (select saldo from kardex_contable kc where kc.codigoprod = ${codigoprod} and kc.sucursal = ${sucursal} order by kc.id_kardex_contable desc limit 1) + ${cantidaddevolucion}, ${sucursal}, 0, '', 0)`);
 
             
-            const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
+            const jjson = JSON.stringify(data).replace("%select%", "lieuiwuygyq").replace("%SELECT%", "lieuiwuygyq")
             var formData = new FormData();
             formData.append("json", jjson)
 

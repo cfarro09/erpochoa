@@ -253,7 +253,7 @@ include("Fragmentos/pie.php");
                 personaldestino = ${personss}
             where id = ${idcambiox.value}
         `)
-        const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
+        const jjson = JSON.stringify(data).replace("%select%", "lieuiwuygyq").replace("%SELECT%", "lieuiwuygyq")
         var formData = new FormData();
         formData.append("json", jjson);
 
