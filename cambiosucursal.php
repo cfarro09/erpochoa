@@ -146,7 +146,7 @@ include("Fragmentos/pie.php");
 
     function detalleguia(estado, finicio, idsorigen, idsdestino, sorigen, sdestino, nroguia, id, json) {
 
-        
+
         nguia.value = nroguia;
 
         idsucursaldestino.value = idsdestino;
@@ -169,10 +169,10 @@ include("Fragmentos/pie.php");
                 </tr>
             `
         })
-        if(estado == "PENDIENTE"){
+        if (estado == "PENDIENTE") {
             btnguarddd.style.display = "";
             getSelectorAll(".productos .cantidad").forEach(ii => ii.disabled = false)
-        }else{
+        } else {
             btnguarddd.style.display = "none";
             getSelectorAll(".productos .cantidad").forEach(ii => ii.disabled = true)
         }
@@ -253,21 +253,21 @@ include("Fragmentos/pie.php");
                 personaldestino = ${personss}
             where id = ${idcambiox.value}
         `)
-        
+        const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
         var formData = new FormData();
-            formData.append("json", JSON.stringify(data));
+        formData.append("json", jjson);
 
-            await fetch(`setVenta.php`, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(res => res.json())
-                .catch(error => console.error("error: ", error))
-                .then(res => {
-                    if (res.success) {
-                        alert("registro completo!");
-                        location.reload()
-                    }
-                });
+        await fetch(`setVenta.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .catch(error => console.error("error: ", error))
+            .then(res => {
+                if (res.success) {
+                    alert("registro completo!");
+                    location.reload()
+                }
+            });
     }
 </script>

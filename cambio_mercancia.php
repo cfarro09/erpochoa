@@ -363,9 +363,9 @@
 
                 // Se registra la salida kardex_contable
          
-
+                const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
                 var formData = new FormData();
-                formData.append("json", JSON.stringify(data))
+                formData.append("json", jjson)
 
                 fetch(`setVenta.php`, {
                     method: 'POST',

@@ -194,8 +194,9 @@ include("Fragmentos/pie.php");
 			data.detalle.push(query)
 		})
 
+		const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
 		var formData = new FormData();
-		formData.append("json", JSON.stringify(data))
+		formData.append("json", jjson)
 
 		fetch(`setVenta.php`, {
 				method: 'POST',

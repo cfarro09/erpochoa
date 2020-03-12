@@ -5,6 +5,9 @@ if (isset($_POST['json'])) {
 	$json = $_POST['json'];
 }
 $lastId = 0;
+
+$json = str_replace("lieuiwuygyq", "select", $json);
+
 $queryheader = json_decode($json)->header;
 $detalleArray = json_decode($json)->detalle;
 

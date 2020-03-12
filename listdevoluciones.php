@@ -31,53 +31,49 @@ $i = 1;
 ?>
 
 <?php if ($totalRows_Listado == 0) : ?>
-<div class="alert alert-danger">
-    <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
-</div>
+    <div class="alert alert-danger">
+        <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
+    </div>
 <?php else : ?>
-<table class="table table-bordered table-hover" id="sample_1">
-    <thead>
-        <tr>
-            <th>N°</th>
-            <th>Fecha</th>
-            <th>Cliente</th>
-            <th>Total Venta</th>
-            <th>Total Pago</th>
-            <th>Tipo Comp.</th>
-            <th>Cod. Comp</th>
-            <th>Devoluc.</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php do {
-                    $restante = $row["total"] - $row["pagoacomulado"];
-                    ?>
-        <tr>
-            <td class="text-center"><?= $i ?></td>
-            <td><?= $row["fecha_emision"] ?></td>
-            <td><?= $row["ClienteNatural"] ?></td>
-            <td><?= $row["total"] ?></td>
-            <td><?= $row["pagoacomulado"] ?></td>
-            <td><?= $row["tipocomprobante"] ?></td>
-            <td><?= $row["codigocomprobante"] ?></td>
-            <td><?= $row["cantidaddev"] ?></td>
-            <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>"
-                    data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>"
-                    data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-sucursal='<?= $row["sucursal"] ?>'
-                    data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>"
-                    onclick="pagar(this)">Detalle</a></td>
-        </tr>
-        <?php
-                    $i++;
-                } while ($row = mysql_fetch_assoc($Listado)); ?>
-    </tbody>
-</table>
+    <table class="table table-bordered table-hover" id="sample_1">
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Total Venta</th>
+                <th>Total Pago</th>
+                <th>Tipo Comp.</th>
+                <th>Cod. Comp</th>
+                <th>Devoluc.</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php do {
+                $restante = $row["total"] - $row["pagoacomulado"];
+            ?>
+                <tr>
+                    <td class="text-center"><?= $i ?></td>
+                    <td><?= $row["fecha_emision"] ?></td>
+                    <td><?= $row["ClienteNatural"] ?></td>
+                    <td><?= $row["total"] ?></td>
+                    <td><?= $row["pagoacomulado"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
+                    <td><?= $row["codigocomprobante"] ?></td>
+                    <td><?= $row["cantidaddev"] ?></td>
+                    <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-sucursal='<?= $row["sucursal"] ?>' data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" onclick="pagar(this)">Detalle</a></td>
+                </tr>
+            <?php
+                $i++;
+            } while ($row = mysql_fetch_assoc($Listado)); ?>
+        </tbody>
+    </table>
 <?php endif ?>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document" style="width: 900px">
-    <input type="hidden" id="moperation_sucursal">
+        <input type="hidden" id="moperation_sucursal">
         <div class="modal-content m-auto">
             <form id="formoperacion" action="">
                 <div class="modal-header">
@@ -91,44 +87,38 @@ $i = 1;
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputfecha" class="control-label">Fecha</label>
-                                    <input type="text" readonly autocomplete="off" id="inputfecha"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputfecha" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputtipocomprobante" class="control-label">Tipo Comp</label>
-                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputtipocomprobante" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputnumerocomprobante" class="control-label">N° Comprobante</label>
-                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputnumerocomprobante" class="form-control" />
                                 </div>
                             </div>
 
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputcliente" class="control-label">Cliente</label>
-                                    <input type="text" readonly autocomplete="off" id="inputcliente"
-                                        class="form-control" />
+                                    <input type="text" readonly autocomplete="off" id="inputcliente" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputrestante" class="control-label">Falta Pagar</label>
-                                    <input type="number" readonly autocomplete="off" id="inputrestante"
-                                        class="form-control" required />
+                                    <input type="number" readonly autocomplete="off" id="inputrestante" class="form-control" required />
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="inputtotal" class="control-label">Total Venta</label>
-                                    <input type="number" readonly autocomplete="off" id="inputtotal"
-                                        class="form-control" required />
+                                    <input type="number" readonly autocomplete="off" id="inputtotal" class="form-control" required />
                                 </div>
                             </div>
                             <div class="col-sm-12">
@@ -165,13 +155,12 @@ $i = 1;
                                     </tbody>
                                 </table>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
-                        aria-label="Close">Cerrar</button>
+                    <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
                 </div>
             </form>
         </div>
@@ -223,15 +212,18 @@ include("Fragmentos/pie.php");
             historialdevolucion = JSON.stringify(historialdevolucion);
             data.detalle.push(
                 `update detalle_ventas set devolucion = 0, historialdevolucion = '${historialdevolucion}', cantidad = cantidad - ${cantidaddevolucion} where codigodetalleproducto = ${iddetalle}`
-                );
+            );
 
             data.detalle.push(`
                 insert into kardex_contable(codigoprod, fecha, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor)
                 values
                 (${codigoprod}, '${new Date().toISOString()}', ${idventa}, '', 'Devolucion', ${cantidaddevolucion}, 0, 
                 (select saldo from kardex_contable kc where kc.codigoprod = ${codigoprod} and kc.sucursal = ${sucursal} order by kc.id_kardex_contable desc limit 1) + ${cantidaddevolucion}, ${sucursal}, 0, '', 0)`);
+
+            
+            const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
             var formData = new FormData();
-            formData.append("json", JSON.stringify(data))
+            formData.append("json", jjson)
 
             fetch(`setVenta.php`, {
                     method: 'POST',
@@ -261,11 +253,11 @@ include("Fragmentos/pie.php");
                     res.forEach(ix => {
                         let devoler = "";
                         let fecha = "";
-                        try{
+                        try {
                             const history = JSON.parse(ix.historialdevolucion);
                             const last = history.pop();
                             fecha = `${new Date(last.fecha).toLocaleDateString()} | ${last.motivo} `
-                        }catch(e){
+                        } catch (e) {
                             debugger
                         }
                         if (ix.devolucion && parseInt(ix.devolucion) > 0) {

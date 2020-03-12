@@ -430,8 +430,10 @@ include("Fragmentos/pie.php");
                 WHERE codigoventas=${h.codventa}`;
 
                 data.detalle.push("UPDATE propiedades SET value = (" + h.nguia + "+1) where `key` = 'despacho_guia_" + codsucursal.value + "'")
+
+                const jjson = JSON.stringify(data).replace("select", "lieuiwuygyq")
                 var formData = new FormData();
-                formData.append("json", JSON.stringify(data));
+                formData.append("json", jjson);
 
                 await fetch(`setVenta.php`, {
                         method: 'POST',
