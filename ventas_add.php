@@ -36,15 +36,15 @@ $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Productos = "
 select pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
-from kardex_contable k
+from kardex_alm k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
 inner join `color` `c` on(p.codigocolor = c.codigocolor)
 left join `presentacion` `pre` on (pre.codigopresent = p.codigopresent)
 inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
-where k.sucursal = $codsucursal and saldo > 0
-and k.id_kardex_contable in
-(select max(id_kardex_contable) from kardex_contable where sucursal = $codsucursal group by codigoprod)";
+where k.codsucursal = $codsucursal and saldo > 0
+and k.id_kardex_alm in
+(select max(id_kardex_alm) from kardex_alm where codsucursal = $codsucursal group by codigoprod)";
 
 $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
 $row_Productos = mysql_fetch_assoc($Productos);

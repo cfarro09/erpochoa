@@ -943,6 +943,14 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a href="stockxsucursal.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <span class="title">Stock por Sucursal</span>
+                                                <span class="selected"></span>
+
+                                            </a>
+                                        </li>
                                         <li class="nav-item" style="display: none">
                                             <a href="cambio_mercancia.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>

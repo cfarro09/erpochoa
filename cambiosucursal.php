@@ -266,7 +266,7 @@ include("Fragmentos/pie.php");
                 .then(res => {
                     if (res.success) {
                         alert("registro completo!");
-
+                        location.reload()
                     }
                 });
     }
