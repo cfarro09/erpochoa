@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `configuracion` (
 --
 
 INSERT INTO `configuracion` (`codconf`, `nombresistema`, `logo`, `favicon`, `footer`) VALUES
-(00000000001, 'Sistema de Administración y Gestion de Local de Ventas y Servicios de Computo', 'img/logo.png', 'img/logo.png', '2016 - 2017 © Todos los derechos reservados');
+(00000000001, 'Sistema de Administración y Gestion de Local de Ventas y Servicios de Computo', 'img/logo.png', 'img/logo.png', '2020 © Todos los derechos reservados');
 
 -- --------------------------------------------------------
 
