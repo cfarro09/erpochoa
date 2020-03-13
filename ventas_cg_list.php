@@ -431,7 +431,7 @@ include("Fragmentos/pie.php");
 
                 data.detalle.push("UPDATE propiedades SET value = (" + h.nguia + "+1) where `key` = 'despacho_guia_" + codsucursal.value + "'")
 
-                const jjson = JSON.stringify(data).replace("%select%", "lieuiwuygyq").replace("%SELECT%", "lieuiwuygyq")
+                const jjson = JSON.stringify(data).replace(/select/g, "lieuiwuygyq")
                 var formData = new FormData();
                 formData.append("json", jjson);
 

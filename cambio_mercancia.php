@@ -363,7 +363,7 @@
 
                 // Se registra la salida kardex_contable
          
-                const jjson = JSON.stringify(data).replace("%select%", "lieuiwuygyq").replace("%SELECT%", "lieuiwuygyq")
+                const jjson = JSON.stringify(data).replace(/select/g, "lieuiwuygyq")
                 var formData = new FormData();
                 formData.append("json", jjson)
 
