@@ -156,11 +156,13 @@ include("Fragmentos/abrirpopupcentro.php");
 					$auxx1 = mysql_query($query_filtro_by_sucursal, $Ventas) or die(mysql_error());
 					$row_aux = mysql_fetch_assoc($auxx1);
 					$total = 0 ;
+					$totalsede = 0 ;
 					do { ?>
 						<?php
 							if($row_aux['cod_sucursal'] == $_SESSION['cod_sucursal']){
-								$total = $row_aux['saldo'];
+								$$totalsede = $row_aux['saldo'];
 							}
+							$total += $row_aux['saldo'];
 						?>
 						
 						<th  class="none"> <?= $row_aux['saldo']; ?></th>
@@ -175,7 +177,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					}
 					?>
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
-					<td> <?= $total;?></td>
+					<td> <?= $totalsede;?></td>
 
 					
 
