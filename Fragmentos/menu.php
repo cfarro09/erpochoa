@@ -44,11 +44,10 @@ $nombreigv = mysql_fetch_object($result)->value;
             if (isset($_GET['sss'])) {
                 $_SESSION['nombre_sucursal'] = $_GET['nnnn'];
                 $_SESSION['cod_sucursal'] = $_GET['sss'];
-            } else {
-                // if (!isset($_SESSION['nombre_sucursal'])) {
-                    $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
-                    $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
-                // }
+            } 
+            if(isset($_GET['init']) && $_GET['init'] == "1"){
+                $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
+                $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
             }
             ?>
 
