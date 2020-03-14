@@ -460,6 +460,7 @@ function KT_redir($url) {
 		if (KT_is_ajax_request()) {
 			header("Kt_location: ".$url);
 			echo "Redirecting to: " . $url;
+			header("Location: ". $url);
 		} else {
 			header("Location: ". $url);
 		}
