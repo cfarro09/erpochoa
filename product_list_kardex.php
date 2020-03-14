@@ -136,7 +136,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th  > CATEGORIA </th>
 				<th > <?= $_SESSION['nombre_sucursal'] ?></th>
 				
-				<th  class="none">TOTAL</th>
+				<th  class="">TOTAL</th>
 				<th  class="none"> CODIGO </th>
 				
 				<th  >  </th>
@@ -167,7 +167,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						?>
 						
 						<th  class="none"> <?= $row_aux['saldo']; ?></th>
-						<th  class="none"> <?= $total; ?></th>
+						
 
 						<?php 
 					} while ($row_aux = mysql_fetch_assoc($auxx1));
@@ -180,7 +180,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					?>
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
 					<td> <?= $totalsede;?></td>
-
+					<th  > <?= $total; ?></th>
 					
 
 					<td> <?php echo $row_Listado['minicodigo'];?></td>
