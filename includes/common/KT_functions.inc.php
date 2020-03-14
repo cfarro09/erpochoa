@@ -459,15 +459,9 @@ function KT_redir($url) {
 		$url = str_replace(" ","%20",$url);
 		if (KT_is_ajax_request()) {
 			header("Kt_location: ".$url);
-			// echo "Redirecting to: " . $url;
+			echo "Redirecting to: " . $url;
 		} else {
-
-			ob_start();
-			while (ob_get_status()) 
-			{
-				ob_end_clean();
-			}
-			header("Location: $url");
+			header("Location: ". $url);
 		}
 	}
 	exit;
