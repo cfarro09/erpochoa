@@ -458,8 +458,8 @@ function KT_redir($url) {
                 session_write_close();
 		$url = str_replace(" ","%20",$url);
 		if (KT_is_ajax_request()) {
-			header("Kt_location: ".$url);
-			echo "Redirecting to: " . $url;
+			// header("Kt_location: ".$url);
+			// echo "Redirecting to: " . $url;
 			header("Location: ". $url);
 		} else {
 			header("Location: ". $url);
