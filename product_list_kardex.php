@@ -160,7 +160,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					do { ?>
 						<?php
 							if($row_aux['cod_sucursal'] == $_SESSION['cod_sucursal']){
-								$$totalsede = $row_aux['saldo'];
+								$totalsede = $row_aux['saldo'];
 							}
 							$total += $row_aux['saldo'];
 						?>
