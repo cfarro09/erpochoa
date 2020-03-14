@@ -134,7 +134,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 				?>
 				<th  > CATEGORIA </th>
-				<th > TOTAL PRODUCTOS</th>
+				<th > <?= $_SESSION['nombre_sucursal'] ?></th>
 				
 				<th  class="none"> CODIGO </th>
 				
@@ -157,8 +157,14 @@ include("Fragmentos/abrirpopupcentro.php");
 					$row_aux = mysql_fetch_assoc($auxx1);
 					$total = 0 ;
 					do { ?>
-						<?php $total = $total + (int) $row_aux['saldo'];?>
+						<?php
+							if($row_aux['cod_sucursal'] == $_SESSION['cod_sucursal']){
+								$total = $row_aux['saldo'];
+							}
+						?>
+						
 						<th  class="none"> <?= $row_aux['saldo']; ?></th>
+
 						<?php 
 					} while ($row_aux = mysql_fetch_assoc($auxx1));
 					
