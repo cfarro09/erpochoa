@@ -44,11 +44,10 @@ $nombreigv = mysql_fetch_object($result)->value;
             if (isset($_GET['sss'])) {
                 $_SESSION['nombre_sucursal'] = $_GET['nnnn'];
                 $_SESSION['cod_sucursal'] = $_GET['sss'];
-            } else {
-                // if (!isset($_SESSION['nombre_sucursal'])) {
-                    $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
-                    $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
-                // }
+            }
+            if (isset($_GET['init'])) {
+                $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
+                $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
             }
             ?>
 
@@ -1006,7 +1005,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                 </li>
                             <?php endif ?>
                             <?php if ($accesos->check_comercial_cajaprincipal) : ?>
-                               
+
                                 <li class="nav-item">
                                     <a href="javascript:;" class="nav-link font-blue-steel">
                                         <i class="glyphicon glyphicon-user font-blue-steel"></i>
@@ -1041,8 +1040,8 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                 </li>
                                             </ul>
                                         </li>
-                                     
-                                        
+
+
                                         <li class="nav-item">
                                             <a href="contatipopago.php" id="" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
@@ -1051,15 +1050,15 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        
+
+
+
+
+
+
+
+
+
                                     </ul>
                                 </li>
                             <?php endif ?>
@@ -1433,7 +1432,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         }
                                     });
                             })
-                            if(getSelector("#showSucursales")){
+                            if (getSelector("#showSucursales")) {
 
                                 getSelector("#showSucursales").addEventListener("click", e => {
                                     e.preventDefault();
