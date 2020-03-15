@@ -44,10 +44,11 @@ $nombreigv = mysql_fetch_object($result)->value;
             if (isset($_GET['sss'])) {
                 $_SESSION['nombre_sucursal'] = $_GET['nnnn'];
                 $_SESSION['cod_sucursal'] = $_GET['sss'];
-            } 
-            if(isset($_GET['init']) && $_GET['init'] == "1"){
-                $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
-                $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
+            } else {
+                // if (!isset($_SESSION['nombre_sucursal'])) {
+                    $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
+                    $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
+                // }
             }
             ?>
 
@@ -516,7 +517,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     <ul class="sub-menu">
                                         <li class="nav-item">
                                             <a href="product_list.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Data Mercaderia</span>
                                                 <span class="selected"></span>
                                             </a>
@@ -730,7 +731,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         <li class="nav-item">
                                             <a href="serviciosporpagar.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">servicios por Pagar</span>
+                                                <span class="title">Servicios por Pagar</span>
                                                 <span class="selected"></span>
 
                                             </a>
@@ -889,14 +890,14 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     <ul class="sub-menu">
                                         <li class="nav-item">
                                             <a href="conciliacion.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Data Clientes</span>
                                                 <span class="selected"></span>
                                             </a>
                                             <ul class="sub-menu">
                                                 <li class="nav-item">
                                                     <a href="cliente_natural_list.php" class="nav-link font-blue-ebonyclay">
-                                                        <i class="fa fa-leaf font-blue-ebonyclay"></i>
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                         <span class="title">Naturales</span>
                                                         <span class="selected"></span>
 
@@ -905,7 +906,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                 </li>
                                                 <li class="nav-item">
                                                     <a href="cliente_juridico_list.php" class="nav-link font-blue-ebonyclay">
-                                                        <i class="fa fa-black-tie font-blue-ebonyclay"></i>
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                         <span class="title">Jur&iacute;dicos</span>
                                                         <span class="selected"></span>
 
@@ -922,21 +923,21 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
                                         <li class="nav-item">
                                             <a href="proforma.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Proforma</span>
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="listproforma.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
                                                 <span class="title">Listado de Proformas</span>
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="contaventas.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
                                                 <span class="title">Reporte de Ventas</span>
                                                 <span class="selected"></span>
 
@@ -944,7 +945,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
                                         <li class="nav-item">
                                             <a href="stockxsucursal.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
                                                 <span class="title">Stock por Sucursal</span>
                                                 <span class="selected"></span>
 
@@ -960,7 +961,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
                                         <li class="nav-item">
                                             <a href="ventas_add.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Ventas Ordinarias</span>
                                                 <span class="selected"></span>
 
@@ -968,7 +969,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
                                         <li class="nav-item">
                                             <a href="ventas_add1.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Ventas No Ordinarias</span>
                                                 <span class="selected"></span>
 
@@ -1005,6 +1006,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                 </li>
                             <?php endif ?>
                             <?php if ($accesos->check_comercial_cajaprincipal) : ?>
+                               
                                 <li class="nav-item">
                                     <a href="javascript:;" class="nav-link font-blue-steel">
                                         <i class="glyphicon glyphicon-user font-blue-steel"></i>
@@ -1014,36 +1016,33 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="nav-item">
-                                            <a href="abonos_cctt.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
-                                                <span class="title">Registro Abonos en CCTT</span>
-                                                <span class="selected"></span>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="cargos_cctt.php" class="nav-link font-blue-ebonyclay">
+                                            <a href="conciliacion.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Registro Carggos CCTT</span>
+                                                <span class="title">Efectivo Ingresos</span>
                                                 <span class="selected"></span>
-
                                             </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="giros_cheques.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                                <span class="title">Registro Giro Cheques</span>
-                                                <span class="selected"></span>
+                                            <ul class="sub-menu">
+                                                <li class="nav-item">
+                                                    <a href="cliente_natural_list.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                        <span class="title">Ingresos</span>
+                                                        <span class="selected"></span>
 
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="estado_cuenta_bancario.php" id="" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                                <span class="title">Estado Cuenta Bancario</span>
-                                                <span class="selected"></span>
 
-                                            </a>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="cliente_juridico_list.php" class="nav-link font-blue-ebonyclay">
+                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                        <span class="title">Egresos</span>
+                                                        <span class="selected"></span>
+
+                                                    </a>
+                                                </li>
+                                            </ul>
                                         </li>
+                                     
+                                        
                                         <li class="nav-item">
                                             <a href="contatipopago.php" id="" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
@@ -1052,6 +1051,15 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
                                     </ul>
                                 </li>
                             <?php endif ?>
