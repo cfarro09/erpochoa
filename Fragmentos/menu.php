@@ -1216,7 +1216,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                         <div class="caption">
                             <i class="<?php echo $Icono; ?> <?php echo $Color; ?>"></i>
                             <span class="caption-subject <?php echo $Color; ?> bold uppercase"><?= "SUCURSAL - " . $_SESSION['nombre_sucursal'] ?></span>
-                            <div class="btn-group">
+                            <div class="btn-group" id="btnagregargordis">
                                 <a class="btn sbold blue <?php echo $EstadoBotonAgregar ?>" onClick="abre_ventana('Emergentes/<?php echo $agregar . $VarUrl2 ?>',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)" data-toggle="modal"> <?php echo $NombreBotonAgregar ?> <i class="fa fa-plus"></i></a>
                             </div>
                             <div class="btn-group">

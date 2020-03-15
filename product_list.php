@@ -103,6 +103,8 @@ include("Fragmentos/head.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 include("Fragmentos/abrirpopupcentro.php");
+$codsucursal = $_SESSION['cod_sucursal'];
+
 //__________________________________________________________________
 ?>        
 
@@ -149,11 +151,11 @@ include("Fragmentos/abrirpopupcentro.php");
 
 
 					<td> 
-						<a  class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>  
+						<a <?= $codsucursal != 1 ? "disabled" : "" ?> class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>  
 					</td>
 					<td> 
 						<?php if($row_Listado['foto']==NULL) { ?>
-							<a  class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Registrar Foto"  onClick="abre_ventana('Emergentes/productofoto.php?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-cubes" ></i></a>
+							<a <?= $codsucursal != 1 ? "disabled" : "" ?>  class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Registrar Foto"  onClick="abre_ventana('Emergentes/productofoto.php?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-cubes" ></i></a>
 						<?php }
 						else {
 							?>
@@ -259,6 +261,12 @@ include("Fragmentos/abrirpopupcentro.php");
 	mysql_free_result($Listado);
 	?>
 	<script>
+		document.onload = e => {
+			const codsucursal = <?= $codsucursal ?>;
+			if(codsucursal != 1){
+				btnagregargordis.style.display = "none"
+			}
+		}
 		document.querySelectorAll(".ver-kardex").forEach(item => {
 			item.addEventListener("click", e => {
 				getSelector("#codproducto").value = e.target.dataset.codproducto
