@@ -10,8 +10,8 @@ $extension = array_pop(explode('.',$file)); // Sacaría "jpg"
 //echo $extension;
 $nombre = array_shift(explode('.',$file));  // Sacaría "nombre"
 //echo $nombre;
-// echo $agregar = $nombre . "_add" ."." . $extension;
-// echo $editar = $nombre . "_edit" ."." . $extension;
+$agregar = $nombre . "_add" ."." . $extension;
+$editar = $nombre . "_edit" ."." . $extension;
 
 ?>
 
