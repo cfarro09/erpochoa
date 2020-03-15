@@ -45,7 +45,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                 $_SESSION['nombre_sucursal'] = $_GET['nnnn'];
                 $_SESSION['cod_sucursal'] = $_GET['sss'];
             }
-            if (isset($_GET['init'])) {
+            if (isset($_GET['init']) && $_GET['init'] == "1") {
                 $_SESSION['nombre_sucursal'] = $row_personal['nombre_sucursal'];
                 $_SESSION['cod_sucursal'] = $row_personal['cod_sucursal'];
             }
