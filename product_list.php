@@ -1,7 +1,7 @@
 <?php require_once('Connections/Ventas.php'); ?>
 <?php
 if (!function_exists("GetSQLValueString")) {
-	function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
+	function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
 	{
 		if (PHP_VERSION < 6) {
 			$theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
@@ -11,21 +11,21 @@ if (!function_exists("GetSQLValueString")) {
 
 		switch ($theType) {
 			case "text":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;    
+				$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+				break;
 			case "long":
 			case "int":
-			$theValue = ($theValue != "") ? intval($theValue) : "NULL";
-			break;
+				$theValue = ($theValue != "") ? intval($theValue) : "NULL";
+				break;
 			case "double":
-			$theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-			break;
+				$theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
+				break;
 			case "date":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;
+				$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+				break;
 			case "defined":
-			$theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-			break;
+				$theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+				break;
 		}
 		return $theValue;
 	}
@@ -37,8 +37,10 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 
 if ((isset($_POST["MM_eliminar"])) && ($_POST["MM_eliminar"] == "Eliminar_Registro")) {
-	$updateSQL = sprintf("DELETE from producto_imagen WHERE codigoprod=%s",
-		GetSQLValueString($_POST['codigoprod'], "int"));
+	$updateSQL = sprintf(
+		"DELETE from producto_imagen WHERE codigoprod=%s",
+		GetSQLValueString($_POST['codigoprod'], "int")
+	);
 
 	mysql_select_db($database_Ventas, $Ventas);
 	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
@@ -52,13 +54,15 @@ if ((isset($_POST["MM_eliminar"])) && ($_POST["MM_eliminar"] == "Eliminar_Regist
 }
 
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
-	
-	
-	
-	$updateSQL = sprintf("UPDATE producto p, producto_stock ps SET p.estado=%s WHERE p.codigoprod=%s and ps.stock=0 and ps.codigoprod=%s",
+
+
+
+	$updateSQL = sprintf(
+		"UPDATE producto p, producto_stock ps SET p.estado=%s WHERE p.codigoprod=%s and ps.stock=0 and ps.codigoprod=%s",
 		GetSQLValueString($_POST['estado'], "text"),
 		GetSQLValueString($_POST['codigoprod'], "int"),
-		GetSQLValueString($_POST['codigoprod'], "int"));
+		GetSQLValueString($_POST['codigoprod'], "int")
+	);
 
 	mysql_select_db($database_Ventas, $Ventas);
 	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
@@ -71,7 +75,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
 	header(sprintf("Location: %s", $updateGoTo));
 }
 mysql_select_db($database_Ventas, $Ventas);
-$querySucursales = "select * from sucursal where estado = 1" ;
+$querySucursales = "select * from sucursal where estado = 1";
 $sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
 $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
@@ -83,20 +87,20 @@ $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
 
- //Enumerar filas de data tablas
+//Enumerar filas de data tablas
 $i = 1;
 
 //Titulo e icono de la pagina
-$Icono="fa fa-cubes"; 
-$Color="font-blue";
-$Titulo="Listado de Productos";
-$NombreBotonAgregar="Agregar"; 
+$Icono = "fa fa-cubes";
+$Color = "font-blue";
+$Titulo = "Listado de Productos";
+$NombreBotonAgregar = "Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
-$EstadoBotonAgregar="";
+$EstadoBotonAgregar = "";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-$popupAncho= 700;
-$popupAlto= 330;
+$popupAncho = 700;
+$popupAlto = 330;
 
 include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
@@ -106,59 +110,65 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 //__________________________________________________________________
-?>        
+?>
 
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 
-<?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
+<?php if ($totalRows_Listado == 0) { // Show if recordset empty 
+?>
 	<div class="alert alert-danger">
 		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
 
 
 	</div>
-<?php } // Show if recordset empty ?>
-<?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
+<?php } // Show if recordset empty 
+?>
+<?php if ($totalRows_Listado > 0) { // Show if recordset not empty 
+?>
 	<table class="table table-striped table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
-				<th  > N&deg; </th>
-				<th  > CODIGO </th>
-				<th  > PRODUCTO </th>
-				<th  > MARCA </th>
-				<th > COLOR</th>
-				<th  > PRESENTACION</th>
-				<th  > CATEGORIA </th>
-				<th  class="none"> CODIGO </th>
-				<th  >  </th>
-				<th  >  </th>
-		
+				<th> N&deg; </th>
+				<th> CODIGO </th>
+				<th> PRODUCTO </th>
+				<th> MARCA </th>
+				<th> COLOR</th>
+				<th> PRESENTACION</th>
+				<th> CATEGORIA </th>
+				<th class="none"> CODIGO </th>
+				<th> </th>
+				<th> </th>
+
 			</tr>
 		</thead>
 		<tbody>
 			<?php do { ?>
 				<tr>
 					<td> <?php echo $i; ?> </td>
-					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a>                                                          </td>
+					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar ?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a> </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
 					<td align="center"> <?php echo $row_Listado['Marca']; ?></td>
 					<td> <?php echo $row_Listado['color']; ?></td>
 					<td align="center"> <?php echo $row_Listado['presentacion']; ?></td>
-					
-					
+
+
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
 
-					<td> <?php echo $row_Listado['minicodigo'];?></td>
+					<td> <?php echo $row_Listado['minicodigo']; ?></td>
 
 
-					<td> 
-						<a <?= $codsucursal != 1 ? "disabled" : "" ?> class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>  
+					<td>
+						<?php if ($codsucursal == 1) : ?>
+							<a class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro" onClick="abre_ventana('Emergentes/<?php echo $editar ?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"><i class="fa fa-refresh"></i></a>
+						<?php endif ?>
 					</td>
-					<td> 
-						<?php if($row_Listado['foto']==NULL) { ?>
-							<a <?= $codsucursal != 1 ? "disabled" : "" ?>  class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Registrar Foto"  onClick="abre_ventana('Emergentes/productofoto.php?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-cubes" ></i></a>
-						<?php }
-						else {
-							?>
+					<td>
+						<?php if ($row_Listado['foto'] == NULL) { ?>
+							<?php if ($codsucursal == 1) : ?>
+								<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Registrar Foto" onClick="abre_ventana('Emergentes/productofoto.php?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"><i class="fa fa-cubes"></i></a>
+							<?php endif ?>
+						<?php } else {
+						?>
 							<form method="POST" action="<?php echo $editFormAction; ?>" name="Eliminar_Registro" id="Eliminar_Registro" onSubmit="return confirm('�ESTA SEGURO QUE DESEA ELIMINAR ESTA FOTO: <?php echo $row_Listado['codigoprod']; ?>?');">
 								<input name="codigoprod" id="codigoprod" type="hidden" value="<?php echo $row_Listado['codigoprod']; ?>">
 								<button type="submit" class="btn red-thunderbird tooltips" data-placement="top" data-original-title="Eliminar Registro"><i class="glyphicon glyphicon-trash"></i></button>
@@ -168,135 +178,142 @@ $codsucursal = $_SESSION['cod_sucursal'];
 						<?php } ?>
 
 					</td>
-					
+
 
 				</tr>
-				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
-			</tbody>
-		</table>
-		<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog" role="document" style="width: 700px">
-				<div class="modal-content m-auto">
-					<div class="modal-header">
-						<h5 class="modal-title" id="moperation-title">Almacen Kardex</h5>
-					</div>
-					<div class="modal-body">
-						<input type="hidden" id="codproducto">
-						<form id="form-setKardex" action="kardex_almacen.php" method="GET">
-							<div class="container-fluid">
-								<div class="row" style="margin-top:20px">
-									<div class="col-xs-12 col-md-12">
-										<div class="row">
-											<div class="col-md-12">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Sucursales</label>
-													<select name="codigosuc" required id="codigosuc" class="sucursalXX form-control select2 tooltips" id="single" data-placement="top" >
-														<?php
-														do {  
-															?>
-															<option value="<?php echo $row_sucursales['cod_sucursal']?>"><?php echo $row_sucursales['nombre_sucursal']?></option>
-															<?php
-														} while ($row_sucursales = mysql_fetch_assoc($sucursales));
-														$rows = mysql_num_rows($sucursales);
-														if($rows > 0) {
-															mysql_data_seek($sucursales, 0);
-															$row_sucursales = mysql_fetch_assoc($sucursales);
-														}
-														?>
-														<option value="9999">OTROS</option>
-													</select>
-												</div>
+			<?php $i++;
+			} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+		</tbody>
+	</table>
+	<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog" role="document" style="width: 700px">
+			<div class="modal-content m-auto">
+				<div class="modal-header">
+					<h5 class="modal-title" id="moperation-title">Almacen Kardex</h5>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="codproducto">
+					<form id="form-setKardex" action="kardex_almacen.php" method="GET">
+						<div class="container-fluid">
+							<div class="row" style="margin-top:20px">
+								<div class="col-xs-12 col-md-12">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label for="field-1" class="control-label">Sucursales</label>
+												<select name="codigosuc" required id="codigosuc" class="sucursalXX form-control select2 tooltips" id="single" data-placement="top">
+													<?php
+													do {
+													?>
+														<option value="<?php echo $row_sucursales['cod_sucursal'] ?>"><?php echo $row_sucursales['nombre_sucursal'] ?></option>
+													<?php
+													} while ($row_sucursales = mysql_fetch_assoc($sucursales));
+													$rows = mysql_num_rows($sucursales);
+													if ($rows > 0) {
+														mysql_data_seek($sucursales, 0);
+														$row_sucursales = mysql_fetch_assoc($sucursales);
+													}
+													?>
+													<option value="9999">OTROS</option>
+												</select>
 											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Fecha Inicio</label>
-													<input type="text" required name ="fecha_inicio" autocomplete="off" id ="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top"  required/>
-												</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="field-1" class="control-label">Fecha Inicio</label>
+												<input type="text" required name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
 											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-													<label for="field-1" class="control-label">Fecha termino</label>
-													<input type="text" name ="fecha_termino" autocomplete="off" id ="fecha_termino" required class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top"  required/>
-												</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="field-1" class="control-label">Fecha termino</label>
+												<input type="text" name="fecha_termino" autocomplete="off" id="fecha_termino" required class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
 											</div>
-											<div class="col-md-12">
-												<table class="table table-striped table-bordered table-hover" id="">
-													<thead>
-														<tr>
-															<th colspan="4" id="headerKardex"></th>
-															<th style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
-														</tr>
-														<tr>
-															<th>FECHA</th>
-															<th>DETALLE</th>
-															<th>TIPO</th>
-															<th>N° COMP/GUIA</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-															<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-														</tr>
-													</thead>
-													<tbody id="detalleKardexAlmProd" class="text-center"></tbody>
-												</table>
-											</div>
+										</div>
+										<div class="col-md-12">
+											<table class="table table-striped table-bordered table-hover" id="">
+												<thead>
+													<tr>
+														<th colspan="4" id="headerKardex"></th>
+														<th style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
+														<th style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
+														<th style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
+													</tr>
+													<tr>
+														<th>FECHA</th>
+														<th>DETALLE</th>
+														<th>TIPO</th>
+														<th>N° COMP/GUIA</th>
+														<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
+														<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
+														<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
+													</tr>
+												</thead>
+												<tbody id="detalleKardexAlmProd" class="text-center"></tbody>
+											</table>
 										</div>
 									</div>
 								</div>
 							</div>
-							<button type="submit" class="btn btn-success">Imprimir</button>
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-						</form>
-					</div>
+						</div>
+						<button type="submit" class="btn btn-success">Imprimir</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</form>
 				</div>
 			</div>
 		</div>
-	<?php } // Show if recordset not empty ?>
-	<?php 
+	</div>
+<?php } // Show if recordset not empty 
+?>
+<?php
 //___________________________________________________________________________________________________________________
-	include("Fragmentos/footer.php");
-	include("Fragmentos/pie.php");
+include("Fragmentos/footer.php");
+include("Fragmentos/pie.php");
 
-	mysql_free_result($Listado);
-	?>
-	<script>
-		document.onload = e => {
-			const codsucursal = <?= $codsucursal ?>;
-			if(codsucursal != 1){
-				btnagregargordis.style.display = "none"
-			}
+mysql_free_result($Listado);
+?>
+<script>
+	$(document).ready(function() {
+		const codsucursal = <?= $codsucursal ?>;
+		debugger
+		if (codsucursal != 1) {
+			btnagregargordis.style.display = "none"
 		}
-		document.querySelectorAll(".ver-kardex").forEach(item => {
-			item.addEventListener("click", e => {
-				getSelector("#codproducto").value = e.target.dataset.codproducto
+	});
 
-				getSelector("#headerKardex").textContent = e.target.dataset.nombreproducto
+	document.querySelectorAll(".ver-kardex").forEach(item => {
+		item.addEventListener("click", e => {
+			getSelector("#codproducto").value = e.target.dataset.codproducto
 
-				$("#mkardex").modal();
-				$("#fecha_inicio").val("");
-				$("#fecha_termino").val("");
-			})
+			getSelector("#headerKardex").textContent = e.target.dataset.nombreproducto
+
+			$("#mkardex").modal();
+			$("#fecha_inicio").val("");
+			$("#fecha_termino").val("");
 		})
-		getSelector("#form-setKardex").addEventListener("submit", e => {
-			e.preventDefault();
-			const codsucursal = $("#codigosuc").val()
-			const fecha_inicio = $("#fecha_inicio").val()
-			const fecha_termino = $("#fecha_termino").val()
-			const codproducto = getSelector("#codproducto").value
-			var formData = new FormData();
-			formData.append("codsucursal", codsucursal);
-			formData.append("fecha_inicio", fecha_inicio);
-			formData.append("fecha_termino", fecha_termino);
-			formData.append("codproducto", codproducto);
+	})
+	getSelector("#form-setKardex").addEventListener("submit", e => {
+		e.preventDefault();
+		const codsucursal = $("#codigosuc").val()
+		const fecha_inicio = $("#fecha_inicio").val()
+		const fecha_termino = $("#fecha_termino").val()
+		const codproducto = getSelector("#codproducto").value
+		var formData = new FormData();
+		formData.append("codsucursal", codsucursal);
+		formData.append("fecha_inicio", fecha_inicio);
+		formData.append("fecha_termino", fecha_termino);
+		formData.append("codproducto", codproducto);
 
-			getSelector("#detalleKardexAlmProd").innerHTML = "<tr><td colspan='6'>No hay registros</td></tr>"
+		getSelector("#detalleKardexAlmProd").innerHTML = "<tr><td colspan='6'>No hay registros</td></tr>"
 
-			fetch(`getKardexAlmFromProductList.php`, { method: 'POST', body: formData })
+		fetch(`getKardexAlmFromProductList.php`, {
+				method: 'POST',
+				body: formData
+			})
 			.then(res => res.json())
 			.catch(error => console.error("error: ", error))
 			.then(res => {
-				if(res.length > 0){
+				if (res.length > 0) {
 					getSelector("#detalleKardexAlmProd").innerHTML = `
 					<tr>
 					<td></td>
@@ -311,7 +328,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 					console.log(res)
 					let i = 0;
 					res.forEach(item => {
-						if(item.cantidad != "0"){
+						if (item.cantidad != "0") {
 							getSelector("#detalleKardexAlmProd").innerHTML += `
 							<tr>
 							<td>${new Date(item.fecha).toLocaleDateString()}</td>
@@ -324,12 +341,12 @@ $codsucursal = $_SESSION['cod_sucursal'];
 							</tr>
 							`;
 						}
-						
+
 					});
 
 				}
 			});
 
 
-		});
-	</script>
+	});
+</script>

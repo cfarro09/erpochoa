@@ -36,11 +36,11 @@ $query_Conf_Sis = "SELECT * FROM configuracion";
 $Conf_Sis = mysql_query($query_Conf_Sis, $Ventas) or die(mysql_error());
 $row_Conf_Sis = mysql_fetch_assoc($Conf_Sis);
 $totalRows_Conf_Sis = mysql_num_rows($Conf_Sis);
-?>
-<!DOCTYPE html>
-<?php session_start(); 
+session_start(); 
 include("Fragmentos/bloquea_caja.php");
 ?>
+<!DOCTYPE html>
+
 <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
 <!--[if !IE]><!-->
