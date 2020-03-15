@@ -133,13 +133,11 @@ include("Fragmentos/abrirpopupcentro.php");
 					$row_sucursales = mysql_fetch_assoc($sucursales);
 				}
 				?>
+				<th  class="none"> Total </th>
 				<th  > CATEGORIA </th>
 				<th > <?= $_SESSION['nombre_sucursal'] ?></th>
+				<th></th>
 				
-				<th  class="">TOTAL</th>
-				<th  class="none"> CODIGO </th>
-				
-				<th  >  </th>
 			</tr>
 		</thead>
 		<tbody>
@@ -178,14 +176,9 @@ include("Fragmentos/abrirpopupcentro.php");
 						$row_aux = mysql_fetch_assoc($auxx1);
 					}
 					?>
+					<th  > <?= $total; ?></th>
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
 					<td> <?= $totalsede;?></td>
-					<th  > <?= $total; ?></th>
-					
-
-					<td> <?php echo $row_Listado['minicodigo'];?></td>
-
-
 					
 					
 					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">kardex</a></td>
