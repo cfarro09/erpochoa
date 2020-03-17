@@ -394,7 +394,7 @@ include("Fragmentos/pie.php");
 				<input type="hidden" class="pcompra" value="${option.dataset.preciocompra}">
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
-				<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+				<td><input type="number" data-type="cantidad" step="any" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
 				<td class="unidad_medida">
 				${option.dataset.namexx}
 				
