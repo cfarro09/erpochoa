@@ -1,3 +1,4 @@
+
 <?php require_once('Connections/Ventas.php'); ?>
 <?php
 if (!function_exists("GetSQLValueString")) {
@@ -36,40 +37,9 @@ if (isset($_SERVER['QUERY_STRING'])) {
 	$editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 }
 
-if ((isset($_POST["MM_eliminar"])) && ($_POST["MM_eliminar"] == "Eliminar_Registro")) {
-	$updateSQL = sprintf("DELETE from producto_imagen WHERE codigoprod=%s",
-		GetSQLValueString($_POST['codigoprod'], "int"));
 
-	mysql_select_db($database_Ventas, $Ventas);
-	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
 
-	$updateGoTo = "product_list.php";
-	if (isset($_SERVER['QUERY_STRING'])) {
-		$updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
-		$updateGoTo .= $_SERVER['QUERY_STRING'];
-	}
-	header(sprintf("Location: %s", $updateGoTo));
-}
 
-if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")) {
-	
-	
-	
-	$updateSQL = sprintf("UPDATE producto p, producto_stock ps SET p.estado=%s WHERE p.codigoprod=%s and ps.stock=0 and ps.codigoprod=%s",
-		GetSQLValueString($_POST['estado'], "text"),
-		GetSQLValueString($_POST['codigoprod'], "int"),
-		GetSQLValueString($_POST['codigoprod'], "int"));
-
-	mysql_select_db($database_Ventas, $Ventas);
-	$Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
-
-	$updateGoTo = "product_list.php";
-	if (isset($_SERVER['QUERY_STRING'])) {
-		$updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
-		$updateGoTo .= $_SERVER['QUERY_STRING'];
-	}
-	header(sprintf("Location: %s", $updateGoTo));
-}
 mysql_select_db($database_Ventas, $Ventas);
 $querySucursales = "select * from sucursal where estado = 1" ;
 $sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
@@ -91,8 +61,8 @@ $Color="font-blue";
 $Titulo="Listado de Productos";
 $NombreBotonAgregar="Agregar"; 
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-//$EstadoBotonAgregar="disabled";
-$EstadoBotonAgregar="";
+$EstadoBotonAgregar="disabled";
+//$EstadoBotonAgregar="";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 $popupAncho= 700;
 $popupAlto= 330;
@@ -118,12 +88,14 @@ include("Fragmentos/abrirpopupcentro.php");
 	<table class="table table-striped table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
-				<th  > N&deg; </th>
-				<th  > CODIGO </th>
-				<th  > PRODUCTO </th>
-				<th  > MARCA </th>
+				<th class="text-center" > N&deg; </th>
+				<th  class="text-center"> CODIGO </th>
+				<th class="text-center" > PRODUCTO </th>
+				<th class="text-center" > MARCA </th>
 				
-				<?php do {  ?>
+				<?php
+
+				do {  ?>
 					<th  class="none"> <?= $row_sucursales['nombre_sucursal'] ?></th>
 					<?php 
 				} while ($row_sucursales = mysql_fetch_assoc($sucursales));
@@ -134,7 +106,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 				?>
 				<th  class="none"> Total </th>
-				<th  > CATEGORIA </th>
+				<th class="text-center" > CATEGORIA </th>
 				<th > <?= $_SESSION['nombre_sucursal'] ?></th>
 				<th></th>
 				
@@ -150,6 +122,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					
 					<?php 
 					$sux = $row_Listado['codigoprod'];
+					
 					$query_filtro_by_sucursal = "SELECT s.nombre_sucursal, s.cod_sucursal, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo, k.codigoprod, k.fecha from sucursal s left join kardex_alm k on k.codsucursal = s.cod_sucursal and k.id_kardex_alm = ( SELECT MAX(t2.id_kardex_alm) FROM kardex_alm t2 WHERE k.codigoprod = t2.codigoprod and t2.codsucursal = s.cod_sucursal) and k.codigoprod = $sux where s.cod_sucursal != 10 order by cod_sucursal asc
 					";
 					$auxx1 = mysql_query($query_filtro_by_sucursal, $Ventas) or die(mysql_error());
@@ -178,7 +151,7 @@ include("Fragmentos/abrirpopupcentro.php");
 					?>
 					<th  > <?= $total; ?></th>
 					<td> <?php echo $row_Listado['Categoria']; ?></td>
-					<td> <?= $totalsede;?></td>
+					<td align="right"> <?= $totalsede;?></td>
 					
 					
 					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">kardex</a></td>

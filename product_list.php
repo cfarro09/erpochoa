@@ -82,7 +82,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 mysql_select_db($database_Ventas, $Ventas);
 //$query_Listado = "select * from vt_listaproducto";
-$query_Listado = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`nombre` AS `Marca`,`c`.`nombre` AS `Categoria`,`a`.`minicodigo` AS `minicodigo`, x.nombre_color as color, p.nombre_presentacion as presentacion, i.foto from (`producto` `a` join `marca` `b` on(`a`.`codigomarca` = `b`.`codigomarca`) join `categoria` `c` on(`a`.`codigocat` = `c`.`codigocat`) inner join color x on x.codigocolor=a.codigocolor) inner join presentacion p on p.codigopresent=a.codigopresent left join producto_imagen i on i.codigoprod=a.codigoprod where (`a`.`estado` = 0) group by `a`.`codigoprod`";
+$query_Listado = "select * from lista_producto";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -128,13 +128,13 @@ $codsucursal = $_SESSION['cod_sucursal'];
 	<table class="table table-striped table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
-				<th> N&deg; </th>
-				<th> CODIGO </th>
-				<th> PRODUCTO </th>
-				<th> MARCA </th>
-				<th> COLOR</th>
-				<th> PRESENTACION</th>
-				<th> CATEGORIA </th>
+				<th class="text-center"> N&deg; </th>
+				<th class="text-center"> CODIGO </th>
+				<th class="text-center"> PRODUCTO </th>
+				<th class="text-center"> MARCA </th>
+				<th class="text-center"> COLOR</th>
+				<th class="text-center"> PRESENTACION</th>
+				<th class="text-center"> CATEGORIA </th>
 				<th class="none"> CODIGO </th>
 				<th> </th>
 				<th> </th>
@@ -142,12 +142,13 @@ $codsucursal = $_SESSION['cod_sucursal'];
 			</tr>
 		</thead>
 		<tbody>
-			<?php do { ?>
+			<?php $i = 1; 
+			do { ?>
 				<tr>
 					<td> <?php echo $i; ?> </td>
 					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar ?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a> </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
-					<td align="center"> <?php echo $row_Listado['Marca']; ?></td>
+					<td > <?php echo $row_Listado['Marca']; ?></td>
 					<td> <?php echo $row_Listado['color']; ?></td>
 					<td align="center"> <?php echo $row_Listado['presentacion']; ?></td>
 
@@ -185,93 +186,15 @@ $codsucursal = $_SESSION['cod_sucursal'];
 			} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 		</tbody>
 	</table>
-	<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog" role="document" style="width: 700px">
-			<div class="modal-content m-auto">
-				<div class="modal-header">
-					<h5 class="modal-title" id="moperation-title">Almacen Kardex</h5>
-				</div>
-				<div class="modal-body">
-					<input type="hidden" id="codproducto">
-					<form id="form-setKardex" action="kardex_almacen.php" method="GET">
-						<div class="container-fluid">
-							<div class="row" style="margin-top:20px">
-								<div class="col-xs-12 col-md-12">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group">
-												<label for="field-1" class="control-label">Sucursales</label>
-												<select name="codigosuc" required id="codigosuc" class="sucursalXX form-control select2 tooltips" id="single" data-placement="top">
-													<?php
-													do {
-													?>
-														<option value="<?php echo $row_sucursales['cod_sucursal'] ?>"><?php echo $row_sucursales['nombre_sucursal'] ?></option>
-													<?php
-													} while ($row_sucursales = mysql_fetch_assoc($sucursales));
-													$rows = mysql_num_rows($sucursales);
-													if ($rows > 0) {
-														mysql_data_seek($sucursales, 0);
-														$row_sucursales = mysql_fetch_assoc($sucursales);
-													}
-													?>
-													<option value="9999">OTROS</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="field-1" class="control-label">Fecha Inicio</label>
-												<input type="text" required name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="field-1" class="control-label">Fecha termino</label>
-												<input type="text" name="fecha_termino" autocomplete="off" id="fecha_termino" required class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
-											</div>
-										</div>
-										<div class="col-md-12">
-											<table class="table table-striped table-bordered table-hover" id="">
-												<thead>
-													<tr>
-														<th colspan="4" id="headerKardex"></th>
-														<th style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
-														<th style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
-														<th style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
-													</tr>
-													<tr>
-														<th>FECHA</th>
-														<th>DETALLE</th>
-														<th>TIPO</th>
-														<th>N° COMP/GUIA</th>
-														<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-														<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-														<th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-													</tr>
-												</thead>
-												<tbody id="detalleKardexAlmProd" class="text-center"></tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<button type="submit" class="btn btn-success">Imprimir</button>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+	
 <?php } // Show if recordset not empty 
-?>
-<?php
+
 //___________________________________________________________________________________________________________________
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
 
 mysql_free_result($Listado);
-?>
+?><!--
 <script>
 	$(document).ready(function() {
 		const codsucursal = <?= $codsucursal ?>;
@@ -350,3 +273,4 @@ mysql_free_result($Listado);
 
 	});
 </script>
+!-->

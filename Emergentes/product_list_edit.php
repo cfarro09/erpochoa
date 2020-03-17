@@ -65,7 +65,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Ingresar")) {
 }
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Categorias = "SELECT * FROM categoria WHERE estado = 0";
+$query_Categorias = "SELECT * FROM categoria WHERE estado = 0 order by nombre asc";
 $Categorias = mysql_query($query_Categorias, $Ventas) or die(mysql_error());
 $row_Categorias = mysql_fetch_assoc($Categorias);
 $totalRows_Categorias = mysql_num_rows($Categorias);
@@ -77,19 +77,19 @@ $row_SubCategorias = mysql_fetch_assoc($SubCategorias);
 $totalRows_SubCategorias = mysql_num_rows($SubCategorias);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Marca = "SELECT * FROM marca WHERE estado = 0";
+$query_Marca = "SELECT * FROM marca WHERE estado = 0 order by nombre asc";
 $Marca = mysql_query($query_Marca, $Ventas) or die(mysql_error());
 $row_Marca = mysql_fetch_assoc($Marca);
 $totalRows_Marca = mysql_num_rows($Marca);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Presentacion = "SELECT * FROM presentacion WHERE estado = 0";
+$query_Presentacion = "SELECT * FROM presentacion WHERE estado = 0 order by nombre_presentacion asc";
 $Presentacion = mysql_query($query_Presentacion, $Ventas) or die(mysql_error());
 $row_Presentacion = mysql_fetch_assoc($Presentacion);
 $totalRows_Presentacion = mysql_num_rows($Presentacion);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Colores = "SELECT * FROM color WHERE estado = 0";
+$query_Colores = "SELECT * FROM color WHERE estado = 0 order by nombre_color asc";
 $Colores = mysql_query($query_Colores, $Ventas) or die(mysql_error());
 $row_Colores = mysql_fetch_assoc($Colores);
 $totalRows_Colores = mysql_num_rows($Colores);

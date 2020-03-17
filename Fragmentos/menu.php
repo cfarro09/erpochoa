@@ -372,7 +372,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     <ul class="sub-menu">
                                         <li class="nav-item">
                                             <a href="ordencompragerencia.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-record"></i>
+                                                <i class="glyphicon glyphicon-ok font-blue-ebonyclay"></i>
                                                 <span class="title">Orden de Compra</span>
                                                 <span class="selected"></span>
                                             </a>
@@ -386,8 +386,8 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="auto_devoluciones.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-record"></i>
+                                            <a href="#" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-remove font-blue-ebonyclay"></i>
                                                 <span class="title">Devoluciones</span>
                                                 <span class="selected"></span>
                                             </a>
@@ -419,7 +419,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                             <?php if ($accesos->check_gerencia_sucursales) : ?>
                                 <li class="nav-item">
                                     <a href="#" id="showSucursales" class="nav-link font-blue-ebonyclay">
-                                        <i class="fa fa-black-tie font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-home font-blue-ebonyclay"></i>
                                         <span class="title">Sucursales</span>
                                         <span class="selected"></span>
 
@@ -429,7 +429,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                             <?php if ($accesos->check_gerencia_frase) : ?>
                                 <li class="nav-item">
                                     <a href="#" id="showFrases" class="nav-link font-blue-ebonyclay">
-                                        <i class="fa fa-black-tie font-blue-ebonyclay"></i>
+                                        <i class="glyphicon glyphicon-pencil font-blue-ebonyclay"></i>
                                         <span class="title">Frase del día</span>
                                         <span class="selected"></span>
                                     </a>
@@ -473,7 +473,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                         -->
                                         <li class="nav-item">
                                             <a href="" id="manageUsuarios" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-eye-open font-blue-ebonyclay"></i>
                                                 <span class="title">Permisos</span>
                                                 <span class="selected"></span>
 
@@ -481,7 +481,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
                                         <li class="nav-item">
                                             <a href="autorizacionvacper.php" id="" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <i class="glyphicon glyphicon-ok font-blue-ebonyclay"></i>
                                                 <span class="title">Vacaciones</span>
                                                 <span class="selected"></span>
 

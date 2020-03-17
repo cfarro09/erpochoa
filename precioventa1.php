@@ -2,7 +2,7 @@
 <?php
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select c.codigorc, 0 as totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerocomprobante,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal  from registro_compras c left join sucursal s on s.cod_sucursal = c.codigosuc left join proveedor p on p.codigoproveedor = c.codigoproveedor inner join acceso a on a.codacceso=c.codacceso";
+$query_Listado = "select c.codigorc, 0 as totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerocomprobante,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal  from registro_compras c left join sucursal s on s.cod_sucursal = c.codigosuc left join proveedor p on p.codigoproveedor = c.codigoproveedor inner join acceso a on a.codacceso=c.codacceso order by c.fecha desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -14,7 +14,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
-$Titulo="Historial de Compras";
+$Titulo="Asignar Precio de Venta C./C.";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
@@ -31,7 +31,7 @@ include("Fragmentos/abrirpopupcentro.php");
 //________________________________________________________________________________________________________________
 ?>
 
-<h2>PRECIO VENTA</h2>
+<h2>Asignar Precio de Venta con Comprobante</h2>
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
 	<div class="alert alert-danger">
@@ -43,14 +43,15 @@ include("Fragmentos/abrirpopupcentro.php");
 	<table class="table table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
-				<th> N&deg; </th>
-				<th>N° COMPR</th>
-				<th>TIPO COMPR </th>
-				<th style="display: none">TIPO COMPR </th>
-				<th style="display: none">TIPO COMPR </th>
-				<th>PROVEEDOR</th>
-				<th>T COMPRA</th>
-				<th>FECHA</th>
+				<th class="text-center"> N&deg; </th>
+				<th class="text-center">FECHA</th>
+				<th class="text-center">TIPO COMPR </th>
+				<th class="text-center">TIPO COMPR </th>
+				<th class="none">Generada </th>
+				<th class="none">N. Reg. </th>
+				<th class="text-center">PROVEEDOR</th>
+				<th class="text-center">Pr. COMPRA</th>
+				
 				<th>SUCURSAL</th>
 				<th>Acciones</th>
 			</tr>
@@ -59,19 +60,22 @@ include("Fragmentos/abrirpopupcentro.php");
 			<?php $i = 1; do { ?>
 				<?php //var_dump($row_Listado); die; ?>
 				<tr>
-					<td><?= $i ?></td>
-					<td class="numerocomprobante"><?= $row_Listado['numerocomprobante'] ?></td>
+					<td ><?= $i ?></td>
+					<td class="fecha"><?php
+					$newDate = date("d/m/Y", strtotime($row_Listado['fecha']));
+					 echo $newDate; ?></td>
 					<td class="tipo_comprobante"><?= $row_Listado['tipo_comprobante'] ?></td>
-					<td style="display: none" class="usuario"><?= $row_Listado['usuario'] ?></td>
-					<td style="display: none" class="codigorc"><?= $row_Listado['codigorc'] ?></td>
+					<td class="text-right" class="numerocomprobante"><?= $row_Listado['numerocomprobante']*1; ?></td>
+					<td class="usuario"><?= $row_Listado['usuario'] ?></td>
+					<td class="codigorc"><?= $row_Listado['codigorc'] ?></td>
 					<td class="razonsocial"><?= $row_Listado['razonsocial'] ?></td>
-					<td class="total"><?= $row_Listado['total'] ?></td>
-					<td class="fecha"><?= $row_Listado['fecha'] ?></td>
+					<td class="text-right" class="total" > <?= $row_Listado['total'] ?></td>
+					
 					<td class="nombre_sucursal"><?= $row_Listado['nombre_sucursal'] ?></td>
 					<?php if ($row_Listado['estadofact'] == 1): ?>
-						<td><a href="#" onclick="managecompra(this)">Asignar</a></td>
+						<td class="text-center"><a href="#" onclick="managecompra(this)">Asignar</a></td>
 						<?php else : ?>
-							<td><a href="#" onclick="verprecioventa(this)">Ver</a></td>
+							<td class="text-center"><a href="#" onclick="verprecioventa(this)">Ver</a></td>
 						<?php endif ?>
 
 					</tr>
@@ -84,7 +88,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				<div class="modal-dialog" role="document" style="width: 1300px">
 					<div class="modal-content m-auto">
 						<div class="modal-header">
-							<h2 class="modal-title" id="moperation-title">Asignar precio venta</h2>
+							<h2 class="modal-title" id="moperation-title">Asignar Precio Venta</h2>
 						</div>
 						<div class="modal-body">
 							<form id="saveOrdenCompra">

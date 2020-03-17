@@ -55,7 +55,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
 }
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT c.codigoordcomp, c.estado ,c.codigo, codigoref1, montofact as valor_compra, razonsocial, p.codigoproveedor as codigoproveedor, fecha_emision FROM ordencompra c inner join proveedor p on c.codigoproveedor=p.codigoproveedor where c.estado=1 or c.estado=2 group by codigo order by fecha_emision asc";
+$query_Listado = "SELECT c.codigoordcomp, c.estado ,c.codigo, codigoref1, montofact as valor_compra, razonsocial, p.codigoproveedor as codigoproveedor, fecha_emision FROM ordencompra c inner join proveedor p on c.codigoproveedor=p.codigoproveedor where c.estado=1 or c.estado=2 group by codigo order by fecha_emision desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -107,17 +107,17 @@ include("Fragmentos/menu.php");
 <table class="table table-striped table-bordered table-hover" id="sample_1">
   <thead>
     <tr>
-      <th> N&deg; </th>
-      <th> CODIGO REF1</th>
-      <th> M. TOTAL</th>
-      <th class="none"> COMPRA </th>
+      <th class="text-center"> N&deg; </th>
+      <th class="text-center"> CODIGO REF1</th>
+      
+      <th class="text-center"> PROVEEDOR</th>
+      <th class="text-center"> FECHA </th>
+      <th class="text-center"> TOTAL</th>
       <th class="none">SUBTOTAL</th>
-      <th class="none"> IVA </th>
-      <th> PROVEEDOR </th>
-      <th> FECHA </th>
-      <th> IMPRIMIR </th>
-      <th> VER </th>
-      <th> ESTADO </th>
+      <th class="none"> IGV </th>
+      <th class="text-center"> IMPRIMIR </th>
+      <th class="text-center"> VER </th>
+      <th class="text-center"> ESTADO </th>
     </tr>
   </thead>
   <tbody>
@@ -141,25 +141,32 @@ include("Fragmentos/menu.php");
       ?>
     <tr style="background-color: <?= $color; ?>">
       <td> <?php echo $i; ?> </td>
-      <td><a
-          onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"
-          data-toggle="modal"> <?php echo $row_Listado['codigoref1']; ?> </a> </td>
-      <td> <?php
+      <td> <?php echo $row_Listado['codigoref1']; ?>  </td>
+      
+     
+      <td> <?php echo $row_Listado['razonsocial']; ?></td>
+     
+      <td class="text-center"> <?php 
+$newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
+
+      echo $newDate; ?></td>
+       <td class="text-right"> <?php
         $preciocompra=$row_Listado['valor_compra'];
         echo number_format($row_Listado['valor_compra'], 2); ?></td>
-      <td><?php  echo "&#36; ".number_format($row_Listado['valor_compra'], 2); ?> </td>
+
       <td> <?php echo "&#36; ".number_format($row_Listado['valor_compra']/$IGV1, 2); ?></td>
       <td>
         <?php echo "&#36; ".number_format(($row_Listado['valor_compra']-number_format($row_Listado['valor_compra']/$IGV1, 2)), 2); ?>
       </td>
-      <td> <?php echo $row_Listado['razonsocial']; ?></td>
-      <td> <?php echo $row_Listado['fecha_emision']; ?></td>
-      <td>
+
+
+
+      <td align="center">
         <a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
-          href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>"
-          target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+          href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>&codigop=<?php echo $row_Listado['codigoproveedor']; ?>"
+          target="new"><i class="glyphicon glyphicon-print"></i></a>
       </td>
-      <td><a href="#" data-estado="<?= $row_Listado['estado'] ?>" data-codigo="<?= $row_Listado['codigo'] ?>"
+      <td class="text-center"><a href="#" data-estado="<?= $row_Listado['estado'] ?>" data-codigo="<?= $row_Listado['codigo'] ?>"
           class="verOrden">Ver</a></td>
       <td><?= $estado ?></td>
 

@@ -114,26 +114,26 @@ include("Fragmentos/abrirpopupcentro.php");
 	<table class="table table-striped table-bordered table-hover" id="sample_1">
 		<thead>
 			<tr>
-				<th>N&deg; </th>
-				<th>CODIGO </th>
-				<th>PRODUCTO </th>
-				<th>MARCA </th>
-				<th>P COMPRA</th>
-				<th>P VENTA</th>
-				<th>TOTAL PROD</th>
-				<th>ACCION </th>
+				<th class="text-center">N&deg; </th>
+				<th class="text-center">CODIGO </th>
+				<th class="text-center">PRODUCTO </th>
+				<th class="text-center">MARCA </th>
+				<th class="text-center">P COMPRA</th>
+				<th class="text-center">P VENTA</th>
+				<th class="text-center">TOTAL PROD</th>
+				<th class="text-center">ACCION </th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php do { ?>
 				<tr>
 					<td> <?php echo $i; ?> </td>
-					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a>                                                          </td>
+					<td class="text-right"> <?php echo $row_Listado['codigoprod']*1; ?>                                                           </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
 					<td align="center"> <?= $row_Listado['Marca']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_compra']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_venta1']; ?></td>
-					<td align="center"> <?= $row_Listado['saldo'];?></td>
+					<td align="right"> <?= $row_Listado['saldo'];?></td>
 					<td><a href="#" data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" data-marca="<?= $row_Listado['Marca']; ?>" data-codigo_pv="<?= $row_Listado['codigo_pv']; ?>"  data-preciocompra="<?= $row_Listado['precio_compra']; ?>" data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" data-precioventa="<?= $row_Listado['precio_venta1']; ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" onClick="asignarprecioventa(this)" >Asignar</a></td>
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
