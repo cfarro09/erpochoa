@@ -415,16 +415,17 @@ include("Fragmentos/pie.php");
 	});
 
 	function changevalue(e) {
+		console.log(e.value)
 		if (e.value < 0 || "" == e.value) {
 			e.value = 0
 		} else {
 			if (e.dataset.type == "cantidad") {
-				if (parseInt(e.dataset.stock) < parseInt(e.value)) {
+				if (parseInt(e.dataset.stock) < parseFloat(e.value)) {
 					e.value = 0
 				}
 			}
 			const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
-			const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+			const cantidad = parseFloat(e.value)
 
 			const mu = precio * cantidad
 			const res = mu.toFixed(2)
@@ -748,11 +749,6 @@ include("Fragmentos/pie.php");
 			data.detalle = [];
 			conpayextra = [];
 
-			// const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
-			// const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
-			// const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
-			// const ccff = rcodigocomp[0].codcc;
-
 			const tipocliente = cliente.options[cliente.selectedIndex].dataset.tipo;
 			h = {
 				tipocomprobante: tipocomprobante.value,
@@ -839,7 +835,7 @@ include("Fragmentos/pie.php");
 					concatenacion: "<?= $_GET['codigo'] ?>" + item.querySelector(".codigopro").dataset.codigo,
 					pventa: item.querySelector(".precio").value,
 					igv: parseFloat(item.querySelector(".precio").value) * IGV,
-					totalventa: (parseInt(item.querySelector(".cantidad").value) * parseFloat(item.querySelector(".precio").value)).toFixed(4)
+					totalventa: (item.querySelector(".cantidad").value * parseFloat(item.querySelector(".precio").value)).toFixed(4)
 				}
 				if (tipocomprobante.value == "notadebito") {
 					data.detalle.push(`
