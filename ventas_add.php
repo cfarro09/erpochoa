@@ -942,7 +942,10 @@ include("Fragmentos/pie.php");
 							$("#mguia").modal()
 							tmpcodigoventas.value = res.id;
 						} else {
-							location.reload();
+							// setTimeout(() => {
+							// 	location.reload();	
+							// }, timeout);
+							
 						}
 					}
 				});
