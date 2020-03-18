@@ -394,11 +394,11 @@ include("Fragmentos/pie.php");
 				<input type="hidden" class="pcompra" value="${option.dataset.preciocompra}">
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
-				<td><input type="number" data-type="cantidad" step="any" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
-				<td class="unidad_medida">
-				${option.dataset.namexx}
+
+				<td><input data-type="cantidad" data-typeprod="${option.dataset.namexx}" data-stock="${option.dataset.stock}"  required class="cantidad cantformventas tooltips form-control" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
 				
-				</td>
+				<td class="unidad_medida">${option.dataset.namexx}</td>
+
 				<td class="nombre">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
 				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
@@ -410,22 +410,43 @@ include("Fragmentos/pie.php");
 				`)
 			$('[data-toggle="tooltip"]').tooltip()
 			$('.tooltips').tooltip();
+
 		}
+		getSelector(".producto:last-child .cantformventas").addEventListener("keydown", validatecantidad)
 
 	});
 
+	function validatecantidad(e) {
+		const ll = e.key + ""
+		if (`${e.target.value}${ll}`.split(".").length > 2) {
+			e.preventDefault();
+			return
+		}
+		if (ll != "Backspace") {
+			const regex = e.target.dataset.typeprod == "KG" ? /^[0-9]*\.?[0-9]*$/ : /^\d+$/
+			debugger
+			if (!e.key.match(regex)) {
+				e.preventDefault();
+				return
+			}
+			e.target.value = `${e.target.value}${ll}`;
+			e.preventDefault();
+			changevalue(e.target)
+
+		}
+	}
+
 	function changevalue(e) {
-		console.log(e.value)
 		if (e.value < 0 || "" == e.value) {
-			e.value = 0
+			e.value = ""
 		} else {
 			if (e.dataset.type == "cantidad") {
 				if (parseInt(e.dataset.stock) < parseFloat(e.value)) {
-					e.value = 0
+					e.value = "1"
 				}
 			}
 			const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
-			const cantidad = parseFloat(e.value)
+			const cantidad = parseFloat(e.closest(".producto").querySelector(".cantidad").value)
 
 			const mu = precio * cantidad
 			const res = mu.toFixed(2)
@@ -719,21 +740,22 @@ include("Fragmentos/pie.php");
 			modalidadentrega.disabled = true;
 		} else
 			modalidadentrega.disabled = false;
-		
+
 		changencomprobantebytype();
 	}
-	async function changencomprobantebytype(){
+	async function changencomprobantebytype() {
 		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
 		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
 		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
 		codigocomprobante.value = rcodigocomp[0].codcc;
 	}
+
 	function imprimir_factura(id) {
 		var url = `Imprimir/facturaventa_imprimir.php?id=${id}`;
 		window.location = url;
 	}
 	let h = {};
-	getSelector("#form-generate-venta").addEventListener("submit",async e => {
+	getSelector("#form-generate-venta").addEventListener("submit", async e => {
 
 		buttonsaveventa.disabled = true;
 		e.preventDefault();
@@ -819,7 +841,7 @@ include("Fragmentos/pie.php");
 
 				data.detalle.push(querydepbancario)
 			})
-			
+
 
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
@@ -915,7 +937,7 @@ include("Fragmentos/pie.php");
 						var opcion = confirm("¿Desea imprimir factura?");
 						if (opcion)
 							imprimir_factura(res.id);
-						
+
 						if (modalidadentrega.value == "Entrega inmediata C/G") {
 							$("#mguia").modal()
 							tmpcodigoventas.value = res.id;
