@@ -393,10 +393,11 @@ include("Fragmentos/pie.php");
 				<input type="hidden" class="pcompra" value="${option.dataset.preciocompra}">
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
-				<td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
-				<td class="unidad_medida">
-				${option.dataset.namexx}
-				</td>
+				
+				<td><input type="number" data-type="cantidad" data-typeprod="${option.dataset.namexx}" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad cantformventas tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+				
+				<td class="unidad_medida">${option.dataset.namexx}</td>
+
 				<td class="nombre">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
 				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
@@ -409,8 +410,26 @@ include("Fragmentos/pie.php");
 			$('[data-toggle="tooltip"]').tooltip()
 			$('.tooltips').tooltip();
 		}
-
+		getSelector(".producto:last-child .cantformventas").addEventListener("keydown", validatecantidad)
 	});
+	function validatecantidad(e) {
+		const ll = e.key + ""
+		if (`${e.target.value}${ll}`.split(".").length > 2) {
+			e.preventDefault();
+			return
+		}
+		if (ll != "Backspace") {
+			const regex = e.target.dataset.typeprod == "KG" ? /^[0-9]*\.?[0-9]*$/ : /^\d+$/
+			debugger
+			if (!e.key.match(regex)) {
+				e.preventDefault();
+				return
+			}
+			e.target.value = `${e.target.value}${ll}`;
+			e.preventDefault();
+			changevalue(e.target)
+		}
+	}
 
 	function changevalue(e) {
 		if (e.value < 0 || "" == e.value) {

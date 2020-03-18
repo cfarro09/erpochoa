@@ -432,7 +432,6 @@ include("Fragmentos/pie.php");
 			e.target.value = `${e.target.value}${ll}`;
 			e.preventDefault();
 			changevalue(e.target)
-
 		}
 	}
 
@@ -942,9 +941,9 @@ include("Fragmentos/pie.php");
 							$("#mguia").modal()
 							tmpcodigoventas.value = res.id;
 						} else {
-							// setTimeout(() => {
-							// 	location.reload();	
-							// }, timeout);
+							setTimeout(() => {
+								location.reload();	
+							}, 1500);
 							
 						}
 					}
