@@ -477,7 +477,10 @@ include("Fragmentos/pie.php");
 				getSelector("#igv-header").textContent = 0;
 			}
 		}
-
+		const ff =getSelector("#total-header").textContent ? parseFloat(getSelector("#total-header").textContent) : 0
+		getSelectorAll(".comision").forEach(x => {
+			x.value = ff*0.05
+		})
 	}
 
 	function addPayExtra() {
@@ -522,7 +525,7 @@ include("Fragmentos/pie.php");
 		<option value="BANCO RIPLEY">BANCO RIPLEY</option>
 		<option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
 		<option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
-		<option value="CMAC AREQUIPA">CMAC AREQUIPA</option>
+		<option value="CMAC AREQUIPA">CMAC AREQUIPA</option>+
 		<option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
 		<option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
 		<option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
@@ -536,7 +539,7 @@ include("Fragmentos/pie.php");
 		</div>
 		</div>
 
-		
+
 
 		<div style="display: none" class="col-md-2 inputxxx cheque tarjetacredito tarjetadebito">
 		<div class="form-group">
@@ -580,6 +583,13 @@ include("Fragmentos/pie.php");
 			<div class="form-group">
 				<label class="control-label">Monto</label>
 				<input type="number" step="any" oninput="calcularmontopagado()" class="form-control montoextra">
+			</div>
+		</div>
+
+		<div style="display: none" class="col-md-2 inputxxx tarjetacredito tarjetadebito">
+			<div class="form-group">
+				<label class="control-label">Comisión</label>
+				<input type="text" step="any" class="form-control comision">
 			</div>
 		</div>
 		`;
@@ -805,7 +815,8 @@ include("Fragmentos/pie.php");
 					fechaextra: ix.querySelector(".fechaextra").value,
 					cuentaabonado: ix.querySelector(".cuentaabonado").value,
 					tipopago: ix.querySelector(".tipopago").value,
-					fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0, 10)
+					fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0, 10),
+					comision: ix.querySelector(".comision").value
 				}
 
 				if (pay.tipopago == "depositobancario" && (!pay.montoextra || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)) {
