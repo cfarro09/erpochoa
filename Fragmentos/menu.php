@@ -385,13 +385,7 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-remove font-blue-ebonyclay"></i>
-                                                <span class="title">Devoluciones</span>
-                                                <span class="selected"></span>
-                                            </a>
-                                        </li>
+                                       
                                         <li class="nav-item">
                                             <a href="precioventa1.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
@@ -406,13 +400,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="cuentascaja.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Cuentas Financieras</span>
-                                                <span class="selected"></span>
-                                            </a>
-                                        </li>
+                                        
                                     </ul>
                                 </li>
                             <?php endif ?>
@@ -736,7 +724,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             </a>
                                         </li>
 
-                                        <li class="nav-item">
+                                     <!--   <li class="nav-item">
                                             <a href="cuentas_x_pagar1.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Cuentas por Pagar</span>
@@ -744,7 +732,7 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
-
+-->
                                         <li class="nav-item">
                                             <a href="compras_list.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
@@ -869,10 +857,11 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="nav-item">
-                                            <a href="conciliacion.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
-                                                <span class="title">Estado de Cuenta</span>
+                                            <a href="cuentas_x_pagar1.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">Cuentas por Pagar</span>
                                                 <span class="selected"></span>
+
                                             </a>
                                         </li>
                                     </ul>
@@ -927,6 +916,23 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
+                                         <li class="nav-item">
+                                            <a href="ventas_add.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">Ventas Ordinarias</span>
+                                                <span class="selected"></span>
+
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="ventas_add1.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">Ventas No Ordinarias</span>
+                                                <span class="selected"></span>
+
+                                            </a>
+                                        </li>
+                                        
                                         <li class="nav-item">
                                             <a href="listproforma.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
@@ -958,22 +964,7 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="ventas_add.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Ventas Ordinarias</span>
-                                                <span class="selected"></span>
-
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="ventas_add1.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Ventas No Ordinarias</span>
-                                                <span class="selected"></span>
-
-                                            </a>
-                                        </li>
+                                       
                                     </ul>
                                 </li>
                             <?php endif ?>
@@ -986,17 +977,17 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         <span class="arrow open"></span>
                                     </a>
                                     <ul class="sub-menu">
-                                        <li class="nav-item">
+                                      <!-- <li class="nav-item">
                                             <a href="emitir_nota_debito.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
                                                 <span class="title">Emitir Nota Debito</span>
                                                 <span class="selected"></span>
                                             </a>
-                                        </li>
+                                        </li>!--->
                                         <li class="nav-item">
                                             <a href="notacredito.php" class="nav-link font-blue-ebonyclay">
-                                                <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
-                                                <span class="title">Emitir Nota Credito</span>
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                <span class="title">Estado de Cuenta</span>
                                                 <span class="selected"></span>
 
                                             </a>
@@ -1042,7 +1033,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
 
 
-                                        <li class="nav-item">
+                                      <!--  <li class="nav-item">
                                             <a href="contatipopago.php" id="" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-signal font-blue-ebonyclay"></i>
                                                 <span class="title">Liquidacion de Caja</span>
@@ -1050,7 +1041,14 @@ $nombreigv = mysql_fetch_object($result)->value;
 
                                             </a>
                                         </li>
-
+                                        -->
+                                        <li class="nav-item">
+                                            <a href="cuentascaja.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">Data Bancos</span>
+                                                <span class="selected"></span>
+                                            </a>
+                                        </li>
 
 
 

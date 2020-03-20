@@ -42,7 +42,7 @@ $i = 1;
                 <th>Banco</th>
                 <th>Moneda</th>
                 <th>N° Cuenta</th>
-                <th>Titular</th>
+                <th>Firma Autorizada</th>
                 <th>Sectorista</th>
                 <th>Celular</th>
                 <th>Saldo Inicial</th>
@@ -86,10 +86,12 @@ $i = 1;
                                     <select class="form-control" id="bancocuenta">
                                         <option value="1">BANCO AZTECA</option>
                                         <option value="2">BANCO BCP</option>
+                                        <option value="22">BANCO BBVA CONTINENTAL </option>
                                         <option value="3">BANCO CENCOSUD</option>
                                         <option value="4">BANCO DE LA NACION</option>
                                         <option value="5">BANCO FALABELLA</option>
                                         <option value="6">BANCO GNB PERÚ</option>
+                                        <option value="23">BANCO INTERBANK </option>
                                         <option value="7">BANCO MI BANCO</option>
                                         <option value="8">BANCO PICHINCHA</option>
                                         <option value="9">BANCO RIPLEY</option>
@@ -105,6 +107,7 @@ $i = 1;
                                         <option value="19">CMAC PAITA</option>
                                         <option value="20">CMAC SULLANA</option>
                                         <option value="21">CMAC TRUJILLO</option>
+                                        
                                     </select>
                                 </div>
                             </div>
@@ -142,7 +145,7 @@ $i = 1;
 
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="control-label">Titular</label>
+                                    <label class="control-label">Firma Autorizada</label>
                                     <input type="text" required class="form-control" id="titular">
                                 </div>
                             </div>

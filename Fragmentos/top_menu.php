@@ -459,7 +459,7 @@ echo $dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y'
 	echo $tNGs->getErrorMsg();
 ?>
                                     
-                                        <a href="<?php echo $logoutTransaction->getLogoutLink(); ?>">
+                                        <a href="cerrarsesion.php">
                                             <i class="icon-key"></i> Cerrar Sesi�n </a>                                    </li>
                                 </ul>
 </li>
