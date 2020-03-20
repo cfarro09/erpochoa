@@ -507,7 +507,7 @@ include("Fragmentos/pie.php");
 		</div>
 		</div>
 
-		<div style="display: none" class="col-md-2 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
+		<div style="display: none" class="col-md-2 inputxxx cheque tarjetacredito tarjetadebito">
 		<div class="form-group">
 		<label class="control-label">Banco</label>
 		<select class="form-control bancoextra">
@@ -545,7 +545,7 @@ include("Fragmentos/pie.php");
 		</div>
 		</div>
 
-		<div style="display: none" class="col-md-2 inputxxx depositobancario cheque">
+		<div style="display: none" class="col-md-2 inputxxx cheque">
 		<div class="form-group">
 		<label class="control-label">Cuenta Corriente</label>
 		<input type="text" class="form-control cuentacorriente">
@@ -808,7 +808,7 @@ include("Fragmentos/pie.php");
 					fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 				}
 
-				if (pay.tipopago == "depositobancario" && (!pay.bancoextra || !pay.montoextra || !pay.cuentacorriente || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)) {
+				if (pay.tipopago == "depositobancario" && (!pay.montoextra || !pay.numerooperacion || !pay.fechaextra || !pay.cuentaabonado)) {
 					errorxxx = "Llena todos los datos de deposito bancario";
 					return;
 				} else if (pay.tipopago == "cheque" && (!pay.bancoextra || !pay.montoextra || !pay.numero || !pay.cuentacorriente)) {
