@@ -231,7 +231,7 @@ include("Fragmentos/pie.php");
                     <td class="text-right">${datatt["comision"] ? datatt["comision"] : "0.00" }</td>
                     <td class="text-right">${sumatotal.toFixed(2)}</td>
                 </tr>`;
-        }else{
+        } else {
             setConsolidado(res)
         }
     }
@@ -264,27 +264,44 @@ include("Fragmentos/pie.php");
 
     const setConsolidado = (res) => {
         bodydata.innerHTML = ""
-        const data = {}
+        const data = {
+            totales: {}
+        }
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             arraypagos.forEach(ixx => {
-                if(!data[iii.fecha_emision])
-                    data[iii.fecha_emision] = {total: 0}
-                
-                if(!data[iii.fecha_emision][ixx.tipopago])
+                if (!data[iii.fecha_emision])
+                    data[iii.fecha_emision] = {
+                        total: 0
+                    }
+
+                if (!data["totales"]["comision"])
+                    data["totales"]["comision"] = 0
+
+                if (!data["totales"]["total"])
+                    data["totales"]["total"] = 0
+
+                if (!data[iii.fecha_emision][ixx.tipopago])
                     data[iii.fecha_emision][ixx.tipopago] = 0
+
+                if (!data["totales"][ixx.tipopago])
+                    data["totales"][ixx.tipopago] = 0
+
+                data["totales"][ixx.tipopago] += parseFloat(ixx.montoextra)
+                data["totales"]["comision"] += parseFloat(ixx.comision)
+                data["totales"]["total"] += parseFloat(ixx.montoextra)
 
                 data[iii.fecha_emision]["total"] += parseFloat(ixx.montoextra)
                 data[iii.fecha_emision]["comision"] += parseFloat(ixx.comision)
 
-                data[iii.fecha_emision][ixx.tipopago] += parseFloat(ixx.montoextra)
+                data[iii.fecha_emision][ixx.tipopago] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
             })
         })
-        
-        for (const [key, value] of Object.entries(data)){
-            const tmpdd = data[key]
-            console.log(tmpdd)
-            bodydata.innerHTML += `
+
+        for (const [key, value] of Object.entries(data)) {
+            if (key != "totales") {
+                const tmpdd = data[key]
+                bodydata.innerHTML += `
                 <tr>
                     <td class="textleft">${key}</td>
                     <td colspan="2"></td>
@@ -297,8 +314,23 @@ include("Fragmentos/pie.php");
                     <td class="textright">${tmpdd["comision"] ? tmpdd["comision"].toFixed(2) : "" }</td>
                     <td class="textright">${tmpdd["total"].toFixed(2)}</td>
                 </tr>`;
+            }
+
         }
-            
+
+            const dd = data["totales"]
+            bodydata.innerHTML += `
+                <tr>
+                    <td class="textright" colspan="3">TOTALES</td>
+                    <td class="textright">${dd["efectivo"] ? dd["efectivo"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["cheque"] ? dd["cheque"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["depositobancario"] ? dd["depositobancario"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["tarjetadebito"] ? dd["tarjetadebito"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["tarjetacredito"] ? dd["tarjetacredito"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["porcobrar"] ? dd["porcobrar"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["comision"] ? dd["comision"].toFixed(2) : "" }</td>
+                    <td class="textright">${dd["total"].toFixed(2)}</td>
+                </tr>`;
     }
     const setventascontado = (res, header = false, key) => {
         if (header)
@@ -318,7 +350,7 @@ include("Fragmentos/pie.php");
             const acumulatedtipos = [];
             acumulatedtipos["comision"] = 0
             arraypagos.forEach(ixx => {
-                if(ixx.comision){
+                if (ixx.comision) {
                     acumulatedtipos["comision"] += parseFloat(ixx.comision)
                     data.ttp["comision"] += parseFloat(ixx.comision)
                 }
