@@ -837,6 +837,11 @@ include("Fragmentos/pie.php");
 				totalpagando += pay.montoextra;
 				pagosextras.push(pay)
 			})
+			if(getSelector(".tipopago").value == ""){
+				alert("Debe ingresar un medio de pago");
+				return;
+			}
+
 			if (errorxxx) {
 				alert(errorxxx);
 				return;

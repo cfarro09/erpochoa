@@ -228,6 +228,7 @@ include("Fragmentos/pie.php");
                     <td class="text-right">${datatt["tarjetadebito"] ? datatt["tarjetadebito"] : "0.00" }</td>
                     <td class="text-right">${datatt["tarjetacredito"] ? datatt["tarjetacredito"] : "0.00" }</td>
                     <td class="text-right">${datatt["porcobrar"] ? datatt["porcobrar"] : "0.00" }</td>
+                    <td class="text-right">${datatt["comision"] ? datatt["comision"] : "0.00" }</td>
                     <td class="text-right">${sumatotal.toFixed(2)}</td>
                 </tr>`;
         }else{
@@ -268,14 +269,13 @@ include("Fragmentos/pie.php");
             const arraypagos = JSON.parse(iii.jsonpagos);
             arraypagos.forEach(ixx => {
                 if(!data[iii.fecha_emision])
-                    data[iii.fecha_emision] = {
-                        total: 0
-                    }
+                    data[iii.fecha_emision] = {total: 0}
                 
                 if(!data[iii.fecha_emision][ixx.tipopago])
                     data[iii.fecha_emision][ixx.tipopago] = 0
 
                 data[iii.fecha_emision]["total"] += parseFloat(ixx.montoextra)
+                data[iii.fecha_emision]["comision"] += parseFloat(ixx.comision)
 
                 data[iii.fecha_emision][ixx.tipopago] += parseFloat(ixx.montoextra)
             })
@@ -283,6 +283,7 @@ include("Fragmentos/pie.php");
         
         for (const [key, value] of Object.entries(data)){
             const tmpdd = data[key]
+            console.log(tmpdd)
             bodydata.innerHTML += `
                 <tr>
                     <td class="textleft">${key}</td>
@@ -293,6 +294,7 @@ include("Fragmentos/pie.php");
                     <td class="textright">${tmpdd["tarjetadebito"] ? tmpdd["tarjetadebito"].toFixed(2) : "" }</td>
                     <td class="textright">${tmpdd["tarjetacredito"] ? tmpdd["tarjetacredito"].toFixed(2) : "" }</td>
                     <td class="textright">${tmpdd["porcobrar"] ? tmpdd["porcobrar"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["comision"] ? tmpdd["comision"].toFixed(2) : "" }</td>
                     <td class="textright">${tmpdd["total"].toFixed(2)}</td>
                 </tr>`;
         }
@@ -314,7 +316,12 @@ include("Fragmentos/pie.php");
             const arraypagos = JSON.parse(iii.jsonpagos);
             let suma = 0;
             const acumulatedtipos = [];
+            acumulatedtipos["comision"] = 0
             arraypagos.forEach(ixx => {
+                if(ixx.comision){
+                    acumulatedtipos["comision"] += parseFloat(ixx.comision)
+                    data.ttp["comision"] += parseFloat(ixx.comision)
+                }
                 const tii = iii.tipocomprobante.toUpperCase();
                 data.acumulated[tii] = parseFloat(iii.totalcargo) + (data.acumulated[tii] ? data.acumulated[tii] : 0);
                 acumulatedtipos[ixx.tipopago] = parseFloat(ixx.montoextra) + (acumulatedtipos[ixx.tipopago] ? acumulatedtipos[ixx.tipopago] : 0);
@@ -338,6 +345,7 @@ include("Fragmentos/pie.php");
                     <td class="textright">${acumulatedtipos["tarjetadebito"] ? acumulatedtipos["tarjetadebito"] : "" }</td>
                     <td class="textright">${acumulatedtipos["tarjetacredito"] ? acumulatedtipos["tarjetacredito"] : "" }</td>
                     <td class="textright">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
+                    <td class="textright">${acumulatedtipos["comision"]}</td>
                     <td class="textright">${suma}</td>
                 </tr>`;
         });
@@ -353,6 +361,7 @@ include("Fragmentos/pie.php");
                     <td class="text-right">${data.ttp["tarjetadebito"] ? data.ttp["tarjetadebito"] : "0.00" }</td>
                     <td class="text-right">${data.ttp["tarjetacredito"] ? data.ttp["tarjetacredito"] : "0.00" }</td>
                     <td class="text-right">${data.ttp["porcobrar"] ? data.ttp["porcobrar"] : "0.00" }</td>
+                    <td class="text-right">${data.ttp["comision"] ? data.ttp["comision"] : "0.00" }</td>
                     <td class="text-right">${data.totalgroup.toFixed(2)}</td>
                 </tr>`;
         return data;
