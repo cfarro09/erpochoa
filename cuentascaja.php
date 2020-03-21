@@ -20,7 +20,9 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Listado = "select c.*, b.nombre_banco from cuenta c left join banco b on b.codigobanco = c.idcodigobanco";
+$query_Listado = "select c.*, cm.saldo, b.nombre_banco from cuenta c left join banco b on b.codigobanco = c.idcodigobanco 
+inner join cuenta_mov cm on cm.id_cuenta = c.id_cuenta and cm.id_cuenta_mov = (select max(cm1.id_cuenta_mov) from cuenta_mov cm1 where cm1.id_cuenta = c.id_cuenta )
+";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -59,7 +61,7 @@ $i = 1;
                     <td><?= $row["titular"] ?></td>
                     <td><?= $row["nombre_sectorista"] ?></td>
                     <td><?= $row["cel_sectorista"] ?></td>
-                    <td><?= $row['saldoinicial'] ?></td>
+                    <td><?= $row['saldo'] ?></td>
                     <td>
                         <a <?= "href='detallecaja.php?id=" . $row['id_cuenta'] . "'" ?> class="btn btn-primary">DET</a>
                         <button class="btn btn-danger" onclick='eliminarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-trash"></i></button>
