@@ -87,6 +87,16 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-4">
+            <select class="form-control" id="tipotmp">
+                <option value="detallado">Detallado</option>
+                <option value="consolidado">Consolidado</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-4">
             <div class="form-group">
                 <label for="field-1" class="control-label">Fecha Inicio</label>
                 <input type="text" required name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
@@ -126,6 +136,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
                 <th class="text-center">T. Debito</th>
                 <th class="text-center">T. Credito</th>
                 <th class="text-center">Por cobrar</th>
+                <th class="text-center">Otros</th>
                 <th class="text-center">Total</th>
             </thead>
             <tbody id="bodydata">
@@ -145,13 +156,17 @@ include("Fragmentos/pie.php");
 <script>
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
-        res.unshift({codigopersonal: 0, fullname: "TODO" })
+        res.unshift({
+            codigopersonal: 0,
+            fullname: "TODO"
+        })
         cargarselect2("#combopersonal", res, "codigopersonal", "fullname")
     }
     window.onload = e => {
         onloadPersonal()
     }
     const codigopersonal = <?= $codpersonal ?>;
+
     const searchconta = async e => {
         e.preventDefault();
         bodydata.innerHTML = "";
@@ -179,32 +194,32 @@ include("Fragmentos/pie.php");
 
         const res = await get_data_dynamic(query);
 
-        const typelist = {};
-
-        res.forEach(xx => {
-            if (!typelist[xx.tipocomprobante])
-                typelist[xx.tipocomprobante] = []
-            typelist[xx.tipocomprobante].push(xx)
-        })
-        let sumatotal = 0;
-        let datatt = {};
-        for (let [key, datatmp1] of Object.entries(typelist)) {
-            key = key == "boleta" ? "boleta de ventas" : key;
-            const dtx = setventascontado(datatmp1, true, null, key);
-            sumatotal += dtx.totalgroup;
-            if (!datatt) {
-                datatt = dtx.ttp;
-            } else {
-                for (const [key, value] of Object.entries(dtx.ttp)) {
-                    datatt[key] = datatt[key] ? datatt[key] : 0;
-                    datatt[key] = parseFloat(datatt[key]) + parseFloat(value);
+        if (tipotmp.value == "detallado") {
+            const typelist = {};
+            res.forEach(xx => {
+                if (!typelist[xx.tipocomprobante])
+                    typelist[xx.tipocomprobante] = []
+                typelist[xx.tipocomprobante].push(xx)
+            })
+            let sumatotal = 0;
+            let datatt = {};
+            for (let [key, datatmp1] of Object.entries(typelist)) {
+                key = key == "boleta" ? "boleta de ventas" : key;
+                const dtx = setventascontado(datatmp1, true, key);
+                sumatotal += dtx.totalgroup;
+                if (!datatt) {
+                    datatt = dtx.ttp;
+                } else {
+                    for (const [key, value] of Object.entries(dtx.ttp)) {
+                        datatt[key] = datatt[key] ? datatt[key] : 0;
+                        datatt[key] = parseFloat(datatt[key]) + parseFloat(value);
+                    }
                 }
             }
-        }
-        for (const [key, value] of Object.entries(datatt)) {
-            datatt[key] = datatt[key].toFixed(2);
-        }
-        bodydata.innerHTML += `
+            for (const [key, value] of Object.entries(datatt)) {
+                datatt[key] = datatt[key].toFixed(2);
+            }
+            bodydata.innerHTML += `
                 <tr style="font-weight: bold">
                     <td class="text-right" colspan="3">TOTALES </td>
                     <td class="text-right">${datatt["efectivo"] ? datatt["efectivo"] : "0.00" }</td>
@@ -215,6 +230,9 @@ include("Fragmentos/pie.php");
                     <td class="text-right">${datatt["porcobrar"] ? datatt["porcobrar"] : "0.00" }</td>
                     <td class="text-right">${sumatotal.toFixed(2)}</td>
                 </tr>`;
+        }else{
+            setConsolidado(res)
+        }
     }
 
     function printDiv() {
@@ -243,19 +261,54 @@ include("Fragmentos/pie.php");
         }
     })()
 
+    const setConsolidado = (res) => {
+        bodydata.innerHTML = ""
+        const data = {}
+        res.forEach(iii => {
+            const arraypagos = JSON.parse(iii.jsonpagos);
+            arraypagos.forEach(ixx => {
+                if(!data[iii.fecha_emision])
+                    data[iii.fecha_emision] = {
+                        total: 0
+                    }
+                
+                if(!data[iii.fecha_emision][ixx.tipopago])
+                    data[iii.fecha_emision][ixx.tipopago] = 0
 
-    const setventascontado = (res, header = false, data, key) => {
+                data[iii.fecha_emision]["total"] += parseFloat(ixx.montoextra)
+
+                data[iii.fecha_emision][ixx.tipopago] += parseFloat(ixx.montoextra)
+            })
+        })
+        
+        for (const [key, value] of Object.entries(data)){
+            const tmpdd = data[key]
+            bodydata.innerHTML += `
+                <tr>
+                    <td class="textleft">${key}</td>
+                    <td colspan="2"></td>
+                    <td class="textright">${tmpdd["efectivo"] ? tmpdd["efectivo"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["cheque"] ? tmpdd["cheque"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["depositobancario"] ? tmpdd["depositobancario"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["tarjetadebito"] ? tmpdd["tarjetadebito"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["tarjetacredito"] ? tmpdd["tarjetacredito"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["porcobrar"] ? tmpdd["porcobrar"].toFixed(2) : "" }</td>
+                    <td class="textright">${tmpdd["total"].toFixed(2)}</td>
+                </tr>`;
+        }
+            
+    }
+    const setventascontado = (res, header = false, key) => {
         if (header)
             bodydata.innerHTML += `
                 <tr>
                     <td colspan="3" class="text-center" style="font-weight: bold; background-color: #b7e1ff">${key.toUpperCase()}</td>
                 </tr>`;
-        if (!data) {
-            data = {
-                acumulated: [],
-                totalgroup: 0,
-                ttp: []
-            }
+
+        data = {
+            acumulated: [],
+            totalgroup: 0,
+            ttp: []
         }
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
@@ -291,8 +344,7 @@ include("Fragmentos/pie.php");
         for (const [key, value] of Object.entries(data.ttp))
             data.ttp[key] = parseFloat(value).toFixed(2);
 
-        if (true) {
-            bodydata.innerHTML += `
+        bodydata.innerHTML += `
                 <tr style="font-weight: bold">
                     <td class="text-right" colspan="3">TOTAL ${key.toUpperCase()}</td>
                     <td class="text-right">${data.ttp["efectivo"] ? data.ttp["efectivo"] : "0.00" }</td>
@@ -303,115 +355,8 @@ include("Fragmentos/pie.php");
                     <td class="text-right">${data.ttp["porcobrar"] ? data.ttp["porcobrar"] : "0.00" }</td>
                     <td class="text-right">${data.totalgroup.toFixed(2)}</td>
                 </tr>`;
-        }
         return data;
     }
-    const setabonocliente = res => {
-        const f_ini = fecha_inicio.value;
-        const f_fin = fecha_fin.value;
-        bodydata.innerHTML += `
-            <tr>
-                <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">COBRANZA A CLIENTES</td>
-            </tr>
-            `;
-        const acumulated = [];
-        const ttp = [];
-        let acumulatedpey = 0;
-        res.forEach(iii => {
-            const arraypagos = JSON.parse(iii.abonoproveedor);
-            arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
-                acumulatedpey += parseFloat(ixx.montoextra);
-                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
-                bodydata.innerHTML += `
-                <tr>
-                    <td class="text-center">${ixx.fechaxxx}</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">${iii.namefull}</td>
-                    ${gethtmlfromtype(ixx)}
-                    <td class="text-center">${parseFloat(ixx.montoextra).toFixed(2)}</td>
-                </tr>`
-            })
-        });
-        bodydata.innerHTML += `
-            <tr style="font-weight: bold">
-                <td class="text-right" colspan="4">TOTALES</td>
-                <td class="text-center">${ttp["efectivo"] ? ttp["efectivo"] : "0.00" }</td>
-                <td class="text-center">${ttp["cheque"] ? ttp["cheque"] : "0.00" }</td>
-                <td class="text-center">${ttp["depositobancario"] ? ttp["depositobancario"] : "0.00" }</td>
-                <td class="text-center">${ttp["tarjetadebito"] ? ttp["tarjetadebito"] : "0.00" }</td>
-                <td class="text-center">${ttp["tarjetacredito"] ? ttp["tarjetacredito"] : "0.00" }</td>
-                <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
-                <td class="text-center">${acumulatedpey.toFixed(2)}</td>
-            </tr>`;
 
-    }
-    const setabonoproveedor = res => {
-        const f_ini = fecha_inicio.value;
-        const f_fin = fecha_fin.value;
-        bodydata.innerHTML += `
-            <tr>
-                <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
-            </tr>
-            `;
-        let acumulatedpey = 0;
-        const acumulated = [];
-        const ttp = [];
-        res.forEach(iii => {
-            const arraypagos = JSON.parse(iii.abono);
-            arraypagos.filter(x => x.codigopersonal == codigopersonal && (new Date(x.fechaxxx) >= new Date(f_ini) && new Date(x.fechaxxx) <= new Date(f_fin))).forEach(ixx => {
-                acumulatedpey += parseFloat(ixx.montoextra);
-                ttp[ixx.tipopago] = parseFloat(ixx.montoextra) + (ttp[ixx.tipopago] ? ttp[ixx.tipopago] : 0);
-                bodydata.innerHTML += `
-                <tr>
-                    <td class="text-center">${ixx.fechaxxx}</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">${iii.razonsocial}</td>
-                    ${gethtmlfromtype(ixx)}
-                    <td class="text-center">${parseFloat(ixx.montoextra).toFixed(2)}</td>
-                </tr>`
-            })
-        });
-        bodydata.innerHTML += `
-            <tr style="font-weight: bold">
-                <td class="text-right" colspan="4">TOTALES</td>
-                <td class="text-center">${ttp["efectivo"] ? ttp["efectivo"] : "0.00" }</td>
-                <td class="text-center">${ttp["cheque"] ? ttp["cheque"] : "0.00" }</td>
-                <td class="text-center">${ttp["depositobancario"] ? ttp["depositobancario"] : "0.00" }</td>
-                <td class="text-center">${ttp["tarjetadebito"] ? ttp["tarjetadebito"] : "0.00" }</td>
-                <td class="text-center">${ttp["tarjetacredito"] ? ttp["tarjetacredito"] : "0.00" }</td>
-                <td class="text-center">${ttp["porcobrar"] ? ttp["porcobrar"] : "0.00" }</td>
-                <td class="text-center">${acumulatedpey.toFixed(2)}</td>
-            </tr>`;
-    }
-    const setotroegresos = res => {
-        bodydata.innerHTML += `
-            <tr>
-                <td colspan="11" class="text-center" style="font-weight: bold; background-color: #b7e1ff">PAGO A PROVEEDORES</td>
-            </tr>
-            `;
-        const acumulated = [];
-        res.forEach(iii => {
-            bodydata.innerHTML += `
-            <tr>
-                <td class="text-center">${iii.concepto} - ${iii.numerorecibo}</td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center">${iii.precio}</td>
-            </tr>`
-        })
-    }
-    const gethtmlfromtype = ii => {
-        return `
-            <td class="text-center">${ii.tipopago == "efectivo" ? parseFloat(ii.montoextra).toFixed(2) : "" }</td>
-            <td class="text-center">${ii.tipopago == "cheque" ? parseFloat(ii.montoextra).toFixed(2) : "" }</td>
-            <td class="text-center">${ii.tipopago == "depositobancario" ? parseFloat(ii.montoextra).toFixed(2) : "" }</td>
-            <td class="text-center">${ii.tipopago == "tarjetadebito" ? parseFloat(ii.montoextra).toFixed(2) : "" }</td>
-            <td class="text-center">${ii.tipopago == "tarjetacredito" ? parseFloat(ii.montoextra).toFixed(2) : "" }</td>
-            <td class="text-center">${ii.tipopago == "porcobrar" ? parseFloat(ii.montoextra).toFixed(2) : "" }</td>
-        `;
-    }
     formoperacion.addEventListener("submit", searchconta)
 </script>
