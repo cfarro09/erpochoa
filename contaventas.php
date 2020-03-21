@@ -76,6 +76,12 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
                 </select>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="field-1" class="control-label">Sucursal</label>
+                <select class="form-control" id="combopersonal"></select>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -137,6 +143,14 @@ include("Fragmentos/pie.php");
 <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
 
 <script>
+    const onloadPersonal = async () => {
+        const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
+        res.unshift({codigopersonal: 0, fullname: "TODO" })
+        cargarselect2("#combopersonal", res, "codigopersonal", "fullname")
+    }
+    window.onload = e => {
+        onloadPersonal()
+    }
     const codigopersonal = <?= $codpersonal ?>;
     const searchconta = async e => {
         e.preventDefault();
@@ -145,6 +159,8 @@ include("Fragmentos/pie.php");
         // const per = personalconta.value;
         const f_ini = fecha_inicio.value;
         const f_fin = fecha_fin.value;
+
+        const whereper = combopersonal.value == 0 ? "" : `and v.codigopersonal = ${combopersonal.value}`
 
         const query = `
             SELECT 
@@ -156,7 +172,9 @@ include("Fragmentos/pie.php");
             FROM ventas v
             left join cnatural cn on v.codigoclienten = cn.codigoclienten 
             left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
-            WHERE v.sucursal = ${suc}
+            WHERE 
+                v.sucursal = ${suc}
+                ${whereper}
                 and v.fecha_emision BETWEEN '${f_ini}' AND '${f_fin}'`;
 
         const res = await get_data_dynamic(query);
