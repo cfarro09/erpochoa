@@ -28,7 +28,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
 
-<button class="btn btn-success" data-toggle="modal" data-target="#moperation" style="margin-bottom: 10px">Agregar Cuenta</button>
+<button class="btn btn-success" id="btnregister" style="margin-bottom: 10px">Agregar Cuenta</button>
 
 <?php if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
@@ -60,7 +60,11 @@ $i = 1;
                     <td><?= $row["nombre_sectorista"] ?></td>
                     <td><?= $row["cel_sectorista"] ?></td>
                     <td><?= $row['saldoinicial'] ?></td>
-                    <td><a <?= "href='detallecaja.php?id=".$row['id_cuenta']."'" ?> class="btn btn-primary">DETALLE</a></td>
+                    <td>
+                        <a <?= "href='detallecaja.php?id=" . $row['id_cuenta'] . "'" ?> class="btn btn-primary">DET</a>
+                        <button class="btn btn-danger" onclick='eliminarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-trash"></i></button>
+                        <button class="btn btn-primary" onclick='editarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-edit"></i></button>
+                    </td>
                 </tr>
             <?php
                 $i++;
@@ -74,7 +78,7 @@ $i = 1;
         <div class="modal-content m-auto">
             <form id="formoperacion" action="">
                 <div class="modal-header">
-                    <h2 class="modal-title">Registrar Cuenta</h2>
+                    <h2 class="modal-title" id="titlemodal">Registrar Cuenta</h2>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
@@ -107,7 +111,7 @@ $i = 1;
                                         <option value="19">CMAC PAITA</option>
                                         <option value="20">CMAC SULLANA</option>
                                         <option value="21">CMAC TRUJILLO</option>
-                                        
+
                                     </select>
                                 </div>
                             </div>
@@ -189,17 +193,88 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    let currentid = 0;
+    const editarcuenta = async id => {
+        currentid = id
+        const res = await get_data_dynamic(`select * from cuenta where id_cuenta = ${id}
+            `).then(r => r);
+        titlemodal.textContent = "Editar cuenta"
+        $("#moperation").modal()
+        const cc = res[0]
+        console.log(cc);
+        
+        bancocuenta.value = cc.idcodigobanco
+        tipocuenta.value = cc.tipo
+        cci.value = cc.cci
+        monedacuenta.value = cc.moneda
+        numero_cuenta.value = cc.numero_cuenta
+
+        numero_cuenta.disabled = true
+        cci.disabled = true
+
+        titular.value = cc.titular
+        sectorista.value = cc.nombre_sectorista
+        celsectorista.value = cc.cel_sectorista
+        saldoinicial.value = cc.saldoinicial
+    }
+    const btnregister = () => {
+        currentid = 0
+        numero_cuenta.disabled = false
+        cci.disabled = false
+        titlemodal.textContent = "Registrar Cuenta"
+        $("#moperation").modal()
+    }
+    const eliminarcuenta = id => {
+        const cc = confirm("¿Desea eliminar la cuenta seleccionada?")
+        if (cc) {
+            const data = {
+                header: "",
+                detalle: []
+            }
+            data.header = `delete from cuenta where id_cuenta=${id}`
+            const formData = new FormData();
+            formData.append("json", JSON.stringify(data))
+
+            fetch(`setVenta.php`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .catch(error => console.error("error: ", error))
+                .then(res => {
+                    $("#mOrdenCompra").modal("hide");
+                    if (res.success) {
+                        alert("se eleminó con exito!")
+                        location.reload()
+                    }
+                });
+        }
+    }
     const guardar = e => {
         e.preventDefault();
         const data = {
             header: "",
             detalle: []
         }
-        data.header = `insert into cuenta (idcodigobanco, tipo, cci, moneda, numero_cuenta, titular, nombre_sectorista, cel_sectorista, saldoinicial) values (${bancocuenta.value}, '${tipocuenta.value}', '${cci.value}', '${monedacuenta.value}', '${numero_cuenta.value}', '${titular.value}', '${sectorista.value}', '${celsectorista.value}','${saldoinicial.value}')`
+        if(currentid == 0){
+            data.header = `insert into cuenta (idcodigobanco, tipo, cci, moneda, numero_cuenta, titular, nombre_sectorista, cel_sectorista, saldoinicial) values (${bancocuenta.value}, '${tipocuenta.value}', '${cci.value}', '${monedacuenta.value}', '${numero_cuenta.value}', '${titular.value}', '${sectorista.value}', '${celsectorista.value}','${saldoinicial.value}')`
 
-        const dd = new Date().toISOString().substring(0, 10);
-        const query = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (###ID###, '${dd}', 'saldo inicial', 'saldo inicial', '${saldoinicial.value}', '${saldoinicial.value}')`
-        data.detalle.push(query);
+            const dd = new Date().toISOString().substring(0, 10);
+            const query = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (###ID###, '${dd}', 'saldo inicial', 'saldo inicial', '${saldoinicial.value}', '${saldoinicial.value}')`
+            data.detalle.push(query);
+        }else{
+            data.header = `
+                update cuenta set 
+                    idcodigobanco = ${bancocuenta.value}, 
+                    tipo = '${tipocuenta.value}', 
+                    moneda = '${monedacuenta.value}',
+                    titular = '${titular.value}', 
+                    nombre_sectorista = '${sectorista.value}', 
+                    cel_sectorista = '${celsectorista.value}', 
+                    saldoinicial = '${saldoinicial.value}'
+                where id_cuenta = ${currentid}
+                    `
+        }
 
         const formData = new FormData();
         formData.append("json", JSON.stringify(data))
