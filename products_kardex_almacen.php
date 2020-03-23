@@ -86,7 +86,7 @@ $suc = $_SESSION['cod_sucursal'];
                         </div>
                     </div>
                     <button type="submit" class="btn btn-success">Imprimir</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar|</button>
                 </form>
             </div>
         </div>
@@ -128,10 +128,15 @@ include("Fragmentos/pie.php");
 
     const initTable = async () => {
         const query = `
-        select p.codigoprod, p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo
+        select 
+            p.codigoprod ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
+             sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' Then k5.cantidad Else 0 End) entradas,
+             sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' Then k5.cantidad Else 0 End) salidas
         from producto p 
         left join marca m on m.codigomarca = p.codigomarca
+        left join kardex_alm k5 on k5.codigoprod = p.codigoprod and codsucursal = <?= $suc ?>
         left join kardex_alm k on k.id_kardex_alm = (SELECT MAX(k2.id_kardex_alm) from  kardex_alm k2 where k2.codigoprod = p.codigoprod and k2.codsucursal = <?= $suc ?>)
+        group by p.codigoprod
         `;
         let data = await get_data_dynamic(query);
 
@@ -149,6 +154,14 @@ include("Fragmentos/pie.php");
                 {
                     title: 'marca',
                     data: 'marca'
+                },
+                {
+                    title: 'entradas',
+                    data: 'entradas'
+                },
+                {
+                    title: 'salidas',
+                    data: 'salidas'
                 },
                 {
                     title: 'saldo',
@@ -199,7 +212,6 @@ include("Fragmentos/pie.php");
 					<td>0</td>
 					</tr>
 					`
-                    console.log(res)
                     let i = 0;
                     res.forEach(item => {
                         if (item.cantidad != "0") {
