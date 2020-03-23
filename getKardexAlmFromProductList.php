@@ -52,3 +52,4 @@ while($res = mysql_fetch_assoc($Factura)){
 die(json_encode($result, 128));
 
 ?>
+
