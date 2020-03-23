@@ -28,7 +28,8 @@ $suc = $_SESSION['cod_sucursal'];
     <div class="modal-dialog" role="document" style="width: 700px">
         <div class="modal-content m-auto">
             <div class="modal-header">
-                <h2 class="modal-title" id="moperationtitle">Detalle del producto</h2>
+                <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle del producto</h2>
+                <button class="btn btn-primary" onclick="dispose()">Despose</button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -38,10 +39,72 @@ $suc = $_SESSION['cod_sucursal'];
                         </div>
                     </div>
                 </div>
-                
+
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mdespose" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 700px">
+        <div class="modal-content m-auto">
+            <div class="modal-header">
+                <h2 class="modal-title" id="moperationtitle">EMPOZE INGRESO</h2>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">N° Recibo</label>
+                                        <input type="text" id="nrecibo" required class="form-control form-control-inline" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Cantidad</label>
+                                        <input type="text" id="cantidad" required class="form-control form-control-inline" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Fecha</label>
+                                        <input type="text" required name="fecha" autocomplete="off" id="fecha" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Por</label>
+                                        <textarea class="form-control" id="byfrom"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Personal</label>
+                                        <select id="personal"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -55,12 +118,11 @@ include("Fragmentos/pie.php");
 <script>
     $(function() {
         initTable()
+        onloadPersonal()
         // onloadSucursales()
     });
-    const onloadSucursales = async () => {
-        const res = await get_data_dynamic("select nombre_sucursal, cod_sucursal from sucursal where estado = 1");
-
-        cargarselect2("#sucursales", res, "cod_sucursal", "nombre_sucursal")
+    const dispose = () => {
+        $("#mdespose").modal()
     }
     const getdetail = async (id, name) => {
         $("#moperation").modal();
@@ -80,7 +142,14 @@ include("Fragmentos/pie.php");
         let ddd = await get_data_dynamic(query);
         setConsolidado(ddd)
     }
-
+    const onloadPersonal = async () => {
+        const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
+        // res.unshift({
+        //     codigopersonal: 0,
+        //     fullname: "TODO"
+        // })
+        cargarselect2("#personal", res, "codigopersonal", "fullname")
+    }
     const initTable = async () => {
         const query = `
         select cod_sucursal, nombre_sucursal from sucursal where estado = 1
@@ -112,7 +181,7 @@ include("Fragmentos/pie.php");
             const arraypagos = JSON.parse(iii.jsonpagos);
             arraypagos.forEach(ixx => {
                 if (ixx.tipopago == "efectivo") {
-                    if(!data[iii.fecha_emision])
+                    if (!data[iii.fecha_emision])
                         data[iii.fecha_emision] = 0
                     data[iii.fecha_emision] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
                     data.total += parseFloat(ixx.montoextra)
@@ -129,8 +198,7 @@ include("Fragmentos/pie.php");
         $('#ventastable').DataTable({
             data: datatotble,
             destroy: true,
-            columns: [
-                {
+            columns: [{
                     title: 'fecha',
                     data: 'fecha'
                 },
