@@ -80,7 +80,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Cantidad</label>
-                                            <input type="text" id="cantidad" required class="form-control form-control-inline" />
+                                            <input type="number" step="any" id="cantidadxx" required class="form-control form-control-inline" />
                                         </div>
                                     </div>
                                 </div>
@@ -93,9 +93,14 @@ $suc = $_SESSION['cod_sucursal'];
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
-                                                <option value="a">a</option>
-                                                <option value="b">b</option>
+                                                <option value="Deposito en cuenta">Deposito en cuenta</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 divparent">
+                                        <div class="form-group">
+                                            <label class="control-label">Cuenta</label>
+                                            <select id="cuentabancaria" class="form-control" ></select>
                                         </div>
                                     </div>
                                 </div>
@@ -151,21 +156,36 @@ include("Fragmentos/pie.php");
         initTable()
         onloadPersonal()
         // onloadSucursales()
+        onloadCuentas()
         formdispose.addEventListener("submit", guardardespse)
     });
+    const changeMotivo = e => {
+        cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
+        
+    }
+    motivo.onchange = changeMotivo;
+
     const dispose = () => {
         formdispose.reset()
         personal.value = 0
+        cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
     }
     const guardardespse = async e => {
         e.preventDefault();
         if (personal.value) {
+
+            if(motivo.value == "Deposito en cuenta"){
+                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', ${cantidadxx.value}, 
+                (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
+                ff_dynamic(querydepbancario);
+            }
+            
             const query = `
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
             values
-                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'empoze', '${motivo.value}')`
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'empoze', '${motivo.value}')`
             let res = await ff_dynamic(query);
             $("#mdespose").modal("hide")
             getdetail(msucursal.value, namesucursal.value)
@@ -199,6 +219,17 @@ include("Fragmentos/pie.php");
         })
         cargarselect2("#personal", res, "codigopersonal", "fullname")
     }
+    const onloadCuentas = async () => {
+        
+		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
+		const arraycuentaabonado = await get_data_dynamic(query);
+		arraycuentaabonado.forEach(x => {
+			cuentabancaria.innerHTML += `
+				<option value="${x.id_cuenta}">${x.description}</option>
+			`;
+		});
+    }
+    
     const initTable = async () => {
         const query = `
         select cod_sucursal, nombre_sucursal from sucursal where estado = 1

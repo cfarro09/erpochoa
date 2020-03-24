@@ -323,6 +323,7 @@ include("Fragmentos/pie.php");
 		changencomprobantebytype();
 	}
 	$(document).ready(onloadxx());
+	
 	async function getcuentaabonados() {
 		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
