@@ -74,7 +74,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Cantidad</label>
-                                            <input type="text" id="cantidad" required class="form-control form-control-inline" />
+                                            <input type="number" step="any" id="cantidadxx" autocomplete="off" required class="form-control form-control-inline" />
                                         </div>
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@ include("Fragmentos/pie.php");
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo) 
             values
-                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose')`
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose')`
             let res = await ff_dynamic(query);
             $("#mdespose").modal("hide")
             getdetail(msucursal.value, namesucursal.value)
