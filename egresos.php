@@ -87,8 +87,7 @@ $suc = $_SESSION['cod_sucursal'];
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="control-label">Motivo</label>
-                                            <select id="motivo" class="form-control">
+                                            <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
                                                 <option value="Sueldo">Sueldo</option>
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
