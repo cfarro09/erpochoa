@@ -22,6 +22,12 @@ $suc = $_SESSION['cod_sucursal'];
 
 ?>
 
+<style>
+    .dt-buttons {
+        margin-top: 0 !important;
+        margin-bottom: 15px !important;
+    }
+</style>
 <table id="maintable" class="display" width="100%"></table>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -34,7 +40,7 @@ $suc = $_SESSION['cod_sucursal'];
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xs-12 col-md-12">
+                        <div class="col-xs-12 col-md-12" style="margin-bottom: 200px">
                             <table id="ventastable" class="display" width="100%"></table>
                         </div>
                     </div>
@@ -244,6 +250,33 @@ include("Fragmentos/pie.php");
         $('#ventastable').DataTable({
             data: res,
             destroy: true,
+            buttons: [{
+                    extend: 'print',
+                    className: 'btn dark btn-outline'
+                },
+                {
+                    extend: 'copy',
+                    className: 'btn red btn-outline'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn green btn-outline'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn yellow btn-outline '
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn purple btn-outline '
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn dark btn-outline',
+                    text: 'Columns'
+                }
+            ],
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
             columns: [{
                     title: 'fecha',
                     data: 'fecha'
@@ -251,6 +284,7 @@ include("Fragmentos/pie.php");
                 {
                     title: 'nrorecibo',
                     data: 'nrorecibo',
+                    className: 'dt-body-left'
                 },
                 {
                     title: 'motivo',
@@ -272,7 +306,7 @@ include("Fragmentos/pie.php");
                     data: 'saldo',
                     className: 'dt-body-right'
                 },
-                
+
             ]
         });
 
