@@ -28,7 +28,7 @@ $suc = $_SESSION['cod_sucursal'];
     <div class="modal-dialog" role="document" style="width: 700px">
         <div class="modal-content m-auto">
             <div class="modal-header">
-                <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle del producto</h2>
+                <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
                 <button class="btn btn-primary" onclick="dispose()">Despose</button>
             </div>
             <div class="modal-body">
@@ -56,7 +56,7 @@ $suc = $_SESSION['cod_sucursal'];
             <input type="hidden" id="namesucursal">
             <div class="modal-content m-auto">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="moperationtitle">EMPOZE INGRESO</h2>
+                    <h2 class="modal-title" id="desposetitle">EMPOZE INGRESO</h2>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
@@ -156,7 +156,7 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "INGRESOS " + name
+        moperationtitle.textContent = "INGRESO CAJA " + name
         const query = `
             SELECT 
                 if(cn.cedula is null, 'juridico', 'natural') as tipo, v.codigoventas, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
