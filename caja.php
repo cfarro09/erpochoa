@@ -156,7 +156,7 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "EFECTIVO " + name
+        moperationtitle.textContent = "INGRESO CAJA " + name
         const query = `
             SELECT 
                 if(cn.cedula is null, 'juridico', 'natural') as tipo, v.codigoventas, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
