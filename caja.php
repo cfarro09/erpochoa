@@ -144,7 +144,7 @@ include("Fragmentos/pie.php");
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo) 
             values
-                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}), 'despose'`
+                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose')`
             let res = await ff_dynamic(query);
             $("#mdespose").modal("hide")
             getdetail(msucursal.value, namesucursal.value)
