@@ -56,7 +56,7 @@ $suc = $_SESSION['cod_sucursal'];
             <input type="hidden" id="namesucursal">
             <div class="modal-content m-auto">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="desposetitle">EMPOZE INGRESO</h2>
+                    <h2 class="modal-title" id="desposetitle">EMPOZE EGRESO</h2>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
@@ -75,6 +75,21 @@ $suc = $_SESSION['cod_sucursal'];
                                         <div class="form-group">
                                             <label class="control-label">Cantidad</label>
                                             <input type="text" id="cantidad" required class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Motivo</label>
+                                            <select id="motivo" class="form-control">
+                                                <option value="Sueldo">Sueldo</option>
+                                                <option value="Viatico">Viatico</option>
+                                                <option value="Vacaciones">Vacaciones</option>
+                                                <option value="Pago Servicios">Pago Servicios</option>
+                                                <option value="a">a</option>
+                                                <option value="b">b</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -108,7 +123,7 @@ $suc = $_SESSION['cod_sucursal'];
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" >Guardar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -132,23 +147,23 @@ include("Fragmentos/pie.php");
         // onloadSucursales()
         formdispose.addEventListener("submit", guardardespse)
     });
-    const dispose =  () => {
+    const dispose = () => {
         formdispose.reset()
         personal.value = 0
         $("#mdespose").modal()
     }
     const guardardespse = async e => {
         e.preventDefault();
-        if(personal.value){
+        if (personal.value) {
             const query = `
             insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal) 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
             values
-                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value})`
+                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'empoze', '${motivo.value}')`
             let res = await ff_dynamic(query);
             $("#mdespose").modal("hide")
             getdetail(msucursal.value, namesucursal.value)
-        }else{
+        } else {
             alert("debe seleccionar personal")
         }
     }
@@ -156,31 +171,19 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "INGRESO CAJA " + name
-        const query = `
-            SELECT 
-                if(cn.cedula is null, 'juridico', 'natural') as tipo, v.codigoventas, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
-                if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
-                if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname, v.fecha_emision,
-                IFNULL(cn.cedula, cj.ruc) as identificacion, 
-                v.montofact as totalcargo, v.pagoacomulado as totalabono 
-            FROM ventas v
-            left join cnatural cn on v.codigoclienten = cn.codigoclienten 
-            left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
-            WHERE 
-                v.sucursal = ${id}`;
-        
+        moperationtitle.textContent = "EGRESOS CAJA " + name
+
         const query1 = `
             SELECT 
-                fecha, cantidad as despose, '' as total
+                fecha, cantidad, tipo, motivo
             FROM despose
             WHERE 
-                sucursal = ${id}`;
+                sucursal = ${id}
+            ORDER by id asc`;
 
-        let ddd = await get_data_dynamic(query);
         let despose = await get_data_dynamic(query1);
 
-        setConsolidado(ddd, despose)
+        setConsolidado(despose)
     }
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
@@ -211,62 +214,41 @@ include("Fragmentos/pie.php");
             ]
         });
     }
-    const setConsolidado = (res, des) => {
-        const datatotble = []
-
-        const data = {
-            total: 0
-        }
-        res.forEach(iii => {
-            const arraypagos = JSON.parse(iii.jsonpagos);
-            arraypagos.forEach(ixx => {
-                if (ixx.tipopago == "efectivo") {
-                    if (!data[iii.fecha_emision])
-                        data[iii.fecha_emision] = 0
-                    data[iii.fecha_emision] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
-                    data.total += parseFloat(ixx.montoextra)
-                }
-            })
-        })
-
-        for (const [key, value] of Object.entries(data))
-            if (key != "total")
-                datatotble.push({
-                    fecha: key,
-                    total: value.toFixed(2),
-                    despose: ''
-                })
-        
-        let qwer = [...datatotble, ...des];
+    const setConsolidado = (res) => {
         let saldo = 0;
-        qwer.sort(function (a, b) {
-            if (a.fecha < b.fecha) {
-                return -1;
+        res = res.map(x => {
+
+            if (x.tipo == "despose") {
+                saldo += parseFloat(x.cantidad)
+                return {
+                    fecha: x.fecha,
+                    ingreso: x.cantidad,
+                    despose: '',
+                    saldo,
+                    motivo: x.motivo
+                }
+            } else {
+                saldo -= parseFloat(x.cantidad)
+                return {
+                    fecha: x.fecha,
+                    ingreso: '',
+                    despose: x.cantidad,
+                    saldo: saldo,
+                    motivo: x.motivo
+                }
             }
-            if (b.fecha < a.fecha) {
-                return 1;
-            }
-            return 0;
-        });
-        debugger
-        qwer = qwer.map(x => {
-            const despose = x.despose ? parseFloat(x.despose) : 0
-            const total = x.total ? parseFloat(x.total) : 0
-            saldo = saldo + total - despose
-            x.saldo = saldo.toFixed(2)
-            return x
         })
-        
+
         $('#ventastable').DataTable({
-            data: qwer,
+            data: res,
             destroy: true,
             columns: [{
                     title: 'fecha',
                     data: 'fecha'
                 },
                 {
-                    title: 'total',
-                    data: 'total',
+                    title: 'ingreso',
+                    data: 'ingreso',
                     className: 'dt-body-right'
                 },
                 {
@@ -277,6 +259,11 @@ include("Fragmentos/pie.php");
                 {
                     title: 'saldo',
                     data: 'saldo',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'motivo',
+                    data: 'motivo',
                     className: 'dt-body-right'
                 },
             ]

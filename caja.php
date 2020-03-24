@@ -142,9 +142,9 @@ include("Fragmentos/pie.php");
         if(personal.value){
             const query = `
             insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal) 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo) 
             values
-                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value})`
+                ('${nrecibox.value}', ${cantidad.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}), 'despose'`
             let res = await ff_dynamic(query);
             $("#mdespose").modal("hide")
             getdetail(msucursal.value, namesucursal.value)
@@ -175,7 +175,7 @@ include("Fragmentos/pie.php");
                 fecha, cantidad as despose, '' as total
             FROM despose
             WHERE 
-                sucursal = ${id}`;
+                sucursal = ${id} and tipo = 'despose'`;
 
         let ddd = await get_data_dynamic(query);
         let despose = await get_data_dynamic(query1);
