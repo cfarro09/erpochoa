@@ -175,7 +175,7 @@ include("Fragmentos/pie.php");
 
         const query1 = `
             SELECT 
-                fecha, cantidad, tipo, motivo
+                fecha, cantidad, tipo, motivo, nrorecibo
             FROM despose
             WHERE 
                 sucursal = ${id}
@@ -223,8 +223,9 @@ include("Fragmentos/pie.php");
                 return {
                     fecha: x.fecha,
                     ingreso: x.cantidad,
+                    nrorecibo: x.nrorecibo,
                     despose: '',
-                    saldo,
+                    saldo: saldo.toFixed(2),
                     motivo: x.motivo
                 }
             } else {
@@ -233,8 +234,9 @@ include("Fragmentos/pie.php");
                     fecha: x.fecha,
                     ingreso: '',
                     despose: x.cantidad,
-                    saldo: saldo,
-                    motivo: x.motivo
+                    saldo: saldo.toFixed(2),
+                    motivo: x.motivo,
+                    nrorecibo: x.nrorecibo
                 }
             }
         })
@@ -245,6 +247,15 @@ include("Fragmentos/pie.php");
             columns: [{
                     title: 'fecha',
                     data: 'fecha'
+                },
+                {
+                    title: 'nrorecibo',
+                    data: 'nrorecibo',
+                },
+                {
+                    title: 'motivo',
+                    data: 'motivo',
+                    className: 'dt-body-right'
                 },
                 {
                     title: 'ingreso',
@@ -261,11 +272,7 @@ include("Fragmentos/pie.php");
                     data: 'saldo',
                     className: 'dt-body-right'
                 },
-                {
-                    title: 'motivo',
-                    data: 'motivo',
-                    className: 'dt-body-right'
-                },
+                
             ]
         });
 
