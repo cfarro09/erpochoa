@@ -511,7 +511,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         </li>
 
                                         <li class="nav-item">
-                                            <a href="product_list_kardex.php" class="nav-link font-blue-ebonyclay">
+                                            <a href="products_kardex_almacen.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
                                                 <span class="title">Kardex Almacen</span>
                                                 <span class="selected"></span>
@@ -1013,7 +1013,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             </a>
                                             <ul class="sub-menu">
                                                 <li class="nav-item">
-                                                    <a href="cliente_natural_list.php" class="nav-link font-blue-ebonyclay">
+                                                    <a href="caja.php" class="nav-link font-blue-ebonyclay">
                                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                         <span class="title">Ingresos</span>
                                                         <span class="selected"></span>
