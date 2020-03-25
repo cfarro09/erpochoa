@@ -178,7 +178,7 @@ include("Fragmentos/pie.php");
         
         const query1 = `
             SELECT 
-                fecha, cantidad as despose, '' as total
+                fecha, cantidad as despose, '' as total, por as motivo
             FROM despose
             WHERE 
                 sucursal = ${id} and tipo = 'despose'`;
@@ -230,6 +230,7 @@ include("Fragmentos/pie.php");
                         data[iii.fecha_emision] = 0
                     data[iii.fecha_emision] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
                     data.total += parseFloat(ixx.montoextra)
+                    
                 }
             })
         })
@@ -239,7 +240,8 @@ include("Fragmentos/pie.php");
                 datatotble.push({
                     fecha: key,
                     total: value.toFixed(2),
-                    despose: ''
+                    despose: '',
+                    motivo: ""
                 })
         
         let qwer = [...datatotble, ...des];
@@ -292,9 +294,14 @@ include("Fragmentos/pie.php");
                 }
             ],
             dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
-            columns: [{
+            columns: [
+                {
                     title: 'fecha',
                     data: 'fecha'
+                },
+                {
+                    title: 'motivo',
+                    data: 'motivo'
                 },
                 {
                     title: 'total',
