@@ -258,7 +258,7 @@ include("Fragmentos/pie.php");
         data.push(rowtotal)
         $('#maintable').DataTable({
             data: data,
-            "ordering": false,
+            ordering: false,
  
             destroy: true,
             columns: [{

@@ -198,12 +198,35 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-            select cod_sucursal, nombre_sucursal from sucursal where estado = 1
+            select 
+                s.cod_sucursal, s.nombre_sucursal,  
+                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) ingreso,
+                sum(Case When d.tipo = 'empoze' Then d.cantidad Else 0 End) egreso
+            from sucursal s 
+            left join despose d on d.sucursal = s.cod_sucursal 
+            where s.estado = 1
+            group by s.cod_sucursal
         `;
         let data = await get_data_dynamic(query);
 
+        const rowtotal = {nombre_sucursal: "", ingreso: 0, egreso: 0, saldo: 0}
+        data = data.map(x => {
+            rowtotal["ingreso"] += parseFloat(x.ingreso);
+            rowtotal["egreso"] += parseFloat(x.egreso);
+            rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
+            return {
+                ...x,
+                saldo: (x.ingreso - x.egreso).toFixed(2)
+            }
+        })
+        rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
+        rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
+        rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
+        data.push(rowtotal)
+
         $('#maintable').DataTable({
             data: data,
+            ordering: false,
             destroy: true,
             columns: [
                 {
@@ -212,9 +235,25 @@ include("Fragmentos/pie.php");
                         const nn = row.nombre_sucursal.replace('"', '').replace("'", "");
                         return `<a href="#" onclick='getdetail(${parseInt(row.cod_sucursal)}, "${nn}")'>${row.nombre_sucursal}</a>`
                     }
+                },
+                {
+                    title: 'INGRESOS',
+                    data: 'ingreso',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'EGRESOS',
+                    data: 'egreso',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'SALDO',
+                    data: 'saldo',
+                    className: 'dt-body-right'
                 }
             ]
         });
+        document.querySelector("#maintable tbody tr:last-child").style.fontWeight = "bold"
     }
     const setConsolidado = (res, des) => {
         const datatotble = []
