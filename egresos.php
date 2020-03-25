@@ -242,15 +242,24 @@ include("Fragmentos/pie.php");
         `;
 
         let data = await get_data_dynamic(query);
-
+        const rowtotal = {nombre_sucursal: "", ingreso: 0, egreso: 0, saldo: 0}
         data = data.map(x => {
+            rowtotal["ingreso"] += parseFloat(x.ingreso);
+            rowtotal["egreso"] += parseFloat(x.egreso);
+            rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
             return {
                 ...x,
-                saldo: x.ingreso - x.egreso
+                saldo: (x.ingreso - x.egreso).toFixed(2)
             }
         })
+        rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
+        rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
+        rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
+        data.push(rowtotal)
         $('#maintable').DataTable({
             data: data,
+            "ordering": false,
+ 
             destroy: true,
             columns: [{
                     title: 'Sucursal',
@@ -276,6 +285,8 @@ include("Fragmentos/pie.php");
                 }
             ]
         });
+        document.querySelector("#maintable tbody tr:last-child").style.fontWeight = "bold"
+
     }
     const setConsolidado = (res) => {
         let saldo = 0;

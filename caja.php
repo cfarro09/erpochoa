@@ -198,7 +198,7 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-        select cod_sucursal, nombre_sucursal from sucursal where estado = 1
+            select cod_sucursal, nombre_sucursal from sucursal where estado = 1
         `;
         let data = await get_data_dynamic(query);
 
