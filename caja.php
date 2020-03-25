@@ -187,7 +187,7 @@ include("Fragmentos/pie.php");
         const query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
-                sum(Case When d.tipo = 'empoze' Then d.cantidad Else 0 End) egreso
+                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
             where s.estado = 1
