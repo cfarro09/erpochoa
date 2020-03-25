@@ -163,19 +163,6 @@ include("Fragmentos/pie.php");
         namesucursal.value = name
         $("#moperation").modal();
         moperationtitle.textContent = "INGRESO CAJA " + name
-        const query = `
-            SELECT 
-                if(cn.cedula is null, 'juridico', 'natural') as tipo, v.codigoventas, montoabono as abonoproveedor, v.tipocomprobante, v.codigocomprobante, v.jsonpagos,
-                if(cn.cedula is null, v.codigoclientej, v.codigoclienten) as codcliente,
-                if(cn.cedula is null, cj.razonsocial, CONCAT(cn.paterno, ' ', cn.materno, ' ', cn.nombre)) as fullname, v.fecha_emision,
-                IFNULL(cn.cedula, cj.ruc) as identificacion, 
-                v.montofact as totalcargo, v.pagoacomulado as totalabono 
-            FROM ventas v
-            left join cnatural cn on v.codigoclienten = cn.codigoclienten 
-            left join cjuridico cj on v.codigoclientej = cj.codigoclientej 
-            WHERE 
-                v.sucursal = ${id}`;
-        
         const query1 = `
             SELECT 
                 fecha, cantidad as despose, '' as total, por as motivo
@@ -183,10 +170,10 @@ include("Fragmentos/pie.php");
             WHERE 
                 sucursal = ${id} and tipo = 'despose'`;
 
-        let ddd = await get_data_dynamic(query);
+        
         let despose = await get_data_dynamic(query1);
 
-        setConsolidado(ddd, despose)
+        setConsolidado(id, despose)
     }
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
@@ -199,31 +186,36 @@ include("Fragmentos/pie.php");
     const initTable = async () => {
         const query = `
             select 
-                s.cod_sucursal, s.nombre_sucursal,  
-                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) ingreso,
+                s.cod_sucursal, s.nombre_sucursal,
                 sum(Case When d.tipo = 'empoze' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
             where s.estado = 1
             group by s.cod_sucursal
         `;
+
         let data = await get_data_dynamic(query);
 
         const rowtotal = {nombre_sucursal: "", ingreso: 0, egreso: 0, saldo: 0}
-        data = data.map(x => {
-            rowtotal["ingreso"] += parseFloat(x.ingreso);
+
+        for (let i = 0; i < data.length; i++) {
+            const x = data[i];
+            const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
+            const ingreso = rr.total;
+            rowtotal["ingreso"] += parseFloat(ingreso);
             rowtotal["egreso"] += parseFloat(x.egreso);
-            rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
-            return {
+            rowtotal["saldo"] += parseFloat(ingreso) - parseFloat(x.egreso);
+            data[i] = {
                 ...x,
-                saldo: (x.ingreso - x.egreso).toFixed(2)
+                ingreso,
+                saldo: (ingreso - x.egreso).toFixed(2)
             }
-        })
+        }
+
         rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
         rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
         rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
         data.push(rowtotal)
-
         $('#maintable').DataTable({
             data: data,
             ordering: false,
@@ -255,33 +247,46 @@ include("Fragmentos/pie.php");
         });
         document.querySelector("#maintable tbody tr:last-child").style.fontWeight = "bold"
     }
-    const setConsolidado = (res, des) => {
-        const datatotble = []
 
-        const data = {
+    const proccessIngresosEfectivo = async id => {
+        const query = `
+            SELECT 
+                v.jsonpagos, v.fecha_emision
+            FROM ventas v
+            WHERE 
+                v.sucursal = ${id}`;
+
+        const da = await get_data_dynamic(query);
+        const res = {
+            datatotble: [],
             total: 0
         }
-        res.forEach(iii => {
+        const data = {}
+
+        da.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             arraypagos.forEach(ixx => {
                 if (ixx.tipopago == "efectivo") {
                     if (!data[iii.fecha_emision])
                         data[iii.fecha_emision] = 0
                     data[iii.fecha_emision] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
-                    data.total += parseFloat(ixx.montoextra)
-                    
+                    res.total += parseFloat(ixx.montoextra)
                 }
             })
         })
-
         for (const [key, value] of Object.entries(data))
-            if (key != "total")
-                datatotble.push({
-                    fecha: key,
-                    total: value.toFixed(2),
-                    despose: '',
-                    motivo: ""
-                })
+            res.datatotble.push({
+                fecha: key,
+                total: value.toFixed(2),
+                despose: '',
+                motivo: ""
+            })
+        return res
+    }
+
+    const setConsolidado = async (id, des) => {
+        const rr = await proccessIngresosEfectivo(id)
+        const datatotble = rr.datatotble;
         
         let qwer = [...datatotble, ...des];
         let saldo = 0;
@@ -294,7 +299,7 @@ include("Fragmentos/pie.php");
             }
             return 0;
         });
-        debugger
+        
         qwer = qwer.map(x => {
             const despose = x.despose ? parseFloat(x.despose) : 0
             const total = x.total ? parseFloat(x.total) : 0

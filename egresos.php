@@ -242,7 +242,12 @@ include("Fragmentos/pie.php");
         `;
 
         let data = await get_data_dynamic(query);
-        const rowtotal = {nombre_sucursal: "", ingreso: 0, egreso: 0, saldo: 0}
+        const rowtotal = {
+            nombre_sucursal: "",
+            ingreso: 0,
+            egreso: 0,
+            saldo: 0
+        }
         data = data.map(x => {
             rowtotal["ingreso"] += parseFloat(x.ingreso);
             rowtotal["egreso"] += parseFloat(x.egreso);
@@ -259,7 +264,7 @@ include("Fragmentos/pie.php");
         $('#maintable').DataTable({
             data: data,
             ordering: false,
- 
+
             destroy: true,
             columns: [{
                     title: 'Sucursal',
