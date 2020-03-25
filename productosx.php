@@ -106,8 +106,12 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'Eliminar',
-                    data: 'kardex'
-                 
+                    render: function(data, type, row) {
+                        if(row.kkanosecualeslapropiedad != null)
+                            return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${row.codigoprod}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">ELIMINAR</a>`
+                        else
+                            return "xx"
+                    }
                 }
             ]
         });
