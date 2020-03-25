@@ -204,7 +204,7 @@ include("Fragmentos/pie.php");
             FROM despose
             WHERE 
                 sucursal = ${id}
-            ORDER by id asc`;
+            ORDER by fecha asc`;
 
         let despose = await get_data_dynamic(query1);
 
@@ -240,12 +240,13 @@ include("Fragmentos/pie.php");
         where s.estado = 1
         group by s.cod_sucursal
         `;
+
         let data = await get_data_dynamic(query);
 
         data = data.map(x => {
             return {
                 ...x,
-                saldo: x.ingreso- x.egreso
+                saldo: x.ingreso - x.egreso
             }
         })
         $('#maintable').DataTable({
@@ -291,7 +292,7 @@ include("Fragmentos/pie.php");
                     motivo: x.motivo
                 }
             } else {
-                saldo -= parseFloat(x.cantidad)
+                saldo = saldo - parseFloat(x.cantidad)
                 return {
                     fecha: x.fecha,
                     ingreso: '',
