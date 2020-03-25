@@ -206,7 +206,6 @@ include("Fragmentos/pie.php");
             data: data,
             destroy: true,
             columns: [
-                // {
                 {
                     title: 'acciones',
                     render: function(data, type, row) {

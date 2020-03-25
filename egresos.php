@@ -99,7 +99,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6 divparent">
                                         <div class="form-group">
                                             <label class="control-label">Cuenta</label>
-                                            <select id="cuentabancaria" class="form-control" ></select>
+                                            <select id="cuentabancaria" class="form-control"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -160,7 +160,7 @@ include("Fragmentos/pie.php");
     });
     const changeMotivo = e => {
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
-        
+
     }
     motivo.onchange = changeMotivo;
 
@@ -174,12 +174,12 @@ include("Fragmentos/pie.php");
         e.preventDefault();
         if (personal.value) {
 
-            if(motivo.value == "Deposito en cuenta"){
+            if (motivo.value == "Deposito en cuenta") {
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
                 ff_dynamic(querydepbancario);
             }
-            
+
             const query = `
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
@@ -219,33 +219,59 @@ include("Fragmentos/pie.php");
         cargarselect2("#personal", res, "codigopersonal", "fullname")
     }
     const onloadCuentas = async () => {
-        
-		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
-		const arraycuentaabonado = await get_data_dynamic(query);
-		arraycuentaabonado.forEach(x => {
-			cuentabancaria.innerHTML += `
+
+        const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
+        const arraycuentaabonado = await get_data_dynamic(query);
+        arraycuentaabonado.forEach(x => {
+            cuentabancaria.innerHTML += `
 				<option value="${x.id_cuenta}">${x.description}</option>
 			`;
-		});
+        });
     }
-    
+
     const initTable = async () => {
         const query = `
-        select cod_sucursal, nombre_sucursal from sucursal where estado = 1
+        select 
+            s.cod_sucursal, s.nombre_sucursal,  
+            sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) ingreso,
+            sum(Case When d.tipo = 'empoze' Then d.cantidad Else 0 End) egreso
+        from sucursal s 
+        left join despose d on d.sucursal = s.cod_sucursal 
+        where s.estado = 1
+        group by s.cod_sucursal
         `;
         let data = await get_data_dynamic(query);
 
+        data = data.map(x => {
+            return {
+                ...x,
+                saldo: x.ingreso- x.egreso
+            }
+        })
         $('#maintable').DataTable({
             data: data,
             destroy: true,
-            columns: [
-                // {
-                {
-                    title: 'acciones',
+            columns: [{
+                    title: 'Sucursal',
                     render: function(data, type, row) {
                         const nn = row.nombre_sucursal.replace('"', '').replace("'", "");
                         return `<a href="#" onclick='getdetail(${parseInt(row.cod_sucursal)}, "${nn}")'>${row.nombre_sucursal}</a>`
                     }
+                },
+                {
+                    title: 'INGRESOS',
+                    data: 'ingreso',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'EGRESOS',
+                    data: 'egreso',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'SALDO',
+                    data: 'saldo',
+                    className: 'dt-body-right'
                 }
             ]
         });
