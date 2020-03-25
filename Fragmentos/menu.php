@@ -422,6 +422,91 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         <span class="selected"></span>
                                     </a>
                                 </li>
+                                
+                                
+                                <li class="nav-item"> 
+                            <a href="javascript:;" class="nav-link font-blue-steel">
+                                <i class="fa fa-cogs font-blue-steel"></i>
+                                <span class="title">MANTENIMIENTOS</span>
+                                <span class="selected"></span>
+                                <span class="arrow open"></span>
+                            </a>
+                            <ul class="sub-menu">
+                            <li class="nav-item">
+                                    <a href="banco_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-bank font-blue-ebonyclay"></i>
+                                        <span class="title">Banco</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                 <li class="nav-item">
+                                    <a href="category_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-bank font-blue-ebonyclay"></i>
+                                        <span class="title">Categoria</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                            <li class="nav-item">
+                                    <a href="color_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="glyphicon glyphicon-tint font-blue-ebonyclay"></i>
+                                        <span class="title">Color</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                
+                                <li class="nav-item">
+                                    <a href="marca_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-apple font-blue-ebonyclay"></i>
+                                        <span class="title">Marca</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="oficina_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-bank font-blue-ebonyclay"></i>
+                                        <span class="title">Oficina</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="presentacion_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-object-group  font-blue-ebonyclay"></i>
+                                        <span class="title">Presentac&iacute;on</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="profesion_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-graduation-cap  font-blue-ebonyclay"></i>
+                                        <span class="title">Profes&iacute;on</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="cargo_list.php" class="nav-link font-blue-ebonyclay">
+                                        <i class="fa fa-graduation-cap  font-blue-ebonyclay"></i>
+                                        <span class="title">Cargo</span>
+                                        <span class="selected"></span>
+                                        
+                                    </a>
+                                </li>
+                                
+                                
+                                
+                                
+                            </ul>
+                        </li>
+                                
+                                
+                                
+                                
                             <?php endif ?>
 
                             <?php if ($accesos->check_gerencia_personal) : ?>
@@ -1022,7 +1107,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a href="cliente_juridico_list.php" class="nav-link font-blue-ebonyclay">
+                                                    <a href="egresos.php" class="nav-link font-blue-ebonyclay">
                                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                         <span class="title">Egresos</span>
                                                         <span class="selected"></span>
@@ -1049,7 +1134,13 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
-
+                                        <li class="nav-item">
+                                            <a href="estadobanco.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                <span class="title">EE.CC Bancario</span>
+                                                <span class="selected"></span>
+                                            </a>
+                                        </li>
 
 
 
