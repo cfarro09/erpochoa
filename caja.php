@@ -35,7 +35,7 @@ $suc = $_SESSION['cod_sucursal'];
         <div class="modal-content m-auto">
             <div class="modal-header">
                 <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
-                <button class="btn btn-primary" onclick="dispose()">Despose</button>
+                <button class="btn btn-primary" onclick="dispose()">Registro Ingreso</button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -343,12 +343,12 @@ include("Fragmentos/pie.php");
                     data: 'motivo'
                 },
                 {
-                    title: 'total',
+                    title: 'Ingreso',
                     data: 'total',
                     className: 'dt-body-right'
                 },
                 {
-                    title: 'despose',
+                    title: 'Egreso',
                     data: 'despose',
                     className: 'dt-body-right'
                 },

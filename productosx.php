@@ -101,8 +101,8 @@ include("Fragmentos/pie.php");
                     title: 'Editar',
                     render: function(data, type, row) {
                         const nn = row.nombre_producto.replace('"', '').replace("'", "");
-                        return `<button class="btn btn-primary" onclick='getdetail(${parseInt(row.codigoprod)}, "${nn}")'>Editar</button>`
-                    }
+                        return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${row.codigoprod}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Editar</a>`
+                    } 
                 },
                 {
                     title: 'Eliminar',
