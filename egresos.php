@@ -192,23 +192,40 @@ include("Fragmentos/pie.php");
             alert("debe seleccionar personal")
         }
     }
+    // const getdetail = async (id, name) => {
+    //     msucursal.value = id
+    //     namesucursal.value = name
+    //     $("#moperation").modal();
+    //     moperationtitle.textContent = "EGRESOS CAJA " + name
+
+    //     const query1 = `
+    //         SELECT 
+    //             fecha, cantidad, tipo, motivo, nrorecibo
+    //         FROM despose
+    //         WHERE 
+    //             sucursal = ${id}
+    //         ORDER by fecha asc`;
+
+    //     let despose = await get_data_dynamic(query1);
+
+    //     setConsolidado(despose)
+    // }
     const getdetail = async (id, name) => {
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "EGRESOS CAJA " + name
-
+        moperationtitle.textContent = "INGRESO CAJA " + name
         const query1 = `
             SELECT 
-                fecha, cantidad, tipo, motivo, nrorecibo
+                fecha, cantidad as despose, '' as total, por as motivo
             FROM despose
             WHERE 
-                sucursal = ${id}
-            ORDER by fecha asc`;
+                sucursal = ${id} and tipo = 'despose'`;
 
+        
         let despose = await get_data_dynamic(query1);
 
-        setConsolidado(despose)
+        setConsolidado(id, despose)
     }
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
@@ -227,6 +244,89 @@ include("Fragmentos/pie.php");
 				<option value="${x.id_cuenta}">${x.description}</option>
 			`;
         });
+    }
+    const setConsolidado = async (id, des) => {
+        const rr = await proccessIngresosEfectivo(id)
+        const datatotble = rr.datatotble;
+        
+        let qwer = [...datatotble, ...des];
+        let saldo = 0;
+        qwer.sort(function (a, b) {
+            if (a.fecha < b.fecha) {
+                return -1;
+            }
+            if (b.fecha < a.fecha) {
+                return 1;
+            }
+            return 0;
+        });
+        
+        qwer = qwer.map(x => {
+            const despose = x.despose ? parseFloat(x.despose) : 0
+            const total = x.total ? parseFloat(x.total) : 0
+            saldo = saldo + total - despose
+            x.saldo = saldo.toFixed(2)
+            return x
+        })
+        
+        $('#ventastable').DataTable({
+            data: qwer,
+            destroy: true,
+            buttons: [{
+                    extend: 'print',
+                    className: 'btn dark btn-outline'
+                },
+                {
+                    extend: 'copy',
+                    className: 'btn red btn-outline'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn green btn-outline'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn yellow btn-outline '
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn purple btn-outline '
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn dark btn-outline',
+                    text: 'Columns'
+                }
+            ],
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+            columns: [
+                {
+                    title: 'fecha',
+                    data: 'fecha'
+                },
+                {
+                    title: 'motivo',
+                    data: 'motivo'
+                },
+                {
+                    title: 'Ingreso',
+                    data: 'total',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'Egreso',
+                    data: 'despose',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'saldo',
+                    data: 'saldo',
+                    className: 'dt-body-right'
+                },
+            ]
+        });
+
+
     }
     const proccessIngresosEfectivo = async id => {
         const query = `
@@ -346,96 +446,96 @@ include("Fragmentos/pie.php");
         document.querySelector("#maintable tbody tr:last-child").style.fontWeight = "bold"
 
     }
-    const setConsolidado = (res) => {
-        let saldo = 0;
-        res = res.map(x => {
+    // const setConsolidado = (res) => {
+    //     let saldo = 0;
+    //     res = res.map(x => {
 
-            if (x.tipo == "despose") {
-                saldo += parseFloat(x.cantidad)
-                return {
-                    fecha: x.fecha,
-                    ingreso: x.cantidad,
-                    nrorecibo: x.nrorecibo,
-                    despose: '',
-                    saldo: saldo.toFixed(2),
-                    motivo: x.motivo
-                }
-            } else {
-                saldo = saldo - parseFloat(x.cantidad)
-                return {
-                    fecha: x.fecha,
-                    ingreso: '',
-                    despose: x.cantidad,
-                    saldo: saldo.toFixed(2),
-                    motivo: x.motivo,
-                    nrorecibo: x.nrorecibo
-                }
-            }
-        })
+    //         if (x.tipo == "despose") {
+    //             saldo += parseFloat(x.cantidad)
+    //             return {
+    //                 fecha: x.fecha,
+    //                 ingreso: x.cantidad,
+    //                 nrorecibo: x.nrorecibo,
+    //                 despose: '',
+    //                 saldo: saldo.toFixed(2),
+    //                 motivo: x.motivo
+    //             }
+    //         } else {
+    //             saldo = saldo - parseFloat(x.cantidad)
+    //             return {
+    //                 fecha: x.fecha,
+    //                 ingreso: '',
+    //                 despose: x.cantidad,
+    //                 saldo: saldo.toFixed(2),
+    //                 motivo: x.motivo,
+    //                 nrorecibo: x.nrorecibo
+    //             }
+    //         }
+    //     })
 
-        $('#ventastable').DataTable({
-            data: res,
-            destroy: true,
-            buttons: [{
-                    extend: 'print',
-                    className: 'btn dark btn-outline'
-                },
-                {
-                    extend: 'copy',
-                    className: 'btn red btn-outline'
-                },
-                {
-                    extend: 'pdf',
-                    className: 'btn green btn-outline'
-                },
-                {
-                    extend: 'excel',
-                    className: 'btn yellow btn-outline '
-                },
-                {
-                    extend: 'csv',
-                    className: 'btn purple btn-outline '
-                },
-                {
-                    extend: 'colvis',
-                    className: 'btn dark btn-outline',
-                    text: 'Columns'
-                }
-            ],
-            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
-            columns: [{
-                    title: 'fecha',
-                    data: 'fecha'
-                },
-                {
-                    title: 'nrorecibo',
-                    data: 'nrorecibo',
-                    className: 'dt-body-left'
-                },
-                {
-                    title: 'motivo',
-                    data: 'motivo',
-                    className: 'dt-body-right'
-                },
-                {
-                    title: 'ingreso',
-                    data: 'ingreso',
-                    className: 'dt-body-right'
-                },
-                {
-                    title: 'despose',
-                    data: 'despose',
-                    className: 'dt-body-right'
-                },
-                {
-                    title: 'saldo',
-                    data: 'saldo',
-                    className: 'dt-body-right'
-                },
+    //     $('#ventastable').DataTable({
+    //         data: res,
+    //         destroy: true,
+    //         buttons: [{
+    //                 extend: 'print',
+    //                 className: 'btn dark btn-outline'
+    //             },
+    //             {
+    //                 extend: 'copy',
+    //                 className: 'btn red btn-outline'
+    //             },
+    //             {
+    //                 extend: 'pdf',
+    //                 className: 'btn green btn-outline'
+    //             },
+    //             {
+    //                 extend: 'excel',
+    //                 className: 'btn yellow btn-outline '
+    //             },
+    //             {
+    //                 extend: 'csv',
+    //                 className: 'btn purple btn-outline '
+    //             },
+    //             {
+    //                 extend: 'colvis',
+    //                 className: 'btn dark btn-outline',
+    //                 text: 'Columns'
+    //             }
+    //         ],
+    //         dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+    //         columns: [{
+    //                 title: 'fecha',
+    //                 data: 'fecha'
+    //             },
+    //             {
+    //                 title: 'nrorecibo',
+    //                 data: 'nrorecibo',
+    //                 className: 'dt-body-left'
+    //             },
+    //             {
+    //                 title: 'motivo',
+    //                 data: 'motivo',
+    //                 className: 'dt-body-right'
+    //             },
+    //             {
+    //                 title: 'ingreso',
+    //                 data: 'ingreso',
+    //                 className: 'dt-body-right'
+    //             },
+    //             {
+    //                 title: 'despose',
+    //                 data: 'despose',
+    //                 className: 'dt-body-right'
+    //             },
+    //             {
+    //                 title: 'saldo',
+    //                 data: 'saldo',
+    //                 className: 'dt-body-right'
+    //             },
 
-            ]
-        });
+    //         ]
+    //     });
 
 
-    }
+    // }
 </script>
