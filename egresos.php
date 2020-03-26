@@ -243,23 +243,23 @@ include("Fragmentos/pie.php");
 
         let data = await get_data_dynamic(query);
         const rowtotal = {
-            nombre_sucursal: "",
+            nombre_sucursal: "CAJA",
             ingreso: 0,
             egreso: 0,
             saldo: 0
         }
         data = data.map(x => {
-            rowtotal["ingreso"] += parseFloat(x.ingreso);
-            rowtotal["egreso"] += parseFloat(x.egreso);
-            rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
+            // rowtotal["ingreso"] += parseFloat(x.ingreso);
+            // rowtotal["egreso"] += parseFloat(x.egreso);
+            // rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
             return {
                 ...x,
                 saldo: (x.ingreso - x.egreso).toFixed(2)
             }
         })
-        rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
-        rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
-        rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
+        // rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
+        // rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
+        // rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
         data.push(rowtotal)
         $('#maintable').DataTable({
             data: data,

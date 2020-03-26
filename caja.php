@@ -202,18 +202,18 @@ include("Fragmentos/pie.php");
             const x = data[i];
             const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
             const ingreso = rr.total;
-            rowtotal["ingreso"] += parseFloat(ingreso);
-            rowtotal["egreso"] += parseFloat(x.egreso);
-            rowtotal["saldo"] += parseFloat(ingreso) - parseFloat(x.egreso);
+            // rowtotal["ingreso"] += parseFloat(ingreso);
+            // rowtotal["egreso"] += parseFloat(x.egreso);
+            // rowtotal["saldo"] += parseFloat(ingreso) - parseFloat(x.egreso);
             data[i] = {
                 ...x,
                 ingreso: ingreso.toFixed(2),
                 saldo: (ingreso - x.egreso).toFixed(2)
             }
         }
-        rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
-        rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
-        rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
+        // rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
+        // rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
+        // rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
         data.push(rowtotal)
         $('#maintable').DataTable({
             data: data,
