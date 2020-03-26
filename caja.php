@@ -196,7 +196,7 @@ include("Fragmentos/pie.php");
 
         let data = await get_data_dynamic(query);
 
-        const rowtotal = {nombre_sucursal: "", ingreso: 0, egreso: 0, saldo: 0}
+        const rowtotal = {nombre_sucursal: "CAJA", ingreso: 0, egreso: 0, saldo: 0}
 
         for (let i = 0; i < data.length; i++) {
             const x = data[i];
@@ -207,11 +207,10 @@ include("Fragmentos/pie.php");
             rowtotal["saldo"] += parseFloat(ingreso) - parseFloat(x.egreso);
             data[i] = {
                 ...x,
-                ingreso,
+                ingreso: ingreso.toFixed(2),
                 saldo: (ingreso - x.egreso).toFixed(2)
             }
         }
-
         rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
         rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
         rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
