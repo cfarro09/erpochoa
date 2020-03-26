@@ -91,6 +91,7 @@ $suc = $_SESSION['cod_sucursal'];
                                                 <option value="Sueldo">Sueldo</option>
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
+                                                <option value="cajatumbes">Caja Principal Tumbes</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Deposito en cuenta">Deposito en cuenta</option>
                                             </select>
@@ -178,6 +179,13 @@ include("Fragmentos/pie.php");
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
                 ff_dynamic(querydepbancario);
+            }else if(motivo.value == "cajatumbes"){
+                const query = `
+                insert into despose 
+                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
+                values
+                    ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', '${motivo.value}')`
+                let res = await ff_dynamic(query);    
             }
 
             const query = `
@@ -215,17 +223,30 @@ include("Fragmentos/pie.php");
         namesucursal.value = name
         $("#moperation").modal();
         moperationtitle.textContent = "INGRESO CAJA " + name
-        const query1 = `
-            SELECT 
-                fecha, cantidad as despose, '' as total, por as motivo
-            FROM despose
-            WHERE 
-                sucursal = ${id} and tipo = 'despose'`;
+        let despose = [];
+
+        if(id != 11){
+            const query1 = `
+                SELECT 
+                    fecha, cantidad as despose, '' as total, por as motivo
+                FROM despose
+                WHERE 
+                    sucursal = ${id} and (tipo = 'despose')`;
 
         
-        let despose = await get_data_dynamic(query1);
+            despose = await get_data_dynamic(query1);
+        }else{
+            const query1 = `
+                SELECT 
+                    fecha, tipo, cantidad as total, por as motivo
+                FROM despose
+                WHERE 
+                    sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
 
+            despose = await get_data_dynamic(query1);
+        }
         setConsolidado(id, despose)
+
     }
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
@@ -246,28 +267,50 @@ include("Fragmentos/pie.php");
         });
     }
     const setConsolidado = async (id, des) => {
-        const rr = await proccessIngresosEfectivo(id)
-        const datatotble = rr.datatotble;
-        
-        let qwer = [...datatotble, ...des];
-        let saldo = 0;
-        qwer.sort(function (a, b) {
-            if (a.fecha < b.fecha) {
-                return -1;
-            }
-            if (b.fecha < a.fecha) {
-                return 1;
-            }
-            return 0;
-        });
-        
-        qwer = qwer.map(x => {
-            const despose = x.despose ? parseFloat(x.despose) : 0
-            const total = x.total ? parseFloat(x.total) : 0
-            saldo = saldo + total - despose
-            x.saldo = saldo.toFixed(2)
-            return x
-        })
+        let qwer = []
+        if(id != 11){
+            const rr = await proccessIngresosEfectivo(id)
+            const datatotble = rr.datatotble;
+            
+            qwer = [...datatotble, ...des];
+            let saldo = 0;
+            qwer.sort(function (a, b) {
+                if (a.fecha < b.fecha) {
+                    return -1;
+                }
+                if (b.fecha < a.fecha) {
+                    return 1;
+                }
+                return 0;
+            });
+            
+            qwer = qwer.map(x => {
+                const despose = x.despose ? parseFloat(x.despose) : 0
+                const total = x.total ? parseFloat(x.total) : 0
+                saldo = saldo + total - despose
+                x.saldo = saldo.toFixed(2)
+                return x
+            })
+        }else{
+            let saldo = 0;
+            des.forEach(x => {
+                if(x.tipo == "ingresocaja"){
+                    saldo += parseFloat(x.total)
+                    qwer.push({
+                        ...x,
+                        despose: 0,
+                        saldo: saldo.toFixed(2)
+                    })
+                }else{
+                    saldo -= parseFloat(x.total)
+                    qwer.push({
+                        total: 0,
+                        despose: x.total,
+                        saldo: saldo.toFixed(2)
+                    })
+                }
+            })
+        }
         
         $('#ventastable').DataTable({
             data: qwer,
@@ -367,53 +410,34 @@ include("Fragmentos/pie.php");
         const query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
+                sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
-            where s.estado = 1
+            where s.estado = 1 OR s.estado = 6969
             group by s.cod_sucursal
         `;
 
         let data = await get_data_dynamic(query);
 
-        const rowtotal = {
-            nombre_sucursal: "CAJA",
-            ingreso: 0,
-            egreso: 0,
-            saldo: 0
-        }
-
         for (let i = 0; i < data.length; i++) {
             const x = data[i];
-            const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
-            const ingreso = rr.total;
-            data[i] = {
-                ...x,
-                ingreso: ingreso.toFixed(2),
-                saldo: (ingreso - x.egreso).toFixed(2)
+            if(x.cod_sucursal != 11){
+                const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
+                const ingreso = rr.total;
+                data[i] = {
+                    ...x,
+                    ingreso: ingreso.toFixed(2),
+                    saldo: (ingreso - x.egreso).toFixed(2)
+                }
+            }else{
+                data[i] = {
+                    ...x,
+                    ingreso: parseFloat(x.ingreso).toFixed(2),
+                    saldo: (x.ingreso - x.egreso).toFixed(2)
+                }
             }
         }
-
-        // let data = await get_data_dynamic(query);
-        // const rowtotal = {
-        //     nombre_sucursal: "CAJA",
-        //     ingreso: 0,
-        //     egreso: 0,
-        //     saldo: 0
-        // }
-        // data = data.map(x => {
-        // rowtotal["ingreso"] += parseFloat(x.ingreso);
-        // rowtotal["egreso"] += parseFloat(x.egreso);
-        // rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
-        //     return {
-        //         ...x,
-        //         saldo: (x.ingreso - x.egreso).toFixed(2)
-        //     }
-        // })
-        // rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
-        // rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
-        // rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
-        data.push(rowtotal)
         $('#maintable').DataTable({
             data: data,
             ordering: false,

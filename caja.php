@@ -163,16 +163,29 @@ include("Fragmentos/pie.php");
         namesucursal.value = name
         $("#moperation").modal();
         moperationtitle.textContent = "INGRESO CAJA " + name
-        const query1 = `
-            SELECT 
-                fecha, cantidad as despose, '' as total, por as motivo
-            FROM despose
-            WHERE 
-                sucursal = ${id} and tipo = 'despose'`;
+
+        let despose = [];
+
+        if(id != 11){
+            const query1 = `
+                SELECT 
+                    fecha, cantidad as despose, '' as total, por as motivo
+                FROM despose
+                WHERE 
+                    sucursal = ${id} and (tipo = 'despose')`;
 
         
-        let despose = await get_data_dynamic(query1);
+            despose = await get_data_dynamic(query1);
+        }else{
+            const query1 = `
+                SELECT 
+                    fecha, tipo, cantidad as total, por as motivo
+                FROM despose
+                WHERE 
+                    sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
 
+            despose = await get_data_dynamic(query1);
+        }
         setConsolidado(id, despose)
     }
     const onloadPersonal = async () => {
@@ -187,34 +200,36 @@ include("Fragmentos/pie.php");
         const query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
+                sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
-            where s.estado = 1
+            where s.estado = 1 or s.estado = 6969
             group by s.cod_sucursal
         `;
 
         let data = await get_data_dynamic(query);
 
-        const rowtotal = {nombre_sucursal: "CAJA", ingreso: 0, egreso: 0, saldo: 0}
 
         for (let i = 0; i < data.length; i++) {
             const x = data[i];
-            const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
-            const ingreso = rr.total;
-            // rowtotal["ingreso"] += parseFloat(ingreso);
-            // rowtotal["egreso"] += parseFloat(x.egreso);
-            // rowtotal["saldo"] += parseFloat(ingreso) - parseFloat(x.egreso);
-            data[i] = {
-                ...x,
-                ingreso: ingreso.toFixed(2),
-                saldo: (ingreso - x.egreso).toFixed(2)
+            if(x.cod_sucursal != 11){
+                const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
+                const ingreso = rr.total;
+                data[i] = {
+                    ...x,
+                    ingreso: ingreso.toFixed(2),
+                    saldo: (ingreso - x.egreso).toFixed(2)
+                }
+            }else{
+                data[i] = {
+                    ...x,
+                    ingreso: parseFloat(x.ingreso).toFixed(2),
+                    saldo: (x.ingreso - x.egreso).toFixed(2)
+                }
             }
         }
-        // rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
-        // rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
-        // rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
-        data.push(rowtotal)
+        
         $('#maintable').DataTable({
             data: data,
             ordering: false,
@@ -284,28 +299,51 @@ include("Fragmentos/pie.php");
     }
 
     const setConsolidado = async (id, des) => {
-        const rr = await proccessIngresosEfectivo(id)
-        const datatotble = rr.datatotble;
+        let qwer = []
+        if(id != 11){
+            const rr = await proccessIngresosEfectivo(id)
+            const datatotble = rr.datatotble;
+            
+            qwer = [...datatotble, ...des];
+            let saldo = 0;
+            qwer.sort(function (a, b) {
+                if (a.fecha < b.fecha) {
+                    return -1;
+                }
+                if (b.fecha < a.fecha) {
+                    return 1;
+                }
+                return 0;
+            });
+            
+            qwer = qwer.map(x => {
+                const despose = x.despose ? parseFloat(x.despose) : 0
+                const total = x.total ? parseFloat(x.total) : 0
+                saldo = saldo + total - despose
+                x.saldo = saldo.toFixed(2)
+                return x
+            })
+        }else{
+            let saldo = 0;
+            des.forEach(x => {
+                if(x.tipo == "ingresocaja"){
+                    saldo += parseFloat(x.total)
+                    qwer.push({
+                        ...x,
+                        despose: 0,
+                        saldo: saldo.toFixed(2)
+                    })
+                }else{
+                    saldo -= parseFloat(x.total)
+                    qwer.push({
+                        total: 0,
+                        despose: x.total,
+                        saldo: saldo.toFixed(2)
+                    })
+                }
+            })
+        }
         
-        let qwer = [...datatotble, ...des];
-        let saldo = 0;
-        qwer.sort(function (a, b) {
-            if (a.fecha < b.fecha) {
-                return -1;
-            }
-            if (b.fecha < a.fecha) {
-                return 1;
-            }
-            return 0;
-        });
-        
-        qwer = qwer.map(x => {
-            const despose = x.despose ? parseFloat(x.despose) : 0
-            const total = x.total ? parseFloat(x.total) : 0
-            saldo = saldo + total - despose
-            x.saldo = saldo.toFixed(2)
-            return x
-        })
         
         $('#ventastable').DataTable({
             data: qwer,
