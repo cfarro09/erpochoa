@@ -304,7 +304,7 @@ include("Fragmentos/pie.php");
                 }else{
                     saldo -= parseFloat(x.total)
                     qwer.push({
-                        fecha: x.fecha,
+                        ...x,
                         total: 0,
                         despose: x.total,
                         saldo: saldo.toFixed(2)
