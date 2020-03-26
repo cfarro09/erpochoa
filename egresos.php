@@ -228,35 +228,88 @@ include("Fragmentos/pie.php");
 			`;
         });
     }
+    const proccessIngresosEfectivo = async id => {
+        const query = `
+            SELECT 
+                v.jsonpagos, v.fecha_emision
+            FROM ventas v
+            WHERE 
+                v.sucursal = ${id}`;
 
+        const da = await get_data_dynamic(query);
+        const res = {
+            datatotble: [],
+            total: 0
+        }
+        const data = {}
+
+        da.forEach(iii => {
+            const arraypagos = JSON.parse(iii.jsonpagos);
+            arraypagos.forEach(ixx => {
+                if (ixx.tipopago == "efectivo") {
+                    if (!data[iii.fecha_emision])
+                        data[iii.fecha_emision] = 0
+                    data[iii.fecha_emision] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
+                    res.total += parseFloat(ixx.montoextra)
+                }
+            })
+        })
+        for (const [key, value] of Object.entries(data))
+            res.datatotble.push({
+                fecha: key,
+                total: value.toFixed(2),
+                despose: '',
+                motivo: ""
+            })
+        return res
+    }
     const initTable = async () => {
         const query = `
-        select 
-            s.cod_sucursal, s.nombre_sucursal,  
-            sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) ingreso,
-            sum(Case When d.tipo = 'empoze' Then d.cantidad Else 0 End) egreso
-        from sucursal s 
-        left join despose d on d.sucursal = s.cod_sucursal 
-        where s.estado = 1
-        group by s.cod_sucursal
+            select 
+                s.cod_sucursal, s.nombre_sucursal,
+                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
+            from sucursal s 
+            left join despose d on d.sucursal = s.cod_sucursal 
+            where s.estado = 1
+            group by s.cod_sucursal
         `;
 
         let data = await get_data_dynamic(query);
+
         const rowtotal = {
             nombre_sucursal: "CAJA",
             ingreso: 0,
             egreso: 0,
             saldo: 0
         }
-        data = data.map(x => {
-            // rowtotal["ingreso"] += parseFloat(x.ingreso);
-            // rowtotal["egreso"] += parseFloat(x.egreso);
-            // rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
-            return {
+
+        for (let i = 0; i < data.length; i++) {
+            const x = data[i];
+            const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
+            const ingreso = rr.total;
+            data[i] = {
                 ...x,
-                saldo: (x.ingreso - x.egreso).toFixed(2)
+                ingreso: ingreso.toFixed(2),
+                saldo: (ingreso - x.egreso).toFixed(2)
             }
-        })
+        }
+
+        // let data = await get_data_dynamic(query);
+        // const rowtotal = {
+        //     nombre_sucursal: "CAJA",
+        //     ingreso: 0,
+        //     egreso: 0,
+        //     saldo: 0
+        // }
+        // data = data.map(x => {
+        // rowtotal["ingreso"] += parseFloat(x.ingreso);
+        // rowtotal["egreso"] += parseFloat(x.egreso);
+        // rowtotal["saldo"] += parseFloat(x.ingreso) - parseFloat(x.egreso);
+        //     return {
+        //         ...x,
+        //         saldo: (x.ingreso - x.egreso).toFixed(2)
+        //     }
+        // })
         // rowtotal["ingreso"] = rowtotal["ingreso"].toFixed(2)
         // rowtotal["egreso"] = rowtotal["egreso"].toFixed(2)
         // rowtotal["saldo"] = rowtotal["saldo"].toFixed(2)
