@@ -228,7 +228,7 @@ include("Fragmentos/pie.php");
         if(id != 11){
             const query1 = `
                 SELECT 
-                    fecha, cantidad as despose, '' as total, por as motivo
+                    fecha, cantidad as despose, '' as total, motivo
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose')`;
@@ -238,7 +238,7 @@ include("Fragmentos/pie.php");
         }else{
             const query1 = `
                 SELECT 
-                    fecha, tipo, cantidad as total, por as motivo
+                    fecha, tipo, cantidad as total, motivo
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
