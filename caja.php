@@ -132,6 +132,7 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const suc = <?= $suc  ?>;
     $(function() {
         initTable()
         onloadPersonal()
@@ -142,7 +143,8 @@ include("Fragmentos/pie.php");
         formdispose.reset()
         personal.value = 0
         $("#mdespose").modal()
-    }    const guardardespse = async e => {
+    }    
+    const guardardespse = async e => {
         e.preventDefault();
         if(personal.value){
             const query = `
@@ -157,6 +159,20 @@ include("Fragmentos/pie.php");
             alert("debe seleccionar personal")
         }
     }
+    const setStatusIngresos = async (id, status, fromdepose) => {
+        const dataxx = {header: "", detalle: []}
+        dataxx.detalle.push(`update despose set estado = '${status}' where id = ${id}`);
+        if(fromdepose)
+            dataxx.detalle.push(`update despose set estado = '${status}' where id = ${fromdepose}`);
+        let res = await ll_dynamic(dataxx);
+        if(res && res.success){
+            alert("DATOS GUARDADOS CORRECTAMENTE");
+            await initTable()
+            await getdetail(msucursal.value, namesucursal.value)
+        }else{
+            alert("hubo un error")
+        }
+    }
     const getdetail = async (id, name) => {
         msucursal.value = id
         namesucursal.value = name
@@ -164,11 +180,10 @@ include("Fragmentos/pie.php");
         moperationtitle.textContent = "INGRESO CAJA " + name
 
         let despose = [];
-
         if(id != 11){
             const query1 = `
                 SELECT 
-                    fecha, cantidad as despose, '' as total, motivo
+                    id, fecha, nrorecibo, cantidad as despose, '' as total, CONCAT(motivo, ' - ',estado) as motivo, fromdespose
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose')`;
@@ -178,7 +193,7 @@ include("Fragmentos/pie.php");
         }else{
             const query1 = `
                 SELECT 
-                    fecha, tipo, cantidad as total, motivo
+                    id, fecha, nrorecibo, tipo, cantidad as total, motivo, estado, fromdespose
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
@@ -196,16 +211,30 @@ include("Fragmentos/pie.php");
         cargarselect2("#personal", res, "codigopersonal", "fullname")
     }
     const initTable = async () => {
-        const query = `
+        let query = "";
+        if(suc == 1)
+              query = `
+            select 
+                s.cod_sucursal, s.nombre_sucursal,
+                sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
+                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
+            from sucursal s 
+            left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA'
+            where (s.estado = 1 or s.estado=6969) 
+            group by s.cod_sucursal
+        `;
+        else
+             query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
                 sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
-            where s.estado = 1 and s.cod_sucursal= <?= $suc  ?>
+            where s.estado = 1 and s.cod_sucursal= ${suc} 
             group by s.cod_sucursal
         `;
+
 
         let data = await get_data_dynamic(query);
 
@@ -299,9 +328,10 @@ include("Fragmentos/pie.php");
 
     const setConsolidado = async (id, des) => {
         let qwer = []
-        if(id != 11){
+        if(id != 11){//OK LO Q ESTA DENTOR DE ESA CONDICION ES DE LAS SCUURSALES Q NO ES LA CAJA TUMBES
+
             const rr = await proccessIngresosEfectivo(id)
-            const datatotble = rr.datatotble;
+            const datatotble = rr.datatotble; 
             
             qwer = [...datatotble, ...des];
             let saldo = 0;
@@ -315,28 +345,34 @@ include("Fragmentos/pie.php");
                 return 0;
             });
             
-            qwer = qwer.map(x => {
+            qwer = qwer.map(x => { //PEROOO EN ESTA FUNCION TE PERMITE RECORRER TODOYa AHI PONLE
                 const despose = x.despose ? parseFloat(x.despose) : 0
                 const total = x.total ? parseFloat(x.total) : 0
                 saldo = saldo + total - despose
                 x.saldo = saldo.toFixed(2)
+                x.nrorecibo = x.nrorecibo || ""; 
                 return x
             })
         }else{
             let saldo = 0;
             des.forEach(x => {
+
                 if(x.tipo == "ingresocaja"){
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
+                        motivo: `${x.motivo} ${x.estado}`,
                         despose: 0,
-                        saldo: saldo.toFixed(2)
+                        saldo: saldo.toFixed(2),
+                        nrorecibo: x.nrorecibo
                     })
                 }else{
                     saldo -= parseFloat(x.total)
                     qwer.push({
+                        ...x,
                         total: 0,
                         despose: x.total,
+                        nrorecibo: x.nrorecibo,
                         saldo: saldo.toFixed(2)
                     })
                 }
@@ -398,6 +434,23 @@ include("Fragmentos/pie.php");
                     data: 'saldo',
                     className: 'dt-body-right'
                 },
+                {
+                    title: 'acciones',
+
+                    render: function(data, type, row) {
+                        if(row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO') && msucursal.value == 1)){
+                            return `
+                                <div class="">
+                                    <button class="btn btn-success" onclick="setStatusIngresos(${row.id},'ACEPTADO', ${row.fromdespose})">Aceptar</button>
+                                    <button class="btn btn-danger" onclick="setStatusIngresos(${row.id},'RECHAZADO', ${row.fromdespose})">Rechazar</button>
+                                </div>
+                                `
+                        }else{
+                            return ""
+                        }
+                        
+                    }
+                }
             ]
         });
 

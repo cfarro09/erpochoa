@@ -56,6 +56,23 @@
 			alert("hubo un problema")
 		}
 	};
+	const ll_dynamic = async (json) => {
+		var formData = new FormData();
+		formData.append("json", JSON.stringify(json))
+		const response = await fetch("setVenta.php", {
+			method: 'POST',
+			body: formData,
+		});
+		if (response.ok) {
+			try {
+				return await response.json();
+			} catch (e) {
+				alert(e)
+			}
+		} else {
+			alert("hubo un problema")
+		}
+	};
 </script>
 <script src="assets/global/plugins/jquery.min.js" type="text/javascript"></script>
 <script src="assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
