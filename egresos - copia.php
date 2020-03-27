@@ -31,7 +31,7 @@ $suc = $_SESSION['cod_sucursal'];
 <table id="maintable" class="display" width="100%"></table>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document" style="width: 900px">
+    <div class="modal-dialog" role="document" style="width: 700px">
         <div class="modal-content m-auto">
             <div class="modal-header">
                 <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
@@ -40,7 +40,7 @@ $suc = $_SESSION['cod_sucursal'];
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xs-12 col-md-12" >
+                        <div class="col-xs-12 col-md-12" style="margin-bottom: 200px">
                             <table id="ventastable" class="display" width="100%"></table>
                         </div>
                     </div>
@@ -55,7 +55,7 @@ $suc = $_SESSION['cod_sucursal'];
 </div>
 
 <div class="modal fade" id="mdespose" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document" style="width: 900px">
+    <div class="modal-dialog" role="document" style="width: 700px">
 
         <form id="formdispose">
             <input type="hidden" id="msucursal">
@@ -152,7 +152,6 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
-    const suc = <?= $suc  ?>;
     $(function() {
         initTable()
         onloadPersonal()
@@ -183,18 +182,18 @@ include("Fragmentos/pie.php");
             }else if(motivo.value == "cajatumbes"){ //ESTA ES OTRA CONDICION SI ES CAJA TUMBES LE INGRESA A CAJA TUMBES, HASTA AHI ENTENDISTE?si
                 const query = `
                 insert into despose 
-                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado) 
+                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
                 values
-                    ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', '${motivo.value}', 'EN ESPERA')`
+                    ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', '${motivo.value}')`
                 let res = await ff_dynamic(query);    
             }
             //ENTONCES TODO LO Q SELECCIONE SON CONDICIOENS QUE PUEDE PASAR SI EL MOTIVO ES DEPOSITO EN CUENTA O CAJA TUMBES
 
             const query = `
             insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado) 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
             values
-                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose', '${motivo.value}', 'ENVIADO')`
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose', '${motivo.value}')`
             let res = await ff_dynamic(query);
             alert("DATOS GUARDADOS CORRECTAMENTE");
             //SI SALIO LO VISTE O NO
@@ -245,7 +244,7 @@ include("Fragmentos/pie.php");
         if(id != 11){
             const query1 = `
                 SELECT 
-                    fecha, nrorecibo, cantidad as despose, '' as total, CONCAT(motivo, ' - ',estado) as motivo
+                    fecha, nrorecibo, cantidad as despose, '' as total, motivo
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose')`;
@@ -403,18 +402,6 @@ include("Fragmentos/pie.php");
                     data: 'saldo',
                     className: 'dt-body-right'
                 },
-                {
-                    title: 'acciones',
-
-                    render: function(data, type, row) {
-                        if(row.motivo.includes('ENVIADO') && suc == 1){
-                            return `<button class="btn btn-success">Aceptar</button><button class="btn btn-danger">Rechazar</button>`
-                        }else{
-                            return ""
-                        }
-                        
-                    }
-                }
             ]
         });
 
@@ -451,34 +438,20 @@ include("Fragmentos/pie.php");
                 fecha: key,
                 total: value.toFixed(2),
                 despose: '',
-                motivo: "Ventas del Dia"
+                motivo: ""
             })
         return res
     }
     const initTable = async () => { //ESTA ES UNA FUNCION QUE TE CARGA LA TABLA,
         //modifica la query, ve como lo ordenasya dejalo asi eso es tdo mañana lo veo con ochoa grascias
-        
-        let query = "";
-        if(suc == 1)
-              query = `
-            select 
-                s.cod_sucursal, s.nombre_sucursal,
-                sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
-                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
-            from sucursal s 
-            left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA'
-            where (s.estado = 1 or s.estado=6969) 
-            group by s.cod_sucursal
-        `;
-        else
-             query = `
+        const query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
                 sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
-            where s.estado = 1 and s.cod_sucursal= ${suc} 
+            where s.estado = 1 OR s.estado = 6969
             group by s.cod_sucursal
         `;
 

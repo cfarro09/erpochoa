@@ -142,7 +142,8 @@ include("Fragmentos/pie.php");
         formdispose.reset()
         personal.value = 0
         $("#mdespose").modal()
-    }    const guardardespse = async e => {
+    }
+    const guardardespse = async e => {
         e.preventDefault();
         if(personal.value){
             const query = `
@@ -203,7 +204,7 @@ include("Fragmentos/pie.php");
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal 
-            where s.estado = 1 and s.cod_sucursal= <?= $suc  ?>
+            where s.estado = 1 or s.estado = 6969
             group by s.cod_sucursal
         `;
 
@@ -292,7 +293,7 @@ include("Fragmentos/pie.php");
                 fecha: key,
                 total: value.toFixed(2),
                 despose: '',
-                motivo: "Ventas del Dia"
+                motivo: ""
             })
         return res
     }
