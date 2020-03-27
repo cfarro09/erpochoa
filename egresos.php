@@ -88,12 +88,12 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
+                                                <option value="cajatumbes">Caja Principal Tumbes</option>
+                                                <option value="Deposito en cuenta">Deposito en cuenta</option>
+                                                <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo</option>
                                                 <option value="Viatico">Viatico</option>
-                                                <option value="Vacaciones">Vacaciones</option>
-                                                <option value="cajatumbes">Caja Principal Tumbes</option>
-                                                <option value="Pago Servicios">Pago Servicios</option>
-                                                <option value="Deposito en cuenta">Deposito en cuenta</option>
+                                                <option value="Vacaciones">Vacaciones</option>    
                                             </select>
                                         </div>
                                     </div>
@@ -175,11 +175,11 @@ include("Fragmentos/pie.php");
         e.preventDefault();
         if (personal.value) {
 
-            if (motivo.value == "Deposito en cuenta") {
+            if (motivo.value == "Deposito en cuenta") { //MIRA GORDITO, ESTA ES  UNA CONDICION QME DIJSITE Q CUANDO SE DEPOSITO EN CUENTA, SE AGREGUE A SU CUENTA
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
                 ff_dynamic(querydepbancario);
-            }else if(motivo.value == "cajatumbes"){
+            }else if(motivo.value == "cajatumbes"){ //ESTA ES OTRA CONDICION SI ES CAJA TUMBES LE INGRESA A CAJA TUMBES, HASTA AHI ENTENDISTE?si
                 const query = `
                 insert into despose 
                     (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo) 
@@ -187,6 +187,7 @@ include("Fragmentos/pie.php");
                     ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', '${motivo.value}')`
                 let res = await ff_dynamic(query);    
             }
+            //ENTONCES TODO LO Q SELECCIONE SON CONDICIOENS QUE PUEDE PASAR SI EL MOTIVO ES DEPOSITO EN CUENTA O CAJA TUMBES
 
             const query = `
             insert into despose 
@@ -194,8 +195,23 @@ include("Fragmentos/pie.php");
             values
                 ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose', '${motivo.value}')`
             let res = await ff_dynamic(query);
+            alert("DATOS GUARDADOS CORRECTAMENTE");
+            //SI SALIO LO VISTE O NO
+            //YA MUY /BIEN, PERO NO SALE
+
+            //AHORA HAY UNA FUNCION Q SE LLAMA INIT TABLE Q SE ENCARGA DE INICIAR LA TABLA
+            //ahora si ya sabes q hay una funcion q carga la tabla, q harias?, en el boton cerrar llamo la funcion ini tabler
+            //NO
+            //PORQUE NO CARGAS CUANDO SE GUARDE, OSEA , pruebala no actualizo
+            
+            await initTable()
+
+            await getdetail(msucursal.value, namesucursal.value)
             $("#mdespose").modal("hide")
-            getdetail(msucursal.value, namesucursal.value)
+
+            //LO ULTIMO Q SELECCIONE ES LO Q SIEMPRE SE VA A EJECUTAR SEA EL MOTIVO Q SEA PORQUE NO HAY NINGUNA CONDICION
+            //ENTENDISTE?si//
+            //AHORA DIME DONDE PONDRIAS EL ALERT P
         } else {
             alert("debe seleccionar personal")
         }
@@ -222,13 +238,13 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "INGRESO CAJA " + name
+        moperationtitle.textContent = "EGRESO CAJA - " + name
         let despose = [];
-
+        //la columna se llama nrecibo q tienes q hacer
         if(id != 11){
             const query1 = `
                 SELECT 
-                    fecha, cantidad as despose, '' as total, motivo
+                    fecha, nrorecibo, cantidad as despose, '' as total, motivo
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose')`;
@@ -238,13 +254,14 @@ include("Fragmentos/pie.php");
         }else{
             const query1 = `
                 SELECT 
-                    fecha, tipo, cantidad as total, motivo
+                    fecha, nrorecibo, tipo, cantidad as total, motivo
                 FROM despose
                 WHERE 
                     sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
 
             despose = await get_data_dynamic(query1);
         }
+        //ya bacan ya en la variable despose te viene con nrorecibo, pero ahora hay q procesarlo en la tabla, veamos q hace la siguiente funcion
         setConsolidado(id, despose)
 
     }
@@ -268,11 +285,14 @@ include("Fragmentos/pie.php");
     }
     const setConsolidado = async (id, des) => {
         let qwer = []
-        if(id != 11){
-            const rr = await proccessIngresosEfectivo(id)
-            const datatotble = rr.datatotble;
+        if(id != 11){//OK LO Q ESTA DENTOR DE ESA CONDICION ES DE LAS SCUURSALES Q NO ES LA CAJA TUMBES
+
+            const rr = await proccessIngresosEfectivo(id) //ESTA FUNCION TE TRAE LOS IGNRESOS, OK PERO LOS INGRESOS TIENEN NRORECIBO O NO?siiil 
+            //METETE UN MANASO POR GIL, DE DONDE SACAS LOS INGRESOS, SI NO ES DEL EFECTIVO aya lso egresos son, AJAM ALMENOS Q SE QUEIRA SACAR EL NRO COMPROBANTE DE LA VENTA PORQUE EL EFECTIVO VIENE DE LA VENTA, ENTONCES
+            //CHECA Q ESA FUNCION RECIBE EL ID Y EL DES , EL DES ES EL ARRAY DE Q TE DEVUELVE EL EQURY
+            const datatotble = rr.datatotble; //EL RR.DATATOBLE ES UN ARRAY PS AHI ESTA EL ARRAY DE IGNRESOS, CAPTASTE?ALGO 
             
-            qwer = [...datatotble, ...des];
+            qwer = [...datatotble, ...des]; //MIRA ESTE CODIGO JUNTA EL DATATOTBLE Q ES EL ARRAY DE LOS IGNRESOS(NO TIENEN NRORECIBO) Y EL DES SI, ENTONCES NO VA  FUNCAR
             let saldo = 0;
             qwer.sort(function (a, b) {
                 if (a.fecha < b.fecha) {
@@ -283,23 +303,33 @@ include("Fragmentos/pie.php");
                 }
                 return 0;
             });
+            //dime  q necesitas, el numer de recibo, en donde en la tabla principal o delen la segunda ok esa tabla se llena en getdetail
             
-            qwer = qwer.map(x => {
+            qwer = qwer.map(x => { //PEROOO EN ESTA FUNCION TE PERMITE RECORRER TODOYa AHI PONLE
                 const despose = x.despose ? parseFloat(x.despose) : 0
                 const total = x.total ? parseFloat(x.total) : 0
                 saldo = saldo + total - despose
                 x.saldo = saldo.toFixed(2)
+                x.nrorecibo = x.nrorecibo ?? ""; //LO Q HACE ESOS ?? ES Q SI X.NROECIBO ES NULL LE PONGA "", EN Q CASO EL NRORECIBO SERA NULL?RESPONDEcuando es ingreso
                 return x
             })
+            //ESTO PASA CUANDO ES UNA SUCURSAL DIFERENTE A LA CAJA TUMBES, AHORA TU HAS CUANDO ES CAJA TUMBES
         }else{
             let saldo = 0;
+            //Q HARIAS AQUI4 nada pq no tengo el nro d recibo ponlo
             des.forEach(x => {
+
+                //CUANDO ES IGNRESO DE UN EGRESO SE GUARDA EN LA TABLA DESPOSE PERO COMO TIPO INGRESOCAJA
+                //ENTONCES TENGO 2 TIPOS, INGRESO CAJA Q ES INGRESO, Y DESPOSE Q ES EGRESOok
+                //SI ENTENDISTE? ALGUNA OTRA PREGUNTA ALUMNO BOBIS has esto producto list
                 if(x.tipo == "ingresocaja"){
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
                         despose: 0,
-                        saldo: saldo.toFixed(2)
+                        saldo: saldo.toFixed(2), //NO SIRVESPARAOGRAMAR
+                        nrorecibo: x.nrorecibo //cuando es ingreso nunca va nada entonces lo seteo vacio, tienes q inicializar las propiedades si nose rompe como tu culo
+
                     })
                 }else{
                     saldo -= parseFloat(x.total)
@@ -307,6 +337,7 @@ include("Fragmentos/pie.php");
                         ...x,
                         total: 0,
                         despose: x.total,
+                        nrorecibo: x.nrorecibo, //porqie pones lo mismo en los dos, //porque ambos tienen nrorecibo
                         saldo: saldo.toFixed(2)
                     })
                 }
@@ -348,7 +379,11 @@ include("Fragmentos/pie.php");
                     title: 'fecha',
                     data: 'fecha'
                 },
-                {
+                 {
+                    title: 'NRO',
+                    data: 'nrorecibo'
+                },
+                {//pruebalo
                     title: 'motivo',
                     data: 'motivo'
                 },
@@ -407,7 +442,8 @@ include("Fragmentos/pie.php");
             })
         return res
     }
-    const initTable = async () => {
+    const initTable = async () => { //ESTA ES UNA FUNCION QUE TE CARGA LA TABLA,
+        //modifica la query, ve como lo ordenasya dejalo asi eso es tdo mañana lo veo con ochoa grascias
         const query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,

@@ -102,12 +102,20 @@ include("Fragmentos/pie.php");
                     render: function(data, type, row) {
                         const nn = row.nombre_producto.replace('"', '').replace("'", "");
                         return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${row.codigoprod}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Editar</a>`
-                    } 
+                    }
                 },
                 {
-                    title: 'Eliminar',
-                    data: 'kardex'
-                 
+                	title: 'Eliminar',
+                    render: function(data, type, row) {
+                        //cuando presioee eliminar me elimine , YA ESA ES TU TAREA ESO LO PUEDES HACER NO SE COMO PERO ES TU CHAMBA, BUENO HASTA AQUI FUE, AVISAME CUANDO ME DEPOSITESok ya mañana seguimos tengo sueño
+                        if(row.kardex){
+                        	return ""
+                        }else{
+                        	
+                        	return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${row.codigoprod}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Eliminar</a>`
+                        }
+                    }
+                    
                 }
             ]
         });
