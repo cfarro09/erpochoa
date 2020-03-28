@@ -231,7 +231,7 @@ include("Fragmentos/pie.php");
 
 <script>
     const suc = <?= $suc  ?>;
-    const idpersonal = <?= $_SESSION['kt_login_id']; ?>;
+    const idpersonal = <?= $_SESSION['kt_codigopersonal']; ?>;
     $(function() {
         initTable()
         onloadPersonal()
@@ -434,14 +434,7 @@ include("Fragmentos/pie.php");
             des = des.map(x => {
                 const motivxxo = x.motivo || ""
                 x.motivo = motivxxo.includes("cajatumbes") ? motivxxo.replace("cajatumbes", "Remesa en Efectivo a Caja Central") : motivxxo
-                let nrorecibo = "";
-                
-                if(x.tipo == "ingreso"){
-                    nrorecibo = "RI - " + nrorecibo
-                }else{
-                    nrorecibo = "RE - " + nrorecibo
-                }
-                
+
                 return {
                     ...x,
                     total: x.tipo == "ingreso" ? x.despose : 0,
@@ -454,13 +447,6 @@ include("Fragmentos/pie.php");
             qwer = [...datatotble, ...des];
             let saldo = 0;
             
-            // qwer.sort(function(a, b) {
-            //     if (a.fecha > b.fecha) 
-            //         return -1;
-            //     if (b.fecha < a.fecha) 
-            //         return 1;   
-            //     return 0;
-            // });
 
             qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
