@@ -453,13 +453,14 @@ include("Fragmentos/pie.php");
 
             qwer = [...datatotble, ...des];
             let saldo = 0;
-            qwer.sort(function(a, b) {
-                if (a.fecha > b.fecha) 
-                    return -1;
-                if (b.fecha < a.fecha) 
-                    return 1;   
-                return 0;
-            });
+            
+            // qwer.sort(function(a, b) {
+            //     if (a.fecha > b.fecha) 
+            //         return -1;
+            //     if (b.fecha < a.fecha) 
+            //         return 1;   
+            //     return 0;
+            // });
 
             qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
@@ -469,6 +470,7 @@ include("Fragmentos/pie.php");
                 x.nrorecibo = x.nrorecibo || "";
                 return x
             })
+            qwer = qwer.reverse();
         } else {
             let saldo = 0;
             des.forEach(x => {
@@ -493,11 +495,13 @@ include("Fragmentos/pie.php");
                     })
                 }
             })
+            qwer = qwer.reverse();
         }
 
         $('#ventastable').DataTable({
             data: qwer,
             destroy: true,
+            ordering: false,
             buttons: [{
                     extend: 'print',
                     className: 'btn dark btn-outline'
