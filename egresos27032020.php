@@ -35,9 +35,8 @@ $suc = $_SESSION['cod_sucursal'];
         <div class="modal-content m-auto">
             <div class="modal-header">
                 <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
-                
-                <button class="btn btn-primary" id="btndisposeingreso" onclick="disposeingreso()">Ingreso</button>
                 <button class="btn btn-primary" id="btndispose" onclick="dispose()">Egreso</button>
+                <button class="btn btn-primary" id="btndisposeingreso" onclick="disposeingreso()">Ingreso</button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -64,7 +63,7 @@ $suc = $_SESSION['cod_sucursal'];
             <input type="hidden" id="namesucursal">
             <div class="modal-content m-auto">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="desposetitle">REGISTRO DE EGRESO</h2>
+                    <h2 class="modal-title" id="desposetitle">EMPOZE EGRESO</h2>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
@@ -90,7 +89,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
-                                                <option value="cajatumbes">Remesa en Efectivo a Caja Central</option>
+                                                <option value="cajatumbes">Caja Principal Tumbes</option>
                                                 <option value="Deposito en cuenta">Deposito en cuenta</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo</option>
@@ -117,7 +116,7 @@ $suc = $_SESSION['cod_sucursal'];
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label">Observacion</label>
+                                            <label class="control-label">Por</label>
                                             <textarea class="form-control" id="byfrom"></textarea>
                                         </div>
                                     </div>
@@ -158,7 +157,7 @@ $suc = $_SESSION['cod_sucursal'];
             <input type="hidden" id="namesucursal">
             <div class="modal-content m-auto">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="desposetitleingreso">REGISTRO DE INGRESO</h2>
+                    <h2 class="modal-title" id="desposetitleingreso">EMPOZE INGRESO</h2>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
@@ -340,7 +339,7 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "EFECTIVO - CAJA " + name
+        moperationtitle.textContent = "EFECTIVO CAJA - " + name
         let despose = [];
         if(id != 11){
             const query1 = `
