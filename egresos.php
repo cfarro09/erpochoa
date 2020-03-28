@@ -35,8 +35,8 @@ $suc = $_SESSION['cod_sucursal'];
         <div class="modal-content m-auto">
             <div class="modal-header">
                 <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
-                <button class="btn btn-primary" onclick="dispose()">Egreso</button>
-                <button class="btn btn-primary" onclick="disposeingreso()">Ingreso</button>
+                <button class="btn btn-primary" id="btndispose" onclick="dispose()">Egreso</button>
+                <button class="btn btn-primary" id="btndisposeingreso" onclick="disposeingreso()">Ingreso</button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -230,8 +230,14 @@ include("Fragmentos/pie.php");
     $(function() {
         initTable()
         onloadPersonal()
-        // onloadSucursales()
         onloadCuentas()
+        if(suc == 1){
+            btndispose.style.display = "none"
+            btndisposeingreso.style.display = "none"
+        }else{
+            btndispose.style.display = ""
+            btndisposeingreso.style.display = ""
+        }
         formdispose.addEventListener("submit", guardardespse)
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
