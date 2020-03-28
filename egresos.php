@@ -246,11 +246,15 @@ include("Fragmentos/pie.php");
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
+        $('#personal').val('').trigger('change');
+
+
     }
     const disposeingreso = () => {
         formdisposeingreso.reset()
         personalingreso.value = 0
         $("#mdesposeingreso").modal()
+        $('#personalingreso').val('').trigger('change');
     }
     
     const guardardespseingreso = async e => {
