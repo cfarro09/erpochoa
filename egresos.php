@@ -35,7 +35,8 @@ $suc = $_SESSION['cod_sucursal'];
         <div class="modal-content m-auto">
             <div class="modal-header">
                 <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
-                <button class="btn btn-primary" onclick="dispose()">Despose</button>
+                <button class="btn btn-primary" onclick="dispose()">Egreso</button>
+                <button class="btn btn-primary" onclick="disposeingreso()">Ingreso</button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -55,7 +56,7 @@ $suc = $_SESSION['cod_sucursal'];
 </div>
 
 <div class="modal fade" id="mdespose" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document" style="width: 1000px">
+    <div class="modal-dialog" role="document">
 
         <form id="formdispose">
             <input type="hidden" id="msucursal">
@@ -146,6 +147,79 @@ $suc = $_SESSION['cod_sucursal'];
     </div>
 </div>
 
+
+
+<div class="modal fade" id="mdesposeingreso" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 700px">
+
+        <form id="formdisposeingreso">
+            <input type="hidden" id="msucursal">
+            <input type="hidden" id="namesucursal">
+            <div class="modal-content m-auto">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="desposetitleingreso">EMPOZE INGRESO</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">N° Recibo</label>
+                                            <input type="text" id="nreciboxingreso" required class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Cantidad</label>
+                                            <input type="number" step="any" id="cantidadxxingreso" autocomplete="off" required class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha</label>
+                                            <input type="text" required name="fecha" autocomplete="off" id="fechaingreso" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Por</label>
+                                            <textarea class="form-control" id="byfromingreso"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Personal</label>
+                                            <select id="personalingreso"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" >Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+
+        </form>
+
+
+
+    </div>
+</div>
 <?php
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
@@ -159,6 +233,7 @@ include("Fragmentos/pie.php");
         // onloadSucursales()
         onloadCuentas()
         formdispose.addEventListener("submit", guardardespse)
+        formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
     const changeMotivo = e => {
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
@@ -171,6 +246,30 @@ include("Fragmentos/pie.php");
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
+    }
+    const disposeingreso = () => {
+        formdisposeingreso.reset()
+        personalingreso.value = 0
+        $("#mdesposeingreso").modal()
+    }
+    
+    const guardardespseingreso = async e => {
+        debugger
+        e.preventDefault();
+        if(personalingreso.value){
+            const query = `
+            insert into despose 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo) 
+            values
+                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso')`
+            let res = await ff_dynamic(query);
+            alert("DATOS GUARDADOS CORRECTAMENTE");
+            $("#mdesposeingreso").modal("hide")
+            await initTable()
+            await getdetail(msucursal.value, namesucursal.value)
+        }else{
+            alert("debe seleccionar personal")
+        }
     }
     const guardardespse = async e => {
         e.preventDefault();
@@ -228,17 +327,16 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "EGRESO CAJA - " + name
+        moperationtitle.textContent = "EFECTIVO CAJA - " + name
         let despose = [];
         if(id != 11){
             const query1 = `
                 SELECT 
-                    id, fecha, nrorecibo, cantidad as despose, '' as total, CONCAT(motivo, ' - ',estado) as motivo, fromdespose
+                    id, fecha, nrorecibo, cantidad as despose, '' as total, tipo, CONCAT(motivo, ' - ',estado) as motivo, por, fromdespose
                 FROM despose
                 WHERE 
-                    sucursal = ${id} and (tipo = 'despose')`;
+                    sucursal = ${id} and (tipo = 'despose' or tipo = 'ingreso')`;
 
-        
             despose = await get_data_dynamic(query1);
         }else{
             const query1 = `
@@ -260,6 +358,7 @@ include("Fragmentos/pie.php");
             fullname: "Seleccionar"
         })
         cargarselect2("#personal", res, "codigopersonal", "fullname")
+        cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
     const onloadCuentas = async () => {
 
@@ -278,6 +377,15 @@ include("Fragmentos/pie.php");
             const rr = await proccessIngresosEfectivo(id)
             const datatotble = rr.datatotble; 
             
+            des = des.map(x => {
+                return {
+                    ...x,
+                    total: x.tipo == "ingreso" ? x.despose : 0,
+                    despose: x.tipo == "ingreso" ? 0 : x.despose,
+                    motivo: x.motivo || x.por.substring(0, 30)
+                }
+            })
+            debugger
             qwer = [...datatotble, ...des];
             let saldo = 0;
             qwer.sort(function (a, b) {
