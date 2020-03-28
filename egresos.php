@@ -434,19 +434,27 @@ include("Fragmentos/pie.php");
             des = des.map(x => {
                 const motivxxo = x.motivo || ""
                 x.motivo = motivxxo.includes("cajatumbes") ? motivxxo.replace("cajatumbes", "Remesa en Efectivo a Caja Central") : motivxxo
-                console.log(x.motivo)
+                let nrorecibo = "";
+                
+                if(x.tipo == "ingreso"){
+                    nrorecibo = "RI - " + nrorecibo
+                }else{
+                    nrorecibo = "RE - " + nrorecibo
+                }
+                
                 return {
                     ...x,
                     total: x.tipo == "ingreso" ? x.despose : 0,
                     despose: x.tipo == "ingreso" ? 0 : x.despose,
-                    motivo: x.motivo || x.por.substring(0, 30)
+                    motivo: x.motivo || x.por.substring(0, 30),
+                    nrorecibo: x.tipo == "ingreso" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
                 }
             })
 
             qwer = [...datatotble, ...des];
             let saldo = 0;
             qwer.sort(function(a, b) {
-                if (a.fecha < b.fecha) 
+                if (a.fecha > b.fecha) 
                     return -1;
                 if (b.fecha < a.fecha) 
                     return 1;   
@@ -472,7 +480,7 @@ include("Fragmentos/pie.php");
                         motivo: `${x.motivo} ${x.estado}`,
                         despose: 0,
                         saldo: saldo.toFixed(2),
-                        nrorecibo: x.nrorecibo
+                        nrorecibo: "RI - " + x.nrorecibo
                     })
                 } else {
                     saldo -= parseFloat(x.total)
@@ -480,7 +488,7 @@ include("Fragmentos/pie.php");
                         ...x,
                         total: 0,
                         despose: x.total,
-                        nrorecibo: x.nrorecibo,
+                        nrorecibo: "RE - " + x.nrorecibo,
                         saldo: saldo.toFixed(2)
                     })
                 }
@@ -490,6 +498,7 @@ include("Fragmentos/pie.php");
         $('#ventastable').DataTable({
             data: qwer,
             destroy: true,
+            ordering: false,
             buttons: [{
                     extend: 'print',
                     className: 'btn dark btn-outline'
