@@ -55,6 +55,7 @@ $suc = $_SESSION['cod_sucursal'];
     </div>
 </div>
 
+<input type="hidden" id="typedespose">
 <div class="modal fade" id="mdespose" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
 
@@ -73,7 +74,22 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">N° Recibo</label>
-                                            <input type="text" id="nrecibox" required class="form-control" />
+                                            <input type="text" id="nrecibox" required class="form-control" disabled />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha</label>
+                                            <input type="text" disabled required  name="fecha" autocomplete="off" id="fecha" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Personal</label>
+                                            <select disabled id="personal"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -105,14 +121,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label">Fecha</label>
-                                            <input type="text" required name="fecha" autocomplete="off" id="fecha" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -121,14 +130,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="control-label">Personal</label>
-                                            <select id="personal"></select>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -167,23 +169,31 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">N° Recibo</label>
-                                            <input type="text" id="nreciboxingreso" required class="form-control" />
+                                            <input type="text" disabled id="nreciboxingreso" required class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha</label>
+                                            <input type="text" disabled required name="fecha" autocomplete="off" id="fechaingreso" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Personal</label>
+                                            <select disabled id="personalingreso"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Cantidad</label>
-                                            <input type="number" step="any" id="cantidadxxingreso" autocomplete="off" required class="form-control form-control-inline" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label">Fecha</label>
-                                            <input type="text" required name="fecha" autocomplete="off" id="fechaingreso" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+                                            <input type="number" step="any" id="cantidadxxingreso"  autocomplete="off" required class="form-control form-control-inline" />
                                         </div>
                                     </div>
                                 </div>
@@ -195,14 +205,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="control-label">Personal</label>
-                                            <select id="personalingreso"></select>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -227,6 +230,7 @@ include("Fragmentos/pie.php");
 
 <script>
     const suc = <?= $suc  ?>;
+    const idpersonal = <?= $_SESSION['kt_login_id']; ?>;
     $(function() {
         initTable()
         onloadPersonal()
@@ -247,26 +251,42 @@ include("Fragmentos/pie.php");
     }
     motivo.onchange = changeMotivo;
 
-    const dispose = () => {
+    const dispose = async () => {
         formdispose.reset()
+        fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
+        
+        let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'negresos'");
+        nrecibox.value = nrecibo[0].value
+        typedespose.value = "negresos";
+
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
-        $('#personal').val('').trigger('change');
+        $('#personal').val(idpersonal).trigger('change');
 
 
     }
-    const disposeingreso = () => {
+    const disposeingreso = async () => {
         formdisposeingreso.reset()
+        fechaingreso.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10);
+        let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'ningresos'");
+        nreciboxingreso.value = nrecibo[0].value
+        typedespose.value = "ningresos";
+
         personalingreso.value = 0
         $("#mdesposeingreso").modal()
-        $('#personalingreso').val('').trigger('change');
+        $('#personalingreso').val(idpersonal).trigger('change');
     }
     
     const guardardespseingreso = async e => {
-        debugger
+        
         e.preventDefault();
         if(personalingreso.value){
+
+            let nrecibo = parseInt(nreciboxingreso.value) + 1;
+
+            await ff_dynamic("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ningresos'")
+
             const query = `
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo) 
@@ -286,6 +306,9 @@ include("Fragmentos/pie.php");
         // ll_dynamic
         const dataxx = {header: "", detalle: []}
         if (personal.value) {
+            
+            let nrecibo = parseInt(nrecibox.value) + 1;
+            dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'negresos'");
 
             if (motivo.value == "Deposito en cuenta") {
                 
@@ -395,7 +418,7 @@ include("Fragmentos/pie.php");
                     motivo: x.motivo || x.por.substring(0, 30)
                 }
             })
-            debugger
+            
             qwer = [...datatotble, ...des];
             let saldo = 0;
             qwer.sort(function (a, b) {
