@@ -35,14 +35,14 @@ $suc = $_SESSION['cod_sucursal'];
         <div class="modal-content m-auto">
             <div class="modal-header">
                 <h2 class="modal-title" style="display: inline-block; margin-right: 10px" id="moperationtitle">Detalle Ingresos</h2>
-                
+
                 <button class="btn btn-primary" id="btndisposeingreso" onclick="disposeingreso()">Ingreso</button>
                 <button class="btn btn-primary" id="btndispose" onclick="dispose()">Egreso</button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xs-12 col-md-12" >
+                        <div class="col-xs-12 col-md-12">
                             <table id="ventastable" class="display" width="100%"></table>
                         </div>
                     </div>
@@ -82,18 +82,11 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Fecha</label>
-                                            <input type="text" disabled required  name="fecha" autocomplete="off" id="fecha" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
+                                            <input type="text" disabled required name="fecha" autocomplete="off" id="fecha" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="control-label">Personal</label>
-                                            <select disabled id="personal"></select>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -111,7 +104,7 @@ $suc = $_SESSION['cod_sucursal'];
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo</option>
                                                 <option value="Viatico">Viatico</option>
-                                                <option value="Vacaciones">Vacaciones</option>    
+                                                <option value="Vacaciones">Vacaciones</option>
                                             </select>
                                         </div>
                                     </div>
@@ -122,7 +115,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -131,7 +124,14 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Personal</label>
+                                            <select id="personal"></select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -194,7 +194,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Cantidad</label>
-                                            <input type="number" step="any" id="cantidadxxingreso"  autocomplete="off" required class="form-control form-control-inline" />
+                                            <input type="number" step="any" id="cantidadxxingreso" autocomplete="off" required class="form-control form-control-inline" />
                                         </div>
                                     </div>
                                 </div>
@@ -206,14 +206,14 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" >Guardar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -236,12 +236,12 @@ include("Fragmentos/pie.php");
         initTable()
         onloadPersonal()
         onloadCuentas()
-        if(suc == 1 ){
+        if (suc == 1) {
             btndispose.style.display = "none"
             btndisposeingreso.style.display = "none"
 
 
-        }else{
+        } else {
             btndispose.style.display = ""
             btndisposeingreso.style.display = ""
         }
@@ -257,7 +257,7 @@ include("Fragmentos/pie.php");
     const dispose = async () => {
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
-        
+
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'negresos'");
         nrecibox.value = nrecibo[0].value
         typedespose.value = "negresos";
@@ -280,11 +280,11 @@ include("Fragmentos/pie.php");
         $("#mdesposeingreso").modal()
         $('#personalingreso').val(idpersonal).trigger('change');
     }
-    
+
     const guardardespseingreso = async e => {
-        
+
         e.preventDefault();
-        if(personalingreso.value){
+        if (personalingreso.value) {
 
             let nrecibo = parseInt(nreciboxingreso.value) + 1;
 
@@ -300,26 +300,29 @@ include("Fragmentos/pie.php");
             $("#mdesposeingreso").modal("hide")
             await initTable()
             await getdetail(msucursal.value, namesucursal.value)
-        }else{
+        } else {
             alert("debe seleccionar personal")
         }
     }
     const guardardespse = async e => {
         e.preventDefault();
         // ll_dynamic
-        const dataxx = {header: "", detalle: []}
+        const dataxx = {
+            header: "",
+            detalle: []
+        }
         if (personal.value) {
-            
+
             let nrecibo = parseInt(nrecibox.value) + 1;
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'negresos'");
 
             if (motivo.value == "Deposito en cuenta") {
-                
+
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', 'DEPOSITO EFECTIVO SUC ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
-                
+
                 dataxx.detalle.push(querydepbancario);
-            }else if(motivo.value == "cajatumbes"){
+            } else if (motivo.value == "cajatumbes") {
                 const query = `
                     insert into despose 
                         (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, fromdespose) 
@@ -346,16 +349,19 @@ include("Fragmentos/pie.php");
         }
     }
     const setStatusIngresos = async (id, status, fromdepose) => {
-        const dataxx = {header: "", detalle: []}
+        const dataxx = {
+            header: "",
+            detalle: []
+        }
         dataxx.detalle.push(`update despose set estado = '${status}' where id = ${id}`);
-        if(fromdepose)
+        if (fromdepose)
             dataxx.detalle.push(`update despose set estado = '${status}' where id = ${fromdepose}`);
         let res = await ll_dynamic(dataxx);
-        if(res && res.success){
+        if (res && res.success) {
             alert("DATOS GUARDADOS CORRECTAMENTE");
             await initTable()
             await getdetail(msucursal.value, namesucursal.value)
-        }else{
+        } else {
             alert("hubo un error")
         }
     }
@@ -365,7 +371,7 @@ include("Fragmentos/pie.php");
         $("#moperation").modal();
         moperationtitle.textContent = "EFECTIVO - CAJA " + name
         let despose = [];
-        if(id != 11){
+        if (id != 11) {
             const query1 = `
                 SELECT 
                     id, fecha, nrorecibo, cantidad as despose, '' as total, tipo, CONCAT(motivo, ' - ',estado) as motivo, por, fromdespose
@@ -374,7 +380,7 @@ include("Fragmentos/pie.php");
                     sucursal = ${id} and (tipo = 'despose' or tipo = 'ingreso')`;
 
             despose = await get_data_dynamic(query1);
-        }else{
+        } else {
             const query1 = `
                 SELECT 
                     id, fecha, nrorecibo, tipo, cantidad as total, motivo, estado, fromdespose
@@ -408,29 +414,27 @@ include("Fragmentos/pie.php");
     }
     const setConsolidado = async (id, des) => {
         let qwer = []
-         if((id == 1 && suc==1) || (id == 11 && suc==1)){
+        if ((id == 1 && suc == 1) || (id == 11 && suc == 1)) {
             btndispose.style.display = ""
             btndisposeingreso.style.display = ""
-        }
-        else
-        {
-            if(id != 1 && suc!=1){
+        } else {
+            if (id != 1 && suc != 1) {
                 btndispose.style.display = ""
                 btndisposeingreso.style.display = ""
+            } else {
+                btndispose.style.display = "none"
+                btndisposeingreso.style.display = "none"
             }
-            else
-            {
-            btndispose.style.display = "none"
-            btndisposeingreso.style.display = "none"
-}
-
         }
-        if(id != 11){//OK LO Q ESTA DENTOR DE ESA CONDICION ES DE LAS SCUURSALES Q NO ES LA CAJA TUMBES
+        if (id != 11) {
 
             const rr = await proccessIngresosEfectivo(id)
-            const datatotble = rr.datatotble; 
-            
+            const datatotble = rr.datatotble;
+
             des = des.map(x => {
+                const motivxxo = x.motivo || ""
+                x.motivo = motivxxo.includes("cajatumbes") ? motivxxo.replace("cajatumbes", "Remesa en Efectivo a Caja Central") : motivxxo
+                console.log(x.motivo)
                 return {
                     ...x,
                     total: x.tipo == "ingreso" ? x.despose : 0,
@@ -438,32 +442,30 @@ include("Fragmentos/pie.php");
                     motivo: x.motivo || x.por.substring(0, 30)
                 }
             })
-            
+
             qwer = [...datatotble, ...des];
             let saldo = 0;
-            qwer.sort(function (a, b) {
-                if (a.fecha < b.fecha) {
+            qwer.sort(function(a, b) {
+                if (a.fecha < b.fecha) 
                     return -1;
-                }
-                if (b.fecha < a.fecha) {
-                    return 1;
-                }
+                if (b.fecha < a.fecha) 
+                    return 1;   
                 return 0;
             });
-            
-            qwer = qwer.map(x => { //PEROOO EN ESTA FUNCION TE PERMITE RECORRER TODOYa AHI PONLE
+
+            qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
                 const total = x.total ? parseFloat(x.total) : 0
                 saldo = saldo + total - despose
                 x.saldo = saldo.toFixed(2)
-                x.nrorecibo = x.nrorecibo || ""; 
+                x.nrorecibo = x.nrorecibo || "";
                 return x
             })
-        }else{
+        } else {
             let saldo = 0;
             des.forEach(x => {
 
-                if(x.tipo == "ingresocaja"){
+                if (x.tipo == "ingresocaja") {
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
@@ -472,7 +474,7 @@ include("Fragmentos/pie.php");
                         saldo: saldo.toFixed(2),
                         nrorecibo: x.nrorecibo
                     })
-                }else{
+                } else {
                     saldo -= parseFloat(x.total)
                     qwer.push({
                         ...x,
@@ -484,7 +486,7 @@ include("Fragmentos/pie.php");
                 }
             })
         }
-        
+
         $('#ventastable').DataTable({
             data: qwer,
             destroy: true,
@@ -515,16 +517,15 @@ include("Fragmentos/pie.php");
                 }
             ],
             dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
-            columns: [
-                {
+            columns: [{
                     title: 'fecha',
                     data: 'fecha'
                 },
-                 {
+                {
                     title: 'NRO',
                     data: 'nrorecibo'
                 },
-                {//pruebalo
+                { //pruebalo
                     title: 'motivo',
                     data: 'motivo'
                 },
@@ -547,17 +548,17 @@ include("Fragmentos/pie.php");
                     title: 'acciones',
 
                     render: function(data, type, row) {
-                        if(row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO') && msucursal.value == 1)){
+                        if (row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO') && msucursal.value == 1)) {
                             return `
                                 <div class="">
                                     <button class="btn btn-success" onclick="setStatusIngresos(${row.id},'ACEPTADO', ${row.fromdespose})">Aceptar</button>
                                     <button class="btn btn-danger" onclick="setStatusIngresos(${row.id},'RECHAZADO', ${row.fromdespose})">Rechazar</button>
                                 </div>
                                 `
-                        }else{
+                        } else {
                             return ""
                         }
-                        
+
                     }
                 }
             ]
@@ -602,10 +603,10 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => { //ESTA ES UNA FUNCION QUE TE CARGA LA TABLA,
         //modifica la query, ve como lo ordenasya dejalo asi eso es tdo mañana lo veo con ochoa grascias
-        
+
         let query = "";
-        if(suc == 1)
-              query = `
+        if (suc == 1)
+            query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
                 sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
@@ -616,7 +617,7 @@ include("Fragmentos/pie.php");
             group by s.cod_sucursal
         `;
         else
-             query = `
+            query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
                 sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
@@ -631,7 +632,7 @@ include("Fragmentos/pie.php");
 
         for (let i = 0; i < data.length; i++) {
             const x = data[i];
-            if(x.cod_sucursal != 11){
+            if (x.cod_sucursal != 11) {
                 const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
                 const ingreso = rr.total;
                 data[i] = {
@@ -639,7 +640,7 @@ include("Fragmentos/pie.php");
                     ingreso: ingreso.toFixed(2),
                     saldo: (ingreso - x.egreso).toFixed(2)
                 }
-            }else{
+            } else {
                 data[i] = {
                     ...x,
                     ingreso: parseFloat(x.ingreso).toFixed(2),
