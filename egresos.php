@@ -128,7 +128,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label">Personal</label>
-                                            <select id="personal"></select>
+                                            <select id="personal" disabled></select>
                                         </div>
                                     </div>
                                 </div>
@@ -274,9 +274,6 @@ include("Fragmentos/pie.php");
         cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
-        $('#cliente').val(idcliente).trigger('change');
-
-
     }
     const disposeingreso = async () => {
         formdisposeingreso.reset()
@@ -286,10 +283,9 @@ include("Fragmentos/pie.php");
         typedespose.value = "ningresos";
 
         personalingreso.value = 0
-        //clienteingreso.value=0
         $("#mdesposeingreso").modal()
+        $('#clienteingreso').val("").trigger('change');
         $('#personalingreso').val(idpersonal).trigger('change');
-       // $('#clienteingreso').val(idcliente).trigger('change');
     }
 
     const guardardespseingreso = async e => {
@@ -300,12 +296,14 @@ include("Fragmentos/pie.php");
             let nrecibo = parseInt(nreciboxingreso.value) + 1;
 
             await ff_dynamic("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ningresos'")
+            
+            const tipo = clienteingreso.options[clienteingreso.selectedIndex].dataset.tipo
 
             const query = `
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente) 
             values
-                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', 5,'juridico')`
+                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', ${clienteingreso.value}, '${tipo}')`
             let res = await ff_dynamic(query);
             alert("DATOS GUARDADOS CORRECTAMENTE");
             $("#mdesposeingreso").modal("hide")
@@ -415,24 +413,14 @@ include("Fragmentos/pie.php");
     }
 
     const onloadCliente = async () => {
-        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as fullname1 FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigoclienten, CONCAT(razonsocial,' ',ruc) as fullname1 FROM cjuridico WHERE estado = 0");
+        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as name FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigo, CONCAT(razonsocial,' ',ruc) as name FROM cjuridico WHERE estado = 0");
         res.unshift({
-            codigoclienten: "",
-            fullname1: "Seleccionar"
+            codigo: "",
+            name: "Seleccionar"
         })
-        //cargarselect2("#personal", res, "codigoclienten", "fullname")
-        cargarselect2("#clienteingreso", res, "codigoclienten", "fullname1")
+
+        cargarselect2("#clienteingreso", res, "codigo", "name", ["tipo"]);
     }
-
-
-
-
-
-
-
-
-
-
 
     const onloadCuentas = async () => {
 
