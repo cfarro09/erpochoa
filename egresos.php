@@ -286,10 +286,10 @@ include("Fragmentos/pie.php");
         typedespose.value = "ningresos";
 
         personalingreso.value = 0
-        clienteingreso.value=0
+        //clienteingreso.value=0
         $("#mdesposeingreso").modal()
         $('#personalingreso').val(idpersonal).trigger('change');
-        $('#clienteingreso').val(idcliente).trigger('change');
+       // $('#clienteingreso').val(idcliente).trigger('change');
     }
 
     const guardardespseingreso = async e => {
@@ -305,7 +305,7 @@ include("Fragmentos/pie.php");
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente) 
             values
-                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', ${clienteingreso.value,'juridico'})`
+                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', 5,'juridico')`
             let res = await ff_dynamic(query);
             alert("DATOS GUARDADOS CORRECTAMENTE");
             $("#mdesposeingreso").modal("hide")
@@ -415,13 +415,13 @@ include("Fragmentos/pie.php");
     }
 
     const onloadCliente = async () => {
-        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as fullname FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigoclienten, CONCAT(razonsocial,' ',ruc) as fullname FROM cjuridico WHERE estado = 0");
+        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as fullname1 FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigoclienten, CONCAT(razonsocial,' ',ruc) as fullname1 FROM cjuridico WHERE estado = 0");
         res.unshift({
             codigoclienten: "",
-            fullname: "Seleccionar"
+            fullname1: "Seleccionar"
         })
-        cargarselect2("#personal", res, "codigoclienten", "fullname")
-        cargarselect2("#clienteingreso", res, "codigoclienten", "fullname")
+        //cargarselect2("#personal", res, "codigoclienten", "fullname")
+        cargarselect2("#clienteingreso", res, "codigoclienten", "fullname1")
     }
 
 
