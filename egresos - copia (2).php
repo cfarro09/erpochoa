@@ -180,15 +180,15 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
- <div class="row">
+
+                                <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label">Cliente</label>
-                                            <select id="clienteingreso"></select>
+                                            <label class="control-label">Personal</label>
+                                            <select disabled id="personalingreso"></select>
                                         </div>
                                     </div>
                                 </div>
-                               
 
                                 <div class="row">
                                     <div class="col-md-6">
@@ -242,7 +242,6 @@ include("Fragmentos/pie.php");
     $(function() {
         initTable()
         onloadPersonal()
-        onloadCliente()
         onloadCuentas()
         if (suc == 1) {
             btndispose.style.display = "none"
@@ -274,7 +273,6 @@ include("Fragmentos/pie.php");
         cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
-        $('#cliente').val(idcliente).trigger('change');
 
 
     }
@@ -286,10 +284,8 @@ include("Fragmentos/pie.php");
         typedespose.value = "ningresos";
 
         personalingreso.value = 0
-        clienteingreso.value=0
         $("#mdesposeingreso").modal()
         $('#personalingreso').val(idpersonal).trigger('change');
-        $('#clienteingreso').val(idcliente).trigger('change');
     }
 
     const guardardespseingreso = async e => {
@@ -303,9 +299,9 @@ include("Fragmentos/pie.php");
 
             const query = `
             insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente) 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo) 
             values
-                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', ${clienteingreso.value,'juridico'})`
+                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso')`
             let res = await ff_dynamic(query);
             alert("DATOS GUARDADOS CORRECTAMENTE");
             $("#mdesposeingreso").modal("hide")
@@ -414,20 +410,20 @@ include("Fragmentos/pie.php");
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
 
-    const onloadCliente = async () => {
-        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as fullname FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigoclienten, CONCAT(razonsocial,' ',ruc) as fullname FROM cjuridico WHERE estado = 0");
-        res.unshift({
-            codigoclienten: "",
-            fullname: "Seleccionar"
-        })
-        cargarselect2("#personal", res, "codigoclienten", "fullname")
-        cargarselect2("#clienteingreso", res, "codigoclienten", "fullname")
-    }
 
 
 
 
+/*
 
+
+async function setcombocliente(e) {
+        clearselect2("#cliente")
+        const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
+        const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
+
+
+*/
 
 
 
@@ -440,8 +436,8 @@ include("Fragmentos/pie.php");
         const arraycuentaabonado = await get_data_dynamic(query);
         arraycuentaabonado.forEach(x => {
             cuentabancaria.innerHTML += `
-                <option value="${x.id_cuenta}">${x.description}</option>
-            `;
+				<option value="${x.id_cuenta}">${x.description}</option>
+			`;
         });
     }
     const setConsolidado = async (id, des) => {
