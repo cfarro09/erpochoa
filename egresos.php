@@ -627,7 +627,7 @@ include("Fragmentos/pie.php");
             query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
-                sum(Case When d.tipo = 'ingresocaja' Then d.cantidad Else 0 End) ingreso,
+                sum(Case When d.tipo = 'ingresocaja'  or d.tipo = 'ingreso' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
             left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA'
