@@ -127,7 +127,7 @@ $suc = $_SESSION['cod_sucursal'];
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label">Personal</label>
+                                            <label class="control-label">Entregado por: </label>
                                             <select id="personal" disabled></select>
                                         </div>
                                     </div>
@@ -183,7 +183,7 @@ $suc = $_SESSION['cod_sucursal'];
  <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label">Cliente</label>
+                                            <label class="control-label">Recibido de:</label>
                                             <select id="clienteingreso"></select>
                                         </div>
                                     </div>
@@ -209,7 +209,7 @@ $suc = $_SESSION['cod_sucursal'];
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label">Personal</label>
+                                            <label class="control-label">Recibido por:</label>
                                             <select disabled id="personalingreso"></select>
                                         </div>
                                     </div>
@@ -459,7 +459,7 @@ include("Fragmentos/pie.php");
                     ...x,
                     total: x.tipo == "ingreso" ? x.despose : 0,
                     despose: x.tipo == "ingreso" ? 0 : x.despose,
-                    motivo: x.motivo || x.por.substring(0, 30),
+                    motivo: x.motivo == "" || x.motivo == " - " ?   x.por.substring(0, 30) : x.motivo,
                     nrorecibo: x.tipo == "ingreso" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
                 }
             })
@@ -652,7 +652,7 @@ include("Fragmentos/pie.php");
             const x = data[i];
             if (x.cod_sucursal != 11) {
                 const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
-                const ingreso = rr.total;
+                const ingreso = rr.total  + parseFloat(x.ingreso || 0);
                 data[i] = {
                     ...x,
                     ingreso: ingreso.toFixed(2),
