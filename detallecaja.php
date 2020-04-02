@@ -192,7 +192,7 @@ include("Fragmentos/pie.php");
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 
-        let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'negresos'");
+        let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'ndetallecaja'");
         nrecibox.value = nrecibo[0].value
 
         personal.value = 0
