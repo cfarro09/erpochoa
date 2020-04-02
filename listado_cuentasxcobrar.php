@@ -509,7 +509,7 @@ include("Fragmentos/pie.php");
         const jssson = JSON.stringify(arraypagoxxx);
         
         arraypagoxxx.filter(x => x.tipopago == "depositobancario").forEach(x => {
-				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO N° ${x.numerooperacion} - ${dnicliente.value}', ${x.montoextra}, 
+				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO N ${x.numerooperacion} - ${dnicliente.value}', ${x.montoextra}, 
 				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
 
 				data.detalle.push(querydepbancario)

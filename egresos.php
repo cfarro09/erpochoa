@@ -325,7 +325,7 @@ include("Fragmentos/pie.php");
 
             if (motivo.value == "Deposito en cuenta") {
 
-                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO N° ${nrecibox.value} ${namesucursal.value}', 'DEPOSITO EFECTIVO N° ${nrecibox.value} ${namesucursal.value}', ${cantidadxx.value}, 
+                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO N ${nrecibox.value} ${namesucursal.value}', 'DEPOSITO EFECTIVO N ${nrecibox.value} ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
 
                 dataxx.detalle.push(querydepbancario);
