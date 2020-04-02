@@ -26,9 +26,18 @@ if (isset($_GET['codigo'])) {
 }
 if($tipo == "juridico"){
     $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
+
+    $query_despose = "select nrorecibo, cantidad, fecha from despose ds where ds.codigocliente = $codcliente and ds.tipocliente = 'juridico'";
+    
 }else{
     $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
+
+    $query_despose = "select nrorecibo, cantidad, fecha from despose ds where ds.codigocliente = $codcliente and ds.tipocliente = 'natural'";
 }
+
+$listdespose = mysql_query($query_despose, $Ventas) or die(mysql_error());
+$rowdespose = mysql_fetch_assoc($listdespose);
+
 
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
@@ -75,7 +84,7 @@ $i = 1;
                 $abonoproveedor = $row["abonoproveedor"];
 
                 $auxiliar = number_format($acumulado, 2, '.', '')
-            ?>
+                ?>
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $row["fecha_emision"] ?></td>
@@ -113,9 +122,32 @@ $i = 1;
                         </tr>
                     <?php endforeach ?>
                 <?php endif ?>
+
             <?php
                 $i++;
             } while ($row = mysql_fetch_assoc($Listado)); ?>
+
+
+                
+            <?php do {
+                 $acumulado = $acumulado - $rowdespose["cantidad"];
+                 $auxiliar = number_format($acumulado, 2, '.', '');
+                ?>
+                <tr>
+                    <td><?= $i ?></td>
+                    <td><?= $rowdespose["fecha"] ?></td>
+                    <td><?= "Deposito efectivo sucursal" ?></td>
+                    <td><?= "RI-".$rowdespose["nrorecibo"] ?></td>
+
+                    <td>0.00</td>
+                    <td><?= number_format($rowdespose["cantidad"], 2, '.', '') ?></td>
+
+                    <td><?= $auxiliar ?></td>
+                </tr>
+            <?php
+                $i++;
+            } while ($rowdespose = mysql_fetch_assoc($listdespose)); ?>
+            
         </tbody>
     </table>
 <?php endif ?>
