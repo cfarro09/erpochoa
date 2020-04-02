@@ -1027,7 +1027,7 @@ $nombreigv = mysql_fetch_object($result)->value;
 
 
        <li class="nav-item">
-                                                    <a href="egresos.php" class="nav-link font-blue-ebonyclay">
+                                                    <a href="cajaventas.php" class="nav-link font-blue-ebonyclay">
                                                         <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                         <span class="title">Efectivo Caja Sucursal</span>
                                                         <span class="selected"></span>
