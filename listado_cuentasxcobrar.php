@@ -273,6 +273,25 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    let htmlcuentaabonado = "";
+    async function getcuentaabonados() {
+		let htmlcuentaabonado1 = "";
+		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
+		const arraycuentaabonado = await get_data_dynamic(query);
+		arraycuentaabonado.forEach(x => {
+			htmlcuentaabonado1 += `
+				<option value="${x.id_cuenta}">${x.description}</option>
+			`;
+		});
+		return htmlcuentaabonado1;
+	}
+
+    const onloadxx = async () => {
+		htmlcuentaabonado = await getcuentaabonados()
+		
+	}
+	$(document).ready(onloadxx());
+
     function changetypepago(e) {
         // guardar_button.style.display = ""
         e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
@@ -350,7 +369,7 @@ include("Fragmentos/pie.php");
         </div>
         </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque tarjetacredito tarjetadebito">
+        <div style="display: none" class="col-md-3 inputxxx  cheque tarjetacredito tarjetadebito">
         <div class="form-group">
         <label class="control-label">Banco</label>
         <select class="form-control bancoextra">
@@ -393,7 +412,7 @@ include("Fragmentos/pie.php");
         </div>
         </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario cheque">
+        <div style="display: none" class="col-md-3 inputxxx  cheque">
         <div class="form-group">
         <label class="control-label">Cuenta Corriente</label>
         <input type="text" class="form-control cuentacorriente">
@@ -418,7 +437,9 @@ include("Fragmentos/pie.php");
         <div style="display: none" class="col-md-3 inputxxx depositobancario">
         <div class="form-group">
         <label class="control-label">Cta Abonado</label>
-        <input type="text" class="form-control cuentaabonado">
+        <select class="form-control cuentaabonado">
+		${htmlcuentaabonado}
+		</select>
         </div>
         </div>`;
         containerpayextra.appendChild(newxx);
@@ -463,7 +484,7 @@ include("Fragmentos/pie.php");
                 fechaxxx: new Date(new Date().setHours(10)).toISOString().substring(0,10)
             })
             totalpagando += parseFloat(montoextra);
-            if (tipopago == "depositobancario" && (!bancoextra || !montoextra || !cuentacorriente || !numerooperacion || !fechaextra || !cuentaabonado)) {
+            if (tipopago == "depositobancario" && (!montoextra || !numerooperacion || !fechaextra || !cuentaabonado)) {
                 errorrr = "Llena todos los datos de deposito bancario";
                 return;
             } else if (tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)) {
@@ -496,6 +517,14 @@ include("Fragmentos/pie.php");
         }
         const jssson = JSON.stringify(arraypagoxxx);
         
+        arraypagoxxx.filter(x => x.tipopago == "depositobancario").forEach(x => {
+				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO', ${x.montoextra}, 
+				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
+
+				data.detalle.push(querydepbancario)
+			})
+
+
         const query = `
         update ventas 
             set 
