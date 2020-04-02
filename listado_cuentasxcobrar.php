@@ -293,22 +293,12 @@ include("Fragmentos/pie.php");
 	$(document).ready(onloadxx());
 
     function changetypepago(e) {
-        // guardar_button.style.display = ""
         e.closest(".containerx").querySelectorAll(".inputxxx").forEach(ix => ix.style.display = "none");
         e.closest(".containerx").querySelectorAll("." + e.value).forEach(ix => ix.style.display = "");
     }
     const pagar = e => {
-        // guardar_button.style.display = "none"
         $("#moperation").modal();
         const pagoefectivo = parseFloat(e.dataset.pagoefectivo);
-        // historialbody.innerHTML = "";
-
-        // if (e.dataset.porpagar == "1") {
-        //     btnaddpay.style.display = "";
-        // } else {
-        //     btnaddpay.style.display = "none";
-        // }
-
         inputfecha.value = e.dataset.fecha;
         inputtipocomprobante.value = e.dataset.codigocomprobante;
         inputnumerocomprobante.value = e.dataset.cliente;
