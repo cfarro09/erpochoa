@@ -1117,30 +1117,12 @@ $nombreigv = mysql_fetch_object($result)->value;
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="nav-item">
-                                            <a href="conciliacion.php" class="nav-link font-blue-ebonyclay">
+                                            <a href="egresos.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Efectivo Caja Central</span>
                                                 <span class="selected"></span>
                                             </a>
-                                            <ul class="sub-menu">
-                                                <li class="nav-item">
-                                                    <a href="caja.php" class="nav-link font-blue-ebonyclay">
-                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                        <span class="title">Ingresos</span>
-                                                        <span class="selected"></span>
-
-
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="egresos.php" class="nav-link font-blue-ebonyclay">
-                                                        <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                        <span class="title">Egresos</span>
-                                                        <span class="selected"></span>
-
-                                                    </a>
-                                                </li>
-                                            </ul>
+                                            
                                         </li>
 
 
