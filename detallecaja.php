@@ -83,12 +83,13 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
-                                                <option value="cajatumbes">Remesa en Efectivo a Caja Central</option>
-                                                <option value="Deposito en cuenta">Deposito en cuenta</option>
+                                                <option value="cuentasxpagar">Cuentas x Pagar Transfenrecia</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
-                                                <option value="Sueldo">Sueldo</option>
+                                                <option value="Sueldo">Sueldo transferencia</option>
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
+                                                <option value="Mantenimiento">Mantenimiento</option>
+                                                <option value="Otros">Otros</option>
                                             </select>
                                         </div>
                                     </div>
