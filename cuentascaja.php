@@ -52,7 +52,9 @@ $i = 1;
             </tr>
         </thead>
         <tbody>
-            <?php do {  ?>
+            <?php do {  
+                $fullname = $row["nombre_banco"] . " : " . $row["numero_cuenta"] . " : " .  $row["moneda"];
+                ?>
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $row["nombre_banco"] ?></td>
@@ -63,7 +65,7 @@ $i = 1;
                     <td><?= $row["cel_sectorista"] ?></td>
                     <td><?= $row['saldo'] ?></td>
                     <td>
-                        <a <?= "href='detallecaja.php?id=" . $row['id_cuenta'] . "'" ?> class="btn btn-primary">DET</a>
+                        <a <?= "href='detallecaja.php?id=" . $row['id_cuenta'] . "&fullname=$fullname'" ?> class="btn btn-primary">DET</a>
                         <button class="btn btn-danger" onclick='eliminarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-trash"></i></button>
                         <button class="btn btn-primary" onclick='editarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-edit"></i></button>
                     </td>
