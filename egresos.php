@@ -434,7 +434,7 @@ include("Fragmentos/pie.php");
     }
     const setConsolidado = async (id, des) => {
         let qwer = []
-        if ((id == 1 && suc == 1) || (id == 11 && suc == 1)) {
+        if ((id == 1 && suc == 1) ) {
             btndispose.style.display = ""
             btndisposeingreso.style.display = ""
         } else {
