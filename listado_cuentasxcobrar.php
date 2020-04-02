@@ -27,12 +27,12 @@ if (isset($_GET['codigo'])) {
 if($tipo == "juridico"){
     $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
-    $query_despose = "select nrorecibo, cantidad, fecha from despose ds where ds.codigocliente = $codcliente and ds.tipocliente = 'juridico'";
+    $query_despose = "select nrorecibo, s.nombre_sucursal, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'juridico' ";
     
 }else{
     $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
-    $query_despose = "select nrorecibo, cantidad, fecha from despose ds where ds.codigocliente = $codcliente and ds.tipocliente = 'natural'";
+    $query_despose = "select nrorecibo, s.nombre_sucursal, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'natural'";
 }
 
 $listdespose = mysql_query($query_despose, $Ventas) or die(mysql_error());
@@ -136,7 +136,7 @@ $i = 1;
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $rowdespose["fecha"] ?></td>
-                    <td><?= "Deposito efectivo sucursal" ?></td>
+                    <td><?= "Deposito efectivo ". $rowdespose["nombre_sucursal"] ?></td>
                     <td><?= "RI-".$rowdespose["nrorecibo"] ?></td>
 
                     <td>0.00</td>
