@@ -114,7 +114,7 @@ $i = 1;
                         <tr>
                             <td><?= $i ?></td>
                             <td><?= $abono->fechaxxx ?></td>
-                            <td>ABONO</td>
+                            <td>ABONO <?= $abono->numerooperacion ?></td>
                             <td><?= $abono->tipopago ?></td>
                             <td>0.00</td>
                             <td><?= number_format((float)$abono->montoextra, 2, '.', '') ?></td>
