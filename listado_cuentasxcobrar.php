@@ -51,6 +51,7 @@ $i = 1;
     }
 </style>
 <h3>Cliente <?= $row["ClienteNatural"] . " - " . $row["cedula"] ?></h3>
+<input type="hidden" id="dnicliente" value='<?= $row["cedula"] ?>'>
 <button class="btn btn-success" style="margin: 10px 0" data-toggle="modal" data-target="#mpagar">PAGAR ACUMULADO</button>
 <?php if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
@@ -508,7 +509,7 @@ include("Fragmentos/pie.php");
         const jssson = JSON.stringify(arraypagoxxx);
         
         arraypagoxxx.filter(x => x.tipopago == "depositobancario").forEach(x => {
-				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO', ${x.montoextra}, 
+				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO N° ${x.numerooperacion} - ${dnicliente.value}', ${x.montoextra}, 
 				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
 
 				data.detalle.push(querydepbancario)
