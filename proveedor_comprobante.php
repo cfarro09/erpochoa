@@ -62,7 +62,7 @@ if (isset($_GET['codigoproveedor'])) {
 	$rucxx = $_GET['codigoproveedor'];
 }
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = sprintf("select *,  
+$query_Listado = sprintf("select r.codigorc, r.rucproveedor , r.total, e.id_estibador , nc.id_notacredito, r.fecha_registro, r.tipo_comprobante,
 r.abonoochoa as abonor, e.abonoochoa as abonoe, nd.abonoochoa as abonond, nc.abonoochoa as abononc, t.abonoochoa as abonot, 
 p.ruc, t.id_transporte, t.tipocomprobante as tipocomprobantet, nc.tipocomprobante as tipocomprobantenc, nd.tipocomprobante as tipocomprobantend, e.tipocomprobante as tipocomprobantee, nc.numerocomprobante as numerocomprobantenc, nd.pagoacumulado, nd.preciond_soles, nd.id_notadebito, nd.numerocomprobante as numerocomprobantend, e.numerocomprobante as numerocomprobantee, t.numerocomprobante as numerocomprobantet, r.numerocomprobante as numerocomprobantec, p.ruc, s.nombre_sucursal 
 FROM registro_compras r 
@@ -72,9 +72,16 @@ LEFT JOIN notadebito_compra nd on nd.codigocompras = r.codigorc
 LEFT JOIN notacredito_compra nc on nc.codigocompras = r.codigorc 
 LEFT JOIN sucursal s on s.cod_sucursal=r.codigosuc 
 LEFT JOIN proveedor p on p.ruc=r.rucproveedor where p.ruc= '%s' or t.ructransporte='%s' or nd.rucnd = '$rucxx' or nc.rucnotacredito = '$rucxx'", GetSQLValueString($colname_Listado, "char"), GetSQLValueString($colname_Listado, "char"));
+
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
+
+$querydespose = "select nrorecibo, cantidad, fecha, por from desposeproveedor dd left join proveedor p on p.codigoproveedor = dd.proveedor where dd.motivo = 'cuentasxpagar' and p.ruc = '$rucxx' ";
+
+$listdespose = mysql_query($querydespose, $Ventas) or die(mysql_error());
+$rrdes = mysql_fetch_assoc($listdespose);
+
 
 $colname_Proveedor = "-1";
 if (isset($_GET['codigoproveedor'])) {
@@ -145,14 +152,7 @@ $codpersonal = $_SESSION['kt_codigopersonal'];
 		<tbody>
 
 			<?php $acumulado = 0;
-			do {
-
-				// $lastcodigoventa = $row_Listado["codigoventas"];
-				// $abonoproveedor = $abonoochoa;
-
-				// $auxiliar = number_format($acumulado, 2, '.', '')
-
-			?>
+			do { ?>
 				<?php if ($row_Listado['codigorc'] != NULL && $row_Listado['rucproveedor'] == $colname_Listado) {
 					$acumulado += $row_Listado["total"];
 					$abonoochoa = $row_Listado["abonor"];
@@ -382,6 +382,28 @@ $codpersonal = $_SESSION['kt_codigopersonal'];
 
 			<?php $i++;
 			} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
+
+
+
+			<?php do { ?>
+				<?php
+				$acumulado = $acumulado - $rrdes["cantidad"];
+				$auxiliar = number_format($acumulado, 2, '.', '');
+				$i++;
+				?>
+				<tr>
+					<td><?= $i ?></td>
+					<td><?= $rrdes["fecha"] ?></td>
+					<td>N° <?= $rrdes["nrorecibo"] ?></td>
+					<td>Trans banco - banco</td>
+					<td><?= number_format((float) $rrdes["cantidad"], 2, '.', '') ?></td>
+					<td>0.00</td>
+					<td><?= $auxiliar ?></td>
+					<td></td>
+				</tr>
+
+			<?php } while ($rrdes = mysql_fetch_assoc($listdespose)); ?>
+
 		</tbody>
 	</table>
 <?php } // Show if recordset not empty 

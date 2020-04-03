@@ -190,6 +190,7 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const suc = <?= $_SESSION['cod_sucursal']  ?>;
     const id = <?= $_GET["id"] ?>;
     const fullname = '<?= $_GET["fullname"] ?>';
     const idpersonal = <?= $_SESSION['kt_codigopersonal']; ?>;
@@ -198,9 +199,49 @@ include("Fragmentos/pie.php");
         initTable();
         onloadPersonal()
         onloadProveedores()
+
+        formdispose.addEventListener("submit", guardardespse)
     });
+
+    const guardardespse = async e => {
+        e.preventDefault();
+        const dataxx = {
+            header: "",
+            detalle: []
+        }
+        if (personal.value) {
+
+            let nrecibo = parseInt(nrecibox.value) + 1;
+            dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ndetallecaja'");
+            let proveedor = 0;
+            if (motivo.value == "cuentasxpagar") {
+                proveedor = selectproveedor.value;
+                const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
+                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${id}, '${fecha.value}', 'Egreso' ,'Cuentas x Pagar N ${nrecibox.value} ${fecha.value} ${ruc}', -${cantidadxx.value}, 
+                (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1))`
+
+                dataxx.detalle.push(querydepbancario);
+            } 
+            const query = `
+                insert into desposeproveedor 
+                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, proveedor) 
+                values
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${suc}, 'despose', '${motivo.value}', 'ENVIADO', ${proveedor})`
+
+            dataxx.header = query;
+
+            let res = await ll_dynamic(dataxx);
+            alert("DATOS GUARDADOS CORRECTAMENTE");
+            await initTable()
+            $("#mdespose").modal("hide")
+        } else {
+            alert("debe seleccionar personal")
+        }
+    }
+
     const changemotivo = e => {
         selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" ? "" : "none"
+        saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" ? "" : "none"
     }
     const changeproveedor = e => {
         saldoproveedor.closest(".divparent").style.display = "";
@@ -230,8 +271,8 @@ include("Fragmentos/pie.php");
     }
     const onloadProveedores = async () => {
         const res = await get_data_dynamic(`
-        SELECT p.codigoproveedor,  CONCAT(razonsocial, '-', ruc) fullname,
-        (sum(IFNULL(rc.total, 0)) + sum(IFNULL(e.precioestibador_soles, 0)) + sum(IFNULL(preciotransp_soles, 0)) + sum(IFNULL(preciond_soles, 0)) + sum(IFNULL(precionc_soles, 0))) - (sum(IFNULL(rc.montoochoa, 0)) +  sum(IFNULL(e.montoochoa, 0)) +  sum(IFNULL(t.montoochoa, 0)) +  sum(IFNULL(nd.montoochoa, 0)) +  sum(IFNULL(nc.precionc_soles, 0))) as saldo
+        SELECT p.codigoproveedor,  CONCAT(razonsocial, '-', ruc) fullname, ruc,
+        (sum(IFNULL(rc.total, 0)) + sum(IFNULL(e.precioestibador_soles, 0)) + sum(IFNULL(preciotransp_soles, 0)) + sum(IFNULL(preciond_soles, 0)) + sum(IFNULL(precionc_soles, 0))) - (sum(IFNULL(rc.montoochoa, 0)) +  sum(IFNULL(e.montoochoa, 0)) +  sum(IFNULL(t.montoochoa, 0)) + (select sum(IFNULL(dess.cantidad, 0)) from desposeproveedor dess where dess.motivo = 'cuentasxpagar' and dess.proveedor = p.codigoproveedor) +  sum(IFNULL(nd.montoochoa, 0)) +  sum(IFNULL(nc.precionc_soles, 0))) as saldo
         FROM proveedor p
         LEFT JOIN registro_compras rc on rc.rucproveedor = p.ruc
         LEFT JOIN transporte_compra t on t.ructransporte = p.ruc
@@ -245,14 +286,20 @@ include("Fragmentos/pie.php");
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        cargarselect2("#selectproveedor", res, "codigoproveedor", "fullname", ["saldo"])
+        cargarselect2("#selectproveedor", res, "codigoproveedor", "fullname", ["saldo", "ruc"])
     }
     const initTable = async () => {
         const query = `
             select * from cuenta_mov where id_cuenta = ${id} order by id_cuenta_mov asc
         `
         let data = await get_data_dynamic(query);
-        
+        data = data.map(x => {
+            return {
+                ...x,
+                cargo: parseFloat(x.monto) < 0 ? (x.monto*-1).toFixed(2) : "0.00",
+                monto: parseFloat(x.monto) < 0 ? "0.00" : x.monto,
+            }
+        })
         $('#maintable').DataTable({
             data,
             ordering: false,
@@ -268,7 +315,7 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'CARGO',
-                    defaultContent: ''
+                    data: 'cargo'
                 },
                 {
                     title: 'ABONO',

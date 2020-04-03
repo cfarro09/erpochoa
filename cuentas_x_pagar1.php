@@ -69,15 +69,22 @@ $updateSQL = sprintf("DELETE FROM proveedor WHERE codigoproveedor=%s",
 //------------Fin Actualizar(Eliminar) Registro----------------
 //------------Inicio Juego de Registro "Listado"----------------
 mysql_select_db($database_Ventas, $Ventas);
+
 $query_Listado = "SELECT p.codigoproveedor, p.ruc, p.razonsocial,
   sum(rc.total) as totalrc, sum(e.precioestibador_soles) as totale, sum(preciotransp_soles) as totalt, sum(preciond_soles) as totalnd, sum(precionc_soles) as totalnc ,
-  sum(rc.montoochoa) as abonorc, sum(e.montoochoa) as abonoe, sum(t.montoochoa) as abonot, sum(nd.montoochoa) as abonond, sum(nc.precionc_soles) as abononc FROM proveedor p
-  LEFT JOIN registro_compras rc on rc.rucproveedor = p.ruc
+  
+  (select sum(dess.cantidad) from desposeproveedor dess where dess.motivo = 'cuentasxpagar' and dess.proveedor = p.codigoproveedor) as abonodespose, sum(rc.montoochoa) as abonorc, sum(e.montoochoa) as abonoe, sum(t.montoochoa) as abonot, sum(nd.montoochoa) as abonond, sum(nc.precionc_soles) as abononc 
+  FROM proveedor p
+  LEFT JOIN registro_compras rc on rc.rucproveedor = p.ruc 
   LEFT JOIN transporte_compra t on t.ructransporte = p.ruc
   LEFT JOIN estibador_compra e on e.rucestibador = p.ruc
   LEFT JOIN notadebito_compra nd on nd.rucnd = p.ruc
   LEFT JOIN notacredito_compra nc on nc.rucnotacredito = p.ruc
-  WHERE estado = '0' and rc.total is not null 
+
+  
+
+
+  WHERE p.estado = '0' and rc.total is not null 
   GROUP BY p.ruc ";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $rr = mysql_fetch_assoc($Listado);
@@ -132,7 +139,7 @@ include("Fragmentos/abrirpopupcentro.php");
     <tbody>
       <?php do { 
         $totalx = $rr["totalrc"] + $rr["totale"] + $rr["totalt"] + $rr["totalnd"] + $rr["totalnc"];
-        $abono = $rr["abonorc"] + $rr["abonoe"] + $rr["abonot"] + $rr["abonond"] + $rr["abononc"];
+        $abono = $rr["abonorc"] + $rr["abonoe"] + $rr["abonot"] + $rr["abonond"] + $rr["abononc"] + $rr["abonodespose"];
         $saldo = $totalx - $abono;
         $cargo = number_format($totalx, 2, '.', '');
         $saldo = number_format($saldo, 2, '.', '');
