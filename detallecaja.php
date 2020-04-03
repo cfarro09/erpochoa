@@ -85,6 +85,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                             <label class="control-label">Motivo</label> 
                                             <select id="motivo" onchange="changemotivo(this)" class="form-control">
                                                 <option value="cuentasxpagar">Cuentas x Pagar Transfenrecia</option>
+                                                <option value="transcheque">Transferencia con cheque</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo transferencia</option>
                                                 <option value="Viatico">Viatico</option>
@@ -214,7 +215,7 @@ include("Fragmentos/pie.php");
             let nrecibo = parseInt(nrecibox.value) + 1;
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ndetallecaja'");
             let proveedor = 0;
-            if (motivo.value == "cuentasxpagar") {
+            if (motivo.value == "cuentasxpagar" || motivo.value == "transcheque") {
                 proveedor = selectproveedor.value;
                 const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${id}, '${fecha.value}', 'Egreso' ,'Cuentas x Pagar N ${nrecibox.value} ${fecha.value} ${ruc}', -${cantidadxx.value}, 
@@ -222,11 +223,12 @@ include("Fragmentos/pie.php");
 
                 dataxx.detalle.push(querydepbancario);
             } 
+            let mm = motivo.value == "cuentasxpagar" || motivo.value == "transcheque" ? "cuentasxpagar" : motivo.value
             const query = `
                 insert into desposeproveedor 
                     (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, proveedor) 
                 values
-                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${suc}, 'despose', '${motivo.value}', 'ENVIADO', ${proveedor})`
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${suc}, 'despose', '${mm}', 'ENVIADO', ${proveedor})`
 
             dataxx.header = query;
 
@@ -240,8 +242,8 @@ include("Fragmentos/pie.php");
     }
 
     const changemotivo = e => {
-        selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" ? "" : "none"
-        saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" ? "" : "none"
+        selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
+        saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
     }
     const changeproveedor = e => {
         saldoproveedor.closest(".divparent").style.display = "";
