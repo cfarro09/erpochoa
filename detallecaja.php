@@ -109,6 +109,21 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                             <input type="text" disabled class="form-control" id="saldoproveedor">
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">N° Cheque</label>
+                                            <input type="text" class="form-control" id="numerocheque">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha Cheque</label>
+                                            <input type="text" readonly required name="fechacheque" autocomplete="off" id="fechacheque" class="form-control form-control-inline input-medium date-picker" data-date-format="yyyy-mm-dd" />
+                                        </div>
+                                    </div>
+
+
                                 </div>
 
                                 <div class="row">
@@ -244,11 +259,14 @@ include("Fragmentos/pie.php");
     const changemotivo = e => {
         selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
         saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
+
+        numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
+        fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
     }
     const changeproveedor = e => {
         saldoproveedor.closest(".divparent").style.display = "";
-        
-        saldoproveedor.value = e.options[e.selectedIndex].dataset.saldo;
+        if(e.options[e.selectedIndex])
+            saldoproveedor.value = e.options[e.selectedIndex].dataset.saldo;
 
     }
     const dispose = async () => {
@@ -262,6 +280,7 @@ include("Fragmentos/pie.php");
         personal.value = 0
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
+        $('#selectproveedor').val("").trigger('change');
     }
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
@@ -274,7 +293,7 @@ include("Fragmentos/pie.php");
     const onloadProveedores = async () => {
         const res = await get_data_dynamic(`
         SELECT p.codigoproveedor,  CONCAT(razonsocial, '-', ruc) fullname, ruc,
-        (sum(IFNULL(rc.total, 0)) + sum(IFNULL(e.precioestibador_soles, 0)) + sum(IFNULL(preciotransp_soles, 0)) + sum(IFNULL(preciond_soles, 0)) + sum(IFNULL(precionc_soles, 0))) - (sum(IFNULL(rc.montoochoa, 0)) +  sum(IFNULL(e.montoochoa, 0)) +  sum(IFNULL(t.montoochoa, 0)) + (select sum(IFNULL(dess.cantidad, 0)) from desposeproveedor dess where dess.motivo = 'cuentasxpagar' and dess.proveedor = p.codigoproveedor) +  sum(IFNULL(nd.montoochoa, 0)) +  sum(IFNULL(nc.precionc_soles, 0))) as saldo
+        (sum(IFNULL(rc.total, 0)) + sum(IFNULL(e.precioestibador_soles, 0)) + sum(IFNULL(preciotransp_soles, 0)) + sum(IFNULL(preciond_soles, 0)) + sum(IFNULL(precionc_soles, 0))) - (sum(IFNULL(rc.montoochoa, 0)) +  sum(IFNULL(e.montoochoa, 0)) +  sum(IFNULL(t.montoochoa, 0)) + IFNULL((select sum(IFNULL(dess.cantidad, 0)) from desposeproveedor dess where dess.motivo = 'cuentasxpagar' and dess.proveedor = p.codigoproveedor), 0) +  sum(IFNULL(nd.montoochoa, 0)) +  sum(IFNULL(nc.precionc_soles, 0))) as saldo
         FROM proveedor p
         LEFT JOIN registro_compras rc on rc.rucproveedor = p.ruc
         LEFT JOIN transporte_compra t on t.ructransporte = p.ruc
@@ -285,7 +304,7 @@ include("Fragmentos/pie.php");
         GROUP BY p.ruc`);
         
         res.unshift({
-            codigopersonal: "",
+            codigoproveedor: "",
             fullname: "Seleccionar"
         })
         cargarselect2("#selectproveedor", res, "codigoproveedor", "fullname", ["saldo", "ruc"])
