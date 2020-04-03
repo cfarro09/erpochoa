@@ -258,7 +258,6 @@ include("Fragmentos/pie.php");
     });
     const changeMotivo = e => {
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
-
     }
     motivo.onchange = changeMotivo;
 
@@ -411,6 +410,7 @@ include("Fragmentos/pie.php");
         cargarselect2("#personal", res, "codigopersonal", "fullname")
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
+    
 
     const onloadCliente = async () => {
         const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as name FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigo, CONCAT(razonsocial,' ',ruc) as name FROM cjuridico WHERE estado = 0");

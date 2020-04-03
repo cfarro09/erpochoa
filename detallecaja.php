@@ -82,7 +82,8 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
+                                            <label class="control-label">Motivo</label> 
+                                            <select id="motivo" onchange="changemotivo(this)" class="form-control">
                                                 <option value="cuentasxpagar">Cuentas x Pagar Transfenrecia</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo transferencia</option>
@@ -93,10 +94,18 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 divparent">
+
+                                    <div class="col-md-6 divparent" >
                                         <div class="form-group">
-                                            <label class="control-label">Cuenta</label>
-                                            <select id="cuentabancaria" class="form-control"></select>
+                                            <label class="control-label">Proveedor</label>
+                                            <select id="selectproveedor" onchange="changeproveedor(this)" ></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Saldo</label>
+                                            <input type="text" disabled class="form-control" id="saldoproveedor">
                                         </div>
                                     </div>
                                 </div>
@@ -188,16 +197,26 @@ include("Fragmentos/pie.php");
     $(function() {
         initTable();
         onloadPersonal()
+        onloadProveedores()
     });
+    const changemotivo = e => {
+        selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" ? "" : "none"
+    }
+    const changeproveedor = e => {
+        saldoproveedor.closest(".divparent").style.display = "";
+        
+        saldoproveedor.value = e.options[e.selectedIndex].dataset.saldo;
+
+    }
     const dispose = async () => {
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'ndetallecaja'");
         nrecibox.value = nrecibo[0].value
-
+        selectproveedor.value = "";
+        saldoproveedor.closest(".divparent").style.display = "none";
         personal.value = 0
-        cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
     }
@@ -208,6 +227,25 @@ include("Fragmentos/pie.php");
             fullname: "Seleccionar"
         })
         cargarselect2("#personal", res, "codigopersonal", "fullname")
+    }
+    const onloadProveedores = async () => {
+        const res = await get_data_dynamic(`
+        SELECT p.codigoproveedor,  CONCAT(razonsocial, '-', ruc) fullname,
+        (sum(IFNULL(rc.total, 0)) + sum(IFNULL(e.precioestibador_soles, 0)) + sum(IFNULL(preciotransp_soles, 0)) + sum(IFNULL(preciond_soles, 0)) + sum(IFNULL(precionc_soles, 0))) - (sum(IFNULL(rc.montoochoa, 0)) +  sum(IFNULL(e.montoochoa, 0)) +  sum(IFNULL(t.montoochoa, 0)) +  sum(IFNULL(nd.montoochoa, 0)) +  sum(IFNULL(nc.precionc_soles, 0))) as saldo
+        FROM proveedor p
+        LEFT JOIN registro_compras rc on rc.rucproveedor = p.ruc
+        LEFT JOIN transporte_compra t on t.ructransporte = p.ruc
+        LEFT JOIN estibador_compra e on e.rucestibador = p.ruc
+        LEFT JOIN notadebito_compra nd on nd.rucnd = p.ruc
+        LEFT JOIN notacredito_compra nc on nc.rucnotacredito = p.ruc
+        WHERE p.estado = '0' and p.ruc <> '00000000000'
+        GROUP BY p.ruc`);
+        
+        res.unshift({
+            codigopersonal: "",
+            fullname: "Seleccionar"
+        })
+        cargarselect2("#selectproveedor", res, "codigoproveedor", "fullname", ["saldo"])
     }
     const initTable = async () => {
         const query = `
