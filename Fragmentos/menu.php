@@ -1149,6 +1149,14 @@ $nombreigv = mysql_fetch_object($result)->value;
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a href="chequeemitidos.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                <span class="title">CHEQUES</span>
+                                                <span class="selected"></span>
+                                            </a>
+                                        </li>
+
 
 
 
