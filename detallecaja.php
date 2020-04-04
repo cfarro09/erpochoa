@@ -232,18 +232,24 @@ include("Fragmentos/pie.php");
             let proveedor = 0;
             if (motivo.value == "cuentasxpagar" || motivo.value == "transcheque") {
                 proveedor = selectproveedor.value;
+
+                const dd = motivo.value == "transcheque" ? "Transf Cheque" : "Cuentas x Pagar";
+
                 const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
-                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${id}, '${fecha.value}', 'Egreso' ,'Cuentas x Pagar :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}', -${cantidadxx.value}, 
-                (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1))`
+                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo, iddespose) VALUES (${id}, '${fecha.value}', 'Egreso' ,'${dd} :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}', -${cantidadxx.value}, 
+                (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1), ###ID###)`
 
                 dataxx.detalle.push(querydepbancario);
-            } 
+            }
+            const nnc = motivo.value == "transcheque" ? numerocheque.value : "";
+            const ffc = motivo.value == "transcheque" ? fechacheque.value : "";
+
             let mm = motivo.value == "cuentasxpagar" || motivo.value == "transcheque" ? "cuentasxpagar" : motivo.value
             const query = `
                 insert into desposeproveedor 
-                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, proveedor) 
+                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, proveedor, nrocheque, fechacheque)
                 values
-                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${suc}, 'despose', '${mm}', 'ENVIADO', ${proveedor})`
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${suc}, 'despose', '${mm}', 'ENVIADO', ${proveedor}, '${nnc}', '${ffc}')`
 
             dataxx.header = query;
 
@@ -276,7 +282,11 @@ include("Fragmentos/pie.php");
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'ndetallecaja'");
         nrecibox.value = nrecibo[0].value
         selectproveedor.value = "";
+        saldoproveedor.value = "";
         saldoproveedor.closest(".divparent").style.display = "none";
+        selectproveedor.closest(".divparent").style.display = "";
+        numerocheque.closest(".divparent").style.display = "none";
+        fechacheque.closest(".divparent").style.display = "none";
         personal.value = 0
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');

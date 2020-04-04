@@ -215,8 +215,8 @@ include("Fragmentos/pie.php");
     namecuenta.textContent = fullname;
     $(function() {
         initTable();
-        onloadPersonal()
-        onloadProveedores()
+        // onloadPersonal()
+        // onloadProveedores()
 
         formdispose.addEventListener("submit", guardardespse)
     });
@@ -279,6 +279,7 @@ include("Fragmentos/pie.php");
         nrecibox.value = nrecibo[0].value
         selectproveedor.value = "";
         saldoproveedor.closest(".divparent").style.display = "none";
+        numerocheque.closest(".divparent").style.display = "none";
         personal.value = 0
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
@@ -313,14 +314,17 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-            select * from cuenta_mov where id_cuenta = ${id} order by id_cuenta_mov asc
+            SELECT desp.fechacheque, desp.nrocheque, p.razonsocial, cm.detalle, desp.cantidad FROM cuenta_mov cm 
+            left join desposeproveedor desp on desp.id = cm.iddespose
+            left join proveedor p on p.codigoproveedor = desp.proveedor
+            WHERE cm.id_cuenta = ${id} and cm.detalle LIKE 'Transf ChequePORCENTAJEXX'
+
         `
         let data = await get_data_dynamic(query);
         data = data.map(x => {
             return {
                 ...x,
-                cargo: parseFloat(x.monto) < 0 ? (x.monto*-1).toFixed(2) : "0.00",
-                monto: parseFloat(x.monto) < 0 ? "0.00" : x.monto,
+                ruc: x.detalle.split("RUC ")[1],
             }
         })
         $('#maintable').DataTable({
@@ -329,25 +333,26 @@ include("Fragmentos/pie.php");
             destroy: true,
             columns: [
                 {
-                    title: 'TIPO MOV',
-                    data: 'tipo_mov'
+                    title: 'fechacheque',
+                    data: 'fechacheque'
                 },
                 {
-                    title: 'DETALLE',
-                    data: 'detalle'
+                    title: 'nrocheque',
+                    data: 'nrocheque'
                 },
                 {
-                    title: 'CARGO',
-                    data: 'cargo'
+                    title: 'razonsocial',
+                    data: 'razonsocial'
                 },
                 {
-                    title: 'ABONO',
-                    data: 'monto'
+                    title: 'ruc',
+                    data: 'ruc'
                 },
                 {
-                    title: 'SALDO',
-                    data: 'saldo'
+                    title: 'cantidad',
+                    data: 'cantidad'
                 },
+                
             ]
         });
     }

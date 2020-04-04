@@ -10,6 +10,7 @@ $query = $_POST['query'];
 
 mysql_query("SET NAMES 'utf8'", $Ventas);
 
+$query = str_replace("PORCENTAJEXX", "%", $query);
 $query_res = mysql_query($query, $Ventas) or die(mysql_error());
 $res = array();
 try{
