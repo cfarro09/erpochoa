@@ -84,7 +84,7 @@ $query_Listado = "SELECT p.codigoproveedor, p.ruc, p.razonsocial,
   
 
 
-  WHERE p.estado = '0' and rc.total is not null 
+  WHERE p.estado = '0' 
   GROUP BY p.ruc ";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $rr = mysql_fetch_assoc($Listado);
