@@ -5,7 +5,7 @@ mysql_select_db($database_Ventas, $Ventas);
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Plan Contable";
+$Titulo = "Detalle Cheques";
 $NombreBotonAgregar = "Agregar";
 $EstadoBotonAgregar = "disabled";
 $popupAncho = 700;
@@ -38,7 +38,9 @@ $codsucursal = $_SESSION['cod_sucursal'];
         <button type="button" onclick="initTable()" class="btn btn-primary" style="margin-top: 10px; padding: 10px 40px">Buscar</button>
     </div>
 </div>
+
 <span id="namecuenta" style="font-weight: bold; font-size: 20px"></span> <button class="btn btn-primary" id="btndispose" onclick="dispose()" style="margin-left: 20px">Egreso</button>
+
 <table id="maintable" class="display" width="100%"></table>
 
 <div class="modal fade" id="mdespose" role="dialog" data-backdrop="static" data-keyboard="false">

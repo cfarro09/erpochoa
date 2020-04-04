@@ -233,7 +233,7 @@ include("Fragmentos/pie.php");
             if (motivo.value == "cuentasxpagar" || motivo.value == "transcheque") {
                 proveedor = selectproveedor.value;
                 const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
-                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${id}, '${fecha.value}', 'Egreso' ,'Cuentas x Pagar N ${nrecibox.value} ${fecha.value} ${ruc}', -${cantidadxx.value}, 
+                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${id}, '${fecha.value}', 'Egreso' ,'Cuentas x Pagar :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}', -${cantidadxx.value}, 
                 (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1))`
 
                 dataxx.detalle.push(querydepbancario);
