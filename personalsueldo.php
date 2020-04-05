@@ -23,10 +23,28 @@ $codsucursal = $_SESSION['cod_sucursal'];
 ?>
 
 <style>
-	.head-title{
-        font-weight: bold;
-        text-align: center;
-    }
+	.head-title {
+		font-weight: bold;
+		text-align: center;
+		padding: 10px;
+		border-bottom: 1px solid
+	}
+
+	.b-left {
+		border-left: 1px solid
+	}
+
+	.b-right {
+		border-right: 1px solid
+	}
+
+	.b-bottom {
+		border-bottom: 1px solid
+	}
+
+	.b-top {
+		border-top: 1px solid
+	}
 </style>
 <button class="btn btn-secondary" style="display: none" onclick="agregaroperation()">Agregar</button>
 
@@ -193,67 +211,104 @@ $codsucursal = $_SESSION['cod_sucursal'];
 								</div>
 							</div>
 						</div>
-						<div class="row">
+						<div class="row ">
 							<div class="col-sm-4">
-								<div class="row">
+								<div class="row ">
 									<div class="col-sm-12 head-title">Ingreso</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">R. Basica</label>
-											<input disabled type="text" required class="form-control text-right" id="rbasica">
+											<input disabled type="text" required class="form-control text-right ccingreso" id="rbasica">
 										</div>
 									</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">Asig. Familiar</label>
-											<input disabled type="text" required class="form-control text-right" id="asignfamiliar">
-										</div>	
+											<input disabled type="text" required class="form-control text-right ccingreso" id="asignfamiliar">
+										</div>
 									</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">Vacaciones</label>
-											<input type="text" required class="form-control text-right" id="vacaciones">
-										</div>	
+											<input type="text" required class="form-control text-right ccingreso" id="vacaciones">
+										</div>
 									</div>
 								</div>
 							</div>
-							<div class="col-sm-4">
-								<div class="row">
+							<div class="col-sm-4 b-left b-right" style="padding-bottom: 10px">
+								<div class="row ">
 									<div class="col-sm-12 head-title">Egresos</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">AFP Aportes</label>
-											<input disabled type="text" required class="form-control text-right" id="afpaportes">
+											<input disabled type="text" required class="form-control text-right ccegreso" id="afpaportes">
 										</div>
 									</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">AFP Comision</label>
-											<input disabled type="text" required class="form-control text-right" id="afpcomision">
-										</div>	
+											<input disabled type="text" required class="form-control text-right ccegreso" id="afpcomision">
+										</div>
 									</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">AFP prima</label>
-											<input disabled type="text" required class="form-control text-right" id="afpprima">
-										</div>	
+											<input disabled type="text" required class="form-control text-right ccegreso" id="afpprima">
+										</div>
 									</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">SNP</label>
-											<input disabled type="text" required class="form-control text-right" id="snp">
-										</div>	
+											<input disabled type="text" required class="form-control text-right ccegreso" id="snp">
+										</div>
 									</div>
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">Abonos</label>
-											<input disabled type="text" required class="form-control text-right" id="abono">
-										</div>	
+											<input disabled type="text" required class="form-control text-right ccegreso" id="abono">
+										</div>
 									</div>
 								</div>
 							</div>
 							<div class="col-sm-4">
+								<div class="row">
+									<div class="col-sm-12 head-title">Aportes Empleados</div>
+									<div class="col-sm-12">
+										<div class="form-group" style="margin-bottom: 0!important">
+											<label class="control-label">ESSALUD 9%</label>
+											<input disabled type="text" required class="form-control text-right" id="essaludp">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row b-top">
+							<div class="col-sm-4">
+								<div class="form-group" style="margin-bottom: 0!important">
+									<br>
+									<input disabled type="text" required class="form-control text-right" id="subtotalingreso">
+								</div>
+							</div>
+							<div class="col-sm-4 b-left b-right">
+								<div class="form-group" style="margin-bottom: 0!important">
+									<br>
+									<input disabled type="text" required class="form-control text-right" id="subtotalegreso">
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<div class="form-group" style="margin-bottom: 0!important">
+									<br>
+									<input disabled type="text" required class="form-control text-right" id="subtotalaportes">
+								</div>
+							</div>
+						</div>
 
+						<div class="row" style="margin-top: 20px">
+							<div class="col-sm-4">
+								<div class="form-group">
+									<label class="control-label">Total a pagar</label>
+									<input type="text" disabled required class="form-control text-right" id="totalpagar">
+								</div>
 							</div>
 						</div>
 					</div>
@@ -278,8 +333,27 @@ include("Fragmentos/pie.php");
 		onloadRegimen()
 		initTable();
 		formoperation.addEventListener("submit", guardaroperation)
+		vacaciones.oninput = inputingresos
 	});
+	const inputingresos = () => {
+		let ttt = 0;
+		getSelectorAll(".ccingreso").forEach(x => {
+			ttt += x.value ? parseFloat(x.value) : 0;
+		})
+		subtotalingreso.value = ttt.toFixed(2);
+		calculartotal()
+	}
 
+	const inputegresos = () => {
+		let ttt = 0;
+		getSelectorAll(".ccegreso").forEach(x => {
+			ttt += x.value ? parseFloat(x.value) : 0;
+		})
+		subtotalegreso.value = ttt.toFixed(2);
+	}
+	const calculartotal = () => {
+		totalpagar. value = subtotalingreso.value - subtotalegreso.value
+	}
 	const onloadBancos = async () => {
 		const res = await get_data_dynamic("select codigobanco, nombre_banco from banco");
 		res.unshift({
@@ -335,9 +409,16 @@ include("Fragmentos/pie.php");
 		const prima = parseFloat(dd.prima);
 		const essalud = parseFloat(dd.essalud);
 
-		afpaportes.value = (sueldo*aporte/100).toFixed(2);
-		afpcomision.value = (sueldo*comision/100).toFixed(2);
-		afpprima.value = (sueldo*prima/100).toFixed(2);
+		afpaportes.value = (sueldo * aporte / 100).toFixed(2);
+		afpcomision.value = (sueldo * comision / 100).toFixed(2);
+		afpprima.value = (sueldo * prima / 100).toFixed(2);
+
+		subtotalaportes.value = (sueldo * 0.09).toFixed(2);
+		essaludp.value = (sueldo * 0.09).toFixed(2);
+
+		inputingresos()
+		inputegresos()
+		calculartotal()
 		// abono.value = sueldo*aporte/100;
 	}
 
