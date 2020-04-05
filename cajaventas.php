@@ -671,7 +671,8 @@ include("Fragmentos/pie.php");
             ordering: false,
 
             destroy: true,
-            columns: [{
+            columns: [
+                {
                     title: 'Sucursal',
                     render: function(data, type, row) {
                         const nn = row.nombre_sucursal.replace('"', '').replace("'", "");

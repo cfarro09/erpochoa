@@ -17,7 +17,7 @@ try{
     );
 }catch(Exception $e){
     $res = array(
-        "succes" => true,
+        "succes" => false,
         "msg" => $e->getMessage()
     );
 }
