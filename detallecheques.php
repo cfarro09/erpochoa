@@ -215,8 +215,8 @@ include("Fragmentos/pie.php");
     namecuenta.textContent = fullname;
     $(function() {
         initTable();
-        // onloadPersonal()
-        // onloadProveedores()
+        onloadPersonal()
+        onloadProveedores()
 
         formdispose.addEventListener("submit", guardardespse)
     });

@@ -9,8 +9,9 @@
 		getSelector(id).innerHTML = "";
 		$(id).val(null).trigger('change');
 	}
-	const cargarselect2 = (id, arrayres, key, value, data = false) => {
-		getSelector(id).innerHTML = "<option disabled>Seleccione</option>"
+	const cargarselect2 = (id, arrayres, key, value, data = false, strselect = true) => {
+		if(strselect)
+			getSelector(id).innerHTML = "<option disabled>Seleccione</option>"
 		arrayres.forEach(xx => {
 			let datastr = "";
 			if (data) {

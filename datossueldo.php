@@ -108,6 +108,8 @@ include("Fragmentos/pie.php");
         idoperation.value = id;
 
         let res = await get_data_dynamic(`select * from datos_sueldo where id = ${id}`);
+
+        
         nombreafp.value = res[0].nombre;
         aporte.value = res[0].aporte;
         comision.value = res[0].comision;
@@ -150,27 +152,22 @@ include("Fragmentos/pie.php");
                 {
                     title: 'nombre',
                     data: 'nombre',
-                    width: "10%"
                 },
                 {
                     title: 'aporte',
                     data: 'aporte',
-                    width: "10%"
                 },
                 {
                     title: 'comision',
                     data: 'comision',
-                    width: "10%"
                 },
                 {
                     title: 'prima',
                     data: 'prima',
-                    width: "10%"
                 },
                 {
                     title: 'essalud',
                     data: 'essalud',
-                    width: "10%"
                 },
                 {
                     title: 'Acciones',
