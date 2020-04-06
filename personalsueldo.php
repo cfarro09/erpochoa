@@ -50,6 +50,39 @@ $codsucursal = $_SESSION['cod_sucursal'];
 
 <table id="maintable" class="display table table-bordered" width="100%"></table>
 
+<div class="modal fade" id="mreporte" role="dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog" role="document">
+		<form id="formreporte">
+			<div class="modal-content m-auto">
+				<div class="modal-header">
+					<h2 class="modal-title" id="titlereporte">Cobro cheque</h2>
+				</div>
+				<input type="hidden" id="idreporte">
+				<div class="modal-body">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label class="control-label">Nombre Trabajador</label>
+									<input disabled type="text" required class="form-control" id="nombrereporte">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<table id="reporttable" class="display table table-bordered" width="100%"></table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="modal_close btn btn-success">Guardar</button>
+					<button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-dialog" role="document">
 		<form id="formoperation">
@@ -380,6 +413,12 @@ include("Fragmentos/pie.php");
 		nombreafp.value = ""
 		titleoperation.textContent = "Registrar datos de sueldo."
 	}
+	const reporte = (id, name) => {
+		$("#mreporte").modal();
+		nombrereporte.value = name;
+		titlereporte.textContent = "Reporte Sueldos"
+		reportTable(id)
+	}
 	const calcularsueldo = async (id, name) => {
 		formplanilla.reset()
 		idpersonalp.value = id;
@@ -387,7 +426,7 @@ include("Fragmentos/pie.php");
 		titleplanilla.textContent = "PLANILLA DE PAGOS";
 		nombrepersonalplanilla.value = name;
 
-
+		vacaciones.value = 0
 		let res = await get_data_dynamic(`
 			SELECT 
 				prof.profesion, p.sueldo_mensual, hijos, ds.id idregimen, ds.nombre regimen, ds.aporte, ds.comision, ds.prima, ds.essalud
@@ -474,12 +513,12 @@ include("Fragmentos/pie.php");
 		const queryvaldiate = `
 			select id 
 			from personalsueldo 
-			where personal = ${idpersonalp.value} and mes = ${mesp.value} and anio = ${aniop.value}`;
+			where personal = ${idpersonalp.value} and estado = 'ENPROCESO'`;
 
 		const res1 = await get_data_dynamic(queryvaldiate);
 
 		if (res1.length > 0) {
-			alert(`Ya existe un pago para el año y mes seleccionado.`)
+			alert(`Ya existe un pago en proceso.`)
 		} else {
 			const vvacaciones = vacaciones.value ? vacaciones.value : 0
 			const vafpaporte = afpaportes.value ? afpaportes.value : 0
@@ -490,9 +529,9 @@ include("Fragmentos/pie.php");
 
 			const query = `
 			insert into personalsueldo 
-				(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar)
+				(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar, estado)
 			values
-				(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value})
+				(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value}, 'ENPROCESO')
 		`;
 			const res = await ff_dynamic(query);
 			if (res.succes) {
@@ -567,6 +606,7 @@ include("Fragmentos/pie.php");
 							return `
                               <button class="btn btn-primary" onclick='editar(${row.codigopersonal},` + "`" + fullname + "`" + `)'>AFP/ONP</button>
                               <button class="btn btn-primary" onclick='calcularsueldo(${row.codigopersonal},` + "`" + fullname + "`" + `)'>SUELDO</button>
+							  <button class="btn btn-primary" onclick='reporte(${row.codigopersonal},` + "`" + fullname + "`" + `)'>REP</button>
                           `;
 						} else {
 							return `
@@ -574,6 +614,44 @@ include("Fragmentos/pie.php");
                           `;
 						}
 
+					}
+				},
+
+			]
+		});
+	}
+	const reportTable = async (id) => {
+		const query = `
+			SELECT ps.id, ps.fecharegistro, concat('Abono', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo FROM personalsueldo ps
+			where ps.personal = ${id}
+        `;
+		let data = await get_data_dynamic(query);
+
+		$('#reporttable').DataTable({
+			data,
+			destroy: true,
+			columns: [{
+					title: 'fecharegistro',
+					data: 'fecharegistro',
+				},
+				{
+					title: 'tipo',
+					data: 'tipo',
+				},
+				{
+					title: 'fecha pago',
+					data: 'fecha',
+				},
+				{
+					title: 'cargo',
+					data: 'cargo',
+				},
+				{
+					title: 'Acciones',
+					render: function(data, type, row) {
+						return `
+                            <button href="#" class="btn btn-danger" onclick=''>IMP</button>
+                          `
 					}
 				},
 

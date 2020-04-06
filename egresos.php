@@ -114,6 +114,12 @@ $suc = $_SESSION['cod_sucursal'];
                                             <select id="cuentabancaria" class="form-control"></select>
                                         </div>
                                     </div>
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Empleado</label>
+                                            <select id="empleado"></select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -244,6 +250,7 @@ include("Fragmentos/pie.php");
         onloadPersonal()
         onloadCliente()
         onloadCuentas()
+        onloadPersonalSueldo()
         if (suc == 1) {
             btndispose.style.display = "none"
             btndisposeingreso.style.display = "none"
@@ -258,6 +265,7 @@ include("Fragmentos/pie.php");
     });
     const changeMotivo = e => {
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
+        empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
 
     }
     motivo.onchange = changeMotivo;
@@ -272,6 +280,7 @@ include("Fragmentos/pie.php");
 
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
+        empleado.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
     }
@@ -408,6 +417,14 @@ include("Fragmentos/pie.php");
         })
         cargarselect2("#personal", res, "codigopersonal", "fullname")
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
+    }
+    const onloadPersonalSueldo = async () => {
+        const res = await get_data_dynamic("SELECT p.codigopersonal, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and ps.estado = 'ENPROCESO' WHERE p.estado = 0 group by p.codigopersonal");
+        res.unshift({
+            codigopersonal: "",
+            fullname: "Seleccionar"
+        })
+        cargarselect2("#empleado", res, "codigopersonal", "fullname")
     }
 
     const onloadCliente = async () => {
