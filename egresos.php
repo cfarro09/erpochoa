@@ -257,6 +257,7 @@ include("Fragmentos/pie.php");
 
 <script>
     const suc = <?= $suc  ?>;
+    let datamaintable;
     const idpersonal = <?= $_SESSION['kt_codigopersonal']; ?>;
     $(function() {
         initTable()
@@ -361,6 +362,12 @@ include("Fragmentos/pie.php");
     }
     const guardardespse = async e => {
         e.preventDefault();
+        const saldocurrent = parseFloat(datamaintable.find(x => x.cod_sucursal == msucursal.value).saldo);
+        const saldoreq = parseFloat(cantidadxx.value);
+        if(saldoreq > saldocurrent){
+            alert("la caja no cuenta con la cantidad solicitada")
+            return;
+        }
         const dataxx = {
             header: "",
             detalle: []
@@ -720,7 +727,8 @@ include("Fragmentos/pie.php");
                 }
             }
         }
-        $('#maintable').DataTable({
+        datamaintable = data;
+        maintable = $('#maintable').DataTable({
             data: data,
             ordering: false,
 
