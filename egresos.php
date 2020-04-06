@@ -281,6 +281,7 @@ include("Fragmentos/pie.php");
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
         empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
         fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
+        fechapagosueldo.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none"
         empleadoegresos.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none"
 
         cantidadxx.value = "";
@@ -291,8 +292,8 @@ include("Fragmentos/pie.php");
             cantidadxx.value = ""
             fechapagosueldo.value = ""
         }else{
-            cantidadxx.value = empleado.options[empleado.selectedIndex].dataset.tegresos
-            fechapagosueldo.value = empleado.options[empleado.selectedIndex].dataset.fechapago
+            cantidadxx.value = empleadoegresos.options[empleadoegresos.selectedIndex].dataset.tegresos
+            fechapagosueldo.value = empleadoegresos.options[empleadoegresos.selectedIndex].dataset.fechapago
         }
     }
     const changeEmpleadoSueldo = e => {
