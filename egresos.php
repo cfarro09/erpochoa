@@ -92,7 +92,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
-                                                <option value="cajatumbes">Remesa en Efectivo a Caja Central</option>
+                                                <option id="optionremesa" value="cajatumbes">Remesa en Efectivo a Caja Central</option>
                                                 <option value="Deposito en cuenta">Deposito en cuenta</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo</option>
@@ -279,6 +279,7 @@ include("Fragmentos/pie.php");
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
     const changeMotivo = e => {
+        cantidadxx.disabled = false;
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
         empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
         fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
@@ -287,6 +288,8 @@ include("Fragmentos/pie.php");
 
         cantidadxx.value = "";
         fechapagosueldo.value = "";
+        if(e.target.value == "Sueldo" || e.target.value == "afp/onp")
+            cantidadxx.disabled = true;
     }
     const changeEmpleadoEgresoSueldo = e => {
         if(e.target.value == ""){
@@ -307,6 +310,8 @@ include("Fragmentos/pie.php");
         }
     }
     const dispose = async () => {
+        optionremesa.disabled = msucursal.value == 11
+        
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 
@@ -314,8 +319,9 @@ include("Fragmentos/pie.php");
         nrecibox.value = nrecibo[0].value
         typedespose.value = "negresos";
 
-        personal.value = 0
-        fechapagosueldo.value = ""
+        personal.value = 0;
+        fechapagosueldo.value = "";
+        cantidadxx.disabled;
         cuentabancaria.closest(".divparent").style.display = "none"
         fechapagosueldo.closest(".divparent").style.display = "none"
         empleadoegresos.closest(".divparent").style.display = "none"
