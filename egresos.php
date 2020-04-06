@@ -86,15 +86,8 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label">Cantidad</label>
-                                            <input type="number" step="any" id="cantidadxx" required class="form-control form-control-inline" />
-                                        </div>
-                                    </div>
-                                </div>
+
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -121,7 +114,20 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Cantidad</label>
+                                            <input type="number" step="any" id="cantidadxx" required class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 divparent">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha Pago</label>
+                                            <input type="text" disabled id="fechapagosueldo" required class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -186,7 +192,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
- <div class="row">
+                                <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label">Recibido de:</label>
@@ -194,7 +200,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                               
+
 
                                 <div class="row">
                                     <div class="col-md-6">
@@ -260,16 +266,26 @@ include("Fragmentos/pie.php");
             btndispose.style.display = ""
             btndisposeingreso.style.display = ""
         }
+        motivo.onchange = changeMotivo;
+        empleado.onchange = changeEmpleadoSueldo;
         formdispose.addEventListener("submit", guardardespse)
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
     const changeMotivo = e => {
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
         empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
-
+        fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
     }
-    motivo.onchange = changeMotivo;
-
+    const changeEmpleadoSueldo = e => {
+        if(e.target.value == ""){
+            cantidadxx.value = ""
+            fechapagosueldo.value = ""
+        }else{
+            cantidadxx.value = empleado.options[empleado.selectedIndex].dataset.totalpagar
+            fechapagosueldo.value = empleado.options[empleado.selectedIndex].dataset.fechapago
+        }
+        
+    }
     const dispose = async () => {
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
@@ -279,7 +295,9 @@ include("Fragmentos/pie.php");
         typedespose.value = "negresos";
 
         personal.value = 0
+        fechapagosueldo.value = ""
         cuentabancaria.closest(".divparent").style.display = "none"
+        fechapagosueldo.closest(".divparent").style.display = "none"
         empleado.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
@@ -304,7 +322,7 @@ include("Fragmentos/pie.php");
             let nrecibo = parseInt(nreciboxingreso.value) + 1;
 
             await ff_dynamic("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ningresos'")
-            
+
             const tipo = clienteingreso.options[clienteingreso.selectedIndex].dataset.tipo
 
             const query = `
@@ -419,12 +437,12 @@ include("Fragmentos/pie.php");
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
     const onloadPersonalSueldo = async () => {
-        const res = await get_data_dynamic("SELECT p.codigopersonal, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and ps.estado = 'ENPROCESO' WHERE p.estado = 0 group by p.codigopersonal");
+        const res = await get_data_dynamic("SELECT p.codigopersonal, CONCAT(ps.mes, ' - ' ,ps.anio) fechapago, ps.totalpagar, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and ps.estado = 'ENPROCESO' WHERE p.estado = 0 group by p.codigopersonal");
         res.unshift({
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        cargarselect2("#empleado", res, "codigopersonal", "fullname")
+        cargarselect2("#empleado", res, "codigopersonal", "fullname", ["totalpagar", "fechapago"])
     }
 
     const onloadCliente = async () => {
@@ -449,7 +467,7 @@ include("Fragmentos/pie.php");
     }
     const setConsolidado = async (id, des) => {
         let qwer = []
-        if ((id == 11 && suc == 1) ) {
+        if ((id == 11 && suc == 1)) {
             btndispose.style.display = ""
             btndisposeingreso.style.display = ""
         } else {
@@ -474,14 +492,14 @@ include("Fragmentos/pie.php");
                     ...x,
                     total: x.tipo == "ingreso" ? x.despose : 0,
                     despose: x.tipo == "ingreso" ? 0 : x.despose,
-                    motivo: x.motivo == "" || x.motivo == " - " ?   x.por.substring(0, 30) : x.motivo,
+                    motivo: x.motivo == "" || x.motivo == " - " ? x.por.substring(0, 30) : x.motivo,
                     nrorecibo: x.tipo == "ingreso" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
                 }
             })
 
             qwer = [...datatotble, ...des];
             let saldo = 0;
-            
+
 
             qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
@@ -667,7 +685,7 @@ include("Fragmentos/pie.php");
             const x = data[i];
             if (x.cod_sucursal != 11) {
                 const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
-                const ingreso = rr.total  + parseFloat(x.ingreso || 0);
+                const ingreso = rr.total + parseFloat(x.ingreso || 0);
                 data[i] = {
                     ...x,
                     ingreso: ingreso.toFixed(2),
