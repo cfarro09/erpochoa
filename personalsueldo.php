@@ -157,6 +157,8 @@ $codsucursal = $_SESSION['cod_sucursal'];
 <div class="modal fade" id="mplanilla" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-dialog" role="document" style="width: 900px">
 		<form id="formplanilla">
+			<input type="hidden" id="idpersonalp">
+			<input type="hidden" id="idregimen">
 			<div class="modal-content m-auto">
 				<div class="modal-header">
 					<h2 class="modal-title" id="titleplanilla">Cobro cheque</h2>
@@ -230,7 +232,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 									<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">Vacaciones</label>
-											<input type="text" required class="form-control text-right ccingreso" id="vacaciones">
+											<input type="number" autocomplete="off" step="any" required class="form-control text-right ccingreso" id="vacaciones">
 										</div>
 									</div>
 								</div>
@@ -314,7 +316,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="modal_close btn btn-success">Guardar</button>
+					<button type="submit" class="modal_close btn btn-success">Pagar</button>
 					<button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
 				</div>
 			</div>
@@ -333,6 +335,7 @@ include("Fragmentos/pie.php");
 		onloadRegimen()
 		initTable();
 		formoperation.addEventListener("submit", guardaroperation)
+		formplanilla.addEventListener("submit", guardarplanillapago)
 		vacaciones.oninput = inputingresos
 	});
 	const inputingresos = () => {
@@ -352,7 +355,7 @@ include("Fragmentos/pie.php");
 		subtotalegreso.value = ttt.toFixed(2);
 	}
 	const calculartotal = () => {
-		totalpagar. value = subtotalingreso.value - subtotalegreso.value
+		totalpagar.value = subtotalingreso.value - subtotalegreso.value
 	}
 	const onloadBancos = async () => {
 		const res = await get_data_dynamic("select codigobanco, nombre_banco from banco");
@@ -379,6 +382,7 @@ include("Fragmentos/pie.php");
 	}
 	const calcularsueldo = async (id, name) => {
 		formplanilla.reset()
+		idpersonalp.value = id;
 		$("#mplanilla").modal();
 		titleplanilla.textContent = "PLANILLA DE PAGOS";
 		nombrepersonalplanilla.value = name;
@@ -386,7 +390,7 @@ include("Fragmentos/pie.php");
 
 		let res = await get_data_dynamic(`
 			SELECT 
-				prof.profesion, p.sueldo_mensual, hijos, ds.nombre regimen, ds.aporte, ds.comision, ds.prima, ds.essalud
+				prof.profesion, p.sueldo_mensual, hijos, ds.id idregimen, ds.nombre regimen, ds.aporte, ds.comision, ds.prima, ds.essalud
 			FROM personal p 
 			INNER JOIN profesion prof on p.codigoprofesion = prof.codigoprofesion 
 			INNER JOIN datos_sueldo ds on ds.id = p.tiporegimen
@@ -395,7 +399,9 @@ include("Fragmentos/pie.php");
 		const dd = res[0];
 		const sueldo = dd.hijos == "si" ? parseFloat(dd.sueldo_mensual) + 93 : parseFloat(dd.sueldo_mensual);
 		const month = new Date().getMonth() + 1;
-		regimenp.value = dd.regimen
+		regimenp.value = dd.regimen;
+		idregimen.value = dd.idregimen;
+
 		cargop.value = dd.profesion;
 		sueldop.value = sueldo.toFixed(2);
 		mesp.value = month;
@@ -461,6 +467,43 @@ include("Fragmentos/pie.php");
 			cci.value = dd.cci;
 			nrocuenta.value = dd.nrocuenta;
 		}
+	}
+	const guardarplanillapago = async e => {
+		e.preventDefault();
+
+		const queryvaldiate = `
+			select id 
+			from personalsueldo 
+			where personal = ${idpersonalp.value} and mes = ${mesp.value} and anio = ${aniop.value}`;
+
+		const res1 = await get_data_dynamic(queryvaldiate);
+
+		if (res1.length > 0) {
+			alert(`Ya existe un pago para el año y mes seleccionado.`)
+		} else {
+			const vvacaciones = vacaciones.value ? vacaciones.value : 0
+			const vafpaporte = afpaportes.value ? afpaportes.value : 0
+			const vafpcomision = afpcomision.value ? afpcomision.value : 0
+			const vafpprima = afpprima.value ? afpprima.value : 0
+			const vsnp = snp.value ? snp.value : 0
+			const vabono = abono.value ? abono.value : 0
+
+			const query = `
+			insert into personalsueldo 
+				(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar)
+			values
+				(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value})
+		`;
+			const res = await ff_dynamic(query);
+			if (res.succes) {
+				alert("Registro Completo")
+				$("#mplanilla").modal("hide");
+				initTable();
+			} else {
+				alert(res.msg)
+			}
+		}
+
 	}
 	const guardaroperation = async e => {
 		e.preventDefault();
