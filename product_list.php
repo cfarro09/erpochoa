@@ -121,5 +121,21 @@ include("Fragmentos/pie.php");
         });
     }
 
+</script>
+<script type="text/javascript">
+    
+    
+if ((isset($_POST["MM_eliminar"])) && ($_POST["MM_eliminar"] == "Eliminar_Registro")) {
+    $updateSQL = sprintf("DELETE from producto WHERE codigoprod=%s",
+        GetSQLValueString($_POST['codigoprod'], "int"));
 
+    mysql_select_db($database_Ventas, $Ventas);
+    $Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
+
+    $updateGoTo = "product_list.php";
+    if (isset($_SERVER['QUERY_STRING'])) {
+        $updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
+        $updateGoTo .= $_SERVER['QUERY_STRING'];
+    }
+    header(sprintf("Location: %s", $updateGoTo));}
 </script>

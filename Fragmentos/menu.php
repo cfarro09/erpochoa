@@ -751,9 +751,17 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="personal_money.php" id="" class="nav-link font-blue-ebonyclay">
+                                            <a href="personalsueldo.php" id="" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Personal Sueldo</span>
+                                                <span class="selected"></span>
+
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="datossueldo.php" id="" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">AFP/ONP</span>
                                                 <span class="selected"></span>
 
                                             </a>

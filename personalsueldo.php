@@ -233,6 +233,15 @@ $codsucursal = $_SESSION['cod_sucursal'];
 										<option value="2">Febrero</option>
 										<option value="3">Marzo</option>
 										<option value="4">Abril</option>
+										<option value="5">Mayo</option>	
+										<option value="6">Junio</option>
+										<option value="7">Julio</option>
+										<option value="8">Agosto</option>
+										<option value="9">Setiembre</option>
+										<option value="10">Octubre</option>
+										<option value="11">Noviembre</option>
+										<option value="12">Diciembre</option>
+
 									</select>
 								</div>
 								<div class="form-group">
@@ -242,6 +251,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 										<option value="2021">2021</option>
 										<option value="2022">2022</option>
 										<option value="2023">2023</option>
+										<option value="2024">2024</option>
 									</select>
 								</div>
 							</div>
@@ -634,7 +644,7 @@ include("Fragmentos/pie.php");
 	}
 	const reportTable = async (id) => {
 		const query = `
-			SELECT ps.id, ps.estadosueldo, ps.fecharegistro, concat('Abono', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as abono, 0 as cargo FROM personalsueldo ps
+			SELECT ps.id, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as abono, 0 as cargo FROM personalsueldo ps
 			where ps.personal = ${id}
         `;
 		let data = await get_data_dynamic(query);
@@ -663,19 +673,20 @@ include("Fragmentos/pie.php");
 					title: 'fecha pago',
 					data: 'fecha',
 				},
-				{
-					title: 'abono',
-					data: 'abono',
-				},
+				
 				{
 					title: 'cargo',
 					data: 'cargo',
 				},
 				{
+					title: 'abono',
+					data: 'abono',
+				},
+				{
 					title: 'Acciones',
 					render: function(data, type, row) {
 						return `
-                            <button href="#" class="btn btn-danger" onclick=''>IMP</button>
+                            <button href="#" class="btn btn-danger" onclick=''>VER</button>
                           `
 					}
 				},
