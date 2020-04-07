@@ -23,7 +23,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 <table id="maintable" class="display table table-bordered" width="100%"></table>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" style="width: 900px">
         <form id="formoperation">
             <div class="modal-content m-auto">
                 <div class="modal-header">
@@ -67,15 +67,26 @@ include("Fragmentos/pie.php");
     const detalle = async (id) => {
         $("#moperation").modal()
         let res = await get_data_dynamic(`
-
-
-select ps.fecharegistro as fecha, p.cedula, concat(p.nombre,' ',p.paterno,' ',p.materno) as nombrepersonal, ps.id, ps.tegresos cargo, '0.00' as abono from datos_sueldo ds inner join personalsueldo ps on ps.regimen = ds.id inner join personal p on p.codigopersonal=ps.personal where ds.id = ${id} 
-union 
-select pa.fecha_registro as fecha, concat('Recibo ', pa.id), 'Pago Efectivo Caja', pa.id, '0.00' cargo, pa.monto abono from datos_sueldo ds inner join pagosafp pa on pa.regimen = ds.id where ds.id = ${id}`);
-
-
-           
-
+            select 
+                ps.fecharegistro as fecha, p.cedula, concat(p.nombre,' ',p.paterno,' ',p.materno) as nombrepersonal, ps.id, ps.tegresos cargo, '0.00' as abono 
+            from datos_sueldo ds 
+            inner join personalsueldo ps on ps.regimen = ds.id 
+            inner join personal p on p.codigopersonal=ps.personal 
+            where ds.id = ${id} 
+            UNION 
+            select 
+                pa.fecha_registro as fecha, concat('Recibo ', pa.id), 'Pago Efectivo Caja', pa.id, '0.00' cargo, pa.monto abono 
+            from datos_sueldo ds 
+            inner join pagosafp pa on pa.regimen = ds.id 
+            where ds.id = ${id}`);
+        let saldo = 0;
+        res = res.map(x => {
+            saldo += parseFloat(x.abono) - parseFloat(x.cargo);
+            return {
+                ...x,
+                saldo: saldo.toFixed(2)
+            }
+        })
         $('#detalletable').DataTable({
             data: res,
             ordering: false,
@@ -106,7 +117,12 @@ select pa.fecha_registro as fecha, concat('Recibo ', pa.id), 'Pago Efectivo Caja
                     title: 'abono',
                     data: 'abono',
                     className: 'dt-body-right'
-                }
+                },
+                {
+                    title: 'saldo',
+                    data: 'saldo',
+                    className: 'dt-body-right'
+                },
             ]
         });
     }
