@@ -27,56 +27,19 @@ $codsucursal = $_SESSION['cod_sucursal'];
         <form id="formoperation">
             <div class="modal-content m-auto">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="titleoperation">Cobro cheque</h2>
+                    <h2 class="modal-title" id="titleoperation">Detalle AFP</h2>
                 </div>
                 <input type="hidden" id="idoperation">
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Nombre AFP</label>
-                                    <select disabled id="nombreafp" required class="form-control">
-                                        <option value="">Selecciona</option>
-                                        <option value="PRIMA">PRIMA</option>
-                                        <option value="INTEGRA">INTEGRA</option>
-                                        <option value="PROFUTURO">PROFUTURO</option>
-                                        <option value="HABITAT">HABITAT</option>
-                                        <option value="ONP">ONP</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Aporte</label>
-                                    <input type="number" step="any" required class="form-control" id="aporte">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Comision</label>
-                                    <input type="number" step="any" required class="form-control" id="comision">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Prima</label>
-                                    <input type="number" step="any" required class="form-control" id="prima">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Essalud</label>
-                                    <input type="number" step="any" required class="form-control" id="essalud">
-                                </div>
+                            <div class="col-sm-12">
+                                <table id="detalletable" class="display table table-bordered" width="100%"></table>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="modal_close btn btn-success">Guardar</button>
                     <button type="button" class="modal_close btn btn-danger" data-dismiss="modal" aria-label="Close">Cerrar</button>
                 </div>
             </div>
@@ -92,7 +55,6 @@ include("Fragmentos/pie.php");
 <script>
     $(function() {
         initTable();
-        formoperation.addEventListener("submit", guardaroperation)
     });
 
     const agregaroperation = () => {
@@ -102,24 +64,42 @@ include("Fragmentos/pie.php");
         nombreafp.value = ""
         titleoperation.textContent = "Registrar datos de sueldo."
     }
-    const editar = async (id) => {
-        $("#moperation").modal();
-        titleoperation.textContent = "Editar datos de sueldo."
-        idoperation.value = id;
+    const detalle = async (id) => {
+        $("#moperation").modal()
+        let res = await get_data_dynamic(`
+            select ps.tegresos cargo, '0.00' as abono from datos_sueldo ds 
+            inner join personalsueldo ps on ps.regimen = ds.id 
+            where ds.id = ${id}
+            
+            union 
+            
+            select '0.00' cargo, pa.monto abono  from datos_sueldo ds 
+            inner join pagosafp pa on pa.regimen = ds.id 
+            where ds.id = ${id}`);
 
-        let res = await get_data_dynamic(`select * from datos_sueldo where id = ${id}`);
+        $('#detalletable').DataTable({
+            data: res,
+            ordering: false,
 
-        
-        nombreafp.value = res[0].nombre;
-        aporte.value = res[0].aporte;
-        comision.value = res[0].comision;
-        prima.value = res[0].prima;
-        essalud.value = res[0].essalud;
+            destroy: true,
+            columns: [
+                {
+                    title: 'cargo',
+                    data: 'cargo',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'abono',
+                    data: 'abono',
+                    className: 'dt-body-right'
+                }
+            ]
+        });
     }
     const guardaroperation = async e => {
         e.preventDefault();
         let query = "";
-        if(idoperation.value != "0"){
+        if (idoperation.value != "0") {
             query = `
                 update datos_sueldo set
                     aporte = ${aporte.value},
@@ -129,19 +109,19 @@ include("Fragmentos/pie.php");
                 where id = ${idoperation.value}
                 `;
         }
-        
+
         const res = await ff_dynamic(query);
-        if(res.succes){
+        if (res.succes) {
             alert("Registro Completo")
             $("#moperation").modal("hide");
             initTable();
-        }else{
+        } else {
             alert(res.msg)
         }
     }
     const initTable = async () => {
         const query = `
-            select ds.nombre, cargo, abono, (IFNULL(cargo, 0) - IFNULL(abono, 0)) saldo from datos_sueldo ds 
+            select ds.id, ds.nombre, cargo, abono, (IFNULL(cargo, 0) - IFNULL(abono, 0)) saldo from datos_sueldo ds 
             
         `;
         let data = await get_data_dynamic(query);
@@ -149,8 +129,7 @@ include("Fragmentos/pie.php");
         $('#maintable').DataTable({
             data,
             destroy: true,
-            columns: [
-                {
+            columns: [{
                     title: 'nombre',
                     data: 'nombre',
                 },
@@ -170,7 +149,7 @@ include("Fragmentos/pie.php");
                     title: 'Acciones',
                     render: function(data, type, row) {
                         return `
-                            <button class="btn btn-primary" onclick='editar(${row.id})'><i class="glyphicon glyphicon-edit"></i></button>
+                            <button class="btn btn-primary" onclick='detalle(${row.id})'>Detalle</button>
                         `;
                     }
                 },
