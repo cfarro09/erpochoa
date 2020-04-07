@@ -51,7 +51,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 <table id="maintable" class="display table table-bordered" width="100%"></table>
 
 <div class="modal fade" id="mreporte" role="dialog" data-backdrop="static" data-keyboard="false">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog" role="document" style="width: 900px">
 		<form id="formreporte">
 			<div class="modal-content m-auto">
 				<div class="modal-header">
@@ -513,34 +513,45 @@ include("Fragmentos/pie.php");
 		const queryvaldiate = `
 			select id 
 			from personalsueldo 
-			where personal = ${idpersonalp.value} and estado = 'ENPROCESO'`;
+			where personal = ${idpersonalp.value} and estadosueldo is null`;
 
 		const res1 = await get_data_dynamic(queryvaldiate);
 
 		if (res1.length > 0) {
-			alert(`Ya existe un pago en proceso.`)
-		} else {
-			const vvacaciones = vacaciones.value ? vacaciones.value : 0
-			const vafpaporte = afpaportes.value ? afpaportes.value : 0
-			const vafpcomision = afpcomision.value ? afpcomision.value : 0
-			const vafpprima = afpprima.value ? afpprima.value : 0
-			const vsnp = snp.value ? snp.value : 0
-			const vabono = abono.value ? abono.value : 0
+			alert(`Ya existe un pago en proceso.`);
+			return;
+		}
+		
+		const queryvaldiate1 = `
+			select id 
+			from personalsueldo 
+			where personal = ${idpersonalp.value} and mes = ${mesp.value} and anio = ${aniop.value}`;
 
-			const query = `
-			insert into personalsueldo 
-				(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar, estado)
-			values
-				(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value}, 'ENPROCESO')
+		const res2 = await get_data_dynamic(queryvaldiate1);
+		if (res2.length > 0) {
+			alert(`Ya existe un pago para el mes y año seleccionado.`);
+		}
+
+		const vvacaciones = vacaciones.value ? vacaciones.value : 0
+		const vafpaporte = afpaportes.value ? afpaportes.value : 0
+		const vafpcomision = afpcomision.value ? afpcomision.value : 0
+		const vafpprima = afpprima.value ? afpprima.value : 0
+		const vsnp = snp.value ? snp.value : 0
+		const vabono = abono.value ? abono.value : 0
+
+		const query = `
+		insert into personalsueldo 
+			(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar)
+		values
+			(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value})
 		`;
-			const res = await ff_dynamic(query);
-			if (res.succes) {
-				alert("Registro Completo")
-				$("#mplanilla").modal("hide");
-				initTable();
-			} else {
-				alert(res.msg)
-			}
+		const res = await ff_dynamic(query);
+		if (res.succes) {
+			alert("Registro Completo")
+			$("#mplanilla").modal("hide");
+			initTable();
+		} else {
+			alert(res.msg)
 		}
 
 	}
@@ -622,11 +633,20 @@ include("Fragmentos/pie.php");
 	}
 	const reportTable = async (id) => {
 		const query = `
-			SELECT ps.id, ps.fecharegistro, concat('Abono', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo FROM personalsueldo ps
+			SELECT ps.id, ps.estadosueldo, ps.fecharegistro, concat('Abono', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as abono, 0 as cargo FROM personalsueldo ps
 			where ps.personal = ${id}
         `;
 		let data = await get_data_dynamic(query);
-
+		const abonos = data.filter(x => x.estadosueldo != null).map(x => {
+			return {
+				...x,
+				abono: 0,
+				cargo: x.abono,
+				tipo: "PAGO CAJA",
+				fecharegistro: x.estadosueldo
+			}
+		})
+		data = [...data, ...abonos];
 		$('#reporttable').DataTable({
 			data,
 			destroy: true,
@@ -641,6 +661,10 @@ include("Fragmentos/pie.php");
 				{
 					title: 'fecha pago',
 					data: 'fecha',
+				},
+				{
+					title: 'abono',
+					data: 'abono',
 				},
 				{
 					title: 'cargo',

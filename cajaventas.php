@@ -566,7 +566,7 @@ include("Fragmentos/pie.php");
                     title: 'acciones',
 
                     render: function(data, type, row) {
-                        if (row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO') && msucursal.value == 1)) {
+                        if ((row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO')) && msucursal.value == 11)) {
                             return `
                                 <div class="">
                                     <button class="btn btn-success" onclick="setStatusIngresos(${row.id},'ACEPTADO', ${row.fromdespose})">Aceptar</button>

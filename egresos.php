@@ -176,7 +176,6 @@ $suc = $_SESSION['cod_sucursal'];
 
         <form id="formdisposeingreso">
             <input type="hidden" id="msucursal">
-            <input type="hidden" id="namesucursal">
             <div class="modal-content m-auto">
                 <div class="modal-header">
                     <h2 class="modal-title" id="desposetitleingreso">REGISTRO DE INGRESO</h2>
@@ -311,7 +310,7 @@ include("Fragmentos/pie.php");
     }
     const dispose = async () => {
         optionremesa.disabled = msucursal.value == 11
-        
+
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
 
@@ -328,6 +327,11 @@ include("Fragmentos/pie.php");
         empleado.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
+
+        $('#empleado').val("").trigger('change');
+        $('#empleadoegresos').val(idpersonal).trigger('change');
+        await onloadPersonalSueldo()
+        // $('#personal').val(idpersonal).trigger('change');
     }
     const disposeingreso = async () => {
         formdisposeingreso.reset()
@@ -384,10 +388,8 @@ include("Fragmentos/pie.php");
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'negresos'");
 
             if (motivo.value == "Deposito en cuenta") {
-
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO N ${nrecibox.value} ${namesucursal.value}', 'DEPOSITO EFECTIVO N ${nrecibox.value} ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
-
                 dataxx.detalle.push(querydepbancario);
             } else if (motivo.value == "cajatumbes") {
                 const query = `
@@ -395,6 +397,21 @@ include("Fragmentos/pie.php");
                         (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, fromdespose) 
                     values
                         ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', 'CAJA TUMBES - ENVIO DE ${namesucursal.value}', 'EN ESPERA', ###ID###)`
+                dataxx.detalle.push(query);
+            }else if(motivo.value == "Sueldo"){
+                const idps = empleado.options[empleado.selectedIndex].dataset.idps;
+                const query = `
+                    update personalsueldo 
+                        set estadosueldo = NOW()
+                    where id = ${idps}`
+                dataxx.detalle.push(query);
+                
+            }else if(motivo.value == "Sueldo"){
+                const idps = empleadoegresos.options[empleadoegresos.selectedIndex].dataset.idps;
+                const query = `
+                    update personalsueldo 
+                        set estadoafp = NOW()
+                    where id = ${idps}`
                 dataxx.detalle.push(query);
             }
 
@@ -470,13 +487,15 @@ include("Fragmentos/pie.php");
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
     const onloadPersonalSueldo = async () => {
-        const res = await get_data_dynamic("SELECT p.codigopersonal, CONCAT(ps.mes, ' - ' ,ps.anio) fechapago, ps.totalpagar, ps.tegresos, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and ps.estado = 'ENPROCESO' WHERE p.estado = 0 group by p.codigopersonal");
-        res.unshift({
+        const ddd = await get_data_dynamic("SELECT ps.id idps, p.codigopersonal, ps.estadosueldo, ps.estadoafp, ps.estadoessalud, CONCAT(ps.mes, ' - ' ,ps.anio) fechapago, ps.totalpagar, ps.tegresos, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and (ps.estadosueldo is null or ps.estadoafp is null or ps.estadoessalud is null) WHERE p.estado = 0 ");
+
+        ddd.unshift({
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        cargarselect2("#empleado", res, "codigopersonal", "fullname", ["totalpagar", "fechapago"])
-        cargarselect2("#empleadoegresos", res, "codigopersonal", "fullname", ["tegresos", "fechapago"])
+        
+        cargarselect2("#empleado", ddd.filter(x => x.estadosueldo == null), "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"])
+        cargarselect2("#empleadoegresos", ddd.filter(x => x.estadoessalud == null), "codigopersonal", "fullname", ["tegresos", "fechapago", "idps"])
     }
 
     const onloadCliente = async () => {
@@ -633,7 +652,7 @@ include("Fragmentos/pie.php");
                     title: 'acciones',
 
                     render: function(data, type, row) {
-                        if (row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO') && msucursal.value == 1)) {
+                        if ((row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO')) && msucursal.value == 11)) {
                             return `
                                 <div class="">
                                     <button class="btn btn-success" onclick="setStatusIngresos(${row.id},'ACEPTADO', ${row.fromdespose})">Aceptar</button>
