@@ -233,7 +233,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 										<option value="2">Febrero</option>
 										<option value="3">Marzo</option>
 										<option value="4">Abril</option>
-										<option value="5">Mayo</option>	
+										<option value="5">Mayo</option>
 										<option value="6">Junio</option>
 										<option value="7">Julio</option>
 										<option value="8">Agosto</option>
@@ -531,7 +531,7 @@ include("Fragmentos/pie.php");
 			alert(`Ya existe un pago en proceso.`);
 			return;
 		}
-		
+
 		const queryvaldiate1 = `
 			select id 
 			from personalsueldo 
@@ -657,9 +657,30 @@ include("Fragmentos/pie.php");
 				fecharegistro: x.estadosueldo
 			}
 		})
+
 		data = [...data, ...cargos];
+
+		data.sort(function(a, b) {
+			if (parseInt(a.id) < parseInt(b.id)) {
+				return -1;
+			}
+			if (parseInt(b.fecha) < parseInt(a.fecha)) {
+				return 1;
+			}
+			return 0;
+		});
+		let saldo = 0;
+		data = data.map(x => {
+			saldo += parseFloat(x.abono) - parseFloat(x.cargo)
+			return {
+				...x,
+				saldo
+			}
+		})
+
 		$('#reporttable').DataTable({
 			data,
+			ordering: false,
 			destroy: true,
 			columns: [{
 					title: 'fecharegistro',
@@ -673,18 +694,21 @@ include("Fragmentos/pie.php");
 					title: 'fecha pago',
 					data: 'fecha',
 				},
-				
+
 				{
 					title: 'cargo',
 					data: 'cargo',
+					className: 'dt-body-right'
 				},
 				{
 					title: 'abono',
 					data: 'abono',
+					className: 'dt-body-right'
 				},
 				{
 					title: 'Saldo',
-					data: 'abono',
+					data: 'saldo',
+					className: 'dt-body-right'
 				},
 				{
 					title: 'Acciones',
