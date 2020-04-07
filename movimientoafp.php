@@ -67,15 +67,14 @@ include("Fragmentos/pie.php");
     const detalle = async (id) => {
         $("#moperation").modal()
         let res = await get_data_dynamic(`
-            select ps.id, ps.tegresos cargo, '0.00' as abono from datos_sueldo ds 
-            inner join personalsueldo ps on ps.regimen = ds.id 
-            where ds.id = ${id}
-            
-            union 
-            
-            select pa.id, '0.00' cargo, pa.monto abono  from datos_sueldo ds 
-            inner join pagosafp pa on pa.regimen = ds.id 
-            where ds.id = ${id}`);
+
+
+select ps.fecharegistro as fecha, p.cedula, concat(p.nombre,' ',p.paterno,' ',p.materno) as nombrepersonal, ps.id, ps.tegresos cargo, '0.00' as abono from datos_sueldo ds inner join personalsueldo ps on ps.regimen = ds.id inner join personal p on p.codigopersonal=ps.personal where ds.id = ${id} 
+union 
+select pa.fecha_registro as fecha, concat('Recibo ', pa.id), 'Pago Efectivo Caja', pa.id, '0.00' cargo, pa.monto abono from datos_sueldo ds inner join pagosafp pa on pa.regimen = ds.id where ds.id = ${id}`);
+
+
+           
 
         $('#detalletable').DataTable({
             data: res,
@@ -83,6 +82,21 @@ include("Fragmentos/pie.php");
 
             destroy: true,
             columns: [
+                {
+                    title: 'fecha',
+                    data: 'fecha',
+                    className: 'dt-body-right'
+                },
+                {
+                    title: 'cedula',
+                    data: 'cedula',
+                    className: 'dt-body-right'
+                },
+                 {
+                    title: 'Nombres Personal',
+                    data: 'nombrepersonal',
+                    className: 'dt-body-right'
+                },
                 {
                     title: 'cargo',
                     data: 'cargo',
