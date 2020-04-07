@@ -530,6 +530,7 @@ include("Fragmentos/pie.php");
 		const res2 = await get_data_dynamic(queryvaldiate1);
 		if (res2.length > 0) {
 			alert(`Ya existe un pago para el mes y año seleccionado.`);
+			return
 		}
 
 		const vvacaciones = vacaciones.value ? vacaciones.value : 0
