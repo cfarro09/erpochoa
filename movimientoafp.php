@@ -68,13 +68,13 @@ include("Fragmentos/pie.php");
         $("#moperation").modal()
         let res = await get_data_dynamic(`
             select ps.id, ps.tegresos cargo, '0.00' as abono from datos_sueldo ds 
-            left join personalsueldo ps on ps.regimen = ds.id 
+            inner join personalsueldo ps on ps.regimen = ds.id 
             where ds.id = ${id}
             
             union 
             
             select pa.id, '0.00' cargo, pa.monto abono  from datos_sueldo ds 
-            left join pagosafp pa on pa.regimen = ds.id 
+            inner join pagosafp pa on pa.regimen = ds.id 
             where ds.id = ${id}`);
 
         $('#detalletable').DataTable({
