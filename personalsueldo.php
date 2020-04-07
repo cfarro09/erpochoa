@@ -644,20 +644,20 @@ include("Fragmentos/pie.php");
 	}
 	const reportTable = async (id) => {
 		const query = `
-			SELECT ps.id, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as abono, 0 as cargo FROM personalsueldo ps
+			SELECT ps.id, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo, 0 as abono FROM personalsueldo ps
 			where ps.personal = ${id}
         `;
 		let data = await get_data_dynamic(query);
-		const abonos = data.filter(x => x.estadosueldo != null).map(x => {
+		const cargos = data.filter(x => x.estadosueldo != null).map(x => {
 			return {
 				...x,
-				abono: 0,
-				cargo: x.abono,
+				cargo: 0,
+				abono: x.cargo,
 				tipo: "PAGO CAJA",
 				fecharegistro: x.estadosueldo
 			}
 		})
-		data = [...data, ...abonos];
+		data = [...data, ...cargos];
 		$('#reporttable').DataTable({
 			data,
 			destroy: true,
@@ -680,6 +680,10 @@ include("Fragmentos/pie.php");
 				},
 				{
 					title: 'abono',
+					data: 'abono',
+				},
+				{
+					title: 'Saldo',
 					data: 'abono',
 				},
 				{
