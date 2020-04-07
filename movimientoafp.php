@@ -96,32 +96,9 @@ include("Fragmentos/pie.php");
             ]
         });
     }
-    const guardaroperation = async e => {
-        e.preventDefault();
-        let query = "";
-        if (idoperation.value != "0") {
-            query = `
-                update datos_sueldo set
-                    aporte = ${aporte.value},
-                    comision = ${comision.value},
-                    prima = ${prima.value},
-                    essalud = ${essalud.value}
-                where id = ${idoperation.value}
-                `;
-        }
-
-        const res = await ff_dynamic(query);
-        if (res.succes) {
-            alert("Registro Completo")
-            $("#moperation").modal("hide");
-            initTable();
-        } else {
-            alert(res.msg)
-        }
-    }
     const initTable = async () => {
         const query = `
-            select ds.id, ds.nombre, cargo, abono, (IFNULL(cargo, 0) - IFNULL(abono, 0)) saldo from datos_sueldo ds 
+            select ds.id, ds.nombre, IFNULL(cargo, 0) cargo, IFNULl(abono, 0) abono, (IFNULL(cargo, 0) - IFNULL(abono, 0)) saldo from datos_sueldo ds 
             
         `;
         let data = await get_data_dynamic(query);
