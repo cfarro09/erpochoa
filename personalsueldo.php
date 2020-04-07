@@ -550,6 +550,7 @@ include("Fragmentos/pie.php");
 		const vsnp = snp.value ? snp.value : 0
 		const vabono = abono.value ? abono.value : 0
 
+		
 		const query = `
 		insert into personalsueldo 
 			(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar)
@@ -557,6 +558,12 @@ include("Fragmentos/pie.php");
 			(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value})
 		`;
 		const res = await ff_dynamic(query);
+		const query0 = `
+			update datos_sueldo
+				set cargo = (IFNULL(cargo, 0) + ${subtotalegreso.value})
+			where id = ${idregimen.value}
+		`
+		await ff_dynamic(query0);
 		if (res.succes) {
 			alert("Registro Completo")
 			$("#mplanilla").modal("hide");
