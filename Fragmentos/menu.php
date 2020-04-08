@@ -959,7 +959,23 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         <li class="nav-item">
                                             <a href="cuentas_x_pagar1.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Cuentas por Pagar</span>
+                                                <span class="title">Proveedor</span>
+                                                <span class="selected"></span>
+
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="movimientoafp.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">AFP/ONP</span>
+                                                <span class="selected"></span>
+
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="movimientoessalud.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
+                                                <span class="title">ESSALUD</span>
                                                 <span class="selected"></span>
 
                                             </a>
