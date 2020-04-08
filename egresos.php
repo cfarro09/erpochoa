@@ -522,7 +522,7 @@ include("Fragmentos/pie.php");
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        cargarselect2("#empleado", ddd), "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"]);
+        cargarselect2("#empleado", ddd, "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"]);
     }
 
     const onloadCliente = async () => {
