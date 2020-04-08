@@ -329,10 +329,10 @@ include("Fragmentos/pie.php");
         personal.value = 0;
         fechapagosueldo.value = "";
         cantidadxx.disabled;
-        cuentabancaria.closest(".divparent").style.display = "none"
-        fechapagosueldo.closest(".divparent").style.display = "none"
-        listafp.closest(".divparent").style.display = "none"
-        empleado.closest(".divparent").style.display = "none"
+        cuentabancaria.closest(".divparent").style.display = "none";
+        fechapagosueldo.closest(".divparent").style.display = "none";
+        listafp.closest(".divparent").style.display = "none";
+        empleado.closest(".divparent").style.display = "none";
         $("#mdespose").modal()
         await onloadPersonalSueldo()
         // $('#personal').val(idpersonal).trigger('change');

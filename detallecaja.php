@@ -71,14 +71,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                     </div>
                                 </div>
                                 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="control-label">Cantidad</label>
-                                            <input type="number" step="any" id="cantidadxx" required class="form-control form-control-inline" />
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -96,6 +89,34 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
 
+
+                                    <div class="col-md-6 divparent divsueldo" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Empleado</label>
+                                            <select id="empleado"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 divparent divsueldo" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Banco</label>
+                                            <input type="text" disabled id="bancosueldo"  class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 divparent divsueldo" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Cuenta</label>
+                                            <input type="text" id="cuentasueldo" disabled  class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 divparent divsueldo" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha Pago</label>
+                                            <input type="text" id="fechapagosueldo" disabled  class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+
+                                    
+                                    
                                     <div class="col-md-6 divparent" >
                                         <div class="form-group">
                                             <label class="control-label">Proveedor</label>
@@ -125,7 +146,14 @@ $codsucursal = $_SESSION['cod_sucursal'];
 
 
                                 </div>
-
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Cantidad</label>
+                                            <input type="number" step="any" id="cantidadxx" required class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -216,9 +244,23 @@ include("Fragmentos/pie.php");
         onloadPersonal()
         onloadProveedores()
 
-        formdispose.addEventListener("submit", guardardespse)
+        formdispose.addEventListener("submit", guardardespse);
+        empleado.onchange = changeEmpleadoSueldo;
     });
-
+    const changeEmpleadoSueldo = e => {
+        if(e.target.value == ""){
+            cantidadxx.value = "";
+            fechapagosueldo.value = "";
+            cuentasueldo.value = "";
+            bancosueldo.value = "";
+        }else{
+            const dddd = empleado.options[empleado.selectedIndex];
+            cantidadxx.value = dddd.dataset.totalpagar;
+            fechapagosueldo.value = dddd.dataset.fechapago;
+            cuentasueldo.value = dddd.dataset.nrocuenta;
+            bancosueldo.value = dddd.dataset.nombre_banco
+        }
+    }
     const guardardespse = async e => {
         e.preventDefault();
         const dataxx = {
@@ -240,6 +282,13 @@ include("Fragmentos/pie.php");
                 (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1), ###ID###)`
 
                 dataxx.detalle.push(querydepbancario);
+            }else if(motivo.value == "Sueldo"){
+                const idps = empleado.options[empleado.selectedIndex].dataset.idps;
+                const query = `
+                    update personalsueldo 
+                        set estadosueldo = NOW()
+                    where id = ${idps}`
+                dataxx.detalle.push(query);
             }
             const nnc = motivo.value == "transcheque" ? numerocheque.value : "";
             const ffc = motivo.value == "transcheque" ? fechacheque.value : "";
@@ -267,12 +316,36 @@ include("Fragmentos/pie.php");
         saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
 
         numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
-        fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
+        fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none";
+        getSelectorAll(".divsueldo").forEach(x => {
+            x.value = "";
+            x.style.display = e.value == "Sueldo" ? "" : "none";
+        });
+        cantidadxx.disabled = e.value == "Sueldo" ? true: false;
+
+        $('#empleado').val("").trigger('change');
+        
+    }
+    const onloadPersonalSueldo = async () => {
+        const ddd = await get_data_dynamic(`
+            SELECT 
+                ps.id idps, b.nombre_banco ,p.codigopersonal, p.nrocuenta, CONCAT(ps.mes, ' - ' ,ps.anio) fechapago, ps.totalpagar, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname 
+            FROM personal p 
+            inner join personalsueldo ps on ps.personal = p.codigopersonal and ps.estadosueldo is null
+            left join banco b on b.codigobanco = p.banco
+            WHERE p.estado = 0 and p.banco is not null and p.cci <> '' and p.nrocuenta <> ''`);
+
+        ddd.unshift({
+            codigopersonal: "",
+            fullname: "Seleccionar"
+        })
+        cargarselect2("#empleado", ddd, "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps", "nrocuenta", "nombre_banco"]);
     }
     const changeproveedor = e => {
         saldoproveedor.closest(".divparent").style.display = "";
-        if(e.options[e.selectedIndex])
-            saldoproveedor.value = e.options[e.selectedIndex].dataset.saldo;
+        if(e.options[e.selectedIndex] && e.value){
+                saldoproveedor.value = e.options[e.selectedIndex].dataset.saldo;
+        }
 
     }
     const dispose = async () => {
@@ -287,6 +360,9 @@ include("Fragmentos/pie.php");
         selectproveedor.closest(".divparent").style.display = "";
         numerocheque.closest(".divparent").style.display = "none";
         fechacheque.closest(".divparent").style.display = "none";
+        onloadPersonalSueldo();
+        getSelectorAll(".divsueldo").forEach(x => x.style.display = "none")
+
         personal.value = 0
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');

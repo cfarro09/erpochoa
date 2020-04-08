@@ -607,7 +607,7 @@ include("Fragmentos/pie.php");
                     fechainiciocontrato = '${fechainiciocontrato.value}',
                     fechafincontrato = '${fechafincontrato.value}',
                     sueldo_mensual = ${sueldomensual.value},
-                    banco = ${bancooperation.value},
+                    banco = ${bancooperation.value || "null"},
                     cci = '${cci.value}',
                     nrocuenta = '${nrocuenta.value}'
                 where codigopersonal = ${idoperation.value}
