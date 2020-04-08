@@ -97,6 +97,7 @@ $suc = $_SESSION['cod_sucursal'];
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo</option>
                                                 <option value="afp/onp">AFP/ONP</option>
+                                                <option value="essalud">ESSALUD</option>
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
                                             </select>
@@ -278,14 +279,12 @@ include("Fragmentos/pie.php");
         formdispose.addEventListener("submit", guardardespse)
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
-    const changeMotivo = e => {
+    const changeMotivo = async e => {
         cantidadxx.disabled = false;
-        cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
-        empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
-        fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none"
-        
-        listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none"
-        // empleadoegresos.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none"
+        cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none";
+        empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
+        fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
+        listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
         $('#personal').val(idpersonal).trigger('change');
         $('#empleado').val("").trigger('change');
         $('#listafp').val("").trigger('change');
@@ -293,6 +292,9 @@ include("Fragmentos/pie.php");
         fechapagosueldo.value = "";
         if(e.target.value == "Sueldo")
             cantidadxx.disabled = true;
+        else if(e.target.value == "essalud"){
+            await selectessalud()
+        }
     }
     const changelistafp = e => {
         if(e.target.value == ""){
@@ -301,7 +303,10 @@ include("Fragmentos/pie.php");
             cantidadxx.value = listafp.options[listafp.selectedIndex].dataset.total
         }
     }
-
+    const selectessalud = async () => {
+        const ddd = await get_data_dynamic("select (IFNULL(ds.cargo, 0) - IFNULL(ds.abono, 0)) total from datos_sueldo ds where ds.nombre = 'essalud'");
+        cantidadxx.value = ddd[0].total;
+    }
     const changeEmpleadoSueldo = e => {
         if(e.target.value == ""){
             cantidadxx.value = ""
@@ -418,6 +423,17 @@ include("Fragmentos/pie.php");
                         where id = ${idps}
                     `
                 dataxx.detalle.push(query0);
+            }else if(motivo.value == "essalud"){
+                const query = `
+                    insert into pagosafp (monto, regimen, despose)
+                    values (${cantidadxx.value}, 0, ###ID###) `
+                dataxx.detalle.push(query);
+
+                const query0 = `
+                        update datos_sueldo
+                            set abono = (IFNULL(abono, 0) + ${cantidadxx.value})
+                        where nombre = 'essalud'`;
+                dataxx.detalle.push(query0);
             }
 
             const query = `
@@ -492,7 +508,7 @@ include("Fragmentos/pie.php");
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
     const onLoadAfp = async () => {
-        const ddd = await get_data_dynamic("select ds.id, ds.nombre, (IFNULL(ds.cargo, 0) - IFNULL(ds.abono, 0)) total from datos_sueldo ds");
+        const ddd = await get_data_dynamic("select ds.id, ds.nombre, (IFNULL(ds.cargo, 0) - IFNULL(ds.abono, 0)) total from datos_sueldo ds where ds.nombre <> 'essalud'");
         
         ddd.unshift({
             id: "",
@@ -507,9 +523,7 @@ include("Fragmentos/pie.php");
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        
-        cargarselect2("#empleado", ddd.filter(x => x.estadosueldo == null), "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"])
-        // cargarselect2("#empleadoegresos", ddd.filter(x => x.estadoessalud == null), "codigopersonal", "fullname", ["tegresos", "fechapago", "idps"])
+        cargarselect2("#empleado", ddd.filter(x => x.estadosueldo == null), "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"]);
     }
 
     const onloadCliente = async () => {

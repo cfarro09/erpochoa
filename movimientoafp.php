@@ -128,7 +128,7 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-            select ds.id, ds.nombre, IFNULL(cargo, 0) cargo, IFNULl(abono, 0) abono, (IFNULL(cargo, 0) - IFNULL(abono, 0)) saldo from datos_sueldo ds 
+            select ds.id, ds.nombre, IFNULL(cargo, 0) cargo, IFNULl(abono, 0) abono, (IFNULL(cargo, 0) - IFNULL(abono, 0)) saldo from datos_sueldo ds where ds.nombre <> 'essalud'
             
         `;
         let data = await get_data_dynamic(query);

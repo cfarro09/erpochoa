@@ -519,7 +519,6 @@ include("Fragmentos/pie.php");
 	}
 	const guardarplanillapago = async e => {
 		e.preventDefault();
-
 		const queryvaldiate = `
 			select id 
 			from personalsueldo 
@@ -543,6 +542,11 @@ include("Fragmentos/pie.php");
 			return
 		}
 
+		const data = {
+			header: "",
+			detalle: []
+		}
+
 		const vvacaciones = vacaciones.value ? vacaciones.value : 0
 		const vafpaporte = afpaportes.value ? afpaportes.value : 0
 		const vafpcomision = afpcomision.value ? afpcomision.value : 0
@@ -550,27 +554,44 @@ include("Fragmentos/pie.php");
 		const vsnp = snp.value ? snp.value : 0
 		const vabono = abono.value ? abono.value : 0
 
-		
 		const query = `
 		insert into personalsueldo 
 			(personal, diastrabajados, regimen, mes, anio, remuneracion, asigfamiliar, vacaciones, afpaporte, afpcomision, afpprima, snp, abonos, essalud, tingresos, tegresos, totalpagar)
 		values
 			(${idpersonalp.value}, ${diastrabajadosp.value}, ${idregimen.value}, ${mesp.value}, ${aniop.value}, ${rbasica.value}, ${asignfamiliar.value}, ${vvacaciones}, ${vafpaporte},${vafpcomision},${vafpprima},${vsnp},${vabono},${essaludp.value}, ${subtotalingreso.value}, ${subtotalegreso.value}, ${totalpagar.value})
 		`;
-		const res = await ff_dynamic(query);
 		const query0 = `
 			update datos_sueldo
 				set cargo = (IFNULL(cargo, 0) + ${subtotalegreso.value})
 			where id = ${idregimen.value}
-		`
-		await ff_dynamic(query0);
-		if (res.succes) {
-			alert("Registro Completo")
-			$("#mplanilla").modal("hide");
-			initTable();
-		} else {
-			alert(res.msg)
-		}
+		`;
+		const query1 = `
+			update datos_sueldo
+				set cargo = (IFNULL(cargo, 0) + ${essaludp.value})
+			where nombre = 'essalud'
+		`;
+		data.detalle.push(query);
+		data.detalle.push(query0);
+		data.detalle.push(query1);
+		
+		const jjson = JSON.stringify(data)
+		var formData = new FormData();
+		formData.append("json", jjson)
+		fetch(`setVenta.php`, {
+			method: 'POST',
+			body: formData
+		})
+		.then(res => res.json())
+		.catch(error => console.error("error: ", error))
+		.then(res => {
+			if (res.success) {
+				alert("Registro Completo")
+				$("#mplanilla").modal("hide");
+				initTable();
+			}else{
+				alert(res.msg)
+			}
+		});
 
 	}
 	const guardaroperation = async e => {

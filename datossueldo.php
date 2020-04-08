@@ -141,7 +141,7 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-            select id, nombre, aporte, comision, prima, essalud from datos_sueldo
+            select id, nombre, aporte, comision, prima, essalud from datos_sueldo where nombre <> 'essalud'
         `;
         let data = await get_data_dynamic(query);
 
