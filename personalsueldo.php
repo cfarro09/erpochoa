@@ -672,7 +672,7 @@ include("Fragmentos/pie.php");
 	}
 	const reportTable = async (id) => {
 		const query = `
-			SELECT ps.id, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo, 0 as abono FROM personalsueldo ps
+			SELECT ps.id,s.nombre_sucursal as sucursal1, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo, 0 as abono FROM personalsueldo ps LEFT JOIN acceso_seguridad a on a.personal=ps.personal left JOIN sucursal s on s.cod_sucursal=a.cod_sucursal
 			where ps.personal = ${id}
         `;
 		let data = await get_data_dynamic(query);
@@ -681,7 +681,7 @@ include("Fragmentos/pie.php");
 				...x,
 				cargo: 0,
 				abono: x.cargo,
-				tipo: "PAGO CAJA",
+				tipo: `PAGO CAJA - ${x.sucursal1}`,
 				fecharegistro: x.estadosueldo
 			}
 		})
