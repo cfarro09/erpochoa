@@ -398,7 +398,7 @@ include("Fragmentos/pie.php");
 		subtotalegreso.value = ttt.toFixed(2);
 	}
 	const calculartotal = () => {
-		totalpagar.value = subtotalingreso.value - subtotalegreso.value
+		totalpagar.value = (subtotalingreso.value - subtotalegreso.value).toFixed(2)
 	}
 	const onloadBancos = async () => {
 		const res = await get_data_dynamic("select codigobanco, nombre_banco from banco");

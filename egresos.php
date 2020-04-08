@@ -409,7 +409,6 @@ include("Fragmentos/pie.php");
                         set estadosueldo = NOW()
                     where id = ${idps}`
                 dataxx.detalle.push(query);
-                
             }else if(motivo.value == "afp/onp"){
                 const idps = listafp.options[listafp.selectedIndex].dataset.id;
                 const query = `
@@ -517,13 +516,13 @@ include("Fragmentos/pie.php");
         cargarselect2("#listafp", ddd, "id", "nombre", ["total", "id"], false);
     }
     const onloadPersonalSueldo = async () => {
-        const ddd = await get_data_dynamic("SELECT ps.id idps, p.codigopersonal, ps.estadosueldo, CONCAT(ps.mes, ' - ' ,ps.anio) fechapago, ps.totalpagar, ps.tegresos, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and (ps.estadosueldo is null or ps.estadoafp is null or ps.estadoessalud is null) WHERE p.estado = 0 ");
+        const ddd = await get_data_dynamic("SELECT ps.id idps, p.codigopersonal, ps.estadosueldo, CONCAT(ps.mes, ' - ' ,ps.anio) fechapago, ps.totalpagar, ps.tegresos, concat(p.paterno, ' ', p.materno, ' ', p.nombre) as fullname FROM personal p inner join personalsueldo ps on ps.personal = p.codigopersonal and ps.estadosueldo is null WHERE p.estado = 0 ");
 
         ddd.unshift({
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        cargarselect2("#empleado", ddd.filter(x => x.estadosueldo == null), "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"]);
+        cargarselect2("#empleado", ddd), "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"]);
     }
 
     const onloadCliente = async () => {

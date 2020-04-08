@@ -102,7 +102,7 @@ $suc = $_SESSION['cod_sucursal'];
                                                 <option value="cajatumbes">Remesa en Efectivo a Caja Central</option>
                                                 <option value="Deposito en cuenta">Deposito en cuenta</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
-                                                <option value="Sueldo">Sueldo</option>
+                                                <option id="optionsalary" value="Sueldo">Sueldo</option>
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
                                             </select>
@@ -238,6 +238,7 @@ include("Fragmentos/pie.php");
 
 <script>
     const suc = <?= $suc  ?>;
+    let salary = 0;
     const idpersonal = <?= $_SESSION['kt_codigopersonal']; ?>;
     $(function() {
         initTable()
@@ -257,22 +258,41 @@ include("Fragmentos/pie.php");
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
     const changeMotivo = e => {
-        cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none"
+        cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none";
+        cantidadxx.value = 0;
+        cantidadxx.disabled = false;
+        if(e.target.value == "Sueldo"){
+            cantidadxx.value = salary;
+            cantidadxx.disabled = true;
+        }
     }
     motivo.onchange = changeMotivo;
 
     const dispose = async () => {
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
-
+        await validateSalary();
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'negresos'");
         nrecibox.value = nrecibo[0].value
         typedespose.value = "negresos";
-
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
+    }
+    const validateSalary = async () => {
+        const query = `
+            select totalpagar from personalsueldo 
+            where personal = ${idpersonal} and estadosueldo is null
+        `;
+        let res = await get_data_dynamic(query);
+        
+        if(res.length > 0){
+            optionsalary.disabled = false;
+            salary = res[0].totalpagar
+        }else{
+            optionsalary.disabled = true;
+        }
     }
     const disposeingreso = async () => {
         formdisposeingreso.reset()
@@ -325,7 +345,6 @@ include("Fragmentos/pie.php");
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'negresos'");
 
             if (motivo.value == "Deposito en cuenta") {
-
                 const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO N ${nrecibox.value} ${namesucursal.value}', 'DEPOSITO EFECTIVO  N ${nrecibox.value} ${namesucursal.value}', ${cantidadxx.value}, 
                 (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
 
@@ -338,7 +357,13 @@ include("Fragmentos/pie.php");
                         ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', 'CAJA TUMBES - ENVIO DE ${namesucursal.value}', 'EN ESPERA', ###ID###)`
                 dataxx.detalle.push(query);
             }
-
+            else if(motivo.value == "Sueldo"){
+                const query = `
+                    update personalsueldo 
+                        set estadosueldo = NOW()
+                    where personal = ${idpersonal} and estadosueldo is null`
+                dataxx.detalle.push(query);
+            }
             const query = `
                 insert into despose 
                     (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado) 
@@ -349,6 +374,7 @@ include("Fragmentos/pie.php");
 
             let res = await ll_dynamic(dataxx);
             alert("DATOS GUARDADOS CORRECTAMENTE");
+
             await initTable()
             await getdetail(msucursal.value, namesucursal.value)
             $("#mdespose").modal("hide")
