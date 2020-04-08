@@ -110,6 +110,12 @@ $suc = $_SESSION['cod_sucursal'];
                                     </div>
                                     <div class="col-md-6 divparent">
                                         <div class="form-group">
+                                            <label class="control-label">Fecha Sueldo</label>
+                                            <input type="text" step="any"  disabled id="inputfechasueldo" required class="form-control form-control-inline" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 divparent">
+                                        <div class="form-group">
                                             <label class="control-label">Cuenta</label>
                                             <select id="cuentabancaria" class="form-control"></select>
                                         </div>
@@ -239,6 +245,7 @@ include("Fragmentos/pie.php");
 <script>
     const suc = <?= $suc  ?>;
     let salary = 0;
+    let fechasueldo = "";
     const idpersonal = <?= $_SESSION['kt_codigopersonal']; ?>;
     $(function() {
         initTable()
@@ -259,11 +266,13 @@ include("Fragmentos/pie.php");
     });
     const changeMotivo = e => {
         cuentabancaria.closest(".divparent").style.display = e.target.value == "Deposito en cuenta" ? "" : "none";
+        inputfechasueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         cantidadxx.value = 0;
         cantidadxx.disabled = false;
         if(e.target.value == "Sueldo"){
             cantidadxx.value = salary;
             cantidadxx.disabled = true;
+            inputfechasueldo.value = fechasueldo;
         }
     }
     motivo.onchange = changeMotivo;
@@ -277,12 +286,13 @@ include("Fragmentos/pie.php");
         typedespose.value = "negresos";
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
+        inputfechasueldo.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
     }
     const validateSalary = async () => {
         const query = `
-            select totalpagar from personalsueldo 
+            select totalpagar, CONCAT(mes, ' - ', anio) fechasueldo from personalsueldo 
             where personal = ${idpersonal} and estadosueldo is null
         `;
         let res = await get_data_dynamic(query);
@@ -290,6 +300,7 @@ include("Fragmentos/pie.php");
         if(res.length > 0){
             optionsalary.disabled = false;
             salary = res[0].totalpagar
+            fechasueldo = res[0].fechasueldo
         }else{
             optionsalary.disabled = true;
         }
