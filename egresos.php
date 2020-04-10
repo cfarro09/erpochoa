@@ -554,7 +554,7 @@ include("Fragmentos/pie.php");
                     id, fecha, nrorecibo, tipo, cantidad as total, motivo, estado, fromdespose
                 FROM despose
                 WHERE 
-                    sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
+                    sucursal = ${id} and (tipo IN ('despose', 'ingresocaja', 'ingreso'))`;
 
             despose = await get_data_dynamic(query1);
         }
@@ -679,13 +679,15 @@ include("Fragmentos/pie.php");
             qwer = qwer.reverse();
         } else {
             let saldo = 0;
+            debugger
             des.forEach(x => {
 
-                if (x.tipo == "ingresocaja") {
+                if (x.tipo == "ingresocaja" || x.tipo == "ingreso") {
+                    
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
-                        motivo: `${x.motivo} ${x.estado}`,
+                        motivo: `${x.motivo || x.tipo} ${x.estado}`,
                         despose: 0,
                         saldo: saldo.toFixed(2),
                         nrorecibo: "RI - " + x.nrorecibo
