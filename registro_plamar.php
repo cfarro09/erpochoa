@@ -270,15 +270,8 @@ include("Fragmentos/menu.php");
       .catch(error => console.error("error: ", error))
       .then(res => {
         if (res.success) {
-          $("#ruc_plamar").val("")
-          $("#nro_recibo_plamar").val("")
-          $("#nombre_plamar").val("")
-          $("#fecha_inicio").val("")
-          $("#fecha_fin").val("")
-          $("#periodo").val("")
-          $("#monto_plamar").val("")
-          $("#descripcion_plamar").val("")
-          $("#mPlamar").modal("hide")
+          alert("Registro completo");
+          location.reload()
         }
       });
   })

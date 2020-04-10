@@ -38,7 +38,7 @@ if (isset($_POST['json'])) {
 $header = json_decode($json);
 
 mysql_select_db($database_Ventas, $Ventas);
-  $update1 = "insert into plamar (ruc,	nro_recibo,	nombre,	fecha_inicio,	fecha_fin,	periodo,	monto,	descripcion, 	codigoacceso) values ('$header->ruc_plamar', '$header->nro_recibo_plamar', '$header->nombre_plamar', '$header->fecha_inicio', '$header->fecha_fin', $header->periodo, $header->monto_plamar, '$header->descripcion_plamar', $header->codigoacceso)";
+  $update1 = "insert into plamar (ruc,	nro_recibo,	nombre,	fecha_inicio,	fecha_fin,	periodo,	monto,	descripcion, 	codigoacceso, estado) values ('$header->ruc_plamar', '$header->nro_recibo_plamar', '$header->nombre_plamar', '$header->fecha_inicio', '$header->fecha_fin', $header->periodo, $header->monto_plamar, '$header->descripcion_plamar', $header->codigoacceso, 'PORPAGAR')";
   $queryC = mysql_query($update1, $Ventas) or die(mysql_error());
   
   die(json_encode(array("success" => true), 128));

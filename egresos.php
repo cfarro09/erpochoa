@@ -92,15 +92,29 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
+                                                <option value="">Seleccionar</option>
                                                 <option id="optionremesa" value="cajatumbes">Remesa en Efectivo a Caja Central</option>
                                                 <option value="Deposito en cuenta">Deposito en cuenta</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="Sueldo">Sueldo</option>
                                                 <option value="afp/onp">AFP/ONP</option>
+                                                <option value="plamar">PLAMAR</option>
                                                 <option value="essalud">ESSALUD</option>
                                                 <option value="Viatico">Viatico</option>
                                                 <option value="Vacaciones">Vacaciones</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Trabajador</label>
+                                            <select id="selectplamar" ></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Datos</label>
+                                            <input type="text" disabled id="datosplamar" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-md-12 divparent" style="display: none">
@@ -282,6 +296,8 @@ include("Fragmentos/pie.php");
         listafp.onchange = changelistafp;
         empleado.onchange = changeEmpleadoSueldo;
         selectpagoservicios.onchange = changePagoServicios;
+        selectplamar.onchange = changePlamar;
+
         formdispose.addEventListener("submit", guardardespse)
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
@@ -292,12 +308,16 @@ include("Fragmentos/pie.php");
         fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
         selectpagoservicios.closest(".divparent").style.display = e.target.value == "Pago Servicios" ? "" : "none";
+
+        datosplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
+        selectplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
+
         $('#personal').val(idpersonal).trigger('change');
         $('#empleado').val("").trigger('change');
         $('#listafp').val("").trigger('change');
         cantidadxx.value = "";
         fechapagosueldo.value = "";
-        if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios")
+        if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
             cantidadxx.disabled = true;
         else if(e.target.value == "essalud"){
             await selectessalud()
@@ -323,7 +343,16 @@ include("Fragmentos/pie.php");
             fechapagosueldo.value = empleado.options[empleado.selectedIndex].dataset.fechapago
         }
     }
+    const changePlamar = e => {
+        if(e.target.value == ""){
+            cantidadxx.value = "";
+        }else{
+            cantidadxx.value = selectplamar.options[selectplamar.selectedIndex].dataset.monto;
+            datosplamar.value = selectplamar.options[selectplamar.selectedIndex].dataset.datoextra;
+        }
+    }
     const changePagoServicios = e => {
+        debugger
         if(e.target.value == ""){
             cantidadxx.value = "";
         }else{
@@ -339,7 +368,7 @@ include("Fragmentos/pie.php");
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'negresos'");
         nrecibox.value = nrecibo[0].value
         typedespose.value = "negresos";
-
+        motivo.value = ""
         personal.value = 0;
         fechapagosueldo.value = "";
         cantidadxx.disabled;
@@ -348,9 +377,12 @@ include("Fragmentos/pie.php");
         listafp.closest(".divparent").style.display = "none";
         empleado.closest(".divparent").style.display = "none";
         selectpagoservicios.closest(".divparent").style.display = "none";
+        datosplamar.closest(".divparent").style.display = "none";
+        selectplamar.closest(".divparent").style.display = "none";
         $("#mdespose").modal()
-        await onloadPersonalSueldo();
+        onloadPersonalSueldo();
         onloadPagoServicio();
+        await onloadPagoPlamar()
         // $('#personal').val(idpersonal).trigger('change');
     }
     const disposeingreso = async () => {
@@ -450,12 +482,19 @@ include("Fragmentos/pie.php");
                         where nombre = 'essalud'`;
                 dataxx.detalle.push(query0);
             }else if(motivo.value == "Pago Servicios"){
-                
                 const query = `
                         update serviciosporpagar set 
                         estado = 'PAGADO',
                         iddespose = ###ID###
                         where id = ${selectpagoservicios.value}
+                    `
+                dataxx.detalle.push(query);
+            }else if(motivo.value == "plamar"){
+                const query = `
+                        update plamar set 
+                        estado = 'PAGADO',
+                        iddespose = ###ID###
+                        where id_plamar = ${selectplamar.value}
                     `
                 dataxx.detalle.push(query);
             }
@@ -555,12 +594,22 @@ include("Fragmentos/pie.php");
             inner join sucursal s on s.cod_sucursal = sp.codsucursal
             where sp.estado = 'PORPAGAR'
         `);
-
         ddd.unshift({
             id: "",
             descripcion: "Seleccionar"
         })
         cargarselect2("#selectpagoservicios", ddd, "id", "descripcion", ["precio"]);
+    }
+
+    const onloadPagoPlamar = async () => {
+        const ddd = await get_data_dynamic(`
+            select id_plamar id, CONCAT(ruc, ' - ' ,nombre) descripcion,  CONCAT(nro_recibo, ': De ', fecha_inicio, ' hasta ', fecha_fin) datoextra, monto from plamar where estado = 'PORPAGAR'
+        `);
+        ddd.unshift({
+            id: "",
+            descripcion: "Seleccionar"
+        })
+        cargarselect2("#selectplamar", ddd, "id", "descripcion", ["datoextra", "monto"]);
     }
 
     const onloadCliente = async () => {
