@@ -130,9 +130,16 @@ include("Fragmentos/pie.php");
         //modificale la query segun el estado o borra todo
         if(ff){
             const query = `dsjndasjdas from producto where codigoprod = ${id}`;
-            let res = await ll_dynamic(query);
-            if(res && res.success)
+            
+            const data = {
+                header: query,
+                detalle: []
+            }
+            let res = await ll_dynamic(data);
+            if(res && res.success){
+                alert("Se eliminó satisfactoriamente")
                 initTable()
+            }
             else
                 alert(res.msg)
         }
