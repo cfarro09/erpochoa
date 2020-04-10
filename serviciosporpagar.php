@@ -171,7 +171,7 @@ include("Fragmentos/pie.php");
     const guardar = e => {
         e.preventDefault();
         const codpersonal = <?= $codpersonal ?>;
-        const query = `insert into serviciosporpagar (fechafacturacion, concepto, numerorecibo, mespago, aniopago, precio, codsucursal, codpersonal) values ('${fechafacturacion.value}', '${concepto.value}', '${numerorecibo.value}', '${mespago.value}', '${aniopago.value}', ${preciopago.value}, ${codsucursal.value}, ${codpersonal})`
+        const query = `insert into serviciosporpagar (fechafacturacion, concepto, numerorecibo, mespago, aniopago, precio, codsucursal, codpersonal, estado) values ('${fechafacturacion.value}', '${concepto.value}', '${numerorecibo.value}', '${mespago.value}', '${aniopago.value}', ${preciopago.value}, ${codsucursal.value}, ${codpersonal}, "PORPAGAR")`
         const detalle = [];
         detalle.push(query);
         const formData = new FormData();

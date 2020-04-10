@@ -103,6 +103,12 @@ $suc = $_SESSION['cod_sucursal'];
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-12 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Concepto</label>
+                                            <select id="selectpagoservicios" ></select>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6 divparent">
                                         <div class="form-group">
                                             <label class="control-label">Cuenta</label>
@@ -265,6 +271,7 @@ include("Fragmentos/pie.php");
         onloadCliente()
         onloadCuentas()
         onloadPersonalSueldo()
+        onloadPagoServicio()
         onLoadAfp()
         if (suc == 1) {
             btndispose.style.display = "none"
@@ -276,6 +283,7 @@ include("Fragmentos/pie.php");
         motivo.onchange = changeMotivo;
         listafp.onchange = changelistafp;
         empleado.onchange = changeEmpleadoSueldo;
+        selectpagoservicios.onchange = changePagoServicios;
         formdispose.addEventListener("submit", guardardespse)
         formdisposeingreso.addEventListener("submit", guardardespseingreso)
     });
@@ -285,12 +293,13 @@ include("Fragmentos/pie.php");
         empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
+        selectpagoservicios.closest(".divparent").style.display = e.target.value == "Pago Servicios" ? "" : "none";
         $('#personal').val(idpersonal).trigger('change');
         $('#empleado').val("").trigger('change');
         $('#listafp').val("").trigger('change');
         cantidadxx.value = "";
         fechapagosueldo.value = "";
-        if(e.target.value == "Sueldo")
+        if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios")
             cantidadxx.disabled = true;
         else if(e.target.value == "essalud"){
             await selectessalud()
@@ -314,6 +323,13 @@ include("Fragmentos/pie.php");
         }else{
             cantidadxx.value = empleado.options[empleado.selectedIndex].dataset.totalpagar
             fechapagosueldo.value = empleado.options[empleado.selectedIndex].dataset.fechapago
+        }
+    }
+    const changePagoServicios = e => {
+        if(e.target.value == ""){
+            cantidadxx.value = "";
+        }else{
+            cantidadxx.value = selectpagoservicios.options[selectpagoservicios.selectedIndex].dataset.precio
         }
     }
     const dispose = async () => {
@@ -523,6 +539,19 @@ include("Fragmentos/pie.php");
             fullname: "Seleccionar"
         })
         cargarselect2("#empleado", ddd, "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps"]);
+    }
+    const onloadPagoServicio = async () => {
+        const ddd = await get_data_dynamic(`
+            select id, CONCAT(s.nombre_sucursal, ' - ', sp.numerorecibo, ' - ', sp.mespago, ' - ', sp.aniopago, ' - ', sp.concepto) descripcion, sp.precio from serviciosporpagar sp
+            inner join sucursal s on s.cod_sucursal = sp.codsucursal
+            where sp.estado = 'PORPAGAR'
+        `);
+
+        ddd.unshift({
+            id: "",
+            descripcion: "Seleccionar"
+        })
+        cargarselect2("#selectpagoservicios", ddd, "id", "descripcion", ["precio"]);
     }
 
     const onloadCliente = async () => {
