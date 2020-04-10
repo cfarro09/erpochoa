@@ -65,11 +65,11 @@ include("Fragmentos/abrirpopupcentro.php");
 					$newDate = date("d/m/Y", strtotime($row_Listado['fecha']));
 					 echo $newDate; ?></td>
 					<td class="tipo_comprobante"><?= $row_Listado['tipo_comprobante'] ?></td>
-					<td class="text-right" class="numerocomprobante"><?= $row_Listado['numerocomprobante']*1; ?></td>
+					<td class="text-right numerocomprobante" ><?= $row_Listado['numerocomprobante']*1; ?></td>
 					<td class="usuario"><?= $row_Listado['usuario'] ?></td>
 					<td class="codigorc"><?= $row_Listado['codigorc'] ?></td>
 					<td class="razonsocial"><?= $row_Listado['razonsocial'] ?></td>
-					<td class="text-right" class="total" > <?= $row_Listado['total'] ?></td>
+					<td class="text-right total" > <?= $row_Listado['total'] ?></td>
 					
 					<td class="nombre_sucursal"><?= $row_Listado['nombre_sucursal'] ?></td>
 					<?php if ($row_Listado['estadofact'] == 1): ?>
