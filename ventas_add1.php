@@ -165,11 +165,11 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				<?php
 				do {
 				?>
-					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
+					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p3'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
 						<?php echo $row_Productos['nombre_producto'] ?> -
 						<?php echo $row_Productos['Marca']; ?> -
 						<?php echo $row_Productos['nombre_color']; ?> -
-						<?php echo "$/." . $row_Productos['p2']; ?> -
+						<?php echo "$/." . $row_Productos['p3']; ?> -
 						(<?= "Stock " . $row_Productos['saldo']; ?>)</option>
 				<?php
 				} while ($row_Productos = mysql_fetch_assoc($Productos));
