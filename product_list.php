@@ -112,7 +112,7 @@ include("Fragmentos/pie.php");
                         	return ""
                         }else{
                         	
-                        	return `<a onClick="eliminarproducto(${row.codigoprod})"  class="btn btn-success">Eliminar</a>`
+                        	return `<a onClick="eliminarproducto(${row.codigoprod}, '${row.nombre_producto}')"  class="btn btn-success">Eliminar</a>`
                         }
                     }
                     
@@ -124,8 +124,8 @@ include("Fragmentos/pie.php");
 </script>
 <script type="text/javascript">
     
-    const eliminarproducto =  async id => {
-        const ff = confirm("Desea eliminar el producto?")
+    const eliminarproducto =  async (id, nombre_producto) => {
+        const ff = confirm(`Desea eliminar el producto ${nombre_producto}?`)
 
         //modificale la query segun el estado o borra todo
         if(ff){
