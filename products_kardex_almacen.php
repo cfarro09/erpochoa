@@ -130,7 +130,7 @@ include("Fragmentos/pie.php");
         const query = `
         select 
             p.codigoprod ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
-             (IFNULL(kc.saldo, 0) - IFNULL(k.saldo, 0)) as xentregar,
+             (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) as xentregar,
              sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' Then k5.cantidad Else 0 End) entradas,
              sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' Then k5.cantidad Else 0 End) salidas
         from producto p 
