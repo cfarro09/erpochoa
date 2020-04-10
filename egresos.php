@@ -270,8 +270,6 @@ include("Fragmentos/pie.php");
         onloadPersonal()
         onloadCliente()
         onloadCuentas()
-        onloadPersonalSueldo()
-        onloadPagoServicio()
         onLoadAfp()
         if (suc == 1) {
             btndispose.style.display = "none"
@@ -349,8 +347,10 @@ include("Fragmentos/pie.php");
         fechapagosueldo.closest(".divparent").style.display = "none";
         listafp.closest(".divparent").style.display = "none";
         empleado.closest(".divparent").style.display = "none";
+        selectpagoservicios.closest(".divparent").style.display = "none";
         $("#mdespose").modal()
-        await onloadPersonalSueldo()
+        await onloadPersonalSueldo();
+        onloadPagoServicio();
         // $('#personal').val(idpersonal).trigger('change');
     }
     const disposeingreso = async () => {
@@ -449,6 +449,15 @@ include("Fragmentos/pie.php");
                             set abono = (IFNULL(abono, 0) + ${cantidadxx.value})
                         where nombre = 'essalud'`;
                 dataxx.detalle.push(query0);
+            }else if(motivo.value == "Pago Servicios"){
+                
+                const query = `
+                        update serviciosporpagar set 
+                        estado = 'PAGADO',
+                        iddespose = ###ID###
+                        where id = ${selectpagoservicios.value}
+                    `
+                dataxx.detalle.push(query);
             }
 
             const query = `
