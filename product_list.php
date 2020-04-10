@@ -111,8 +111,9 @@ include("Fragmentos/pie.php");
                         if(row.kardex){
                         	return ""
                         }else{
-                        	
-                        	return `<a onClick="eliminarproducto(${row.codigoprod}, '${row.nombre_producto}')"  class="btn btn-success">Eliminar</a>`
+                        	let ss = row.nombre_producto.replace(/'/g, "")
+                            debugger
+                        	return `<a onClick='eliminarproducto(${row.codigoprod}, "${ss}")'  class="btn btn-success">Eliminar</a>`
                         }
                     }
                     
