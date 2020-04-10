@@ -112,7 +112,7 @@ include("Fragmentos/pie.php");
                         	return ""
                         }else{
                         	
-                        	return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${row.codigoprod}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Eliminar</a>`
+                        	return `<a onClick="eliminarproducto(${row.codigoprod})"  class="btn btn-success">Eliminar</a>`
                         }
                     }
                     
@@ -124,18 +124,17 @@ include("Fragmentos/pie.php");
 </script>
 <script type="text/javascript">
     
-    
-if ((isset($_POST["MM_eliminar"])) && ($_POST["MM_eliminar"] == "Eliminar_Registro")) {
-    $updateSQL = sprintf("DELETE from producto WHERE codigoprod=%s",
-        GetSQLValueString($_POST['codigoprod'], "int"));
+    const eliminarproducto =  async id => {
+        const ff = confirm("Desea eliminar el producto?")
 
-    mysql_select_db($database_Ventas, $Ventas);
-    $Result1 = mysql_query($updateSQL, $Ventas) or die(mysql_error());
-
-    $updateGoTo = "product_list.php";
-    if (isset($_SERVER['QUERY_STRING'])) {
-        $updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
-        $updateGoTo .= $_SERVER['QUERY_STRING'];
+        //modificale la query segun el estado o borra todo
+        if(ff){
+            const query = `dsjndasjdas from producto where codigoprod = ${id}`;
+            let res = await ll_dynamic(query);
+            if(res && res.success)
+                initTable()
+            else
+                alert(res.msg)
+        }
     }
-    header(sprintf("Location: %s", $updateGoTo));}
 </script>
