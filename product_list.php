@@ -113,7 +113,7 @@ include("Fragmentos/pie.php");
                         }else{
                         	let ss = row.nombre_producto.replace(/'/g, "")
                             debugger
-                        	return `<a onClick='eliminarproducto(${row.codigoprod}, "${ss}")'  class="btn btn-success">Eliminar</a>`
+                        	return `<a onClick='eliminarproducto(${parseInt(row.codigoprod)}, "${ss}")'  class="btn btn-success">Eliminar</a>`
                         }
                     }
                     
