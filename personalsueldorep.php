@@ -625,10 +625,20 @@ include("Fragmentos/pie.php");
 	}
 	const initTable = async () => {
 		const query = `
-          SELECT codigopersonal, cedula, paterno, materno, nombre, tiporegimen FROM personal WHERE estado = '0'
+          SELECT p.codigopersonal, p.cedula, p.paterno, p.materno, p.nombre, p.tiporegimen,
+		  	sum(IFNULL(ps.totalpagar, 0)) cargo, sum(Case When ps.estadosueldo is not null Then ps.totalpagar Else 0 End) abono
+		  FROM personal p
+		  left JOIN personalsueldo ps on ps.personal = p.codigopersonal
+		  WHERE p.estado = '0' and p.tiporegimen is not null
+		  group by p.codigopersonal
         `;
 		let data = await get_data_dynamic(query);
-
+		data = data.map(x => {
+			return {
+				...x,
+				saldo: x.cargo ? (parseFloat(x.cargo) - parseFloat(x.abono)).toFixed(2) : "0.00"
+			}
+		})
 		$('#maintable').DataTable({
 			data,
 			destroy: true,
@@ -649,13 +659,27 @@ include("Fragmentos/pie.php");
 					data: 'nombre',
 				},
 				{
+					title: 'cargo',
+					data: 'cargo',
+					className: 'dt-body-right'
+				},
+				{
+					title: 'abono',
+					data: 'abono',
+					className: 'dt-body-right'
+				},
+				{
+					title: 'saldo',
+					data: 'saldo',
+					className: 'dt-body-right'
+				},
+				{
 					title: 'Acciones',
 					render: function(data, type, row) {
 						const fullname = `${row.paterno} ${row.materno} ${row.nombre}`
 						if (row.tiporegimen) {
 							return `
-                              <button class="btn btn-primary" onclick='editar(${row.codigopersonal},` + "`" + fullname + "`" + `)'>AFP/ONP</button>
-                              <button class="btn btn-primary" onclick='calcularsueldo(${row.codigopersonal},` + "`" + fullname + "`" + `)'>SUELDO</button>
+							  <button class="btn btn-primary" onclick='reporte(${row.codigopersonal},` + "`" + fullname + "`" + `)'>REP</button>
                           `;
 						} else {
 							return `
@@ -671,8 +695,11 @@ include("Fragmentos/pie.php");
 	}
 	const reportTable = async (id) => {
 		const query = `
-			SELECT ps.id,s.nombre_sucursal as sucursal1, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo, 0 as abono FROM personalsueldo ps LEFT JOIN acceso_seguridad a on a.personal=ps.personal left JOIN sucursal s on s.cod_sucursal=a.cod_sucursal
-			where ps.personal = ${id}
+			SELECT ps.id,s.nombre_sucursal as sucursal1, ps.estadosueldo, ps.fecharegistro, concat('Boleta', ' - ', ps.id) as tipo, concat(ps.mes, ' - ', anio) as fecha, ps.totalpagar as cargo, 0 as abono 
+			FROM personalsueldo ps 
+			LEFT JOIN acceso_seguridad a on a.personal=ps.personal 
+			LEFT JOIN sucursal s on s.cod_sucursal=a.cod_sucursal
+			WHERE ps.personal = ${id}
         `;
 		let data = await get_data_dynamic(query);
 		const cargos = data.filter(x => x.estadosueldo != null).map(x => {

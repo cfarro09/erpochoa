@@ -9,7 +9,8 @@ left join estibador_compra e on e.codigocompras = r.codigorc
 left join notadebito_compra nd on nd.codigocompras = r.codigorc 
 left join notacredito_compra nc on nc.codigocompras = r.codigorc 
 left join sucursal s on s.cod_sucursal=r.codigosuc 
-LEFT JOIN proveedor p on p.ruc=r.rucproveedor";
+LEFT JOIN proveedor p on p.ruc=r.rucproveedor
+group by r.codigorc";
 
 
 

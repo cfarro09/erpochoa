@@ -48,15 +48,7 @@ if($header->codigoguia){
      $update2 = "update detalle_guia_oc set cant_recibida = $detalle->cantidad_recibida where codigo_guiaoc = $detalle->codigo_guiaoc";
     $queryDetalle = mysql_query($update2  , $Ventas) or die(mysql_error());
 
-    $querylastsaldo = "select saldo from kardex_alm where codsucursal = $header->codsucursal and codigoprod = $detalle->codigoprod order by fecha desc limit 1";
-    $lastSaldo = mysql_query($querylastsaldo, $Ventas) or die(mysql_error());
-    if($lastSaldo){
-      $lastSaldo = (int) mysql_fetch_assoc($lastSaldo)["saldo"] + $detalle->cantidad_kardex;
-    }else{
-      $lastSaldo = $detalle->cantidad_kardex;
-    }
-
-    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo) values ($detalle->codigoprod, $header->codigoguia, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, $lastSaldo, $header->codsucursal, 'oc')";
+    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) values ($detalle->codigoprod, $header->codigoguia, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, IFNULL((select k1.saldo   from kardex_alm k1 where k1.codsucursal = $header->codsucursal and k1.codigoprod = $detalle->codigoprod order by k1.id_kardex_alm desc limit 1), 0) + $detalle->cantidad_kardex, $header->codsucursal, 'oc', '$header->tipodocalmacen')";
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
   }
 
@@ -73,15 +65,10 @@ if($header->codigoguia){
     $insertDetalle = "insert into detalle_guia_oc(codigo, codigoprod, cantidad, cant_recibida, codacceso) values ($lastId,$detalle->codigoprod,$detalle->cantidad,$detalle->cantidad_recibida, $header->codigoacceso)";
      $queryDetalle = mysql_query($insertDetalle, $Ventas) or die(mysql_error());
 
-    $querylastsaldo = "select saldo from kardex_alm where codsucursal = $header->codsucursal and codigoprod = $detalle->codigoprod order by fecha desc limit 1";
-    $lastSaldo = mysql_query($querylastsaldo, $Ventas) or die(mysql_error());
-    if($lastSaldo){
-      $lastSaldo = (int) mysql_fetch_assoc($lastSaldo)["saldo"] + $detalle->cantidad_kardex;
-    }else{
-      $lastSaldo = $detalle->cantidad_kardex;
-    }
+    $insertkardex = "
+      insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) 
+      values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, IFNULL((select k1.saldo  from kardex_alm k1 where k1.codsucursal = $header->codsucursal and k1.codigoprod = $detalle->codigoprod order by k1.id_kardex_alm desc limit 1), 0) + $detalle->cantidad_kardex, $header->codsucursal, 'oc', '$header->tipodocalmacen')";
 
-    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, $lastSaldo, $header->codsucursal, 'oc', '$header->tipodocalmacen')";
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
 
 

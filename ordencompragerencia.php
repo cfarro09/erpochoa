@@ -236,7 +236,7 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
       .then(res => res.json())
       .catch(error => console.error("error: ", error))
       .then(res => {
-        alert("Se ace´tó la orden de compra!")
+        alert("Se aceptó la orden de compra!")
         $("#mOrdenCompra").modal("hide");
         location.reload()
       });

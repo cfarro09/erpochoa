@@ -132,7 +132,7 @@ include("Fragmentos/pie.php");
             p.codigoprod ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
              (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) as xentregar,
              sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' Then k5.cantidad Else 0 End) entradas,
-             sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' Then k5.cantidad Else 0 End) salidas
+             sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' or k5.detalle like '%despacho%' Then k5.cantidad Else 0 End) salidas
         from producto p 
         left join marca m on m.codigomarca = p.codigomarca
         left join kardex_alm k5 on k5.codigoprod = p.codigoprod and k5.codsucursal = <?= $suc ?>
@@ -224,6 +224,7 @@ include("Fragmentos/pie.php");
 					`
                     let i = 0;
                     res.forEach(item => {
+                        debugger
                         if (item.cantidad != "0") {
                             getSelector("#detalleKardexAlmProd").innerHTML += `
 							<tr>
@@ -232,8 +233,8 @@ include("Fragmentos/pie.php");
 							<td>${item.tipodocumento}</td>
 							<td>${item.numero}</td>
 
-							<td>${item.detalle.toLowerCase().includes("compras") || item.detalle.toLowerCase().includes("entra") ? item.cantidad : ""}</td>
-							<td>${item.detalle.toLowerCase().includes("ventas") || item.detalle.toLowerCase().includes("sale") ? item.cantidad : ""}</td>
+							<td>${item.detalle.toLowerCase().includes("compras", "entra") ? item.cantidad : ""}</td>
+							<td>${item.detalle.toLowerCase().includes("ventas", "sale") || item.detalle.toLowerCase().includes("despacho")  ? item.cantidad : ""}</td>
 
 
 							<td>${item.saldo}</td>

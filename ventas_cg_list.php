@@ -413,7 +413,7 @@ include("Fragmentos/pie.php");
                             'Despacho de Mercancia',
                             ${d.cantidad},
                             (select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.sucursal} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad},
-                            '${h.fecha}',
+                            NOW(),
                             ${h.sucursal},
                             '',
                             'guia')

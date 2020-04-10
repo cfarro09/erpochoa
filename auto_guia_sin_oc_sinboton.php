@@ -209,7 +209,7 @@ include("Fragmentos/menu.php");
     .then(res => res.json())
     .catch(error => console.error("error: ", error))
     .then(res => {
-      alert("Se ace´tó la orden de compra!")
+      alert("Se aceptó la orden de compra!")
       $("#mOrdenCompra").modal("hide");
       location.reload()
     });
