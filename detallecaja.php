@@ -302,7 +302,7 @@ include("Fragmentos/pie.php");
 
         getSelectorAll(".divsueldo").forEach(x => {
             x.value = "";
-            x.style.display = e.target.value == "Sueldo" ? "" : "none";
+            x.style.display = e.target.value.includes("Sueldo") ? "" : "none";
         });
 
         if(e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque")){
