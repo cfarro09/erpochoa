@@ -81,6 +81,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                                 <option value="transcheque">Transferencia con cheque</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="plamar">Plamar Transferencia</option>
+                                                <option value="essalud">Essalud Transferencia</option>
                                                 <option value="Sueldo">Sueldo transferencia</option>
                                                 <option value="afp/onp">AFP/ONP Transferencia</option>
                                             </select>
@@ -293,6 +294,9 @@ include("Fragmentos/pie.php");
 
         if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
             cantidadxx.disabled = true;
+        else if(e.target.value == "essalud")
+            await selectessalud()
+        
         $('#listafp').val("").trigger('change');
         $('#empleado').val("").trigger('change');
         $('#selectpagoservicios').val("").trigger('change');
@@ -304,6 +308,10 @@ include("Fragmentos/pie.php");
         }else{
             cantidadxx.value = listafp.options[listafp.selectedIndex].dataset.total
         }
+    }
+    const selectessalud = async () => {
+        const ddd = await get_data_dynamic("select (IFNULL(ds.cargo, 0) - IFNULL(ds.abono, 0)) total from datos_sueldo ds where ds.nombre = 'essalud'");
+        cantidadxx.value = ddd[0].total;
     }
     const onLoadAfp = async () => {
         const ddd = await get_data_dynamic("select ds.id, ds.nombre, (IFNULL(ds.cargo, 0) - IFNULL(ds.abono, 0)) total from datos_sueldo ds where ds.nombre <> 'essalud'");
@@ -400,6 +408,18 @@ include("Fragmentos/pie.php");
                     `
                 dataxx.detalle.push(query);
                 detallemov = `PAGO PLAMAR ${descripcion}`;
+            }else if(motivo.value == "essalud"){
+                const query = `
+                    insert into pagosafp (monto, regimen, despose)
+                    values (${cantidadxx.value}, 0, ###ID###) `
+                dataxx.detalle.push(query);
+
+                const query0 = `
+                        update datos_sueldo
+                            set abono = (IFNULL(abono, 0) + ${cantidadxx.value})
+                        where nombre = 'essalud'`;
+                dataxx.detalle.push(query0);
+                detallemov = `PAGO ESSALUD`;
             } else if(motivo.value == "afp/onp"){
                 const descripcion = listafp.options[listafp.selectedIndex].dataset.nombre
 
