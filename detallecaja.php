@@ -268,7 +268,7 @@ include("Fragmentos/pie.php");
             detalle: []
         }
         if (personal.value) {
-
+            const detallemov = "";
             let nrecibo = parseInt(nrecibox.value) + 1;
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ndetallecaja'");
             let proveedor = 0;
@@ -276,23 +276,29 @@ include("Fragmentos/pie.php");
                 proveedor = selectproveedor.value;
 
                 const dd = motivo.value == "transcheque" ? "Transf Cheque" : "Cuentas x Pagar";
-
                 const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
-                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo, iddespose) VALUES (${id}, '${fecha.value}', 'Egreso' ,'${dd} :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}', -${cantidadxx.value}, 
-                (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1), ###ID###)`
-
-                dataxx.detalle.push(querydepbancario);
+                detallemov = `${dd} :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}`;
+                
             }else if(motivo.value == "Sueldo"){
                 const idps = empleado.options[empleado.selectedIndex].dataset.idps;
+                const fullname = empleado.options[empleado.selectedIndex].dataset.fullname;
+                const fechapago = empleado.options[empleado.selectedIndex].dataset.fechapago;
+
+                detallemov = `PAGO SUELDO ${fullname} ${fechapago}`;
+
                 const query = `
                     update personalsueldo 
                         set estadosueldo = NOW()
                     where id = ${idps}`
                 dataxx.detalle.push(query);
             }
+
+            const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo, iddespose) VALUES (${id}, '${fecha.value}', 'Egreso' , '${detallemov}', -${cantidadxx.value}, 
+            (select cm.saldo - ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${id} order by cm.id_cuenta_mov desc limit 1), ###ID###)`
+            dataxx.detalle.push(querydepbancario);
+
             const nnc = motivo.value == "transcheque" ? numerocheque.value : "";
             const ffc = motivo.value == "transcheque" ? fechacheque.value : "";
-
             let mm = motivo.value == "cuentasxpagar" || motivo.value == "transcheque" ? "cuentasxpagar" : motivo.value
             const query = `
                 insert into desposeproveedor 
@@ -339,7 +345,7 @@ include("Fragmentos/pie.php");
             codigopersonal: "",
             fullname: "Seleccionar"
         })
-        cargarselect2("#empleado", ddd, "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps", "nrocuenta", "nombre_banco"]);
+        cargarselect2("#empleado", ddd, "codigopersonal", "fullname", ["totalpagar", "fechapago", "idps", "nrocuenta", "nombre_banco", "fullname"]);
     }
     const changeproveedor = e => {
         saldoproveedor.closest(".divparent").style.display = "";
