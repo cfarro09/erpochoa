@@ -277,18 +277,18 @@ include("Fragmentos/pie.php");
     });
     const changeMotivo = async e => {
         cantidadxx.disabled = false;
-        selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
-        saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
+        selectproveedor.closest(".divparent").style.display = e.target.value == "cuentasxpagar" || e.target.value == "transcheque" ? "" : "none"
+        saldoproveedor.closest(".divparent").style.display = e.target.value == "cuentasxpagar" || e.target.value == "transcheque" ? "" : "none"
 
-        numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
-        fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none";
+        numerocheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none"
+        fechacheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none";
         selectpagoservicios.closest(".divparent").style.display = e.target.value == "Pago Servicios" ? "" : "none";
         datosplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
         selectplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
         listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
         getSelectorAll(".divsueldo").forEach(x => {
             x.value = "";
-            x.style.display = e.value == "Sueldo" ? "" : "none";
+            x.style.display = e.target.value == "Sueldo" ? "" : "none";
         });
 
         if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
