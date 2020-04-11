@@ -81,9 +81,15 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                                 <option value="transcheque">Transferencia con cheque</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
                                                 <option value="plamar">Plamar Transferencia</option>
-                                                <option value="essalud">Essalud Transferencia</option>
                                                 <option value="Sueldo">Sueldo transferencia</option>
                                                 <option value="afp/onp">AFP/ONP Transferencia</option>
+                                                
+                                                <option value="Pago Servicios - Cheque">Pago Servicios Cheque</option>
+                                                <option value="plamar - Cheque">Plamar Transferencia Cheque</option>
+                                                <option value="Sueldo - Cheque">Sueldo transferencia Cheque</option>
+                                                <option value="afp/onp - Cheque">AFP/ONP Transferencia Cheque</option>
+
+                                                <option value="essalud">Essalud Transferencia Cheque</option>
                                             </select>
                                         </div>
                                     </div>
@@ -278,8 +284,7 @@ include("Fragmentos/pie.php");
     });
     const changeMotivo = async e => {
         cantidadxx.disabled = false;
-        selectproveedor.closest(".divparent").style.display = e.target.value == "cuentasxpagar" || e.target.value == "transcheque" ? "" : "none"
-        saldoproveedor.closest(".divparent").style.display = e.target.value == "cuentasxpagar" || e.target.value == "transcheque" ? "" : "none"
+        
 
         numerocheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none"
         fechacheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none";
@@ -287,10 +292,20 @@ include("Fragmentos/pie.php");
         datosplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
         selectplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
         listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
+
+
         getSelectorAll(".divsueldo").forEach(x => {
             x.value = "";
             x.style.display = e.target.value == "Sueldo" ? "" : "none";
         });
+
+        if(e.target.value == "cuentasxpagar" || e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque")){
+            selectproveedor.closest(".divparent").style.display = "";
+            saldoproveedor.closest(".divparent").style.display = "";
+        }else{
+            selectproveedor.closest(".divparent").style.display = "";
+            saldoproveedor.closest(".divparent").style.display = "";
+        }
 
         if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
             cantidadxx.disabled = true;
@@ -369,10 +384,11 @@ include("Fragmentos/pie.php");
             let nrecibo = parseInt(nrecibox.value) + 1;
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ndetallecaja'");
             let proveedor = 0;
+            const dd = e.target.value == "cuentasxpagar" || e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque") ? "Transf Cheque" : "Cuentas x Pagar";
+
             if (motivo.value == "cuentasxpagar" || motivo.value == "transcheque") {
                 proveedor = selectproveedor.value;
 
-                const dd = motivo.value == "transcheque" ? "Transf Cheque" : "Cuentas x Pagar";
                 const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
                 detallemov = `${dd} :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}`;
                 
@@ -381,7 +397,7 @@ include("Fragmentos/pie.php");
                 const fullname = empleado.options[empleado.selectedIndex].dataset.fullname;
                 const fechapago = empleado.options[empleado.selectedIndex].dataset.fechapago;
 
-                detallemov = `PAGO SUELDO ${fullname} ${fechapago}`;
+                detallemov = `${dd} PAGO SUELDO ${fullname} ${fechapago}`;
 
                 const query = `
                     update personalsueldo 
@@ -397,7 +413,7 @@ include("Fragmentos/pie.php");
                         where id = ${selectpagoservicios.value}
                     `
                 dataxx.detalle.push(query);
-                detallemov = `PAGO SERVICIOS ${descripcion}`;
+                detallemov = `${dd} PAGO SERVICIOS ${descripcion}`;
             }else if(motivo.value == "plamar"){
                 const descripcion = selectplamar.options[selectplamar.selectedIndex].dataset.descripcion
                 const query = `
@@ -407,7 +423,7 @@ include("Fragmentos/pie.php");
                         where id_plamar = ${selectplamar.value}
                     `
                 dataxx.detalle.push(query);
-                detallemov = `PAGO PLAMAR ${descripcion}`;
+                detallemov = `${dd} PAGO PLAMAR ${descripcion}`;
             }else if(motivo.value == "essalud"){
                 const query = `
                     insert into pagosafp (monto, regimen, despose)
@@ -419,7 +435,7 @@ include("Fragmentos/pie.php");
                             set abono = (IFNULL(abono, 0) + ${cantidadxx.value})
                         where nombre = 'essalud'`;
                 dataxx.detalle.push(query0);
-                detallemov = `PAGO ESSALUD`;
+                detallemov = `${dd} PAGO ESSALUD`;
             } else if(motivo.value == "afp/onp"){
                 const descripcion = listafp.options[listafp.selectedIndex].dataset.nombre
 
@@ -435,7 +451,7 @@ include("Fragmentos/pie.php");
                         where id = ${idps}
                     `
                 dataxx.detalle.push(query0);
-                detallemov = `PAGO AFP/ONP ${descripcion}`;
+                detallemov = `${dd} PAGO AFP/ONP ${descripcion}`;
             }
 
             const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo, iddespose) VALUES (${id}, '${fecha.value}', 'Egreso' , '${detallemov}', -${cantidadxx.value}, 

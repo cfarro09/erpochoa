@@ -261,7 +261,7 @@ include("Fragmentos/pie.php");
     const changemotivo = e => {
         selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
         saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
-
+        
         numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
         fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
     }
