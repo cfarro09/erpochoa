@@ -388,7 +388,7 @@ include("Fragmentos/pie.php");
             let nrecibo = parseInt(nrecibox.value) + 1;
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ndetallecaja'");
             let proveedor = 0;
-            const dd = e.target.value == "cuentasxpagar" || e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque") ? "Transf Cheque" : "Cuentas x Pagar";
+            const dd = motivo.value == "cuentasxpagar" || motivo.value == "essalud" || motivo.value == "transcheque" || motivo.value.includes("- Cheque") ? "Transf Cheque" : "Cuentas x Pagar";
 
             if (motivo.value == "cuentasxpagar" || motivo.value == "transcheque") {
                 proveedor = selectproveedor.value;
