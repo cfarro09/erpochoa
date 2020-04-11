@@ -261,7 +261,7 @@ include("Fragmentos/pie.php");
     const changemotivo = e => {
         selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
         saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
-        
+
         numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
         fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
     }
@@ -314,11 +314,10 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-            SELECT desp.fechacheque, desp.nrocheque, p.razonsocial, cm.detalle, desp.cantidad 
-            FROM cuenta_mov cm 
+            SELECT desp.fechacheque, desp.nrocheque, p.razonsocial, cm.detalle, desp.cantidad FROM cuenta_mov cm 
             left join desposeproveedor desp on desp.id = cm.iddespose
             left join proveedor p on p.codigoproveedor = desp.proveedor
-            WHERE cm.id_cuenta = ${id} and cm.detalle LIKE 'Transf Cheque%'
+            WHERE cm.id_cuenta = ${id} and cm.detalle LIKE 'Transf ChequePORCENTAJEXX'
 
         `
         let data = await get_data_dynamic(query);

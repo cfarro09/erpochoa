@@ -85,11 +85,11 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                                 <option value="afp/onp">AFP/ONP Transferencia</option>
                                                 
                                                 <option value="Pago Servicios - Cheque">Pago Servicios Cheque</option>
-                                                <option value="plamar - Cheque">Plamar Transferencia Cheque</option>
-                                                <option value="Sueldo - Cheque">Sueldo transferencia Cheque</option>
-                                                <option value="afp/onp - Cheque">AFP/ONP Transferencia Cheque</option>
+                                                <option value="plamar - Cheque">Plamar Cheque</option>
+                                                <option value="Sueldo - Cheque">Sueldo Cheque</option>
+                                                <option value="afp/onp - Cheque">AFP/ONP Cheque</option>
 
-                                                <option value="essalud">Essalud Transferencia Cheque</option>
+                                                <option value="essalud">Essalud Cheque</option>
                                             </select>
                                         </div>
                                     </div>
@@ -288,10 +288,10 @@ include("Fragmentos/pie.php");
 
         numerocheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none"
         fechacheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none";
-        selectpagoservicios.closest(".divparent").style.display = e.target.value == "Pago Servicios" ? "" : "none";
-        datosplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
-        selectplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
-        listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
+        selectpagoservicios.closest(".divparent").style.display = e.target.value.includes("Pago Servicios") ? "" : "none";
+        datosplamar.closest(".divparent").style.display = e.target.value.includes("plamar")? "" : "none";
+        selectplamar.closest(".divparent").style.display = e.target.value.includes("plamar")? "" : "none";
+        listafp.closest(".divparent").style.display = e.target.value.includes("afp/onp") ? "" : "none";
 
 
         getSelectorAll(".divsueldo").forEach(x => {
@@ -300,11 +300,11 @@ include("Fragmentos/pie.php");
         });
 
         if(e.target.value == "cuentasxpagar" || e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque")){
-            selectproveedor.closest(".divparent").style.display = "";
-            saldoproveedor.closest(".divparent").style.display = "";
+            numerocheque.closest(".divparent").style.display = "";
+            fechacheque.closest(".divparent").style.display = "";
         }else{
-            selectproveedor.closest(".divparent").style.display = "";
-            saldoproveedor.closest(".divparent").style.display = "";
+            numerocheque.closest(".divparent").style.display = "none";
+            fechacheque.closest(".divparent").style.display = "none";
         }
 
         if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
