@@ -283,8 +283,14 @@ include("Fragmentos/pie.php");
         empleado.onchange = changeEmpleadoSueldo;
     });
     const changeMotivo = async e => {
+        $('#listafp').val("").trigger('change');
+        $('#empleado').val("").trigger('change');
+        $('#selectpagoservicios').val("").trigger('change');
         cantidadxx.disabled = false;
         
+
+        selectproveedor.closest(".divparent").style.display = e.target.value == "cuentasxpagar" || e.target.value == "transcheque" ? "" : "none";
+        saldoproveedor.closest(".divparent").style.display = e.target.value == "cuentasxpagar" || e.target.value == "transcheque" ? "" : "none";
 
         numerocheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none"
         fechacheque.closest(".divparent").style.display = e.target.value == "transcheque" ? "" : "none";
@@ -299,7 +305,7 @@ include("Fragmentos/pie.php");
             x.style.display = e.target.value == "Sueldo" ? "" : "none";
         });
 
-        if(e.target.value == "cuentasxpagar" || e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque")){
+        if(e.target.value == "essalud" || e.target.value == "transcheque" || e.target.value.includes("- Cheque")){
             numerocheque.closest(".divparent").style.display = "";
             fechacheque.closest(".divparent").style.display = "";
         }else{
@@ -312,9 +318,7 @@ include("Fragmentos/pie.php");
         else if(e.target.value == "essalud")
             await selectessalud()
         
-        $('#listafp').val("").trigger('change');
-        $('#empleado').val("").trigger('change');
-        $('#selectpagoservicios').val("").trigger('change');
+       
         
     }
     const changelistafp = e => {
