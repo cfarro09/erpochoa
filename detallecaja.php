@@ -313,7 +313,7 @@ include("Fragmentos/pie.php");
             fechacheque.closest(".divparent").style.display = "none";
         }
 
-        if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
+        if(e.target.value.includes("Sueldo") || e.target.value.includes("Pago Servicios") || e.target.value.includes("plamar"))
             cantidadxx.disabled = true;
         else if(e.target.value == "essalud")
             await selectessalud()
