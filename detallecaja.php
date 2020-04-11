@@ -76,19 +76,40 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">Motivo</label> 
-                                            <select id="motivo" onchange="changemotivo(this)" class="form-control">
+                                            <select id="motivo"  class="form-control">
                                                 <option value="cuentasxpagar">Cuentas x Pagar Transfenrecia</option>
                                                 <option value="transcheque">Transferencia con cheque</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
+                                                <option value="plamar">Plamar Transferencia</option>
                                                 <option value="Sueldo">Sueldo transferencia</option>
-                                                <option value="Viatico">Viatico</option>
-                                                <option value="Vacaciones">Vacaciones</option>
-                                                <option value="Mantenimiento">Mantenimiento</option>
-                                                <option value="Otros">Otros</option>
+                                                <option value="afp/onp">AFP/ONP Transferencia</option>
                                             </select>
                                         </div>
                                     </div>
-
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">AFP/ONP</label>
+                                            <select id="listafp"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Trabajador</label>
+                                            <select id="selectplamar" ></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Datos</label>
+                                            <input type="text" disabled id="datosplamar" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 divparent" style="display: none">
+                                        <div class="form-group">
+                                            <label class="control-label">Concepto</label>
+                                            <select id="selectpagoservicios" ></select>
+                                        </div>
+                                    </div>
 
                                     <div class="col-md-6 divparent divsueldo" style="display: none">
                                         <div class="form-group">
@@ -234,19 +255,81 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    let datamaintable;
     const suc = <?= $_SESSION['cod_sucursal']  ?>;
     const id = <?= $_GET["id"] ?>;
     const fullname = '<?= $_GET["fullname"] ?>';
     const idpersonal = <?= $_SESSION['kt_codigopersonal']; ?>;
     namecuenta.textContent = fullname;
-    $(function() {
-        initTable();
-        onloadPersonal()
-        onloadProveedores()
 
+   
+    $(function() {
+        motivo.onchange = changeMotivo;
+        initTable();
+        onloadPersonal();
+        onloadProveedores();
+        
+        listafp.onchange = changelistafp;
+        selectpagoservicios.onchange = changePagoServicios;
+        selectplamar.onchange = changePlamar;
         formdispose.addEventListener("submit", guardardespse);
         empleado.onchange = changeEmpleadoSueldo;
     });
+    const changeMotivo = async e => {
+        cantidadxx.disabled = false;
+        selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
+        saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
+
+        numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
+        fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none";
+        selectpagoservicios.closest(".divparent").style.display = e.target.value == "Pago Servicios" ? "" : "none";
+        datosplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
+        selectplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
+        listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
+        getSelectorAll(".divsueldo").forEach(x => {
+            x.value = "";
+            x.style.display = e.value == "Sueldo" ? "" : "none";
+        });
+
+        if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
+            cantidadxx.disabled = true;
+        $('#listafp').val("").trigger('change');
+        $('#empleado').val("").trigger('change');
+        $('#selectpagoservicios').val("").trigger('change');
+        
+    }
+    const changelistafp = e => {
+        if(e.target.value == ""){
+            cantidadxx.value = ""
+        }else{
+            cantidadxx.value = listafp.options[listafp.selectedIndex].dataset.total
+        }
+    }
+    const onLoadAfp = async () => {
+        const ddd = await get_data_dynamic("select ds.id, ds.nombre, (IFNULL(ds.cargo, 0) - IFNULL(ds.abono, 0)) total from datos_sueldo ds where ds.nombre <> 'essalud'");
+        
+        ddd.unshift({
+            id: "",
+            nombre: "Seleccionar"
+        })
+        cargarselect2("#listafp", ddd, "id", "nombre", ["total", "id", "nombre"], false);
+    }
+    const changePlamar = e => {
+        if(e.target.value == ""){
+            cantidadxx.value = "";
+        }else{
+            cantidadxx.value = selectplamar.options[selectplamar.selectedIndex].dataset.monto;
+            datosplamar.value = selectplamar.options[selectplamar.selectedIndex].dataset.datoextra;
+        }
+    }
+    const changePagoServicios = e => {
+        
+        if(e.target.value == ""){
+            cantidadxx.value = "";
+        }else{
+            cantidadxx.value = selectpagoservicios.options[selectpagoservicios.selectedIndex].dataset.precio
+        }
+    }
     const changeEmpleadoSueldo = e => {
         if(e.target.value == ""){
             cantidadxx.value = "";
@@ -263,12 +346,18 @@ include("Fragmentos/pie.php");
     }
     const guardardespse = async e => {
         e.preventDefault();
+        const saldocurrent = parseFloat(datamaintable[0].saldo);
+        const saldoreq = parseFloat(cantidadxx.value);
+        if(saldoreq > saldocurrent){
+            alert("la caja no cuenta con la cantidad solicitada")
+            return;
+        }
         const dataxx = {
             header: "",
             detalle: []
         }
         if (personal.value) {
-            const detallemov = "";
+            let detallemov = "";
             let nrecibo = parseInt(nrecibox.value) + 1;
             dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ndetallecaja'");
             let proveedor = 0;
@@ -291,6 +380,42 @@ include("Fragmentos/pie.php");
                         set estadosueldo = NOW()
                     where id = ${idps}`
                 dataxx.detalle.push(query);
+            }else if(motivo.value == "Pago Servicios"){
+                const descripcion = selectpagoservicios.options[selectpagoservicios.selectedIndex].dataset.descripcion;
+                const query = `
+                        update serviciosporpagar set 
+                        estado = 'PAGADO',
+                        iddespose = ###ID###
+                        where id = ${selectpagoservicios.value}
+                    `
+                dataxx.detalle.push(query);
+                detallemov = `PAGO SERVICIOS ${descripcion}`;
+            }else if(motivo.value == "plamar"){
+                const descripcion = selectplamar.options[selectplamar.selectedIndex].dataset.descripcion
+                const query = `
+                        update plamar set 
+                        estado = 'PAGADO',
+                        iddespose = ###ID###
+                        where id_plamar = ${selectplamar.value}
+                    `
+                dataxx.detalle.push(query);
+                detallemov = `PAGO PLAMAR ${descripcion}`;
+            } else if(motivo.value == "afp/onp"){
+                const descripcion = listafp.options[listafp.selectedIndex].dataset.nombre
+
+                const idps = listafp.options[listafp.selectedIndex].dataset.id;
+                const query = `
+                    insert into pagosafp (monto, regimen, despose)
+                    values (${cantidadxx.value}, ${idps}, ###ID###) `
+                dataxx.detalle.push(query);
+
+                const query0 = `
+                        update datos_sueldo
+                            set abono = (IFNULL(abono, 0) + ${cantidadxx.value})
+                        where id = ${idps}
+                    `
+                dataxx.detalle.push(query0);
+                detallemov = `PAGO AFP/ONP ${descripcion}`;
             }
 
             const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo, iddespose) VALUES (${id}, '${fecha.value}', 'Egreso' , '${detallemov}', -${cantidadxx.value}, 
@@ -317,21 +442,7 @@ include("Fragmentos/pie.php");
         }
     }
 
-    const changemotivo = e => {
-        selectproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
-        saldoproveedor.closest(".divparent").style.display = e.value == "cuentasxpagar" || e.value == "transcheque" ? "" : "none"
-
-        numerocheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none"
-        fechacheque.closest(".divparent").style.display = e.value == "transcheque" ? "" : "none";
-        getSelectorAll(".divsueldo").forEach(x => {
-            x.value = "";
-            x.style.display = e.value == "Sueldo" ? "" : "none";
-        });
-        cantidadxx.disabled = e.value == "Sueldo" ? true: false;
-
-        $('#empleado').val("").trigger('change');
-        
-    }
+    
     const onloadPersonalSueldo = async () => {
         const ddd = await get_data_dynamic(`
             SELECT 
@@ -366,13 +477,40 @@ include("Fragmentos/pie.php");
         selectproveedor.closest(".divparent").style.display = "";
         numerocheque.closest(".divparent").style.display = "none";
         fechacheque.closest(".divparent").style.display = "none";
+        listafp.closest(".divparent").style.display = "none";
         onloadPersonalSueldo();
+        onloadPagoServicio();
+        onloadPagoPlamar();
+        onLoadAfp();
         getSelectorAll(".divsueldo").forEach(x => x.style.display = "none")
 
         personal.value = 0
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
         $('#selectproveedor').val("").trigger('change');
+    }
+    const onloadPagoServicio = async () => {
+        const ddd = await get_data_dynamic(`
+            select id, CONCAT(s.nombre_sucursal, ' - ', sp.numerorecibo, ' - ', sp.mespago, ' - ', sp.aniopago, ' - ', sp.concepto) descripcion, sp.precio from serviciosporpagar sp
+            inner join sucursal s on s.cod_sucursal = sp.codsucursal
+            where sp.estado = 'PORPAGAR'
+        `);
+        ddd.unshift({
+            id: "",
+            descripcion: "Seleccionar"
+        })
+        cargarselect2("#selectpagoservicios", ddd, "id", "descripcion", ["precio", "descripcion"]);
+    }
+
+    const onloadPagoPlamar = async () => {
+        const ddd = await get_data_dynamic(`
+            select id_plamar id, CONCAT(ruc, ' - ' ,nombre) descripcion,  CONCAT(nro_recibo, ': De ', fecha_inicio, ' hasta ', fecha_fin) datoextra, monto from plamar where estado = 'PORPAGAR'
+        `);
+        ddd.unshift({
+            id: "",
+            descripcion: "Seleccionar"
+        })
+        cargarselect2("#selectplamar", ddd, "id", "descripcion", ["datoextra", "monto", "descripcion"]);
     }
     const onloadPersonal = async () => {
         const res = await get_data_dynamic("SELECT codigopersonal, concat(paterno, ' ', materno, ' ', nombre) as fullname FROM personal WHERE estado = 0");
@@ -403,7 +541,7 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-            select * from cuenta_mov where id_cuenta = ${id} order by id_cuenta_mov asc
+            select tipo_mov, detalle, monto, saldo, fecha_trans from cuenta_mov where id_cuenta = ${id} order by id_cuenta_mov asc
         `
         let data = await get_data_dynamic(query);
         data = data.map(x => {
@@ -413,11 +551,17 @@ include("Fragmentos/pie.php");
                 monto: parseFloat(x.monto) < 0 ? "0.00" : x.monto,
             }
         })
+        data = data.reverse();
+        datamaintable = data;
         $('#maintable').DataTable({
             data,
             ordering: false,
             destroy: true,
             columns: [
+                {
+                    title: 'fecha_trans',
+                    data: 'fecha_trans'
+                },
                 {
                     title: 'TIPO MOV',
                     data: 'tipo_mov'

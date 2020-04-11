@@ -284,7 +284,6 @@ include("Fragmentos/pie.php");
         onloadPersonal()
         onloadCliente()
         onloadCuentas()
-        onLoadAfp()
         if (suc == 1) {
             btndispose.style.display = "none"
             btndisposeingreso.style.display = "none"
@@ -307,14 +306,16 @@ include("Fragmentos/pie.php");
         empleado.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         fechapagosueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         listafp.closest(".divparent").style.display = e.target.value == "afp/onp" ? "" : "none";
+        
         selectpagoservicios.closest(".divparent").style.display = e.target.value == "Pago Servicios" ? "" : "none";
-
         datosplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
         selectplamar.closest(".divparent").style.display = e.target.value == "plamar" ? "" : "none";
 
         $('#personal').val(idpersonal).trigger('change');
         $('#empleado').val("").trigger('change');
         $('#listafp').val("").trigger('change');
+        $('#selectplamar').val("").trigger('change');
+        $('#selectpagoservicios').val("").trigger('change');
         cantidadxx.value = "";
         fechapagosueldo.value = "";
         if(e.target.value == "Sueldo" || e.target.value == "Pago Servicios" || e.target.value == "plamar")
@@ -382,7 +383,8 @@ include("Fragmentos/pie.php");
         $("#mdespose").modal()
         onloadPersonalSueldo();
         onloadPagoServicio();
-        await onloadPagoPlamar()
+        onloadPagoPlamar()
+        onLoadAfp();
         // $('#personal').val(idpersonal).trigger('change');
     }
     const disposeingreso = async () => {
