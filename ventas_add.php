@@ -571,7 +571,7 @@ include("Fragmentos/pie.php");
 		</div>
 		</div>
 
-		<div style="display: none" class="col-md-2 inputxxx depositobancario">
+		<div style="display: none" class="col-md-2 inputxxx tarjetadebito tarjetacredito depositobancario">
 		<div class="form-group">
 		<label class="control-label">Cta Abonado</label>
 		<select class="form-control cuentaabonado">
@@ -826,7 +826,7 @@ include("Fragmentos/pie.php");
 				} else if (pay.tipopago == "cheque" && (!pay.bancoextra || !pay.montoextra || !pay.numero || !pay.cuentacorriente)) {
 					errorxxx = "Llena todos los datos de cheque";
 					return;
-				} else if ((pay.tipopago == "tarjetacredito" || pay.tipopago == "tarjetadebito") && (!pay.bancoextra || !pay.montoextra || !pay.numero)) {
+				} else if ((pay.tipopago == "tarjetacredito" || pay.tipopago == "tarjetadebito") && (!pay.bancoextra || !pay.montoextra || !pay.numero || !pay.cuentaabonado)) {
 					errorxxx = "Llena todos los datos de " + pay.tipopago;
 					return;
 				}
@@ -851,7 +851,7 @@ include("Fragmentos/pie.php");
 				alert("Los montos no coinciden");
 				return;
 			}
-			pagosextras.filter(x => x.tipopago == "depositobancario").forEach(x => {
+			pagosextras.filter(x => x.tipopago == "depositobancario" || x.tipopago == "tarjetacredito" || x.tipopago == "tarjetadebito").forEach(x => {
 				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO', ${x.montoextra}, 
 				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
 
