@@ -124,13 +124,13 @@ $codsucursal = $_SESSION['cod_sucursal'];
                                             <select id="empleado"></select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 divparent divsueldo" style="display: none">
+                                    <div class="col-md-4 divparent" style="display: none">
                                         <div class="form-group">
                                             <label class="control-label">Banco</label>
                                             <input type="text" disabled id="bancosueldo"  class="form-control form-control-inline" />
                                         </div>
                                     </div>
-                                    <div class="col-md-4 divparent divsueldo" style="display: none">
+                                    <div class="col-md-4 divparent" style="display: none">
                                         <div class="form-group">
                                             <label class="control-label">Cuenta</label>
                                             <input type="text" id="cuentasueldo" disabled  class="form-control form-control-inline" />
