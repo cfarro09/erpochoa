@@ -396,7 +396,7 @@ include("Fragmentos/pie.php");
                 const ruc = selectproveedor.options[selectproveedor.selectedIndex].dataset.ruc;
                 detallemov = `${dd} :: Nro ${nrecibox.value} :: FECHA ${fecha.value} :: RUC ${ruc}`;
                 
-            }else if(motivo.value == "Sueldo"){
+            }else if(motivo.value.includes("Sueldo")){
                 const idps = empleado.options[empleado.selectedIndex].dataset.idps;
                 const fullname = empleado.options[empleado.selectedIndex].dataset.fullname;
                 const fechapago = empleado.options[empleado.selectedIndex].dataset.fechapago;
@@ -408,7 +408,7 @@ include("Fragmentos/pie.php");
                         set estadosueldo = NOW()
                     where id = ${idps}`
                 dataxx.detalle.push(query);
-            }else if(motivo.value == "Pago Servicios"){
+            }else if(motivo.value.includes("Pago Servicios")){
                 const descripcion = selectpagoservicios.options[selectpagoservicios.selectedIndex].dataset.descripcion;
                 const query = `
                         update serviciosporpagar set 
@@ -418,7 +418,7 @@ include("Fragmentos/pie.php");
                     `
                 dataxx.detalle.push(query);
                 detallemov = `${dd} PAGO SERVICIOS ${descripcion}`;
-            }else if(motivo.value == "plamar"){
+            }else if(motivo.value.includes("plamar")){
                 const descripcion = selectplamar.options[selectplamar.selectedIndex].dataset.descripcion
                 const query = `
                         update plamar set 
@@ -428,7 +428,7 @@ include("Fragmentos/pie.php");
                     `
                 dataxx.detalle.push(query);
                 detallemov = `${dd} PAGO PLAMAR ${descripcion}`;
-            }else if(motivo.value == "essalud"){
+            }else if(motivo.value.includes("essalud")){
                 const query = `
                     insert into pagosafp (monto, regimen, despose)
                     values (${cantidadxx.value}, 0, ###ID###) `
@@ -440,7 +440,7 @@ include("Fragmentos/pie.php");
                         where nombre = 'essalud'`;
                 dataxx.detalle.push(query0);
                 detallemov = `${dd} PAGO ESSALUD`;
-            } else if(motivo.value == "afp/onp"){
+            } else if(motivo.value.includes("afp/onp")){
                 const descripcion = listafp.options[listafp.selectedIndex].dataset.nombre
 
                 const idps = listafp.options[listafp.selectedIndex].dataset.id;
