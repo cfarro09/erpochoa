@@ -489,6 +489,13 @@ include("Fragmentos/pie.php");
                 return;
             }
 
+            const query1x = `
+            insert into despose 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
+            values
+                ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra, NOW(), 'cuentas x cobrar <?= $row["cedula"] ?>', <?= $codsucursal ?>, 'ingreso'})
+            `;
+            data.detalle.push(query1x);
         });
         if (errorrr) {
             alert(errorrr);
@@ -515,14 +522,13 @@ include("Fragmentos/pie.php");
 				data.detalle.push(querydepbancario)
 			})
 
-
         const query = `
         update ventas 
             set 
                 abonoproveedor = '${jssson}',
                 montoabono =  IFNULL(montoabono, 0) + ${acumuladoabono}
-        where codigoventas = ${lastcodigoventas.value}`
-        data.detalle.push(query)
+        where codigoventas = ${lastcodigoventas.value}`;
+        data.detalle.push(query);
 
         var formData = new FormData();
         formData.append("json", JSON.stringify(data))

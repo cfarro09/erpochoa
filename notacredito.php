@@ -65,9 +65,9 @@ $i = 1;
                     <td><?= $i ?></td>
                     <td><?= $row["identificacion"] ?></td>
                     <td><?= $row["fullname"] ?></td>
-                    <td><?= number_format($row["totalcargo"], 2, '.', '') ?></td>
-                    <td><?= number_format($row["totalabono"] + $row["abonodespose"] + $row["abonoproveedor"], 2, '.', '') ?></td>
-                    <td><?= number_format($row["totalcargo"] - $row["abonodespose"] - $row["totalabono"] - $row["abonoproveedor"], 2, '.', '') ?></td>
+                    <td class="text-right"><?= number_format($row["totalcargo"], 2, '.', '') ?></td>
+                    <td class="text-right"><?= number_format($row["totalabono"] + $row["abonodespose"] + $row["abonoproveedor"], 2, '.', '') ?></td>
+                    <td class="text-right"><?= number_format($row["totalcargo"] - $row["abonodespose"] - $row["totalabono"] - $row["abonoproveedor"], 2, '.', '') ?></td>
 
                      <td align="center"> 
                          <?php if($row["totalcargo"] != null): ?> 
