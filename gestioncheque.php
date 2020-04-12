@@ -130,12 +130,10 @@ include("Fragmentos/pie.php");
         }
 
         let totalpagando = 0;
-        let totalx = 0;
+        let totalx = parseFloat(montoextra.value);
         let errorxxx = "";
         const pagosextras = [];
-        getSelectorAll(".montoextra").forEach(x => {
-            totalx += parseFloat(x.value);
-        })
+        
 
         getSelectorAll(".containerx").forEach(ix => {
             const pay = {
@@ -168,6 +166,7 @@ include("Fragmentos/pie.php");
             alert(errorxxx);
             return;
         }
+        debugger
         if (totalx != totalpagando) {
             alert("Los montos no coinciden");
             return;
@@ -248,7 +247,7 @@ include("Fragmentos/pie.php");
         getSelectorAll(".montoextra").forEach(x => {
             total += parseFloat(x.value);
         })
-        if (total >= importe) {
+        if (total > importe) {
             if (e)
                 e.value = 0;
         }
