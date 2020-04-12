@@ -19,7 +19,7 @@ $i = 1;
 //Titulo e icono de la pagina
 $Icono="fa fa-cubes"; 
 $Color="font-blue";
-$Titulo="Listado de Productos";
+$Titulo="Asignar PV/Est - Gerencia";
 $NombreBotonAgregar="Agregar"; 
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";

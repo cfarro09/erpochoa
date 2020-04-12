@@ -5,7 +5,7 @@ mysql_select_db($database_Ventas, $Ventas);
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Listado Ventas";
+$Titulo = "Reporte Ventas";
 $NombreBotonAgregar = "Agregar";
 $EstadoBotonAgregar = "disabled";
 $popupAncho = 700;
@@ -30,7 +30,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 
 ?>
-<style>
+<style>ui
     .textright {
         text-align: right
     }
@@ -283,6 +283,8 @@ include("Fragmentos/pie.php");
 
                 if (!data[iii.fecha_emision][ixx.tipopago])
                     data[iii.fecha_emision][ixx.tipopago] = 0
+                if (!data[iii.fecha_emision]["comision"])
+                    data[iii.fecha_emision]["comision"] = 0
 
                 if (!data["totales"][ixx.tipopago])
                     data["totales"][ixx.tipopago] = 0
@@ -342,7 +344,7 @@ include("Fragmentos/pie.php");
         data = {
             acumulated: [],
             totalgroup: 0,
-            ttp: []
+            ttp: {comision: 0}
         }
         res.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
@@ -351,8 +353,8 @@ include("Fragmentos/pie.php");
             acumulatedtipos["comision"] = 0
             arraypagos.forEach(ixx => {
                 if (ixx.comision) {
-                    acumulatedtipos["comision"] += parseFloat(ixx.comision)
-                    data.ttp["comision"] += parseFloat(ixx.comision)
+                    acumulatedtipos["comision"] += parseFloat(ixx.comision | 0)
+                    data.ttp["comision"] += parseFloat(ixx.comision | 0)
                 }
                 const tii = iii.tipocomprobante.toUpperCase();
                 data.acumulated[tii] = parseFloat(iii.totalcargo) + (data.acumulated[tii] ? data.acumulated[tii] : 0);
@@ -365,7 +367,6 @@ include("Fragmentos/pie.php");
             for (const [key, value] of Object.entries(acumulatedtipos)) {
                 acumulatedtipos[key] = parseFloat(value).toFixed(2);
             }
-
             bodydata.innerHTML += `
                 <tr>
                     <td class="textleft">${iii.fecha_emision}</td>

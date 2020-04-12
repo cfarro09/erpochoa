@@ -56,13 +56,15 @@ $i = 1;
     <thead>
       <tr>
         <th width="5%"> N&deg; </th>
-          <th  width="10%" > TIPO - NUM </th>
           <th  width="15%"> FECHA REG  </th>
+          <th  width="15%"> DETALLE  </th>
+          <th  width="10%" > TIPO - NUM </th>
           
+          <th  width="20%"> RUC - PROVEEDOR  </th>
           <th  width="10%"> TOTAL </th>
           <th  width="20%"> SUCURSAL </th>
-          <th  width="20%"> RUC - PROVEEDOR  </th>
-          <th  width="15%"> DETALLE  </th>
+          
+          
           <th  width="5%"> VER </th>
         </tr>
       </thead>
@@ -73,13 +75,17 @@ $i = 1;
                <tr>
              
                   <td> <?php echo $i; ?> </td>
-                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>                                                           </td>
+                                                                             </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo $row_Listado['total']; ?> </td>
+                  <td> COMPRA </td>
+
+                  <td> <?php echo $row_Listado['tipo_comprobante'].' - '.$row_Listado['numerocomprobantec']; ?>
+                  <td> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
+                  <td  class="text-right"> <?php echo $row_Listado['total']; ?> </td>
                   <td><?php echo $row_Listado['nombre_sucursal']; ?>  </td>
                   
-                  <td> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
-                  <td> COMPRA </td>
+                  
+                  
 
                   <td align="center">  
                       VER
@@ -94,7 +100,7 @@ $i = 1;
                   <td> <?php echo $i; ?> </td>
                   <td> <?php echo $row_Listado['tipocomprobantet'].' - '.$row_Listado['numerocomprobantet']; ?>                                                           </td>
                   <td> <?php echo $row_Listado['fecha_registro']; ?></td>
-                  <td> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
+                  <td class="text-right"> <?php echo round($row_Listado['preciotransp_soles'],2); ?> </td>
                   <td> <?php echo $row_Listado['nombre_sucursal']; ?>  </td>
                   
                   <td> <?php echo $row_Listado['razonsocial'].' '.$row_Listado['ruc']; ?> </td>
@@ -160,6 +166,5 @@ include("Fragmentos/pie.php");
 mysql_free_result($Listado);
 ?>
 <script type="text/javascript">
-getSelector(".caption").style.display = "none"
 
 </script>

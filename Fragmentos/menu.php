@@ -710,7 +710,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="personal_estado_cuenta.php" class="nav-link font-blue-ebonyclay">
+                                            <a href="personalsueldorep.php" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
                                                 <span class="title">Estado de cuenta</span>
                                                 <span class="selected"></span>

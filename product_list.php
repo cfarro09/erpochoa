@@ -5,7 +5,7 @@ mysql_select_db($database_Ventas, $Ventas);
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Plan Contable";
+$Titulo = "Data Mercaderia";
 $NombreBotonAgregar = "Agregar";
 $EstadoBotonAgregar = "disabled";
 $popupAncho = 700;

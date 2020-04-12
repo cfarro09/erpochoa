@@ -76,7 +76,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
-$Titulo="Almacen";
+$Titulo="Mercaderias PR";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";

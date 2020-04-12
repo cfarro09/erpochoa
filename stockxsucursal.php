@@ -5,7 +5,7 @@ mysql_select_db($database_Ventas, $Ventas);
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Plan Contable";
+$Titulo = "Stock por Sucursal";
 $NombreBotonAgregar = "Agregar";
 $EstadoBotonAgregar = "disabled";
 $popupAncho = 700;
@@ -119,7 +119,8 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'SALDO',
-                    data: 'saldo'
+                    data: 'saldo',
+                    className: 'dt-body-right'
                 }
             ]
         });

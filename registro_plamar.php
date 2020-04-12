@@ -70,7 +70,7 @@ $i = 1;
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
-$Titulo="Historial de ordenes de compras";
+$Titulo="Registro Plamar";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
@@ -118,7 +118,7 @@ include("Fragmentos/menu.php");
       <td><?= $row_Listado['ruc'] ?> </td>
       <td><?= $row_Listado['nombre'] ?> </td>
       <td> <?php echo $row_Listado['nro_recibo']; ?></td>
-      <td> <?php echo $row_Listado['monto']; ?></td>
+      <td class="text-right"> <?php echo $row_Listado['monto']; ?></td>
       <td> <?php echo $row_Listado['fecha_inicio']; ?></td>
       <td> <?php echo $row_Listado['fecha_fin']; ?></td>
       <td><a href="#">VER</a></td>

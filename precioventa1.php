@@ -14,7 +14,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
-$Titulo="Asignar Precio de Venta C./C.";
+$Titulo="Fijar PV CC - Gerencia";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";

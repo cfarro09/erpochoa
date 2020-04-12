@@ -23,6 +23,10 @@ $codsucursal = $_SESSION['cod_sucursal'];
 ?>
 
 <style>
+	.dt-buttons {
+        margin-top: 0 !important;
+        margin-bottom: 15px !important;
+    }
 	.head-title {
 		font-weight: bold;
 		text-align: center;
@@ -632,20 +636,47 @@ include("Fragmentos/pie.php");
 		$('#maintable').DataTable({
 			data,
 			destroy: true,
+			buttons: [{
+                    extend: 'print',
+                    className: 'btn dark btn-outline'
+                },
+                {
+                    extend: 'copy',
+                    className: 'btn red btn-outline'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn green btn-outline'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn yellow btn-outline '
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn purple btn-outline '
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn dark btn-outline',
+                    text: 'Columns'
+                }
+            ],
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 			columns: [{
-					title: 'cedula',
+					title: 'DNI',
 					data: 'cedula',
 				},
 				{
-					title: 'paterno',
+					title: 'Paterno',
 					data: 'paterno',
 				},
 				{
-					title: 'materno',
+					title: 'Materno',
 					data: 'materno',
 				},
 				{
-					title: 'nombre',
+					title: 'Nombre',
 					data: 'nombre',
 				},
 				{
@@ -709,26 +740,53 @@ include("Fragmentos/pie.php");
 			data,
 			ordering: false,
 			destroy: true,
+			buttons: [{
+                    extend: 'print',
+                    className: 'btn dark btn-outline'
+                },
+                {
+                    extend: 'copy',
+                    className: 'btn red btn-outline'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn green btn-outline'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn yellow btn-outline '
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn purple btn-outline '
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn dark btn-outline',
+                    text: 'Columns'
+                }
+            ],
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 			columns: [{
-					title: 'fecharegistro',
+					title: 'Fecha Registro',
 					data: 'fecharegistro',
 				},
 				{
-					title: 'tipo',
+					title: 'Tipo',
 					data: 'tipo',
 				},
 				{
-					title: 'fecha pago',
+					title: 'Fecha Pago',
 					data: 'fecha',
 				},
 
 				{
-					title: 'cargo',
+					title: 'Cargo',
 					data: 'cargo',
 					className: 'dt-body-right'
 				},
 				{
-					title: 'abono',
+					title: 'Abono',
 					data: 'abono',
 					className: 'dt-body-right'
 				},

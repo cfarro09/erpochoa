@@ -16,7 +16,7 @@ $i = 1;
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
-$Titulo="Historial de ordenes de compras";
+$Titulo="Autorizar Vacaciones - Gerencia";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";

@@ -61,7 +61,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 //Titulo e icono de la pagina
 $Icono="glyphicon glyphicon-user";
 $Color="font-blue";
-$Titulo="Listado de Personal";
+$Titulo="EE.CC. Personal";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
@@ -103,7 +103,7 @@ include("Fragmentos/abrirpopupcentro.php");
       <?php do { ?>
         <tr>
           <td> <?php echo $i; ?> </td>
-          <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigopersonal=<?php echo $row_Listado['codigopersonal']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['cedula']; ?> </a>                                                          </td>
+          <td><?php echo $row_Listado['cedula']; ?> </td>
           <td> <?php echo $row_Listado['paterno']; ?></td>
           <td> <?php echo $row_Listado['materno']; ?> </td>
           <td> <?php echo $row_Listado['nombre']; ?> </td>

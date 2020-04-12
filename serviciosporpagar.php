@@ -5,7 +5,7 @@ mysql_select_db($database_Ventas, $Ventas);
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Servicios por pagar";
+$Titulo = "Servicios por Pagar";
 $NombreBotonAgregar = "Agregar";
 $EstadoBotonAgregar = "disabled";
 $popupAncho = 700;
@@ -59,7 +59,7 @@ $i = 1;
                 <td><?= $row_Listado["numerorecibo"] ?></td>
                 <td><?= $row_Listado["mespago"] ?></td>
                 <td><?= $row_Listado["aniopago"] ?></td>
-                <td><?= $row_Listado["precio"] ?></td>
+                <td class="text-right"><?= number_format($row_Listado["precio"], 2) ?></td>
                 <td><?= $row_Listado["nombre_sucursal"] ?></td>
                 </tr>
             <?php
@@ -126,17 +126,18 @@ $i = 1;
                                 <div class="form-group">
                                     <label for="aniopago" class="control-label">Año Pago</label>
                                     <select class="form-control" name="aniopago" id="aniopago">
-                                        <option value="2019">2019</option>
-                                        <option value="220">2020</option>
+                                    
+                                        <option value="2020">2020</option>
                                         <option value="2021">2021</option>
                                         <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label for="preciopago" class="control-label">Precio</label>
-                                    <input type="number" required autocomplete="off" id="preciopago" class="form-control" required />
+                                    <label for="preciopago" class="control-label text-right" >Precio</label> 
+                                    <input type="number" required autocomplete="off" id="preciopago" class="form-control text-right" required />
                                 </div>
                             </div>
                             <div class="col-sm-4">

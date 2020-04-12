@@ -44,7 +44,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 //Titulo e icono de la pagina
 $Icono="glyphicon glyphicon-shopping-cart";
 $Color="font-blue";
-$Titulo="Generar Guia sin orden de compra - Principal - Tumbes";
+$Titulo="Vacaciones/Permisos - Personal";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";

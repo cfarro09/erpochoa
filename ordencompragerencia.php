@@ -76,7 +76,7 @@ $totalRows_Listado1 = mysql_num_rows($Listado1);
 //Titulo e icono de la pagina
 $Icono="fa fa-building-o";
 $Color="font-blue";
-$Titulo="Historial de ordenes de compras";
+$Titulo="Orden Compra Gerencia";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";

@@ -46,7 +46,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
 <style type="text/css">
-    #sample_1 td, th{
+    #sample_1  th{
         text-align: center
     }
 </style>
@@ -94,10 +94,10 @@ $i = 1;
 
                     <?php if ($row["tipocomprobante"] == "notacredito"): ?>
                         <td>0.00</td>
-                        <td><?= number_format($row["total"], 2, '.', '') ?></td>
+                        <td class="text-right"><?= number_format($row["total"], 2, '.', '') ?></td>
                     <?php else: ?>
-                        <td><?= number_format($row["total"], 2, '.', '') ?></td>
-                        <td><?= number_format($row["pagoacomulado"], 2, '.', '') ?></td>
+                        <td class="text-right"><?= number_format($row["total"], 2, '.', '') ?></td>
+                        <td class="text-right"><?= number_format($row["pagoacomulado"], 2, '.', '') ?></td>
                     <?php endif ?>
 
                     <td><?= $auxiliar ?></td>
@@ -117,9 +117,9 @@ $i = 1;
                             <td><?= $abono->fechaxxx ?></td>
                             <td>ABONO <?= $abono->numerooperacion ?></td>
                             <td><?= $abono->tipopago ?></td>
-                            <td>0.00</td>
-                            <td><?= number_format((float)$abono->montoextra, 2, '.', '') ?></td>
-                            <td><?= $auxiliar ?></td>
+                            <td class="text-right">0.00</td>
+                            <td class="text-right"><?= number_format((float)$abono->montoextra, 2, '.', '') ?></td>
+                            <td class="text-right"><?= $auxiliar ?></td>
                         </tr>
                     <?php endforeach ?>
                 <?php endif ?>
@@ -140,10 +140,10 @@ $i = 1;
                     <td><?= "Deposito efectivo ". $rowdespose["nombre_sucursal"] ?></td>
                     <td><?= "RI-".$rowdespose["nrorecibo"] ?></td>
 
-                    <td>0.00</td>
-                    <td><?= number_format($rowdespose["cantidad"], 2, '.', '') ?></td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right"><?= number_format($rowdespose["cantidad"], 2, '.', '') ?></td>
 
-                    <td><?= $auxiliar ?></td>
+                    <td class="text-right"><?= $auxiliar ?></td>
                 </tr>
             <?php
                 $i++;

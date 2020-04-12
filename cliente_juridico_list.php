@@ -61,7 +61,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 //Titulo e icono de la pagina
 $Icono="fa fa-black-tie";
 $Color="font-blue";
-$Titulo="Clientes Jurídicos";
+$Titulo="Clientes Jur&iacute;dicos";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
@@ -92,8 +92,8 @@ include("Fragmentos/abrirpopupcentro.php");
       <tr>
         <th width="5%"> N&deg; </th>
           <th  width="15%"> R.U.C </th>
-          <th  width="20%"> RAZÓN SOCIAL </th>
-          <th  width="20%"> TELÉFONO </th>
+          <th  width="30%"> RAZÓN SOCIAL </th>
+          
           <th  width="25%"> CELULAR </th>
           <th  width="25%"> E-MAIL </th>
           <th  width="5%">  </th>
@@ -106,7 +106,7 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> <?php echo $i; ?> </td>
           <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoclientej=<?php echo $row_Listado['codigoclientej']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['ruc']; ?> </a>                                                          </td>
           <td> <?php echo $row_Listado['razonsocial']; ?></td>
-          <td> <?php echo $row_Listado['telefono']; ?> </td>
+         
           <td> <?php echo $row_Listado['celular']; ?> </td>
           <td> <?php echo $row_Listado['email']; ?> </td>
           <td> 

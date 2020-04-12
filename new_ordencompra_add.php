@@ -73,7 +73,7 @@ $totalRows_Bancos = mysql_num_rows($Bancos);
 //Titulo e icono de la pagina
 $Icono="glyphicon glyphicon-shopping-cart";
 $Color="font-blue";
-$Titulo="Generar Guia sin orden de compra - Principal - Tumbes";
+$Titulo="Orden Compra - Area Comercial";
 $NombreBotonAgregar="Agregar";
 //--------------------CAMBIO DE ESTADO DEL BOTON----------------------
 //$EstadoBotonAgregar="disabled";
