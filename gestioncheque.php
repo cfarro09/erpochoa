@@ -94,12 +94,14 @@ include("Fragmentos/pie.php");
     let codventas = 0;
     let chequeselected = {};
     let indexselected = -1;
+    let tipo = "";
     $(function() {
         initTable();
     });
-    const cobrarcheque = (id, monto, indexcheque, json) => {
-        debugger
+    const cobrarcheque = (ttipo, id, monto, indexcheque, json) => {
+        
         codventas = id;
+        tipo = ttipo;
         montoextra.value = monto;
         chequeselected = JSON.parse(json);
         indexselected = indexcheque;
@@ -179,14 +181,14 @@ include("Fragmentos/pie.php");
         })
         pagosextras.filter(x => x.tipopago == "efectivo").forEach(x => {
                 const query1x = `
-                    insert into despose 
-                        (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
-                    values
-                        ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cobro cheque', <?= $codpersonal ?>, <?= $codsucursal ?>, 'ingreso')
-                    `;
+                insert into despose 
+                    (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
+                values
+                    ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cobro cheque', <?= $codpersonal ?>, <?= $codsucursal ?>, 'ingreso')
+                `;
                 data.detalle.push(query1x);
         })
-
+        
         chequeselected = chequeselected.map(x => {
             let ix = 0;
             if (x.tipopago == "cheque" && ix == indexselected) {
@@ -199,7 +201,7 @@ include("Fragmentos/pie.php");
         console.log(chequeselected);
         
         data.header = `
-            update ventas set jsonpagos = '${JSON.stringify(chequeselected)}' where codigoventas = ${codventas}
+            update ventas set ${tipo} = '${JSON.stringify(chequeselected)}' where codigoventas = ${codventas}
             `;
         const formData = new FormData();
         formData.append("json", JSON.stringify(data))
@@ -274,9 +276,9 @@ include("Fragmentos/pie.php");
                 const list = JSON.parse(x.abonoproveedor);
                 list.filter(o => o.tipopago == "cheque").forEach(y => {
                     const dateemited = new Date(y.fechaextra);
-                    debugger
                     const current = new Date();
                     const days = parseInt((current.getTime() - dateemited.getTime()) / (1000 * 3600 * 24));
+                    debugger;
                     arrayxx.push({
                         ...x,
                         ["estado"]: y.estado ? y.estado : "CARTERA",
@@ -284,6 +286,8 @@ include("Fragmentos/pie.php");
                         ["tipopago"]: y.tipopago,
                         ["indexcheque"]: indexcheque,
                         ["fecha_emision"]: y.fechaextra,
+                        ["tipo"]: "abonoproveedor",
+                        ["jsonformated"]: x.abonoproveedor,
                         ["montoextra"]: y.montoextra,
                         ["documento"]: x.cedula ? x.cedula : x.ruc,
                         ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
@@ -305,6 +309,8 @@ include("Fragmentos/pie.php");
                         ["tipopago"]: y.tipopago,
                         ["indexcheque"]: indexcheque,
                         ["fecha_emision"]: y.fechaextra,
+                        ["tipo"]: "jsonpagos",
+                        ["jsonformated"]: x.jsonpagos,
                         ["montoextra"]: y.montoextra,
                         ["documento"]: x.cedula ? x.cedula : x.ruc,
                         ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
@@ -360,8 +366,10 @@ include("Fragmentos/pie.php");
                 {
                     title: 'ACCIONES',
                     render: function(data, type, row, meta) {
+                        console.log(row);
+                        
                         if(row.estado != "COBRADO")
-                            return `<button class="btn btn-primary" onclick='cobrarcheque(${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonpagos + "`)'>Cobrar Cheque</button>";
+                            return `<button class="btn btn-primary" onclick='cobrarcheque("${row.tipo}", ${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonformated + "`)'>Cobrar Cheque</button>";
                         else
                             return '';
                     }
