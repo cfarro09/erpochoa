@@ -425,7 +425,7 @@ include("Fragmentos/pie.php");
         </div>
         </div>
 
-        <div style="display: none" class="col-md-3 inputxxx depositobancario">
+        <div style="display: none" class="col-md-3 inputxxx tarjetadebito tarjetacredito depositobancario">
         <div class="form-group">
         <label class="control-label">Cta Abonado</label>
         <select class="form-control cuentaabonado">
@@ -481,7 +481,7 @@ include("Fragmentos/pie.php");
             } else if (tipopago == "cheque" && (!bancoextra || !montoextra || !numero || !cuentacorriente)) {
                 errorrr = "Llena todos los datos de cheque";
                 return;
-            } else if ((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero)) {
+            } else if ((tipopago == "tarjetacredito" || tipopago == "tarjetadebito") && (!bancoextra || !montoextra || !numero || !cuentaabonado)) {
                 errorrr = "Llena todos los datos de " + tipopago;
                 return;
             } else if (tipopago == "efectivo" && !montoextra) {
@@ -509,8 +509,8 @@ include("Fragmentos/pie.php");
         }
         const jssson = JSON.stringify(arraypagoxxx);
         
-        arraypagoxxx.filter(x => x.tipopago == "depositobancario").forEach(x => {
-				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO N ${x.numerooperacion} - ${dnicliente.value}', ${x.montoextra}, 
+        arraypagoxxx.filter(x => x.tipopago == "depositobancario" || x.tipopago == "tarjetacredito" || x.tipopago == "tarjetadebito").forEach(x => {
+				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO N ${x.numerooperacion | x.numero} - ${dnicliente.value}', ${x.montoextra}, 
 				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
 
 				data.detalle.push(querydepbancario)

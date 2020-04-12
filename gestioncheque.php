@@ -243,35 +243,64 @@ include("Fragmentos/pie.php");
     }
     const initTable = async () => {
         const query = `
-        SELECT v.codigoventas, v.tipocomprobante,v.jsonpagos, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial FROM ventas v left join cnatural c on c.codigoclienten=v.codigoclienten left join cjuridico j on j.codigoclientej=v.codigoclientej where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"`
+        SELECT v.codigoventas, v.tipocomprobante,v.jsonpagos, v.abonoproveedor, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial 
+        FROM ventas v 
+        left join cnatural c on c.codigoclienten=v.codigoclienten 
+        left join cjuridico j on j.codigoclientej=v.codigoclientej 
+        where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"
+        group by v.codigoventas
+        `
         //     WHERE r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
         // `;
         let data = await get_data_dynamic(query);
         const arrayxx = [];
         data = data.forEach(x => {
-            const list = JSON.parse(x.jsonpagos);
-            console.log(x.codigoventas);
-            console.log(x.jsonpagos);
-
             
+
             let indexcheque = 0;
-            list.filter(o => o.tipopago == "cheque").forEach(y => {
-                const dateemited = new Date(y.fechaextra);
-                const current = new Date();
-                const days = (current.getTime() - current.getTime()) / (1000 * 3600 * 24);
-                arrayxx.push({
-                    ...x,
-                    ["estado"]: y.estado ? y.estado : "CARTERA",
-                    ["daysto"]: days,
-                    ["tipopago"]: y.tipopago,
-                    ["indexcheque"]: indexcheque,
-                    ["fecha_emision"]: y.fechaextra,
-                    ["montoextra"]: y.montoextra,
-                    ["documento"]: x.cedula ? x.cedula : x.ruc,
-                    ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
-                });
-                indexcheque++;
-            })
+
+            if(x.abonoproveedor){
+                const list = JSON.parse(x.abonoproveedor);
+                list.filter(o => o.tipopago == "cheque").forEach(y => {
+                    const dateemited = new Date(y.fechaextra);
+                    debugger
+                    const current = new Date();
+                    const days = parseInt((current.getTime() - dateemited.getTime()) / (1000 * 3600 * 24));
+                    arrayxx.push({
+                        ...x,
+                        ["estado"]: y.estado ? y.estado : "CARTERA",
+                        ["daysto"]: days,
+                        ["tipopago"]: y.tipopago,
+                        ["indexcheque"]: indexcheque,
+                        ["fecha_emision"]: y.fechaextra,
+                        ["montoextra"]: y.montoextra,
+                        ["documento"]: x.cedula ? x.cedula : x.ruc,
+                        ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
+                    });
+                    indexcheque++;
+                })    
+            }
+            
+            if(x.jsonpagos){
+                const list = JSON.parse(x.jsonpagos);
+                list.filter(o => o.tipopago == "cheque").forEach(y => {
+                    const dateemited = new Date(y.fechaextra);
+                    const current = new Date();
+                    const days = parseInt((current.getTime() - dateemited.getTime()) / (1000 * 3600 * 24));
+                    arrayxx.push({
+                        ...x,
+                        ["estado"]: y.estado ? y.estado : "CARTERA",
+                        ["daysto"]: days,
+                        ["tipopago"]: y.tipopago,
+                        ["indexcheque"]: indexcheque,
+                        ["fecha_emision"]: y.fechaextra,
+                        ["montoextra"]: y.montoextra,
+                        ["documento"]: x.cedula ? x.cedula : x.ruc,
+                        ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
+                    });
+                    indexcheque++;
+                })
+            }
         })
         $('#maintable').DataTable({
             data: arrayxx,

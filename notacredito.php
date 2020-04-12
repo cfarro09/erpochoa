@@ -26,7 +26,6 @@ select 'natural' as tipo, (select sum(ds.cantidad) from despose ds where ds.codi
 from cnatural cn
 left join ventas v on v.codigoclienten = cn.codigoclienten and v.jsonpagos like '%porcobrar%'  and v.codigoclienten is not null
 
-group by cn.codigoclienten
     
 UNION    
 select 'juridico' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cj.codigoclientej and ds.tipocliente = 'juridico') as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 

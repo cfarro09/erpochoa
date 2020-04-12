@@ -587,6 +587,7 @@ include("Fragmentos/pie.php");
         data = data.map(x => {
             return {
                 ...x,
+                tipo_mov: x.tipo_mov.toUpperCase(),
                 cargo: parseFloat(x.monto) < 0 ? (x.monto*-1).toFixed(2) : "0.00",
                 monto: parseFloat(x.monto) < 0 ? "0.00" : x.monto,
             }
@@ -612,15 +613,18 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'CARGO',
-                    data: 'cargo'
+                    data: 'cargo',
+                    className: 'dt-body-right'
                 },
                 {
                     title: 'ABONO',
-                    data: 'monto'
+                    data: 'monto',
+                    className: 'dt-body-right'
                 },
                 {
                     title: 'SALDO',
-                    data: 'saldo'
+                    data: 'saldo',
+                    className: 'dt-body-right'
                 },
             ]
         });

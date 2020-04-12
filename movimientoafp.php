@@ -143,14 +143,17 @@ include("Fragmentos/pie.php");
                 {
                     title: 'cargo',
                     data: 'cargo',
+                    className: 'dt-body-right'
                 },
                 {
                     title: 'abono',
                     data: 'abono',
+                    className: 'dt-body-right'
                 },
                 {
                     title: 'saldo',
                     data: 'saldo',
+                    className: 'dt-body-right'
                 },
                 {
                     title: 'Acciones',
