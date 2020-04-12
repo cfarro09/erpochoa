@@ -520,7 +520,7 @@ include("Fragmentos/pie.php");
             insert into despose 
                 (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
             values
-                ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cuentas x cobrar <?= $row["cedula"] ?>', <?= $codpersonal ?>, <?= $codsucursal ?>, 'ingreso'})
+                ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cuentas x cobrar <?= $row["cedula"] ?>', <?= $codpersonal ?>, <?= $codsucursal ?>, 'ingreso')
             `;
             data.detalle.push(query1x);
             })
