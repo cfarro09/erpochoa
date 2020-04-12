@@ -65,8 +65,7 @@ $i = 1;
                     <td><?= $row["cel_sectorista"] ?></td>
                     <td><?= $row['saldo'] ?></td>
                     <td>
-                        <button class="btn btn-danger" onclick='eliminarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-trash"></i></button>
-                        <button class="btn btn-primary" onclick='editarcuenta(<?= $row["id_cuenta"] ?>)'><i class="glyphicon glyphicon-edit"></i></button>
+                        <a <?= "href='detallecaja.php?id=" . $row['id_cuenta'] . "&fullname=$fullname'" ?> class="btn btn-primary">DET</a>
                     </td>
                 </tr>
             <?php
