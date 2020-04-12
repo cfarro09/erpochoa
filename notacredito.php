@@ -29,10 +29,10 @@ left join despose ds on ds.codigocliente = cn.codigoclienten and ds.tipocliente 
 group by cn.codigoclienten
     
 UNION    
-select 'juridico' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cj.codigoclientej and ds.tipocliente = 'juridico') as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
+select 'juridico' as tipo, sum(ds.cantidad) as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
 from cjuridico cj
 left join ventas v on v.codigoclientej = cj.codigoclientej  and v.jsonpagos like '%porcobrar%'  and v.codigoclientej is not null
-
+left join despose ds on ds.codigocliente = cj.codigoclientej and ds.tipocliente = 'juridico'
  group by cj.codigoclientej
 
 ";
