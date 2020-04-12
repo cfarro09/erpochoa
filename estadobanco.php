@@ -30,7 +30,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
 
-<button class="btn btn-success" onclick="btnregister()" style="margin-bottom: 10px">Agregar Cuenta</button>
+
 
 <?php if ($totalRows_Listado == 0) : ?>
     <div class="alert alert-danger">
