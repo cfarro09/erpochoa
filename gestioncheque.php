@@ -18,6 +18,7 @@ include("Fragmentos/menu.php");
 
 include("Fragmentos/abrirpopupcentro.php");
 
+$codpersonal = $_SESSION['kt_codigopersonal'];
 $codsucursal = $_SESSION['cod_sucursal'];
 
 ?>
@@ -176,6 +177,16 @@ include("Fragmentos/pie.php");
                 `
             );
         })
+        pagosextras.filter(x => x.tipopago == "efectivo").forEach(x => {
+                const query1x = `
+                    insert into despose 
+                        (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
+                    values
+                        ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cobro cheque', <?= $codpersonal ?>, <?= $codsucursal ?>, 'ingreso')
+                    `;
+                data.detalle.push(query1x);
+        })
+
         chequeselected = chequeselected.map(x => {
             let ix = 0;
             if (x.tipopago == "cheque" && ix == indexselected) {
