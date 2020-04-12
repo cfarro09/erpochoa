@@ -489,13 +489,7 @@ include("Fragmentos/pie.php");
                 return;
             }
 
-            const query1x = `
-            insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
-            values
-                ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra, NOW(), 'cuentas x cobrar <?= $row["cedula"] ?>', <?= $codsucursal ?>, 'ingreso'})
-            `;
-            data.detalle.push(query1x);
+            
         });
         if (errorrr) {
             alert(errorrr);
@@ -521,6 +515,16 @@ include("Fragmentos/pie.php");
 
 				data.detalle.push(querydepbancario)
 			})
+        arraypagoxxx.filter(x => x.tipopago == "efectivo").forEach(x => {
+                const query1x = `
+            insert into despose 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
+            values
+                ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cuentas x cobrar <?= $row["cedula"] ?>', <?= $codpersonal ?>, <?= $codsucursal ?>, 'ingreso'})
+            `;
+            data.detalle.push(query1x);
+            })
+
 
         const query = `
         update ventas 
