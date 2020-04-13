@@ -47,12 +47,13 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 mysql_select_db($database_Ventas, $Ventas);
 //$query_Listado = "select * from vt_listaproducto";
 
-$query_Listado = "select `a`.`codigoprod` AS `codigoprod`,`a`.`nombre_producto` AS `nombre_producto`,`b`.`nombre` AS `Marca`,`pv`.`precioventa1` AS `precio_venta`,`pv`.`precioventa2` AS `precio_venta2`,`pv`.`precioventa3` AS `precio_venta3`,`a`.`minicodigo` AS `minicodigo`, k.precio as precio_compra, (select sum(kx.saldo) from kardex_contable kx where kx.id_kardex_contable in (select max(kz1.id_kardex_contable) from kardex_contable kz1 where kz1.codigoprod = a.codigoprod group by kz1.sucursal)) as saldo from `producto` `a` join `marca` `b` on `a`.`codigomarca` = `b`.`codigomarca` 
-left join `precio_venta` `pv` on `pv`.`codigoprod` = `a`.`codigoprod`
-left join kardex_contable k on k.codigoprod = a.codigoprod and k.id_kardex_contable = (select max(k1.id_kardex_contable) from kardex_contable k1 where k1.codigoprod = k.codigoprod)
-where 
-    (`a`.`estado` = 0) 
-group by `a`.`codigoprod` order by a.codigoprod";
+$query_Listado = "select 
+p.codigoprod, p.nombre_producto,m.nombre Marca,pv.precioventa1 AS precio_venta,pv.precioventa2 AS precio_venta2,pv.precioventa3 AS precio_venta3,p.minicodigo AS minicodigo, k.precio as precio_compra, k.saldo 
+
+from producto p join marca m on p.codigomarca = m.codigomarca 
+left join precio_venta pv on pv.codigoprod = p.codigoprod
+left join kardex_contable k on k.codigoprod = p.codigoprod and k.id_kardex_contable = (select max(k1.id_kardex_contable) from kardex_contable k1 where k1.codigoprod = k.codigoprod)
+  ";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -302,4 +303,75 @@ include("Fragmentos/abrirpopupcentro.php");
 
 
 		});
+
+		const initTable = async () => {
+        const query = `
+        SELECT v.codigoventas, v.tipocomprobante,v.jsonpagos, v.abonoproveedor, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial 
+        FROM ventas v 
+        left join cnatural c on c.codigoclienten=v.codigoclienten 
+        left join cjuridico j on j.codigoclientej=v.codigoclientej 
+        where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"
+        group by v.codigoventas
+        `
+        let data = await get_data_dynamic(query);
+        const arrayxx = [];
+		
+        $('#maintable').DataTable({
+            data: arrayxx,
+            destroy: true,
+            columns: [
+                {
+                    title: 'FECHAEMISION',
+                    data: 'fecha_emision'
+                },
+                {
+                    title: 'codigoventas',
+                    data: 'codigoventas'
+                },
+                {
+                    title: 'DAYSTO',
+                    data: 'daysto'
+                },
+                {
+                    title: 'tipopago',
+                    data: 'tipopago'
+                },
+                {
+                    title: 'DOCUMENTO',
+                    data: 'documento'
+                },
+                {
+                    title: 'IDENTIFICACION',
+                    data: 'identificacion'
+                },
+                {
+                    title: 'TIPOCOMPROBANTE',
+                    data: 'tipocomprobante'
+                },
+                {
+                    title: 'CODIGOCOMPROBANTE',
+                    data: 'codigocomprobante'
+                },
+                {
+                    title: 'MONTOEXTRA',
+                    data: 'montoextra'
+                },
+                {
+                    title: 'ESTADO',
+                    data: 'estado'
+                },
+                {
+                    title: 'ACCIONES',
+                    render: function(data, type, row, meta) {
+                        console.log(row);
+                        
+                        if(row.estado != "COBRADO")
+                            return `<button class="btn btn-primary" onclick='cobrarcheque("${row.tipo}", ${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonformated + "`)'>Cobrar Cheque</button>";
+                        else
+                            return '';
+                    }
+                },
+            ]
+        });
+    }
 	</script>
