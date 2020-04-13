@@ -206,6 +206,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				<option value="<?php echo $row_Productos['codigoprod']?>"
 					data-nombre="<?php echo $row_Productos['nombre_producto']?>"
 					data-marca="<?php echo $row_Productos['Marca']; ?>"
+					data-umedida="<?php echo $row_Productos['umedida']; ?>"
 					<?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {echo "selected=\"selected\"";} ?>>
 					<?php echo $row_Productos['nombre_producto']?> -
 					<?php echo $row_Productos['Marca']; ?> -
@@ -337,13 +338,7 @@ mysql_free_result($Detalle_Compras);
 				<td style="width: 80px"><input type="number" required oninput="nonegative(this)" class="cantidad form-control" value="1" ></td>
 				<td class="nombre">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
-				<td style="width: 100px">
-				<select class="form-control unidad_medida" onchange="changeunidadmedida(this)" name="unidad_medida" required>
-				<option value="unidad">unidad</option>
-				<option value="kilo">kilo</option>
-				<option value="tonelada">tonelada</option>
-				</select>
-				</td>
+				<td class="unidad_medida" style="width: 100px">${option.dataset.umedida}</td>
 				<td class="td-cantidad_aux" style="display: none; width: 80px">
 				<input type="number" oninput="nonegative(this)" class="cantidad_aux form-control" >
 				</td>
@@ -400,7 +395,7 @@ mysql_free_result($Detalle_Compras);
 				console.log(item.querySelector(".unidad_medida").value)
 				data.detalle.push({
 					codigoprod: item.querySelector(".codigopro").dataset.codigo,
-					unidad_medida: item.querySelector(".unidad_medida").value,
+					unidad_medida: item.querySelector(".unidad_medida").textContent,
 					cantidad_aux: item.querySelector(".cantidad_aux").value ? item.querySelector(".cantidad_aux").value : "0",
 					cantidad: item.querySelector(".cantidad").value
 				})
