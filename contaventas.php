@@ -31,7 +31,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 
 ?>
 <style>ui
-    .textright {
+    .text-right {
         text-align: right
     }
 
@@ -307,14 +307,14 @@ include("Fragmentos/pie.php");
                 <tr>
                     <td class="textleft">${key}</td>
                     <td colspan="2"></td>
-                    <td class="textright">${tmpdd["efectivo"] ? tmpdd["efectivo"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["cheque"] ? tmpdd["cheque"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["depositobancario"] ? tmpdd["depositobancario"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["tarjetadebito"] ? tmpdd["tarjetadebito"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["tarjetacredito"] ? tmpdd["tarjetacredito"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["porcobrar"] ? tmpdd["porcobrar"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["comision"] ? tmpdd["comision"].toFixed(2) : "" }</td>
-                    <td class="textright">${tmpdd["total"].toFixed(2)}</td>
+                    <td class="text-right">${tmpdd["efectivo"] ? tmpdd["efectivo"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["cheque"] ? tmpdd["cheque"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["depositobancario"] ? tmpdd["depositobancario"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["tarjetadebito"] ? tmpdd["tarjetadebito"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["tarjetacredito"] ? tmpdd["tarjetacredito"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["porcobrar"] ? tmpdd["porcobrar"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["comision"] ? tmpdd["comision"].toFixed(2) : "" }</td>
+                    <td class="text-right">${tmpdd["total"].toFixed(2)}</td>
                 </tr>`;
             }
 
@@ -323,15 +323,15 @@ include("Fragmentos/pie.php");
             const dd = data["totales"]
             bodydata.innerHTML += `
                 <tr>
-                    <td class="textright" colspan="3">TOTALES</td>
-                    <td class="textright">${dd["efectivo"] ? dd["efectivo"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["cheque"] ? dd["cheque"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["depositobancario"] ? dd["depositobancario"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["tarjetadebito"] ? dd["tarjetadebito"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["tarjetacredito"] ? dd["tarjetacredito"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["porcobrar"] ? dd["porcobrar"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["comision"] ? dd["comision"].toFixed(2) : "" }</td>
-                    <td class="textright">${dd["total"].toFixed(2)}</td>
+                    <td class="text-right" colspan="3">TOTALES</td>
+                    <td class="text-right">${dd["efectivo"] ? dd["efectivo"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["cheque"] ? dd["cheque"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["depositobancario"] ? dd["depositobancario"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["tarjetadebito"] ? dd["tarjetadebito"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["tarjetacredito"] ? dd["tarjetacredito"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["porcobrar"] ? dd["porcobrar"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["comision"] ? dd["comision"].toFixed(2) : "" }</td>
+                    <td class="text-right">${dd["total"].toFixed(2)}</td>
                 </tr>`;
     }
     const setventascontado = (res, header = false, key) => {
@@ -372,14 +372,14 @@ include("Fragmentos/pie.php");
                     <td class="textleft">${iii.fecha_emision}</td>
                     <td class="textleft"><a href="Imprimir/facturaventa_imprimir.php?id=${iii.codigoventas}">${iii.codigocomprobante}</a></td>
                     <td class="textleft">${iii.fullname}</td>
-                    <td class="textright">${acumulatedtipos["efectivo"] ? acumulatedtipos["efectivo"] : "" }</td>
-                    <td class="textright">${acumulatedtipos["cheque"] ? acumulatedtipos["cheque"] : "" }</td>
-                    <td class="textright">${acumulatedtipos["depositobancario"] ? acumulatedtipos["depositobancario"] : "" }</td>
-                    <td class="textright">${acumulatedtipos["tarjetadebito"] ? acumulatedtipos["tarjetadebito"] : "" }</td>
-                    <td class="textright">${acumulatedtipos["tarjetacredito"] ? acumulatedtipos["tarjetacredito"] : "" }</td>
-                    <td class="textright">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
-                    <td class="textright">${acumulatedtipos["comision"]}</td>
-                    <td class="textright">${suma}</td>
+                    <td class="text-right">${acumulatedtipos["efectivo"] ? acumulatedtipos["efectivo"] : "" }</td>
+                    <td class="text-right">${acumulatedtipos["cheque"] ? acumulatedtipos["cheque"] : "" }</td>
+                    <td class="text-right">${acumulatedtipos["depositobancario"] ? acumulatedtipos["depositobancario"] : "" }</td>
+                    <td class="text-right">${acumulatedtipos["tarjetadebito"] ? acumulatedtipos["tarjetadebito"] : "" }</td>
+                    <td class="text-right">${acumulatedtipos["tarjetacredito"] ? acumulatedtipos["tarjetacredito"] : "" }</td>
+                    <td class="text-right">${acumulatedtipos["porcobrar"] ? acumulatedtipos["porcobrar"] : "" }</td>
+                    <td class="text-right">${acumulatedtipos["comision"]}</td>
+                    <td class="text-right">${suma}</td>
                 </tr>`;
         });
         for (const [key, value] of Object.entries(data.ttp))
