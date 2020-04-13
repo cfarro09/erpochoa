@@ -1,144 +1,30 @@
-<?php require_once('Connections/Ventas.php'); ?>
 <?php
-if (!function_exists("GetSQLValueString")) {
-	function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-	{
-		if (PHP_VERSION < 6) {
-			$theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-		}
-
-		$theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-		switch ($theType) {
-			case "text":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;    
-			case "long":
-			case "int":
-			$theValue = ($theValue != "") ? intval($theValue) : "NULL";
-			break;
-			case "double":
-			$theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-			break;
-			case "date":
-			$theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-			break;
-			case "defined":
-			$theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-			break;
-		}
-		return $theValue;
-	}
-}
-
-$editFormAction = $_SERVER['PHP_SELF'];
-if (isset($_SERVER['QUERY_STRING'])) {
-	$editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
-}
-
-
+require_once('Connections/Ventas.php');
 
 mysql_select_db($database_Ventas, $Ventas);
-$querySucursales = "select * from sucursal where estado = 1" ;
-$sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
-$row_sucursales = mysql_fetch_assoc($sucursales);
-$totalRows_sucursales = mysql_num_rows($sucursales);
 
-mysql_select_db($database_Ventas, $Ventas);
-//$query_Listado = "select * from vt_listaproducto";
-
-$query_Listado = "select 
-p.codigoprod, p.nombre_producto,m.nombre Marca,pv.precioventa1 AS precio_venta,pv.precioventa2 AS precio_venta2,pv.precioventa3 AS precio_venta3,p.minicodigo AS minicodigo, k.precio as precio_compra, k.saldo 
-
-from producto p join marca m on p.codigomarca = m.codigomarca 
-left join precio_venta pv on pv.codigoprod = p.codigoprod
-left join kardex_contable k on k.codigoprod = p.codigoprod and k.id_kardex_contable = (select max(k1.id_kardex_contable) from kardex_contable k1 where k1.codigoprod = k.codigoprod)
-  ";
-$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row_Listado = mysql_fetch_assoc($Listado);
-$totalRows_Listado = mysql_num_rows($Listado);
-
- //Enumerar filas de data tablas
-$i = 1;
-
-//Titulo e icono de la pagina
-$Icono="fa fa-cubes"; 
-$Color="font-blue";
-$Titulo="Listado de Productos";
-$NombreBotonAgregar="Agregar"; 
-//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-//$EstadoBotonAgregar="disabled";
-$EstadoBotonAgregar="";
-//--------------------CAMBIO DE ESTADO DEL BOTON----------------------
-$popupAncho= 700;
-$popupAlto= 330;
+$Icono = "glyphicon glyphicon-shopping-cart";
+$Color = "font-blue";
+$Titulo = "Plan Contable";
+$NombreBotonAgregar = "Agregar";
+$EstadoBotonAgregar = "disabled";
+$popupAncho = 700;
+$popupAlto = 525;
 
 include("Fragmentos/archivo.php");
 include("Fragmentos/head.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
+
 include("Fragmentos/abrirpopupcentro.php");
-//__________________________________________________________________
-?>        
 
-<!--  ----------------------------------------------------------------------------------------------------------------------------------->
+$codpersonal = $_SESSION['kt_codigopersonal'];
+$codsucursal = $_SESSION['cod_sucursal'];
 
-<?php if ($totalRows_Listado == 0) { // Show if recordset empty ?>
-	<div class="alert alert-danger">
-		<strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
+?>
+<table id="maintable" class="display" width="100%"></table>
 
-
-	</div>
-<?php } // Show if recordset empty ?>
-<?php if ($totalRows_Listado > 0) { // Show if recordset not empty ?>
-	<style>
-		#historydata th,td{
-			text-align: center
-		}
-	</style>
-	<table class="table table-striped table-bordered table-hover" id="sample_1">
-		<thead>
-			<tr>
-				<th  > N&deg; </th>
-				<th  > CODIGO </th>
-				<th  > PRODUCTO </th>
-				<th  > MARCA </th>
-				
-				<th  >  STOCK</th>
-				<th  >  P. COMPRA</th>
-				<th  >  P. VENTA</th>
-				<th  >  KARDEX</th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php do { ?>
-				<tr>
-					<td> <?php echo $i; ?> </td>
-					<td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoprod=<?php echo $row_Listado['codigoprod']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['codigoprod']; ?> </a>                                                          </td>
-					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
-					<td align="center"> <?php echo $row_Listado['Marca']; ?></td>
-					<td align="center"> <?php if($row_Listado['saldo']==NULL)
-									echo 0;
-								else 
-									echo $row_Listado['saldo'];
-								 ?></td>
-					<td align="center"> <?php if($row_Listado['precio_compra']==NULL)
-									echo 0;
-								else 
-									echo $row_Listado['precio_compra']; ?></td>
-					<td align="center"> <?php if($row_Listado['precio_venta']==NULL)
-									echo 0;
-								else 
-									echo $row_Listado['precio_venta']; ?></td>
-
-	
-					<td><a href="#" data-nombreproducto = "<?= $row_Listado['nombre_producto'] ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" class="ver-kardex">kardex</a></td>
-					
-				</tr>
-				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
-			</tbody>
-		</table>
-		<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
 			<div class="modal-dialog" role="document" style="width: 1100px">
 				<div class="modal-content m-auto">
 					<div class="modal-header">
@@ -220,26 +106,16 @@ include("Fragmentos/abrirpopupcentro.php");
 				</div>
 			</div>
 		</div>
-	<?php } // Show if recordset not empty ?>
-	<?php 
-//___________________________________________________________________________________________________________________
-	include("Fragmentos/footer.php");
-	include("Fragmentos/pie.php");
+<?php
+include("Fragmentos/footer.php");
+include("Fragmentos/pie.php");
+?>
 
-	mysql_free_result($Listado);
-	?>
-	<script>
-		document.querySelectorAll(".ver-kardex").forEach(item => {
-			item.addEventListener("click", e => {
-				getSelector("#codproducto").value = e.target.dataset.codproducto
-
-				getSelector("#headerKardex").textContent = e.target.dataset.nombreproducto
-
-				$("#mkardex").modal();
-				$("#fecha_inicio").val("");
-				$("#fecha_termino").val("");
-			})
-		})
+<script>
+   
+    $(function() {
+        initTable();
+        
 		getSelector("#form-setKardex").addEventListener("submit", e => {
 			e.preventDefault();
 			const codsucursal = $("#codigosuc").val()
@@ -303,75 +179,60 @@ include("Fragmentos/abrirpopupcentro.php");
 
 
 		});
-
-		const initTable = async () => {
+    });
+	const verkardex = e => {
+			getSelector("#codproducto").value = e.dataset.codproducto
+			getSelector("#headerKardex").textContent = e.dataset.nombreproducto
+			$("#mkardex").modal();
+			$("#fecha_inicio").val("");
+			$("#fecha_termino").val("");
+		}
+    const initTable = async () => {
         const query = `
-        SELECT v.codigoventas, v.tipocomprobante,v.jsonpagos, v.abonoproveedor, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial 
-        FROM ventas v 
-        left join cnatural c on c.codigoclienten=v.codigoclienten 
-        left join cjuridico j on j.codigoclientej=v.codigoclientej 
-        where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"
-        group by v.codigoventas
+        select 
+        	p.codigoprod, p.nombre_producto,m.nombre Marca, IFNULL(pv.precioventa1, 0) precioventa1, IFNULL(k.precio, 0) precio_compra, IFNULL(k.saldo, 0) saldo
+        from producto p join marca m on p.codigomarca = m.codigomarca 
+        left join precio_venta pv on pv.codigoprod = p.codigoprod
+        left join kardex_contable k on k.codigoprod = p.codigoprod and k.id_kardex_contable = (select max(k1.id_kardex_contable) from kardex_contable k1 where k1.codigoprod = k.codigoprod)
         `
         let data = await get_data_dynamic(query);
-        const arrayxx = [];
-		
+        
         $('#maintable').DataTable({
-            data: arrayxx,
+            data: data,
             destroy: true,
             columns: [
                 {
-                    title: 'FECHAEMISION',
-                    data: 'fecha_emision'
+                    title: 'N°',
+                    data: 'codigoprod'
                 },
                 {
-                    title: 'codigoventas',
-                    data: 'codigoventas'
+                    title: 'nombre_producto',
+                    data: 'nombre_producto'
                 },
                 {
-                    title: 'DAYSTO',
-                    data: 'daysto'
+                    title: 'saldo',
+                    data: 'saldo',
+					className: 'dt-body-right'
                 },
                 {
-                    title: 'tipopago',
-                    data: 'tipopago'
+                    title: 'precio_compra',
+                    data: 'precio_compra',
+					className: 'dt-body-right'
                 },
                 {
-                    title: 'DOCUMENTO',
-                    data: 'documento'
-                },
-                {
-                    title: 'IDENTIFICACION',
-                    data: 'identificacion'
-                },
-                {
-                    title: 'TIPOCOMPROBANTE',
-                    data: 'tipocomprobante'
-                },
-                {
-                    title: 'CODIGOCOMPROBANTE',
-                    data: 'codigocomprobante'
-                },
-                {
-                    title: 'MONTOEXTRA',
-                    data: 'montoextra'
-                },
-                {
-                    title: 'ESTADO',
-                    data: 'estado'
+                    title: 'precioventa1',
+                    data: 'precioventa1',
+					className: 'dt-body-right'
                 },
                 {
                     title: 'ACCIONES',
                     render: function(data, type, row, meta) {
-                        console.log(row);
-                        
-                        if(row.estado != "COBRADO")
-                            return `<button class="btn btn-primary" onclick='cobrarcheque("${row.tipo}", ${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonformated + "`)'>Cobrar Cheque</button>";
-                        else
-                            return '';
+						const nn = row.nombre_producto.replace(/'|"/gi, '');
+                        return `<a href="#" onclick="verkardex(this)" data-nombreproducto="${nn}" data-codproducto="${parseInt(row.codigoprod)}">VER KARDEX</a>`;
+                       
                     }
                 },
             ]
         });
     }
-	</script>
+</script>
