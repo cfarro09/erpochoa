@@ -241,7 +241,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label">Por</label>
-                                            <textarea class="form-control" id="byfromingreso"></textarea>
+                                            <textarea class="form-control" required id="byfromingreso"></textarea>
                                         </div>
                                     </div>
                                 </div>
