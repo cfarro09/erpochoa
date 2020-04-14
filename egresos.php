@@ -553,8 +553,10 @@ include("Fragmentos/pie.php");
         } else {
             const query1 = `
                 SELECT 
-                    id, fecha, nrorecibo, tipo, cantidad as total, motivo, estado, fromdespose
-                FROM despose
+                    dd.id, dd.fecha, dd.nrorecibo, dd.tipo, dd.cantidad as total, dd.motivo, dd.estado, 
+                    IF(dd.tipo = 'ingreso', IF(dd.tipocliente = 'natural', (select CONCAT('DNI', cn.cedula) from cnatural cn where cn.codigoclienten = dd.codigocliente), (select CONCAT('RUC', cj.ruc) from cjuridico cj where cj.codigoclientej = dd.codigocliente)), '') extra,
+                    dd.fromdespose
+                FROM despose dd
                 WHERE 
                     sucursal = ${id} and (tipo IN ('despose', 'ingresocaja', 'ingreso'))`;
 
@@ -689,7 +691,7 @@ include("Fragmentos/pie.php");
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
-                        motivo: `${x.motivo || x.tipo} ${x.estado}`,
+                        motivo: `${x.motivo || x.tipo + " " + x.extra} ${x.estado}`,
                         despose: 0,
                         saldo: saldo.toFixed(2),
                         nrorecibo: "RI - " + x.nrorecibo
