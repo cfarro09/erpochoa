@@ -25,13 +25,13 @@ $query_Listado = "
 select 'natural' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cn.codigoclienten and ds.tipocliente = 'natural') as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
 from cnatural cn
 left join ventas v on v.codigoclienten = cn.codigoclienten and v.jsonpagos like '%porcobrar%'  and v.codigoclienten is not null
-
+group by cn.codigoclienten
     
 UNION    
 select 'juridico' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cj.codigoclientej and ds.tipocliente = 'juridico') as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
 from cjuridico cj
 left join ventas v on v.codigoclientej = cj.codigoclientej  and v.jsonpagos like '%porcobrar%'  and v.codigoclientej is not null
-cj.codigoclientej
+group by  cj.codigoclientej
 ";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
@@ -69,7 +69,8 @@ $i = 1;
                     <td class="text-right"><?= number_format($row["totalcargo"] - $row["abonodespose"] - $row["totalabono"] - $row["abonoproveedor"], 2, '.', '') ?></td>
 
                      <td align="center"> 
-                         <?php if($row["totalcargo"] != null || $row["abonodespose"] != null || $row["totalabono"] != null || $row["abonoproveedor"] != null): ?> 
+                         <?php if($row["totalcargo"] != null || $row["abonodespose"] != null || $row["totalabono"] != null || $row["abonoproveedor"] != null): ?>
+
                             <a href="listado_cuentasxcobrar.php?codigo=<?= $row['codigo']."&tipo=".$row["tipo"] ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i>
                             </a>
                             <?php endif ?> 

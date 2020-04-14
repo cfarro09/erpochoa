@@ -24,6 +24,11 @@ if (isset($_GET['codigo'])) {
     $codcliente = $_GET['codigo'];
     $tipo = $_GET['tipo'];
 }
+else
+{
+   $codcliente = 0;
+    $tipo = "tipo"; 
+}
 if($tipo == "juridico"){
     $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
