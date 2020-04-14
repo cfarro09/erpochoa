@@ -22,20 +22,16 @@ $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Listado = "
 
-select 'natural' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cn.codigoclienten and ds.tipocliente = 'natural') as abonodespose, sum(montoabono) as abonoproveedor, cn.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
+select 'natural' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cn.codigoclienten and ds.tipocliente = 'natural') as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre) as fullname, cedula as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
 from cnatural cn
 left join ventas v on v.codigoclienten = cn.codigoclienten and v.jsonpagos like '%porcobrar%'  and v.codigoclienten is not null
 group by cn.codigoclienten
     
 UNION    
-select 'juridico' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cj.codigoclientej and ds.tipocliente = 'juridico') as abonodespose, sum(montoabono) as abonoproveedor, cj.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
+select 'juridico' as tipo, (select sum(ds.cantidad) from despose ds where ds.codigocliente = cj.codigoclientej and ds.tipocliente = 'juridico') as abonodespose, sum(montoabono) as abonoproveedor, v.codigoclientej as codigo, razonsocial as fullname, ruc as identificacion, sum(v.montofact) as totalcargo, sum(v.pagoacomulado) as totalabono 
 from cjuridico cj
 left join ventas v on v.codigoclientej = cj.codigoclientej  and v.jsonpagos like '%porcobrar%'  and v.codigoclientej is not null
 group by  cj.codigoclientej
-<<<<<<< HEAD
-=======
-
->>>>>>> b445a0bf15f7e6daeb8f7bfbf2662b0fa6be0dc7
 ";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
