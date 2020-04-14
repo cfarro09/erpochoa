@@ -28,32 +28,37 @@ if($tipo == "juridico"){
     $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
     $query_despose = "select nrorecibo, s.nombre_sucursal, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'juridico' ";
-    
+
+    $querycliente = "select razonsocial as ClienteNatural, c.ruc as cedula from cjuridico c where codigoclientej = $codcliente";
 }else{
     $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
     $query_despose = "select nrorecibo, s.nombre_sucursal, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'natural'";
+
+    $querycliente = "select CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from cnatural c where codigoclienten = $codcliente";
 }
+$listcliente = mysql_query($querycliente, $Ventas) or die(mysql_error());
+$rowcliente = mysql_fetch_assoc($listcliente);
 
 $listdespose = mysql_query($query_despose, $Ventas) or die(mysql_error());
 $rowdespose = mysql_fetch_assoc($listdespose);
-
-
+$countdespose = mysql_num_rows($listdespose);
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
 $i = 1;
 ?>
+
 <style type="text/css">
     #sample_1  th{
         text-align: center
     }
 </style>
-<h3>Cliente <?= $row["ClienteNatural"] . " - " . $row["cedula"] ?></h3>
-<input type="hidden" id="dnicliente" value='<?= $row["cedula"] ?>'>
+<h3>Cliente <?= $rowcliente["ClienteNatural"] . " - " . $rowcliente["cedula"] ?></h3>
+<input type="hidden" id="dnicliente" value='<?= $rowcliente["cedula"] ?>'>
 <button class="btn btn-success" style="margin: 10px 0" data-toggle="modal" data-target="#mpagar">PAGAR ACUMULADO</button>
-<?php if ($totalRows_Listado == 0) : ?>
+<?php if ($totalRows_Listado == 0 && $countdespose == 0) : ?>
     <div class="alert alert-danger">
         <strong>AUN NO SE HA INGRESADO NINGUN REGISTRO...!</strong>
     </div>
@@ -72,6 +77,7 @@ $i = 1;
         </thead>
         <tbody>
             <?php $acumulado = 0; $lastcodigoventa = 0; $abonoproveedor = ""?>
+            <?php if ($totalRows_Listado != 0) : ?>
             <?php do {
                 if($row["tipocomprobante"] == "notacredito"){
                     $restante = 0;
@@ -127,9 +133,9 @@ $i = 1;
             <?php
                 $i++;
             } while ($row = mysql_fetch_assoc($Listado)); ?>
+            <?php endif ?>
 
-
-                
+            <?php if ($countdespose != 0) : ?>
             <?php do {
                  $acumulado = $acumulado - $rowdespose["cantidad"];
                  $auxiliar = number_format($acumulado, 2, '.', '');
@@ -148,7 +154,7 @@ $i = 1;
             <?php
                 $i++;
             } while ($rowdespose = mysql_fetch_assoc($listdespose)); ?>
-            
+            <?php endif ?>
         </tbody>
     </table>
 <?php endif ?>
