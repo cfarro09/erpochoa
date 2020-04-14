@@ -47,7 +47,7 @@ $i = 1;
                 <th>Firma Autorizada</th>
                 <th>Sectorista</th>
                 <th>Celular</th>
-                <th>Saldo Inicial</th>
+                <th>Saldo</th>
                 <th>d</th>
             </tr>
         </thead>

@@ -539,7 +539,7 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "EFECTIVO - CAJA " + name
+        moperationtitle.textContent = name
         let despose = [];
         if (id != 11) {
             const query1 = `
