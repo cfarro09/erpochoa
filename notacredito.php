@@ -32,10 +32,7 @@ select 'juridico' as tipo, (select sum(ds.cantidad) from despose ds where ds.cod
 from cjuridico cj
 left join ventas v on v.codigoclientej = cj.codigoclientej  and v.jsonpagos like '%porcobrar%'  and v.codigoclientej is not null
 group by  cj.codigoclientej
-<<<<<<< HEAD
-=======
 
->>>>>>> b445a0bf15f7e6daeb8f7bfbf2662b0fa6be0dc7
 ";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
@@ -73,8 +70,7 @@ $i = 1;
                     <td class="text-right"><?= number_format($row["totalcargo"] - $row["abonodespose"] - $row["totalabono"] - $row["abonoproveedor"], 2, '.', '') ?></td>
 
                      <td align="center"> 
-                         <?php if($row["totalcargo"] != null || $row["abonodespose"] != null || $row["totalabono"] != null || $row["abonoproveedor"] != null): ?>
-
+                         <?php if($row["totalcargo"] != null || $row["abonodespose"] != null || $row["totalabono"] != null || $row["abonoproveedor"] != null): ?> 
                             <a href="listado_cuentasxcobrar.php?codigo=<?= $row['codigo']."&tipo=".$row["tipo"] ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i>
                             </a>
                             <?php endif ?> 
