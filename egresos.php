@@ -749,14 +749,14 @@ include("Fragmentos/pie.php");
                     title: 'NRO',
                     data: 'nrorecibo'
                 },
-                { //pruebalo
-                    title: 'motivo',
-                    data: 'motivo'
-                },
                 {
                     title: 'Ingreso',
                     data: 'total',
                     className: 'dt-body-right'
+                },
+                { //pruebalo
+                    title: 'motivo',
+                    data: 'motivo'
                 },
                 {
                     title: 'Egreso',
