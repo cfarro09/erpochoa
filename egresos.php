@@ -5,7 +5,7 @@ mysql_select_db($database_Ventas, $Ventas);
 
 $Icono = "glyphicon glyphicon-shopping-cart";
 $Color = "font-blue";
-$Titulo = "Plan Contable";
+$Titulo = "Efectivo Caja Central";
 $NombreBotonAgregar = "Agregar";
 $EstadoBotonAgregar = "disabled";
 $popupAncho = 700;
@@ -94,14 +94,13 @@ $suc = $_SESSION['cod_sucursal'];
                                             <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
                                                 <option value="">Seleccionar</option>
                                                 <option id="optionremesa" value="cajatumbes">Remesa en Efectivo a Caja Central</option>
-                                                <option value="Deposito en cuenta">Deposito en cuenta</option>
+                                                <option value="Deposito en cuenta">Deposito en Cuenta Corriente</option>
                                                 <option value="Pago Servicios">Pago Servicios</option>
-                                                <option value="Sueldo">Sueldo</option>
+                                                <option value="Sueldo">Sueldos y Salarios</option>
                                                 <option value="afp/onp">AFP/ONP</option>
-                                                <option value="plamar">PLAMAR</option>
+                                                <option value="plamar">PLAME</option>
                                                 <option value="essalud">ESSALUD</option>
-                                                <option value="Viatico">Viatico</option>
-                                                <option value="Vacaciones">Vacaciones</option>
+                                                
                                             </select>
                                         </div>
                                     </div>
@@ -742,21 +741,21 @@ include("Fragmentos/pie.php");
             ],
             dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
             columns: [{
-                    title: 'fecha',
+                    title: 'Fecha',
                     data: 'fecha'
                 },
                 {
-                    title: 'NRO',
+                    title: 'Numero',
                     data: 'nrorecibo'
+                },
+                { //pruebalo
+                    title: 'Recibido de: / Entregado a:',
+                    data: 'motivo'
                 },
                 {
                     title: 'Ingreso',
                     data: 'total',
                     className: 'dt-body-right'
-                },
-                { //pruebalo
-                    title: 'motivo',
-                    data: 'motivo'
                 },
                 {
                     title: 'Egreso',
@@ -764,12 +763,12 @@ include("Fragmentos/pie.php");
                     className: 'dt-body-right'
                 },
                 {
-                    title: 'saldo',
+                    title: 'Saldo',
                     data: 'saldo',
                     className: 'dt-body-right'
                 },
                 {
-                    title: 'acciones',
+                    title: 'Acciones',
 
                     render: function(data, type, row) {
                         if ((row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO')) && msucursal.value == 11)) {

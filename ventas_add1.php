@@ -74,8 +74,10 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					<div class="form-group">
 						<label for="field-1" class="control-label">Comprobante</label>
 						<select required class="form-control" id="tipocomprobante" onchange="setcombocliente(this)">
-							<option value="ventasxconfirmar">Ventas x Confirmar</option>
-							<option value="ventasxordensalida">Ventas por orden Salida</option>
+							<option value="ventasxconfirmar">Venta x Confirmar - GR</option>
+							<option value="ventasxordensalida">Orden Salida</option>
+							<option value="ventasxordensalida">Otro Debito</option>
+							<option value="ventasxordensalida">Otro Credito</option>
 						</select>
 					</div>
 				</div>

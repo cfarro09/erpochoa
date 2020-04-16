@@ -73,8 +73,8 @@ $i = 1;
             <tr>
                 <th>N°</th> 
                 <th>Fecha</th>
-                <th>Tipo Comp.</th>
-                <th>Cod. Comp</th>
+                <th>Comprobante</th>
+                <th>Motivo</th>
                 <th>CARGO</th>
                 <th>ABONO</th>
                 <th>SALDO</th>
@@ -100,8 +100,8 @@ $i = 1;
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $row["fecha_emision"] ?></td>
-                    <td><?= $row["tipocomprobante"] ?></td>
                     <td><?= $row["codigocomprobante"] ?></td>
+                    <td><?= $row["tipocomprobante"] ?></td>
 
                     <?php if ($row["tipocomprobante"] == "notacredito"): ?>
                         <td>0.00</td>
@@ -126,8 +126,8 @@ $i = 1;
                         <tr>
                             <td><?= $i ?></td>
                             <td><?= $abono->fechaxxx ?></td>
-                            <td>ABONO <?= $abono->numerooperacion ?></td>
                             <td><?= $abono->tipopago ?></td>
+                            <td>ABONO <?= $abono->numerooperacion ?></td>
                             <td class="text-right">0.00</td>
                             <td class="text-right"><?= number_format((float)$abono->montoextra, 2, '.', '') ?></td>
                             <td class="text-right"><?= $auxiliar ?></td>
@@ -148,8 +148,8 @@ $i = 1;
                 <tr>
                     <td><?= $i ?></td>
                     <td><?= $rowdespose["fecha"] ?></td>
-                    <td><?= "Deposito efectivo ". $rowdespose["nombre_sucursal"] ?></td>
                     <td><?= "RI-".$rowdespose["nrorecibo"] ?></td>
+                    <td><?= "Deposito efectivo ". $rowdespose["nombre_sucursal"] ?></td>
 
                     <td class="text-right">0.00</td>
                     <td class="text-right"><?= number_format($rowdespose["cantidad"], 2, '.', '') ?></td>
