@@ -753,7 +753,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                                         <li class="nav-item">
                                             <a href="personalsueldo.php" id="" class="nav-link font-blue-ebonyclay">
                                                 <i class="glyphicon glyphicon-log-in font-blue-ebonyclay"></i>
-                                                <span class="title">Personal Sueldo</span>
+                                                <span class="title">Sueldos y Salarios</span>
                                                 <span class="selected"></span>
 
                                             </a>
