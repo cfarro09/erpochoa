@@ -554,7 +554,7 @@ include("Fragmentos/pie.php");
             const query1 = `
                 SELECT 
                     dd.id, dd.fecha, dd.nrorecibo, dd.tipo, dd.cantidad as total, dd.motivo, dd.estado, 
-                    IF(dd.tipo = 'ingreso', IF(dd.tipocliente = 'natural', (select CONCAT('DNI', cn.cedula) from cnatural cn where cn.codigoclienten = dd.codigocliente), (select CONCAT('RUC', cj.ruc) from cjuridico cj where cj.codigoclientej = dd.codigocliente)), '') extra,
+                    IF(dd.tipo = 'ingreso', IF(dd.tipocliente = 'natural', (select CONCAT(cn.nombre, ' ', cn.paterno, ' DNI ', cn.cedula) from cnatural cn where cn.codigoclienten = dd.codigocliente), (select CONCAT(cj.razonsocial,' RUC ', cj.ruc) from cjuridico cj where cj.codigoclientej = dd.codigocliente)), '') extra,
                     dd.fromdespose
                 FROM despose dd
                 WHERE 
