@@ -691,7 +691,7 @@ include("Fragmentos/pie.php");
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
-                        motivo: `${x.motivo || x.tipo + " " + x.extra} ${x.estado}`,
+                        motivo: `${x.motivo || x.extra} ${x.estado}`,
                         despose: 0,
                         saldo: saldo.toFixed(2),
                         nrorecibo: "RI - " + x.nrorecibo
