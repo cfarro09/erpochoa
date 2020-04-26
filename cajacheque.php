@@ -376,9 +376,9 @@ include("Fragmentos/pie.php");
             debugger
             const query = `
             insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente, datoscheque) 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente, datoscheque, motivo) 
             values
-                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingresocheque', ${clienteingreso.value}, '${tipo}', '${JSON.stringify(datoscheque)}')`
+                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingresocheque', ${clienteingreso.value}, '${tipo}', '${JSON.stringify(datoscheque)}', 'cheque - ${clienteingreso.options[clienteingreso.selectedIndex].textContent}')`
             let res = await ff_dynamic(query);
             alert("DATOS GUARDADOS CORRECTAMENTE");
             $("#mdesposeingreso").modal("hide")
