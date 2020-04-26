@@ -32,13 +32,13 @@ else
 if($tipo == "juridico"){
     $query_Listado = "select v.*, razonsocial as ClienteNatural, c.ruc as cedula from ventas v left join  cjuridico c on c.codigoclientej = v.codigoclientej where v.codigoclientej = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
-    $query_despose = "select nrorecibo, s.nombre_sucursal, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'juridico' ";
+    $query_despose = "select nrorecibo, s.nombre_sucursal, ds.tipo, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'juridico' ";
 
     $querycliente = "select razonsocial as ClienteNatural, c.ruc as cedula from cjuridico c where codigoclientej = $codcliente";
 }else{
     $query_Listado = "select v.*, CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from ventas v left join  cnatural c on c.codigoclienten = v.codigoclienten where v.codigoclienten = $codcliente and (v.tipocomprobante =  'notacredito' or v.porpagar = 1) order by v.codigoventas asc";
 
-    $query_despose = "select nrorecibo, s.nombre_sucursal, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'natural'";
+    $query_despose = "select nrorecibo, s.nombre_sucursal, ds.tipo, cantidad, fecha from despose ds inner join sucursal s on s.cod_sucursal = ds.sucursal where ds.codigocliente = $codcliente and ds.tipocliente = 'natural'";
 
     $querycliente = "select CONCAT(c.paterno,  ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula from cnatural c where codigoclienten = $codcliente";
 }
@@ -149,7 +149,7 @@ $i = 1;
                     <td><?= $i ?></td>
                     <td><?= $rowdespose["fecha"] ?></td>
                     <td><?= "RI-".$rowdespose["nrorecibo"] ?></td>
-                    <td><?= "Deposito efectivo ". $rowdespose["nombre_sucursal"] ?></td>
+                    <td><?= "Deposito ".  ($rowdespose["tipo"] === "ingresocheque" ? "cheque " : "efectivo ") . $rowdespose["nombre_sucursal"] ?></td>
 
                     <td class="text-right">0.00</td>
                     <td class="text-right"><?= number_format($rowdespose["cantidad"], 2, '.', '') ?></td>
