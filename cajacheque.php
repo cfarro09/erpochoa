@@ -86,7 +86,7 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -111,7 +111,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6 divparent">
                                         <div class="form-group">
                                             <label class="control-label">Fecha Sueldo</label>
-                                            <input type="text" step="any"  disabled id="inputfechasueldo" required class="form-control form-control-inline" />
+                                            <input type="text" step="any" disabled id="inputfechasueldo" required class="form-control form-control-inline" />
                                         </div>
                                     </div>
                                     <div class="col-md-6 divparent">
@@ -194,7 +194,49 @@ $suc = $_SESSION['cod_sucursal'];
                                         </div>
                                     </div>
                                 </div>
-                               
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Banco:</label>
+                                            <select class="form-control datoscheque" id="bancocheque">
+                                                <option value="BANCO AZTECA">BANCO AZTECA</option>
+                                                <option value="BANCO BCP">BANCO BCP</option>
+                                                <option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
+                                                <option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
+                                                <option value="BANCO FALABELLA">BANCO FALABELLA</option>
+                                                <option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
+                                                <option value="BANCO MI BANCO">BANCO MI BANCO</option>
+                                                <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
+                                                <option value="BANCO RIPLEY">BANCO RIPLEY</option>
+                                                <option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
+                                                <option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
+                                                <option value="CMAC AREQUIPA">CMAC AREQUIPA</option>+
+                                                <option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
+                                                <option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
+                                                <option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
+                                                <option value="CMAC ICA">CMAC ICA</option>
+                                                <option value="CMAC LIMA">CMAC LIMA</option>
+                                                <option value="CMAC MAYNA">CMAC MAYNA</option>
+                                                <option value="CMAC PAITA">CMAC PAITA</option>
+                                                <option value="CMAC SULLANA">CMAC SULLANA</option>
+                                                <option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Numero:</label>
+                                            <input type="text" id="numerocheque" autocomplete="off" required class="form-control datoscheque" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha:</label>
+                                            <input type="text" required name="fecha" autocomplete="off" id="fechacheque" class="form-control date-picker datoscheque" data-date-format="yyyy-mm-dd" />
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="row">
                                     <div class="col-md-6">
@@ -269,7 +311,7 @@ include("Fragmentos/pie.php");
         inputfechasueldo.closest(".divparent").style.display = e.target.value == "Sueldo" ? "" : "none";
         cantidadxx.value = 0;
         cantidadxx.disabled = false;
-        if(e.target.value == "Sueldo"){
+        if (e.target.value == "Sueldo") {
             cantidadxx.value = salary;
             cantidadxx.disabled = true;
             inputfechasueldo.value = fechasueldo;
@@ -296,12 +338,12 @@ include("Fragmentos/pie.php");
             where personal = ${idpersonal} and estadosueldo is null
         `;
         let res = await get_data_dynamic(query);
-        
-        if(res.length > 0){
+
+        if (res.length > 0) {
             optionsalary.disabled = false;
             salary = res[0].totalpagar
             fechasueldo = res[0].fechasueldo
-        }else{
+        } else {
             optionsalary.disabled = true;
         }
     }
@@ -326,14 +368,17 @@ include("Fragmentos/pie.php");
             let nrecibo = parseInt(nreciboxingreso.value) + 1;
 
             await ff_dynamic("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'ningresos'")
-            
-            const tipo = clienteingreso.options[clienteingreso.selectedIndex].dataset.tipo
 
+            const tipo = clienteingreso.options[clienteingreso.selectedIndex].dataset.tipo
+            // datoscheque
+            const datoscheque = {};
+            getSelectorAll(".datoscheque").forEach(x => datoscheque[x.id] = x.value);
+            debugger
             const query = `
             insert into despose 
-                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente) 
+                (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, codigocliente, tipocliente, datoscheque) 
             values
-                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', ${clienteingreso.value}, '${tipo}')`
+                ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingresocheque', ${clienteingreso.value}, '${tipo}', '${JSON.stringify(datoscheque)}')`
             let res = await ff_dynamic(query);
             alert("DATOS GUARDADOS CORRECTAMENTE");
             $("#mdesposeingreso").modal("hide")
@@ -367,8 +412,7 @@ include("Fragmentos/pie.php");
                     values
                         ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', 'CAJA TUMBES - ENVIO DE ${namesucursal.value}', 'EN ESPERA', ###ID###)`
                 dataxx.detalle.push(query);
-            }
-            else if(motivo.value == "Sueldo"){
+            } else if (motivo.value == "Sueldo") {
                 const query = `
                     update personalsueldo 
                         set estadosueldo = NOW()
@@ -447,7 +491,7 @@ include("Fragmentos/pie.php");
         cargarselect2("#personal", res, "codigopersonal", "fullname")
         cargarselect2("#personalingreso", res, "codigopersonal", "fullname")
     }
-    
+
 
     const onloadCliente = async () => {
         const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as name FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigo, CONCAT(razonsocial,' ',ruc) as name FROM cjuridico WHERE estado = 0");
@@ -471,7 +515,7 @@ include("Fragmentos/pie.php");
     }
     const setConsolidado = async (id, des) => {
         let qwer = []
-        if ((id == 1 && suc == 1) ) {
+        if ((id == 1 && suc == 1)) {
             btndispose.style.display = ""
             btndisposeingreso.style.display = ""
         } else {
@@ -496,14 +540,14 @@ include("Fragmentos/pie.php");
                     ...x,
                     total: x.tipo == "ingresocheque" ? x.despose : 0,
                     despose: x.tipo == "ingresocheque" ? 0 : x.despose,
-                    motivo: x.motivo == "" || x.motivo == " - " ?   x.por.substring(0, 30) : x.motivo,
+                    motivo: x.motivo == "" || x.motivo == " - " ? x.por.substring(0, 30) : x.motivo,
                     nrorecibo: x.tipo == "ingresocheque" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
                 }
             })
 
             qwer = [...datatotble, ...des];
             let saldo = 0;
-            
+
 
             qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
@@ -689,7 +733,7 @@ include("Fragmentos/pie.php");
             const x = data[i];
             if (x.cod_sucursal != 11) {
                 const rr = await proccessIngresosEfectivo(x.cod_sucursal).then(r => r);
-                const ingreso = rr.total  + parseFloat(x.ingreso || 0);
+                const ingreso = rr.total + parseFloat(x.ingreso || 0);
                 data[i] = {
                     ...x,
                     ingreso: ingreso.toFixed(2),
@@ -708,8 +752,7 @@ include("Fragmentos/pie.php");
             ordering: false,
 
             destroy: true,
-            columns: [
-                {
+            columns: [{
                     title: 'Sucursal',
                     render: function(data, type, row) {
                         const nn = row.nombre_sucursal.replace('"', '').replace("'", "");
