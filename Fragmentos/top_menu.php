@@ -153,8 +153,12 @@ echo $dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y'
                                     <span class="badge badge-success"> 7 </span>
                                 </a>
                                 <ul class="dropdown-menu">
+                                <?php include("Fragmentos/menu.php"); ?>
                                     <li class="external">
                                         <h3>
+                                            
+
+
                                             <span class="bold">12 pending</span> notifications</h3>
                                         <a href="page_user_profile_1.html">view all</a>
                                     </li>

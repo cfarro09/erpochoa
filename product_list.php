@@ -29,6 +29,7 @@ $suc = $_SESSION['cod_sucursal'];
 <?php
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
+$suc = $_SESSION['cod_sucursal'];
 ?>
 
 <script>
@@ -101,7 +102,14 @@ include("Fragmentos/pie.php");
                     title: 'Editar',
                     render: function(data, type, row) {
                         const nn = row.nombre_producto.replace('"', '').replace("'", "");
-                        return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${row.codigoprod}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Editar</a>`
+                        return `<a onClick="abre_ventana('emergentes/product_list_edit.php?codigoprod=${parseInt(row.codigoprod)}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Editar</a>`
+                    }
+                },
+                {
+                    title: 'Foto',
+                    render: function(data, type, row) {
+                        const nn = row.nombre_producto.replace('"', '').replace("'", "");
+                        return `<a onClick="abre_ventana('emergentes/productofoto.php?codigoprod=${parseInt(row.codigoprod)}',<?php echo $popupAncho ?>,<?php echo $popupAlto ?>)"  class="btn btn-success">Foto</a>`
                     }
                 },
                 {
@@ -112,7 +120,7 @@ include("Fragmentos/pie.php");
                         	return ""
                         }else{
                         	let ss = row.nombre_producto.replace(/'/g, "")
-                            debugger
+                            
                         	return `<a onClick='eliminarproducto(${parseInt(row.codigoprod)}, "${ss}")'  class="btn btn-success">Eliminar</a>`
                         }
                     }
@@ -124,7 +132,15 @@ include("Fragmentos/pie.php");
 
 </script>
 <script type="text/javascript">
-    
+    window.onload = e => {
+        const codsucursal = <?= $suc ?>;
+    if(codsucursal ==  1){
+        
+        getSelector("#btnagregargordis .disabled").classList.remove("disabled")
+        getSelector("#btnagregargordis .disabled").classList.remove("disabled")
+
+    }
+    }
     const eliminarproducto =  async (id, nombre_producto) => {
         const ff = confirm(`Desea eliminar el producto ${nombre_producto}?`)
 

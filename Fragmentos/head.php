@@ -93,4 +93,5 @@ $totalRows_Conf_Sis = mysql_num_rows($Conf_Sis);
   <link href="assets/layouts/layout4/css/custom.min.css" rel="stylesheet" type="text/css" />
   <!-- END THEME LAYOUT STYLES -->
   <link rel="shortcut icon" href="img/<?php echo $row_Conf_Sis['favicon']; ?>" />
+  <link href="../cssejemplo.css" rel="stylesheet" type="text/css" />
 </head>

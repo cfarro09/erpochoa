@@ -47,9 +47,11 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")){
 			
 		}else{
 			
-			move_uploaded_file($_FILES["image"]["tmp_name"],"../reservation/img/products/" . $_FILES["image"]["name"]);
+			$ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+			$ext = strtolower($ext);
+			move_uploaded_file($_FILES["image"]["tmp_name"],"../reservation/img/products/" . $colname_Producto.".".$ext);
 			
-			$location=$_FILES["image"]["name"];
+			$location=$colname_Producto.".jpg";
 			//$pname=$_POST['pname'];
 			//$desc=$_POST['desc'];
 			//$price=$_POST['price'];
