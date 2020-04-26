@@ -422,7 +422,7 @@ include("Fragmentos/pie.php");
                     id, fecha, nrorecibo, cantidad as despose, '' as total, tipo, CONCAT(motivo, ' - ',estado) as motivo, por, fromdespose
                 FROM despose
                 WHERE 
-                    sucursal = ${id} and (tipo = 'despose' or tipo = 'ingreso')`;
+                    sucursal = ${id} and tipo like '%cheque%'`;
 
             despose = await get_data_dynamic(query1);
         } else {
@@ -431,7 +431,7 @@ include("Fragmentos/pie.php");
                     id, fecha, nrorecibo, tipo, cantidad as total, motivo, estado, fromdespose
                 FROM despose
                 WHERE 
-                    sucursal = ${id} and (tipo = 'despose' or tipo = 'ingresocaja')`;
+                    sucursal = ${id} and tipo like '%cheque%'`;
 
             despose = await get_data_dynamic(query1);
         }
@@ -494,10 +494,10 @@ include("Fragmentos/pie.php");
 
                 return {
                     ...x,
-                    total: x.tipo == "ingreso" ? x.despose : 0,
-                    despose: x.tipo == "ingreso" ? 0 : x.despose,
+                    total: x.tipo == "ingresocheque" ? x.despose : 0,
+                    despose: x.tipo == "ingresocheque" ? 0 : x.despose,
                     motivo: x.motivo == "" || x.motivo == " - " ?   x.por.substring(0, 30) : x.motivo,
-                    nrorecibo: x.tipo == "ingreso" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
+                    nrorecibo: x.tipo == "ingresocheque" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
                 }
             })
 
@@ -518,7 +518,7 @@ include("Fragmentos/pie.php");
             let saldo = 0;
             des.forEach(x => {
 
-                if (x.tipo == "ingresocaja") {
+                if (x.tipo == "ingresocheque") {
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
@@ -639,7 +639,7 @@ include("Fragmentos/pie.php");
         da.forEach(iii => {
             const arraypagos = JSON.parse(iii.jsonpagos);
             arraypagos.forEach(ixx => {
-                if (ixx.tipopago == "efectivo") {
+                if (ixx.tipopago == "cheque") {
                     if (!data[iii.fecha_emision])
                         data[iii.fecha_emision] = 0
                     data[iii.fecha_emision] += ixx.montoextra ? parseFloat(ixx.montoextra) : 0
@@ -652,7 +652,7 @@ include("Fragmentos/pie.php");
                 fecha: key,
                 total: value.toFixed(2),
                 despose: '',
-                motivo: "Ventas del Dia"
+                motivo: "Ventas del Dia - Cheque"
             })
         return res
     }
@@ -664,21 +664,21 @@ include("Fragmentos/pie.php");
             query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
-                sum(Case When d.tipo = 'ingresocaja'  or d.tipo = 'ingreso' Then d.cantidad Else 0 End) ingreso,
+                sum(Case When d.tipo = 'ingresocheque' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
-            left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA' and d.tipo not like '%cheque%'
-            where s.estado = 1 
+            left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA' and d.tipo like '%cheque%'
+            where (s.estado = 1 ) 
             group by s.cod_sucursal
         `;
         else
             query = `
             select 
                 s.cod_sucursal, s.nombre_sucursal,
-                sum(Case When d.tipo = 'ingresocaja' or d.tipo = 'ingreso'  Then d.cantidad Else 0 End) ingreso,
-                sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
+                sum(Case When d.tipo = 'ingresocheque'  Then d.cantidad Else 0 End) ingreso,
+                sum(Case When d.tipo = 'desposecheque' Then d.cantidad Else 0 End) egreso
             from sucursal s 
-            left join despose d on d.sucursal = s.cod_sucursal and d.tipo not like '%cheque%'
+            left join despose d on d.sucursal = s.cod_sucursal  and d.tipo like '%cheque%'
             where s.estado = 1 and s.cod_sucursal= ${suc} 
             group by s.cod_sucursal
         `;
