@@ -99,11 +99,16 @@ include("Fragmentos/pie.php");
         initTable();
     });
     const cobrarcheque = (ttipo, id, monto, indexcheque, json) => {
-        
+
         codventas = id;
         tipo = ttipo;
         montoextra.value = monto;
-        chequeselected = JSON.parse(json);
+        if (tipo == "desponse"){
+            chequeselected = JSON.parse(json.replace(/abcd/gi, '"'));
+        }else{
+            chequeselected = JSON.parse(json);
+        }
+            
         indexselected = indexcheque;
         $("#moperation").modal();
     }
@@ -133,7 +138,7 @@ include("Fragmentos/pie.php");
         let totalx = parseFloat(montoextra.value);
         let errorxxx = "";
         const pagosextras = [];
-        
+
 
         getSelectorAll(".containerx").forEach(ix => {
             const pay = {
@@ -179,28 +184,36 @@ include("Fragmentos/pie.php");
             );
         })
         pagosextras.filter(x => x.tipopago == "efectivo").forEach(x => {
-                const query1x = `
+            const query1x = `
                 insert into despose 
                     (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo)
                 values
                     ((select \`value\` from propiedades where \`key\` = 'ningresos') + 1, ${x.montoextra}, NOW(), 'cobro cheque', <?= $codpersonal ?>, 11, 'ingreso')
                 `;
-                data.detalle.push(query1x);
+            data.detalle.push(query1x);
         })
-        
-        chequeselected = chequeselected.map(x => {
-            let ix = 0;
-            if (x.tipopago == "cheque" && ix == indexselected) {
-                x.estado  = "COBRADO";
-                x.cobrocheque = pagosextras;
-                ix++;
-            };
-            return x;
-        });
-        
-        data.header = `
+        if (tipo === "despose") {
+            const newxx = [...chequeselected, ...pagosextras];
+            data.header = `
+                update despose set datoscheque = '${JSON.stringify(newxx)}',  estado = "COBRADO" where id = ${codventas}
+            `;
+
+        } else {
+            chequeselected = chequeselected.map(x => {
+                let ix = 0;
+                if (x.tipopago == "cheque" && ix == indexselected) {
+                    x.estado = "COBRADO";
+                    x.cobrocheque = pagosextras;
+                    ix++;
+                };
+                return x;
+            });
+
+            data.header = `
             update ventas set ${tipo} = '${JSON.stringify(chequeselected)}' where codigoventas = ${codventas}
             `;
+        }
+
         const formData = new FormData();
         formData.append("json", JSON.stringify(data))
 
@@ -260,17 +273,42 @@ include("Fragmentos/pie.php");
         left join cjuridico j on j.codigoclientej=v.codigoclientej 
         where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"
         group by v.codigoventas
-        `
-        //     WHERE r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
-        // `;
-        let data = await get_data_dynamic(query);
-        const arrayxx = [];
-        data = data.forEach(x => {
-            
+        `;
 
+        const arrayxx = [];
+
+        const query2 = `
+            select id, cantidad, fecha, motivo, saldocheque, datoscheque, estado  from despose where tipo = 'egresocheque';
+        `;
+        let data0 = await get_data_dynamic(query2);
+
+        data0 = data0.map(x => {
+            const identificacion = x.motivo.replace("traslado ", "").split(" -|- ")[0];
+            const documento = x.motivo.replace("traslado ", "").split(" -|- ")[1];
+            arrayxx.push({
+                montoextra: x.saldocheque || x.cantidad,
+                fecha_emision: x.fecha,
+                datoscheque: x.datoscheque || "[]",
+                tipo: "despose",
+                id: x.id,
+                tipopago: "cheque",
+                identificacion,
+                documento,
+                estado: x.estado == "ENVIADO" ? "CARTERA" : x.estado,
+                daysto: 0,
+                tipocomprobante: "ingreso",
+                codigocomprobante: '0'
+            })
+        })
+
+
+
+        let data = await get_data_dynamic(query);
+
+        data = data.forEach(x => {
             let indexcheque = 0;
 
-            if(x.abonoproveedor){
+            if (x.abonoproveedor) {
                 const list = JSON.parse(x.abonoproveedor);
                 list.filter(o => o.tipopago == "cheque").forEach(y => {
                     const dateemited = new Date(y.fechaextra);
@@ -291,10 +329,10 @@ include("Fragmentos/pie.php");
                         ["identificacion"]: x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial
                     });
                     indexcheque++;
-                })    
+                })
             }
-            
-            if(x.jsonpagos){
+
+            if (x.jsonpagos) {
                 const list = JSON.parse(x.jsonpagos);
                 list.filter(o => o.tipopago == "cheque").forEach(y => {
                     const dateemited = new Date(y.fechaextra);
@@ -320,14 +358,9 @@ include("Fragmentos/pie.php");
         $('#maintable').DataTable({
             data: arrayxx,
             destroy: true,
-            columns: [
-                {
+            columns: [{
                     title: 'FECHAEMISION',
                     data: 'fecha_emision'
-                },
-                {
-                    title: 'codigoventas',
-                    data: 'codigoventas'
                 },
                 {
                     title: 'DAYSTO',
@@ -365,10 +398,14 @@ include("Fragmentos/pie.php");
                     title: 'ACCIONES',
                     render: function(data, type, row, meta) {
                         console.log(row);
-                        
-                        if(row.estado == "CARTERA")
-                            return `<button class="btn btn-primary" onclick='cobrarcheque("${row.tipo}", ${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonformated + "`)'>Cobrar Cheque</button>";
-                        else
+
+                        if (row.estado == "CARTERA") {
+                            if (row.tipo === "despose") {
+                                return `<button class="btn btn-primary" onclick="cobrarcheque('${row.tipo}', ${parseInt(row.id)}, ${row.montoextra},0,'${row.datoscheque.replace(/"/gi, "abcd")}')">Cobrar Cheque</button>`;
+                            } else {
+                                return `<button class="btn btn-primary" onclick='cobrarcheque("${row.tipo}", ${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonformated + "`)'>Cobrar Cheque</button>";
+                            }
+                        } else
                             return '';
                     }
                 },

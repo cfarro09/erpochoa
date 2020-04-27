@@ -477,10 +477,6 @@ include("Fragmentos/pie.php");
                     dataxx.detalle.push(`
                         update ventas set ${tipo} = '${JSON.stringify(array)}' where codigoventas = ${chequescartera.value};
                     `);
-                    console.log(`
-                        update ventas set ${tipo} = '${JSON.stringify(array)}' where codigoventas = ${chequescartera.value};
-                    `);
-                    
                 }
                 
             }
@@ -560,7 +556,7 @@ include("Fragmentos/pie.php");
 
 
     const onloadCliente = async () => {
-        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' ',cedula) as name FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigo, CONCAT(razonsocial,' ',ruc) as name FROM cjuridico WHERE estado = 0");
+        const res = await get_data_dynamic("SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno, ' ', materno, ' ', nombre, ' -|- ',cedula) as name FROM cnatural WHERE estado = 0 UNION SELECT 'juridico' as tipo, codigoclientej as codigo, CONCAT(razonsocial,' -|- ',ruc) as name FROM cjuridico WHERE estado = 0");
         res.unshift({
             codigo: "",
             name: "Seleccionar"
