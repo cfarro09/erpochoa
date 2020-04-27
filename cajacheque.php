@@ -98,20 +98,16 @@ $suc = $_SESSION['cod_sucursal'];
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="control-label">Motivo</label> <select id="motivo" class="form-control">
-                                                <option value="cajatumbes">Remesa en Efectivo a Caja Central</option>
-                                                <option value="Deposito en cuenta">Deposito en cuenta</option>
-                                                <option value="Pago Servicios">Pago Servicios</option>
-                                                <option id="optionsalary" value="Sueldo">Sueldo</option>
-                                                <option value="Viatico">Viatico</option>
-                                                <option value="Vacaciones">Vacaciones</option>
+                                            <label class="control-label">Motivo</label>
+                                            <select id="motivo" class="form-control">
+                                                <option value="traslado">Traslado a caja principal</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-6 divparent">
                                         <div class="form-group">
-                                            <label class="control-label">Fecha Sueldo</label>
-                                            <input type="text" step="any" disabled id="inputfechasueldo" required class="form-control form-control-inline" />
+                                            <label class="control-label">Cheques - CARTERA</label>
+                                            <select class="form-control" id="chequescartera" onchange="changechequescartera()"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-6 divparent">
@@ -292,8 +288,9 @@ include("Fragmentos/pie.php");
     $(function() {
         initTable()
         onloadPersonal()
-        onloadCliente()
-        onloadCuentas()
+        loadChequesCartera()
+         onloadCliente()
+         onloadCuentas()
         if (suc == 1) {
             btndispose.style.display = "none"
             btndisposeingreso.style.display = "none"
@@ -318,7 +315,69 @@ include("Fragmentos/pie.php");
         }
     }
     motivo.onchange = changeMotivo;
+    const loadChequesCartera = async () => {
+        const qq = `
+            select id, motivo as identificacion, cantidad as montoextra from despose where estado = '' and tipo = 'ingresocheque'
+        `;
+        let data0 = await get_data_dynamic(qq);
+        const query = `
+        SELECT v.codigoventas, v.tipocomprobante,v.jsonpagos, v.abonoproveedor, v.total, v.codigocomprobante, c.cedula, c.nombre, c.paterno, j.ruc, j.razonsocial 
+        FROM ventas v 
+        left join cnatural c on c.codigoclienten=v.codigoclienten 
+        left join cjuridico j on j.codigoclientej=v.codigoclientej 
+        where v.jsonpagos like "%cheque%" or v.abonoproveedor like "%cheque%"
+        group by v.codigoventas
+        `;
+        let data = await get_data_dynamic(query);
+        const arrayxx = [];
+        data = data.forEach(x => {
+            let indexcheque = 0;
+            if (x.abonoproveedor) {
+                const list = JSON.parse(x.abonoproveedor);
+                list.filter(o => o.tipopago == "cheque").forEach(y => {
+                    arrayxx.push({
+                        ["codigoventas"]: parseInt(x.codigoventas),
+                        ["montoextra"]: y.montoextra,
+                        ["indexcheque"]: indexcheque,
+                        ["tipo"]: "abonoproveedor",
+                        ["jsonformated"]: x.abonoproveedor,
+                        ["identificacion"]: (x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial) + " " + (x.cedula ? x.cedula : x.ruc)
+                    });
+                    indexcheque++;
+                })
+            }
 
+            if (x.jsonpagos) {
+                const list = JSON.parse(x.jsonpagos);
+                list.filter(o => o.tipopago == "cheque").forEach(y => {
+                    arrayxx.push({
+                        ["jsonformated"]: x.jsonpagos,
+                        ["codigoventas"]: parseInt(x.codigoventas),
+                        ["montoextra"]: y.montoextra,
+                        ["indexcheque"]: indexcheque,
+                        ["tipo"]: "jsonpagos",
+                        ["identificacion"]: (x.cedula ? `${x.paterno} ${x.nombre}` : x.razonsocial) + " " + (x.cedula ? x.cedula : x.ruc)
+                    });
+                    indexcheque++;
+                })
+            }
+        })
+        chequescartera.innerHTML = "<option value=''>Seleccione</option>";
+        arrayxx.forEach(x => {
+            chequescartera.innerHTML += `
+                <option data-json="${x.jsonformated.replace(/"/gi, "'")}" data-tipo="${x.tipo}" data-index="${x.indexcheque}"data-monto="${x.montoextra}" value="${x.codigoventas}">${x.identificacion}</option>
+            `;
+        })
+        data0.forEach(x => {
+            chequescartera.innerHTML += `
+                <option data-tipo="despose"" data-monto="${x.montoextra}" value="${x.id}">${x.identificacion.split("cheque - ")[1]}</option>
+            `;
+        })
+    }
+    const changechequescartera = () => {
+        const monto = chequescartera.options[chequescartera.selectedIndex].dataset.monto;
+        cantidadxx.value = monto
+    }
     const dispose = async () => {
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
@@ -326,9 +385,10 @@ include("Fragmentos/pie.php");
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'negresos'");
         nrecibox.value = nrecibo[0].value
         typedespose.value = "negresos";
+        cantidadxx.disabled = true;
         personal.value = 0
+        loadChequesCartera()
         cuentabancaria.closest(".divparent").style.display = "none"
-        inputfechasueldo.closest(".divparent").style.display = "none"
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
     }
@@ -340,11 +400,11 @@ include("Fragmentos/pie.php");
         let res = await get_data_dynamic(query);
 
         if (res.length > 0) {
-            optionsalary.disabled = false;
+            // optionsalary.disabled = false;
             salary = res[0].totalpagar
             fechasueldo = res[0].fechasueldo
         } else {
-            optionsalary.disabled = true;
+            // optionsalary.disabled = true;
         }
     }
     const disposeingreso = async () => {
@@ -396,34 +456,40 @@ include("Fragmentos/pie.php");
             detalle: []
         }
         if (personal.value) {
+            if (motivo.value == "traslado") {
 
-            let nrecibo = parseInt(nrecibox.value) + 1;
-            dataxx.detalle.push("UPDATE propiedades SET value = (" + nrecibo + ") where `key` = 'negresos'");
+                const {tipo, json, index} = chequescartera.options[chequescartera.selectedIndex].dataset;
+                if(tipo == "despose"){
+                    const query = `
+                        update despose set estado = 'ENVIADO' where id = ${chequescartera.value}`
+                    dataxx.detalle.push(query);
+                } else if (/^jsonpagos$|^abonoproveedor$/gi.test(tipo)){
+                    let array = JSON.parse(json.replace(/'/gi, '"'));
 
-            if (motivo.value == "Deposito en cuenta") {
-                const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${cuentabancaria.value}, '${fecha.value}', 'DEPOSITO EFECTIVO N ${nrecibox.value} ${namesucursal.value}', 'DEPOSITO EFECTIVO  N ${nrecibox.value} ${namesucursal.value}', ${cantidadxx.value}, 
-                (select cm.saldo + ${cantidadxx.value} from cuenta_mov cm where cm.id_cuenta = ${cuentabancaria.value} order by cm.id_cuenta_mov desc limit 1))`
-
-                dataxx.detalle.push(querydepbancario);
-            } else if (motivo.value == "cajatumbes") {
-                const query = `
-                    insert into despose 
-                        (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado, fromdespose) 
-                    values
-                        ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, 11, 'ingresocaja', 'CAJA TUMBES - ENVIO DE ${namesucursal.value}', 'EN ESPERA', ###ID###)`
-                dataxx.detalle.push(query);
-            } else if (motivo.value == "Sueldo") {
-                const query = `
-                    update personalsueldo 
-                        set estadosueldo = NOW()
-                    where personal = ${idpersonal} and estadosueldo is null`
-                dataxx.detalle.push(query);
+                    array = array.map(x => {
+                        let ix = 0;
+                        if (x.tipopago == "cheque" && ix == index) {
+                            x.estado  = "CARTERA";
+                            ix++;
+                        };
+                        return x;
+                    });
+                    dataxx.detalle.push(`
+                        update ventas set ${tipo} = '${JSON.stringify(array)}' where codigoventas = ${chequescartera.value};
+                    `);
+                    console.log(`
+                        update ventas set ${tipo} = '${JSON.stringify(array)}' where codigoventas = ${chequescartera.value};
+                    `);
+                    
+                }
+                
             }
+            const dataextra = chequescartera.options[chequescartera.selectedIndex].textContent;
             const query = `
                 insert into despose 
                     (nrorecibo, cantidad, fecha, por, personal, sucursal, tipo, motivo, estado) 
                 values
-                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'despose', '${motivo.value}', 'ENVIADO')`
+                ('${nrecibox.value}', ${cantidadxx.value}, '${fecha.value}', '${byfrom.value}', ${personal.value}, ${msucursal.value}, 'egresocheque', '${motivo.value} ${dataextra}', 'ENVIADO')`
 
             dataxx.header = query;
 
@@ -458,7 +524,7 @@ include("Fragmentos/pie.php");
         msucursal.value = id
         namesucursal.value = name
         $("#moperation").modal();
-        moperationtitle.textContent = "EFECTIVO - CAJA " + name
+        moperationtitle.textContent = "CHEQUE - CAJA " + name
         let despose = [];
         if (id != 11) {
             const query1 = `
@@ -544,15 +610,15 @@ include("Fragmentos/pie.php");
                     nrorecibo: x.tipo == "ingresocheque" ? `RI - ${x.nrorecibo}` : `RE - ${x.nrorecibo}`
                 }
             })
-
+            debugger
             qwer = [...datatotble, ...des];
             let saldo = 0;
-
 
             qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
                 const total = x.total ? parseFloat(x.total) : 0
                 saldo = saldo + total - despose
+                x.despose = despose;
                 x.saldo = saldo.toFixed(2)
                 x.nrorecibo = x.nrorecibo || "";
                 return x

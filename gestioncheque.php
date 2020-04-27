@@ -280,7 +280,7 @@ include("Fragmentos/pie.php");
                     debugger;
                     arrayxx.push({
                         ...x,
-                        ["estado"]: y.estado ? y.estado : "CARTERA",
+                        ["estado"]: y.estado || "",
                         ["daysto"]: days,
                         ["tipopago"]: y.tipopago,
                         ["indexcheque"]: indexcheque,
@@ -303,7 +303,7 @@ include("Fragmentos/pie.php");
                     const days = parseInt((current.getTime() - dateemited.getTime()) / (1000 * 3600 * 24));
                     arrayxx.push({
                         ...x,
-                        ["estado"]: y.estado ? y.estado : "CARTERA",
+                        ["estado"]: y.estado || "",
                         ["daysto"]: days,
                         ["tipopago"]: y.tipopago,
                         ["indexcheque"]: indexcheque,
@@ -367,7 +367,7 @@ include("Fragmentos/pie.php");
                     render: function(data, type, row, meta) {
                         console.log(row);
                         
-                        if(row.estado != "COBRADO")
+                        if(row.estado == "CARTERA")
                             return `<button class="btn btn-primary" onclick='cobrarcheque("${row.tipo}", ${parseInt(row.codigoventas)}, ${row.montoextra}, ${row.indexcheque}, ` + '`' + row.jsonformated + "`)'>Cobrar Cheque</button>";
                         else
                             return '';
