@@ -197,7 +197,6 @@ include("Fragmentos/pie.php");
             };
             return x;
         });
-        console.log(chequeselected);
         
         data.header = `
             update ventas set ${tipo} = '${JSON.stringify(chequeselected)}' where codigoventas = ${codventas}

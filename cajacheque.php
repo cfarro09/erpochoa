@@ -349,7 +349,7 @@ include("Fragmentos/pie.php");
 
             if (x.jsonpagos) {
                 const list = JSON.parse(x.jsonpagos);
-                list.filter(o => o.tipopago == "cheque" !o.estado).forEach(y => {
+                list.filter(o => o.tipopago == "cheque" && !o.estado).forEach(y => {
                     arrayxx.push({
                         ["jsonformated"]: x.jsonpagos,
                         ["codigoventas"]: parseInt(x.codigoventas),
