@@ -46,7 +46,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 				<div class="col-md-3">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Tipo Compra</label>
-						<select id="tipocompra" required class="form-control">
+						<select id="tipocompra" onchange="changetipo(this)" required class="form-control">
 							<option value="mercaderia">Mercaderia</option>
 							<option value="insumos">Insumos</option>
 							<option value="servicios">Servicios</option>
@@ -86,6 +86,14 @@ $codsucursal = $_SESSION['cod_sucursal'];
 			</div>
 		</div>
 	</div>
+	<div class="row" style="margin-bottom: 10px">
+		<div class="col-sm-12">
+			<label class="" style="font-weight: bold">Seleccione </label>
+			<select id="prouctosaux" class="form-control select2-allow-clear" name="prouctosaux">
+				
+			</select>
+		</div>
+	</div>
 	<button type="button" onclick="agregarproducto()" class="btn btn-primary">Agregar Producto</button>
 	<div class="row" style="margin-top:20px">
 		<div class="col-sm-12">
@@ -103,6 +111,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 			</table>
 		</div>
 	</div>
+	
 	<div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px" id="header-guia">
 		<div class="col-sm-4">
 			Total: <span id="totalheader"></span>
@@ -152,6 +161,19 @@ include("Fragmentos/pie.php");
 				</td>
 			</tr>
 		`;
+	}
+	const changetipo = e => {
+		clearselect2("#prouctosaux")
+		let query = "";
+		if(e.value === "mercaderia"){
+			query = "";
+		}else if(e.value === "mercaderia"){
+			query = "";
+		}else if(e.value === "servicios"){
+			query = "";
+		}
+		let res = await get_data_dynamic(query).then(r => r);
+		cargarselect2("#prouctosaux", res, "id", "descripcion", ["tipo"]);
 	}
 	const guardar = async e => {
 		e.preventDefault();

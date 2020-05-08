@@ -291,7 +291,7 @@ $nombreigv = mysql_fetch_object($result)->value;
             $row_frases = mysql_fetch_assoc($frases);
             $totalRows_frases = mysql_num_rows($frases);
             ?>
-            <div class="modal fade" id="mFrases" role="dialog" data-backdrop="static" data-keyboard="false">
+            <div class="modal fade" id="mFrasesx" role="dialog" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content m-auto">
                         <div class="modal-header">
@@ -1516,7 +1516,7 @@ $nombreigv = mysql_fetch_object($result)->value;
                             const getSelectorAll = (tag) => document.querySelectorAll(tag)
                             if (getSelector("#showFrases")) {
                                 getSelector("#showFrases").addEventListener("click", e => {
-                                    $("#mFrases").modal()
+                                    $("#mFrasesx").modal()
                                 })
                             }
 

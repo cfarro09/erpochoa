@@ -153,7 +153,7 @@ echo $dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y'
                                     <span class="badge badge-success"> 7 </span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                <?php include("Fragmentos/menu.php"); ?>
+                                
                                     <li class="external">
                                         <h3>
                                             
