@@ -164,15 +164,21 @@ include("Fragmentos/pie.php");
 	}
 	const changetipo = e => {
 		clearselect2("#prouctosaux")
-		let query = "";
+		let query = "select i.codigoins, i.nombre_insumo, m.nombre, p.nombre_presentacion, c.nombre_color dd from insumo i inner join marca m on i.codigomarca=m.codigomarca inner join presentacion p on p.codigopresent=i.codigopresent inner join color c on c.codigocolor=i.codigocolor";
 		if(e.value === "mercaderia"){
-			query = "";
+			// query = "";
 		}else if(e.value === "mercaderia"){
-			query = "";
+			// query = "";
 		}else if(e.value === "servicios"){
-			query = "";
+			// query = "";
 		}
 		let res = await get_data_dynamic(query).then(r => r);
+		res = res.map(x => {
+			return {
+				descripcion: `${x.nombre_insumo} ${x.nombre} ${x.nombre_presentacion} ${x.nombre_color}`,
+				id: x.codigoins
+			}
+		});
 		cargarselect2("#prouctosaux", res, "id", "descripcion", ["tipo"]);
 	}
 	const guardar = async e => {
