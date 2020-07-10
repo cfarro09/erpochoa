@@ -57,15 +57,15 @@ $totalRows_personal = mysql_num_rows($l_per);
                 </select>
             </div>
         </div>
-  <div class="col-md-4">
+        <div class="col-md-4">
             <div class="form-group">
                 <input type="hidden" name="cod_acceso_seguridad" value="0" id="cod_acceso_seguridad">
                 <label for="personalconta" class="control-label">Personal</label>
                 <select name="personal" id="personalconta" required class="form-control select2 tooltips" data-placement="top" data-original-title="Seleccionar personal">
                     <?php do { ?>
-         <option <?= $r_per['codigopersonal'] == $codpersonal ? 'selected' : '' ?> value="<?= $r_per['codigopersonal'] ?>">
-      <?= $r_per['fullname'] ?>
-       </option>
+                        <option <?= $r_per['codigopersonal'] == $codpersonal ? 'selected' : '' ?> value="<?= $r_per['codigopersonal'] ?>">
+                            <?= $r_per['fullname'] ?>
+                        </option>
                     <?php
                     } while ($r_per = mysql_fetch_assoc($l_per)); ?>
                 </select>

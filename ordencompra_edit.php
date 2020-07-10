@@ -127,7 +127,7 @@ if ((isset($_POST["MM_GuardarVenta"])) && ($_POST["MM_GuardarVenta"] == "Guardar
 
         mysql_select_db($database_Ventas, $Ventas);
         $codigoproducto10=$_POST['codigoprod'];
-        $query_Productos = "SELECT codigoprod, precio_venta, round(precio_compra/1.12,2) as precio_compra FROM producto_stock WHERE codigoprod = $codigoproducto10 ORDER BY codigoprod desc";
+        $query_Productos = "SELECT codigoprod, precio_venta, round(precio_compra/1.18,2) as precio_compra FROM producto_stock WHERE codigoprod = $codigoproducto10 ORDER BY codigoprod desc";
         $Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
         $row_Productos = mysql_fetch_assoc($Productos);
         $totalRows_Productos = mysql_num_rows($Productos);
@@ -145,11 +145,12 @@ if ((isset($_POST["MM_GuardarVenta"])) && ($_POST["MM_GuardarVenta"] == "Guardar
          $concatenacion=$_POST['CodigoProducto'].$_POST['codigoprod'];
 
 
-         $insertSQL = sprintf("INSERT INTO detalle_compras_oc (codigo, codigoprod, concatenacion, pcompra, igv, totalcompras) VALUES (%s, %s, %s, %s, %s, %s)",
+         $insertSQL = sprintf("INSERT INTO detalle_compras_oc (codigo, codigoprod, concatenacion, pcompra, igv, totalcompras) 
+         VALUES (%s, %s, %s, %s, %s, %s)",
            GetSQLValueString($_POST['CodigoProducto'], "text"),
            GetSQLValueString($_POST['codigoprod'], "int"),
            GetSQLValueString($concatenacion,"text"),
-           GetSQLValueString(0, "double"),
+           //GetSQLValueString(0, "double"),
            GetSQLValueString($row_Productos['precio_compra'], "double"),
            GetSQLValueString(round($row_Productos['precio_compra']*0.18,2), "double"),
            GetSQLValueString(round($row_Productos['precio_compra']+$row_Productos['precio_compra']*0.18,2), "double"));

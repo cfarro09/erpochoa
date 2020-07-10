@@ -48,7 +48,7 @@ if($header->codigoguia){
      $update2 = "update detalle_guia_oc set cant_recibida = $detalle->cantidad_recibida where codigo_guiaoc = $detalle->codigo_guiaoc";
     $queryDetalle = mysql_query($update2  , $Ventas) or die(mysql_error());
 
-    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) values ($detalle->codigoprod, $header->codigoguia, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, IFNULL((select k1.saldo   from kardex_alm k1 where k1.codsucursal = $header->codsucursal and k1.codigoprod = $detalle->codigoprod order by k1.id_kardex_alm desc limit 1), 0) + $detalle->cantidad_kardex, $header->codsucursal, 'oc', '$header->tipodocalmacen')";
+    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux) values ($detalle->codigoprod, $header->codigoguia, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, IFNULL((select k1.saldo   from kardex_alm k1 where k1.codsucursal = $header->codsucursal and k1.codigoprod = $detalle->codigoprod order by k1.id_kardex_alm desc limit 1), 0) + $detalle->cantidad_kardex, $header->codsucursal, 'oc', '$header->tipodocalmacen', '$header->detalleaux')";
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
   }
 
@@ -66,18 +66,11 @@ if($header->codigoguia){
      $queryDetalle = mysql_query($insertDetalle, $Ventas) or die(mysql_error());
 
     $insertkardex = "
-      insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) 
-      values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, IFNULL((select k1.saldo  from kardex_alm k1 where k1.codsucursal = $header->codsucursal and k1.codigoprod = $detalle->codigoprod order by k1.id_kardex_alm desc limit 1), 0) + $detalle->cantidad_kardex, $header->codsucursal, 'oc', '$header->tipodocalmacen')";
+      insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux) 
+      values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad_kardex, IFNULL((select k1.saldo  from kardex_alm k1 where k1.codsucursal = $header->codsucursal and k1.codigoprod = $detalle->codigoprod order by k1.id_kardex_alm desc limit 1), 0) + $detalle->cantidad_kardex, $header->codsucursal, 'oc', '$header->tipodocalmacen', '$header->detalleaux')";
 
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
-
-
   }
-
-  die(json_encode(array("success" => true), 128));
-  
+  die(json_encode(array("success" => true), 128)); 
 }
-
-
-
 ?>

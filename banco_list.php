@@ -56,7 +56,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
 }
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT b.codigobanco as codigobanco, b.nombre_banco, codigoventas FROM banco b left join ventas v on b.codigobanco=v.codigobanco group by b.codigobanco order by b.codigobanco";
+$query_Listado = "SELECT b.codigobanco as codigobanco, b.nombre_banco FROM banco b order by b.codigobanco";
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
@@ -99,30 +99,18 @@ include("Fragmentos/abrirpopupcentro.php");
           <th  width="85%"> NOMBRE DE BANCO </th>
          
           <th  width="5%">  </th>
-          <th  width="5%">  </th>
+       
         </tr>
       </thead>
     <tbody>
-      <?php do { ?>
+      <?php $i=1; do { ?>
         <tr>
           <td> <?php echo $i; ?> </td>
           <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigobanco=<?php echo $row_Listado['codigobanco']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['nombre_banco']; ?> </a>                                                          </td>
           
           <td> 
             <a  class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigobanco=<?php echo $row_Listado['codigobanco']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>          </td>
-          <td>
-                    <?php 
-		  if ($row_Listado['codigoventas'] == NULL) { ?>
-            <form method="POST" action="<?php echo $editFormAction; ?>" name="Eliminar_Registro" id="Eliminar_Registro" onSubmit="return confirm('¿ESTA SEGURO QUE DESEA ELIMINAR ESTA MARCA: <?php echo $row_Listado['nombre_banco']; ?>?');">
-              <input name="codigobanco" id="codigobanco" type="hidden" value="<?php echo $row_Listado['codigobanco']; ?>">
-              <input name="estado" id="estado" type="hidden" value="1">
-              <button type="submit" class="btn red-thunderbird tooltips" data-placement="top" data-original-title="Eliminar Registro"><i class="glyphicon glyphicon-trash"></i></button>
-                              
-              <input type="hidden" name="MM_update" value="Eliminar_Registro" />
-          </form>
-          <?php } 
-		  ?>
-          </td>
+          
         </tr>
         <?php $i++; } while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
     </tbody>

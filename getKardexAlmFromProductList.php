@@ -41,7 +41,14 @@ $codproducto = $_POST["codproducto"];
 
 mysql_select_db($database_Ventas, $Ventas);
 
-$queryKardex = "select * from kardex_alm where codigoprod = $codproducto and codsucursal = $codsucursal and fecha BETWEEN '$fecha_inicio' AND '$fecha_termino'";
+$searchsuc = $codsucursal == "1" ? "in (1, 10)" : " = 1";
+
+$queryKardex = "SELECT 
+ka.* from kardex_alm ka
+where 
+  ka.codigoprod = $codproducto and 
+  ka.codsucursal  $searchsuc and 
+  ka.fecha BETWEEN '$fecha_inicio' AND '$fecha_termino'";
 
 $Factura = mysql_query($queryKardex, $Ventas) or die(mysql_error());
 $result = array();

@@ -88,7 +88,7 @@
         <div class="col-md-3">
             <div class="form-group">
                 <label for="sucursal_destino">Numero de Guia:</label>
-                <input type="text" name="numero_guia" disabled id="numero_guia" class="form-control" required>
+                <input type="text" name="numero_guia" id="numero_guia" class="form-control" required>
             </div>
         </div>
         <div class="col-md-12">

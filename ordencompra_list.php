@@ -108,8 +108,8 @@ $totalRows_Listado = mysql_num_rows($Listado);
 		<thead>
 			<tr>
 				<th  > N&deg; </th>
-				<th  > CODIGO REF1</th>
-				<th  > M. TOTAL</th>
+				<th  > DOC REF1</th>
+				<th  class="none"> M. TOTAL</th>
 				<th  class="none"> COMPRA </th>
 				<th  class="none">SUBTOTAL</th>
 				<th  class="none"> IVA </th>
@@ -255,7 +255,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 						document.querySelector("#aceptarOrden-x").style.display = "none"
 						document.querySelector("#anularOrden").style.display = ""
 						document.querySelector("#corregirOrden").style.display = ""
-						document.querySelector("#corregirOrden").href = `ordencompra_edit.php?codigoproveedor=${res.header.codigoproveedor}&codigoref1=${res.header.codigoref1}&codigoref2=${res.header.codigoref2}&codigo=${e.target.dataset.codigo}`
+						document.querySelector("#corregirOrden").href = `new_ordencompra_edit.php?codigo=${e.target.dataset.codigo}`
 					}else if(e.target.dataset.estado == "4" || e.target.dataset.estado == "1" ||  e.target.dataset.estado == "2"){
 						document.querySelector("#rechazarOrden").style.display = "none"
 						document.querySelector("#aceptarOrden-x").style.display = "none"

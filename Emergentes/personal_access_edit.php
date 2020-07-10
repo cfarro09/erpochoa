@@ -37,10 +37,9 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Actualizar")) {
-  $updateSQL = sprintf("UPDATE acceso SET usuario=%s, clave=md5(%s), nivel=%s WHERE codacceso=%s",
+  $updateSQL = sprintf("UPDATE acceso SET usuario=%s, clave=md5(%s) WHERE codacceso=%s",
                        GetSQLValueString($_POST['usuario'], "text"),
                        GetSQLValueString($_POST['clave'], "text"),
-                       GetSQLValueString($_POST['nivel'], "text"),
                        GetSQLValueString($_POST['codacceso'], "int"));
 
   mysql_select_db($database_Ventas, $Ventas);
@@ -126,24 +125,7 @@ include("Fragmentos/bloquea_caja.php");
 </tr>
 
 
-<tr>
-<td> 
-<div class="col-md-5">
-<div class="form-group"><span id="spryselect1">
-  <select name="nivel" id="nivel" class="form-control tooltips"  data-placement="top" data-original-title="Seleccionar Nivel">
-    <option value="0" <?php if (!(strcmp(0, $row_Personal['nivel']))) {echo "selected=\"selected\"";} ?>>--- Nivel ---</option>
-    <option value="root" <?php if (!(strcmp("root", $row_Personal['nivel']))) {echo "selected=\"selected\"";} ?>> Super Administrador</option>
-    <option value="admin" <?php if (!(strcmp("admin", $row_Personal['nivel']))) {echo "selected=\"selected\"";} ?>> Administrador</option>
-    <option value="user" <?php if (!(strcmp("user", $row_Personal['nivel']))) {echo "selected=\"selected\"";} ?>> Usuario</option>
-    
-  </select>
-  <span class="selectInvalidMsg"></span><span class="selectRequiredMsg"></span></span></div> </div>
-</td>
-<td>
 
-</td>
-
-</tr>
 
 </tbody>
 </table>

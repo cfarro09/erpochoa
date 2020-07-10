@@ -194,8 +194,8 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
           RUC : <span id="mruc"></span><br>
           PROVEEDOR: <span id="mproveedor"></span> <BR>
           VALOR TOTAL: <span id="mvalortotal"></span><BR>
-          CODIGO DE REF 1 : <span id="mcodref1"></span> <br>
-          CODIGO REF2: <span id="mcodref2"></span> <br>
+          DOCUMENTO REF 1 : <span id="mcodref1"></span> <br>
+          DOCUMENTO REF2: <span id="mcodref2"></span> <br>
 
           
           

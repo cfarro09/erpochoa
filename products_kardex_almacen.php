@@ -25,10 +25,10 @@ $suc = $_SESSION['cod_sucursal'];
 <table id="maintable" class="display" width="100%"></table>
 
 <div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document" style="width: 700px">
+    <div class="modal-dialog" role="document" style="width: 900px">
         <div class="modal-content m-auto">
             <div class="modal-header">
-                <h2 class="modal-title" id="moperation-title">Detalle del producto</h2>
+                <h2 class="modal-title" id="moperation-title-kardex">Detalle del producto</h2>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="codproducto">
@@ -50,36 +50,18 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="field-1" class="control-label">Fecha Inicio</label>
-                                            <input type="text" required name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
+                                            <input type="text"  name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" style="margin-bottom: 7rem">
                                         <div class="form-group">
                                             <label for="field-1" class="control-label">Fecha termino</label>
-                                            <input type="text" name="fecha_termino" autocomplete="off" id="fecha_termino" required class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
+                                            <input type="text" name="fecha_termino" autocomplete="off" id="fecha_termino" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
                                         </div>
                                     </div>
                                     <div class="col-md-12">
-                                        <table class="table table-striped table-bordered table-hover" id="">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="4" id="headerKardex"></th>
-                                                    <th style="background-color: #01aaff; color: white; text-align: center">ENTRADA</th>
-                                                    <th style="background-color: #01aaff; color: white; text-align: center">SALIDA</th>
-                                                    <th style="background-color: #01aaff; color: white; text-align: center">SALDO</th>
-                                                </tr>
-                                                <tr>
-                                                    <th>FECHA</th>
-                                                    <th>DETALLE</th>
-                                                    <th>TIPO</th>
-                                                    <th>N° COMP/GUIA</th>
-                                                    <th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-                                                    <th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-                                                    <th style="background-color: #01aaff; color: white; text-align: center">CANTIDAD</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="detalleKardexAlmProd" class="text-center"></tbody>
-                                        </table>
+                                        <table id="maintabledetail" class="display" width="100%"></table>
+
                                     </div>
                                 </div>
                             </div>
@@ -110,8 +92,8 @@ include("Fragmentos/pie.php");
     }
     const getdetail = async (idpro, name) => {
         getSelector("#codproducto").value = idpro
-        getSelector("#headerKardex").textContent = name
-        detalleKardexAlmProd.innerHTML = ""
+        getSelector("#moperation-title-kardex").textContent = `Detalle de ${name}`
+        // detalleKardexAlmProd.innerHTML = ""
         $("#mkardex").modal();
         $("#fecha_inicio").val("");
         $("#fecha_termino").val("");
@@ -123,13 +105,14 @@ include("Fragmentos/pie.php");
             containersucursales.innerHTML += `
                 <div>${s.name}: ${s.saldo}</div>
             `
-        })
+        });
+        getdetailproduct();
     }
 
     const initTable = async () => {
         const query = `
         select 
-            p.codigoprod ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
+            p.codigoprod, p.minicodigo, p.codigo2, p.codigo3 ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
              (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) as xentregar,
              sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' Then k5.cantidad Else 0 End) entradas,
              sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' or k5.detalle like '%despacho%' Then k5.cantidad Else 0 End) salidas
@@ -141,7 +124,7 @@ include("Fragmentos/pie.php");
 
         group by p.codigoprod
         `;
-        
+
         let data = await get_data_dynamic(query);
 
         $('#maintable').DataTable({
@@ -158,6 +141,20 @@ include("Fragmentos/pie.php");
                 {
                     title: 'marca',
                     data: 'marca'
+                },
+                {
+                    title: 'minicodigo',
+                    data: 'minicodigo',
+                },
+                {
+                    title: 'codigo2',
+                    data: 'codigo2',
+                    visible: false
+                },
+                {
+                    title: 'codigo3',
+                    data: 'codigo3',
+                    visible: false
                 },
                 {
                     title: 'entradas',
@@ -182,7 +179,7 @@ include("Fragmentos/pie.php");
                     render: function(data, type, row) {
                         const nn = row.nombre_producto.replace(/'|"/gi, '');
                         return `<button class="btn btn-primary" onclick='getdetail(${parseInt(row.codigoprod)}, "${nn}")'>detalle</button>`
-                        
+
                     }
                 }
             ]
@@ -191,9 +188,14 @@ include("Fragmentos/pie.php");
 
     getSelector("#form-setKardex").addEventListener("submit", e => {
         e.preventDefault();
+        getdetailproduct();
+    });
+    
+    function getdetailproduct (){
         const codsucursal = $("#sucursales").val()
-        const fecha_inicio = $("#fecha_inicio").val()
-        const fecha_termino = $("#fecha_termino").val()
+        const fecha_inicio = $("#fecha_inicio").val() ? $("#fecha_inicio").val() : "1999-09-09";
+        const fecha_termino = $("#fecha_termino").val() ? $("#fecha_termino").val() : "2030-03-03";
+        
         const codproducto = getSelector("#codproducto").value
         var formData = new FormData();
         formData.append("codsucursal", codsucursal);
@@ -201,7 +203,7 @@ include("Fragmentos/pie.php");
         formData.append("fecha_termino", fecha_termino);
         formData.append("codproducto", codproducto);
 
-        getSelector("#detalleKardexAlmProd").innerHTML = "<tr><td colspan='6'>No hay registros</td></tr>"
+        //getSelector("#detalleKardexAlmProd").innerHTML = "<tr><td colspan='6'>No hay registros</td></tr>"
 
         fetch(`getKardexAlmFromProductList.php`, {
                 method: 'POST',
@@ -211,42 +213,97 @@ include("Fragmentos/pie.php");
             .catch(error => console.error("error: ", error))
             .then(res => {
                 if (res.length > 0) {
-                    getSelector("#detalleKardexAlmProd").innerHTML = `
-					<tr>
-					<td></td>
-					<td>Inventario inicial</td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>	
-					<td>0</td>
-					</tr>
-					`
+                    const listdata = [];
                     let i = 0;
                     res.forEach(item => {
-                        debugger
                         if (item.cantidad != "0") {
-                            getSelector("#detalleKardexAlmProd").innerHTML += `
-							<tr>
-							<td>${new Date(item.fecha).toLocaleDateString()}</td>
-							<td>${item.detalle}</td>
-							<td>${item.tipodocumento}</td>
-							<td>${item.numero}</td>
-
-							<td>${item.detalle.toLowerCase().includes("compras", "entra") ? item.cantidad : ""}</td>
-							<td>${item.detalle.toLowerCase().includes("ventas", "sale") || item.detalle.toLowerCase().includes("despacho")  ? item.cantidad : ""}</td>
-
-
-							<td>${item.saldo}</td>
-							</tr>
-							`;
+                            listdata.push({
+                                fecha: new Date(item.fecha).toLocaleDateString(),
+                                detalle: item.isproveedor ? "INVENTARIO" : item.detalle, //isproveedor is isinventario
+                                tipodocumento: item.isproveedor ? "" : item.tipodocumento,
+                                numero: item.isproveedor ? "" : item.numero,
+                                entrada: item.detalle.toLowerCase().includes("compras", "entra", "inventario") ? item.cantidad : "",
+                                salida: item.detalle.toLowerCase().includes("ventas", "sale") || item.detalle.toLowerCase().includes("despacho") ? item.cantidad : "",
+                                proveedor: item.isproveedor ? "INVENTARIO" : item.detalleaux,
+                                saldo: item.saldo
+                            });
                         }
 
                     });
-
+                    $('#maintabledetail').DataTable({
+                        data: listdata,
+                        ordering: false,
+                        dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+                        destroy: true,
+                        buttons: [{
+                                extend: 'print',
+                                className: 'btn dark btn-outline'
+                            },
+                            {
+                                extend: 'copy',
+                                className: 'btn red btn-outline'
+                            },
+                            {
+                                extend: 'pdf',
+                                className: 'btn green btn-outline'
+                            },
+                            {
+                                extend: 'excel',
+                                className: 'btn yellow btn-outline '
+                            },
+                            {
+                                extend: 'csv',
+                                className: 'btn purple btn-outline '
+                            },
+                            {
+                                extend: 'colvis',
+                                className: 'btn dark btn-outline',
+                                text: 'Columns'
+                            }
+                        ],
+                        columns: [
+                            {
+                                title: 'Fecha',
+                                data: 'fecha',
+                            },
+                            {
+                                title: 'Detalle',
+                                data: 'proveedor',
+                            },
+                            {
+                                title: 'Detalle',
+                                data: 'detalle',
+                                visible: false
+                            },
+                            {
+                                title: 'Tipo Doc',
+                                data: 'tipodocumento',
+                            },
+                            {
+                                title: 'N°',
+                                data: 'numero',
+                            },
+                            {
+                                title: 'Entrada',
+                                data: 'entrada',
+                                className: 'dt-body-right'
+                            },
+                            {
+                                title: 'Salida',
+                                data: 'salida',
+                                className: 'dt-body-right'
+                            },
+                            {
+                                title: 'Saldo',
+                                data: 'saldo',
+                                className: 'dt-body-right'
+                            },
+                        ]
+                    });
                 }
             });
 
 
-    });
+    
+    }
 </script>

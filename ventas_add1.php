@@ -306,6 +306,12 @@ include("Fragmentos/pie.php");
 ?>
 
 <script type="text/javascript">
+$(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.which; if (code == 13) { e.preventDefault(); return false; } });
+
+
+
+
+
 	let htmlcuentaabonado = "";
 	let h = {};
 	const onloadxx = async () => {
@@ -851,6 +857,7 @@ include("Fragmentos/pie.php");
 				alert("Los montos no coinciden");
 				return;
 			}
+			const proveedor_detalleaux = $('#cliente').select2('data')[0].text;
 			pagosextras.filter(x => x.tipopago == "depositobancario" || x.tipopago == "tarjetacredito" || x.tipopago == "tarjetadebito").forEach(x => {
 				const querydepbancario = `insert into cuenta_mov (id_cuenta, fecha_trans, tipo_mov, detalle, monto, saldo) VALUES (${x.cuentaabonado}, '${x.fechaextra}', 'DEPOSITO', 'ABONO ${x.tipopago.toUpperCase()}', ${x.montoextra}, 
 				(select cm.saldo from cuenta_mov cm where cm.id_cuenta = ${x.cuentaabonado} order by cm.id_cuenta_mov desc limit 1) + ${x.montoextra})`
@@ -903,11 +910,11 @@ include("Fragmentos/pie.php");
 
 						if (modalidadentrega.value != "Entrega almacen C/G") {
 							data.detalle.push(`
-							insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
+							insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux)
 							values
 							(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
 							(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) + ${d.cantidad}
-							, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+							, ${h.codsucursal}, 'venta', '${h.tipocomprobante}', '${proveedor_detalleaux}')`);
 						}
 					}
 				} else {
@@ -926,11 +933,11 @@ include("Fragmentos/pie.php");
 
 					if (modalidadentrega.value != "Entrega almacen C/G") {
 						data.detalle.push(`
-						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
+						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux)
 						values
 						(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
 						(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad}
-						, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+						, ${h.codsucursal}, 'venta', '${h.tipocomprobante}', '${proveedor_detalleaux}')`);
 					}
 				}
 			})

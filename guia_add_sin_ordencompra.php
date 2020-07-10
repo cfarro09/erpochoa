@@ -194,10 +194,25 @@ include("Fragmentos/abrirpopupcentro.php");
 </div>
 </div>
 </div>
-<div class="row">
-	<div class="col-sm-12">
-		<label class="" style="font-weight: bold">Seleccione un producto</label>
-		<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
+    
+	<div class="row" style="margin-top:20px">
+		<div class="col-sm-12">
+			<table class="table">
+				<thead>
+					<th>Nº</th>
+					<th>Cantidad</th>
+					<th>Producto</th>
+					<th>Marca</th>
+					<th>U. Medida</th>
+					<th style="display: none" id="cant_aux">Cant Aux</th>
+					<th>Accion</th>
+				</thead>
+				<tbody id="detalleFormProducto">
+				</tbody>
+			</table>
+			<div class="row">
+	    <div class="col-sm-12">
+    		<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
 			<option value="" <?php if (!(strcmp("", "compras_add.php"))) {echo "selected=\"selected\"";} ?>>
 			</option>
 			<?php
@@ -225,21 +240,6 @@ include("Fragmentos/abrirpopupcentro.php");
 			</select>
 		</div>
 	</div>
-	<div class="row" style="margin-top:20px">
-		<div class="col-sm-12">
-			<table class="table">
-				<thead>
-					<th>Nº</th>
-					<th>Cantidad</th>
-					<th>Producto</th>
-					<th>Marca</th>
-					<th>U. Medida</th>
-					<th style="display: none" id="cant_aux">Cant Aux</th>
-					<th>Accion</th>
-				</thead>
-				<tbody id="detalleFormProducto">
-				</tbody>
-			</table>
 		</div>
 	</div>
 </form>
@@ -296,6 +296,7 @@ mysql_free_result($Detalle_Compras);
 ?>
 
 <script type="text/javascript">
+$(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.which; if (code == 13) { e.preventDefault(); return false; } });
 	$(".sucursalXX").on("change", function () {
 
 		if ($(".sucursalXX").val() == 10) {
@@ -326,16 +327,14 @@ mysql_free_result($Detalle_Compras);
 	}
 
 	$('#codigoprod').on('change', function () {
-		if (getSelector(`.codigo_${this.value}`)) {
-
-		} else {
+		if (!getSelector(`.codigo_${this.value}`)) {
 			const option = this.options[this.selectedIndex]
 			const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
 			$("#detalleFormProducto").append(`
 				<tr class="producto">
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
-				<td style="width: 80px"><input type="number" required oninput="nonegative(this)" class="cantidad form-control" value="1" ></td>
+				<td style="width: 80px"><input type="text" required oninput="nonegative(this)" class="cantidad form-control" value="" autofocus ></td>
 				<td class="nombre">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
 				<td class="unidad_medida" style="width: 100px">${option.dataset.umedida}</td>
@@ -348,7 +347,10 @@ mysql_free_result($Detalle_Compras);
 				</tr>
 				`)
 		}
-
+	setTimeout(() => {
+	    getSelector("#detalleFormProducto tr:last-of-type").querySelector("input.cantidad").focus()    
+	}, 1000)
+    
 	});
 	function nonegative(e) {
 		if (e.value < 0) {
@@ -365,8 +367,13 @@ mysql_free_result($Detalle_Compras);
 			i++;
 		})
 	}
+	let elperritobobis = -1;
 	getSelector("#form-generate-compra").addEventListener("submit", e => {
 		e.preventDefault();
+		let errorrrr = false;
+		if (elperritobobis > 0)
+			return;
+		elperritobobis = elperritobobis * -1;
 		if (getSelectorAll(".producto").length < 1) {
 			alert("Debes agregar almenos un producto")
 		} else {
@@ -378,6 +385,7 @@ mysql_free_result($Detalle_Compras);
 				tipodoc: $("#tipodocsinoc").val(),
 				codigoguia: 0,
 				codigo: "<?= $_GET['codigo'] ?>",
+				nameproveedor:  $("#proveedor").select2('data')[0].text.trim(),
 				codigoproveedor: getSelector("#proveedor").value,
 				codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
@@ -390,9 +398,10 @@ mysql_free_result($Detalle_Compras);
 				codigoreferencia2: getSelector("#codigoreferencia2").value,
 				estado: 1
 			}
-			console.log(data)
 			getSelectorAll(".producto").forEach(item => {
-				console.log(item.querySelector(".unidad_medida").value)
+				const numberxxx = item.querySelector(".cantidad").value ? item.querySelector(".cantidad").value : "0";
+				if (numberxxx === "" || numberxxx === "0")
+				    errorrrr = true;
 				data.detalle.push({
 					codigoprod: item.querySelector(".codigopro").dataset.codigo,
 					unidad_medida: item.querySelector(".unidad_medida").textContent,
@@ -400,7 +409,9 @@ mysql_free_result($Detalle_Compras);
 					cantidad: item.querySelector(".cantidad").value
 				})
 			})
-			console.log(data)
+			if (errorrrr){
+			    alert("Los productos deben tener una cantidad mayor de 0 y diferente a vacio.")
+			}
 			var formData = new FormData();
 			formData.append("json", JSON.stringify(data))
 

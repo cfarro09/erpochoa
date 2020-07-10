@@ -203,9 +203,9 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					<div class="form-group">
 						<label for="field-1" class="control-label">Entrega</label>
 						<select required class="form-control" id="modalidadentrega">
-							<option value="Entrega inmediata S/G">Inmediata S/G</option>
-							<option value="Entrega inmediata C/G">Inmediata C/G</option>
-							<option value="Entrega almacen C/G">Entrega desde Almacen C/G</option>
+							<option value="Entrega inmediata S/G">Inmediata M/D</option>
+							<!-- <option value="Entrega inmediata C/G">Inmediata C/G</option> -->
+							<option value="Entrega almacen C/G">Despacho desde Almacen</option>
 						</select>
 					</div>
 				</div>
@@ -858,6 +858,7 @@ include("Fragmentos/pie.php");
 				data.detalle.push(querydepbancario)
 			})
 
+			const proveedor_detalleaux = $('#cliente').select2('data')[0].text;
 
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
@@ -904,11 +905,11 @@ include("Fragmentos/pie.php");
 						debugger
 						if (modalidadentrega.value != "Entrega almacen C/G") {
 							data.detalle.push(`
-							insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
+							insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux)
 							values
 							(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
 							(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) + ${d.cantidad}
-							, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+							, ${h.codsucursal}, 'venta', '${h.tipocomprobante}', '${proveedor_detalleaux}')`);
 						}
 					}
 				} else {
@@ -927,11 +928,11 @@ include("Fragmentos/pie.php");
 
 					if (modalidadentrega.value != "Entrega almacen C/G") {
 						data.detalle.push(`
-						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento)
+						insert into kardex_alm(codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux)
 						values
 						(${d.codigoprod}, ###ID###, '${h.codigocomprobante}', 'Ventas', ${d.cantidad},  
 						(select saldo from kardex_alm kc where kc.codigoprod = ${d.codigoprod} and kc.codsucursal = ${h.codsucursal} order by kc.id_kardex_alm desc limit 1) - ${d.cantidad}
-						, ${h.codsucursal}, 'venta', '${h.tipocomprobante}')`);
+						, ${h.codsucursal}, 'venta', '${h.tipocomprobante}', '${proveedor_detalleaux}')`);
 					}
 				}
 			})

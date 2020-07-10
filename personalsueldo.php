@@ -311,12 +311,12 @@ $codsucursal = $_SESSION['cod_sucursal'];
 											<input disabled type="text" required class="form-control text-right ccegreso" id="snp">
 										</div>
 									</div>
-									<div class="col-sm-12">
+								<!--	<div class="col-sm-12">
 										<div class="form-group" style="margin-bottom: 0!important">
 											<label class="control-label">Abonos</label>
 											<input disabled type="text" required class="form-control text-right ccegreso" id="abono">
 										</div>
-									</div>
+									</div>-->
 								</div>
 							</div>
 							<div class="col-sm-4">
@@ -355,7 +355,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 						<div class="row" style="margin-top: 20px">
 							<div class="col-sm-4">
 								<div class="form-group">
-									<label class="control-label">Total a pagar</label>
+									<label class="control-label">Neto a Pagar</label>
 									<input type="text" disabled required class="form-control text-right" id="totalpagar">
 								</div>
 							</div>

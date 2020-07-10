@@ -352,7 +352,8 @@ include("Fragmentos/pie.php");
             const acumulatedtipos = [];
             acumulatedtipos["comision"] = 0
             arraypagos.forEach(ixx => {
-                if (ixx.comision) {
+                if (ixx.comision && (ixx.tipopago === "tarjetacredito" || ixx.tipopago === "tarjetadebito") ) {
+                    debugger
                     acumulatedtipos["comision"] += parseFloat(ixx.comision | 0)
                     data.ttp["comision"] += parseFloat(ixx.comision | 0)
                 }

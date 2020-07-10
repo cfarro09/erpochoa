@@ -91,7 +91,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")) {
   $insertSQL = sprintf("INSERT INTO acceso (usuario, clave, nivel, codigopersonal, obs) VALUES (%s, md5(%s), %s, %s, %s)",
                        GetSQLValueString($_POST['usuario'], "text"),
                        GetSQLValueString($_POST['clave'], "text"),
-                       GetSQLValueString($_POST['nivel'], "text"),
+                       GetSQLValueString('root', "text"),
                        GetSQLValueString($_POST['codigopersonal'], "int"),
                        GetSQLValueString(base64_encode($_POST['clave']), "text"));
 
@@ -200,24 +200,7 @@ do {
 </tr>
 
 
-<tr>
-<td> 
-<div class="col-md-5">
-<div class="form-group tooltips"  data-placement="top" data-original-title="Seleccionar Nivel"><span id="spryselect1">
-  <select name="nivel" id="nivel" class="form-control ">
-    <option value="0">--- Nivel ---</option>
-    <option value="root"> Super Administrador</option>
-    <option value="admin"> Administrador</option>
-    <option value="user"> Usuario</option>
-    
-  </select>
-  <span class="selectInvalidMsg"></span><span class="selectRequiredMsg"></span></span></div> </div>
-</td>
-<td>
 
-</td>
-
-</tr>
 
 </tbody>
 </table>

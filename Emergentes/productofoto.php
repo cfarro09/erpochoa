@@ -52,12 +52,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")){
 			move_uploaded_file($_FILES["image"]["tmp_name"],"../reservation/img/products/" . $colname_Producto.".".$ext);
 			
 			$location=$colname_Producto.".jpg";
-			//$pname=$_POST['pname'];
-			//$desc=$_POST['desc'];
-			//$price=$_POST['price'];
-			//$cat=$_POST['cat'];
 			
-
 			$pname=$row_Producto['codigoprod'];
 			$update=mysql_query("INSERT INTO producto_imagen (codigoprod, foto) VALUES ('$pname','$location')");
 header("location: productofoto.php");

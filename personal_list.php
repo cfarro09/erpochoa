@@ -110,7 +110,7 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> 
             <a  class="btn blue-ebonyclay tooltips" data-placement="top" data-original-title="Actualizar Registro"  onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigopersonal=<?php echo $row_Listado['codigopersonal']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)"><i class="fa fa-refresh" ></i></a>          </td>
           <td>
-            <form method="POST" action="<?php echo $editFormAction; ?>" name="Eliminar_Registro" id="Eliminar_Registro" onSubmit="return confirm('ï¿½ESTA SEGURO QUE DESEA ELIMINAR ESTE REGISTRO: <?php echo $row_Listado['cedula']; ?>?');">
+            <form method="POST" action="<?php echo $editFormAction; ?>" name="Eliminar_Registro" id="Eliminar_Registro" onSubmit="return confirm('¿ESTA SEGURO QUE DESEA ELIMINAR ESTE REGISTRO: <?php echo $row_Listado['cedula']; ?>?');">
               <input name="codigopersonal" id="codigopersonal" type="hidden" value="<?php echo $row_Listado['codigopersonal']; ?>">
               <input name="estado" id="estado" type="hidden" value="1">
               <button type="submit" class="btn red-thunderbird tooltips" data-placement="top" data-original-title="Eliminar Registro"><i class="glyphicon glyphicon-trash"></i></button>

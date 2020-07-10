@@ -55,6 +55,11 @@ if($header->codigoguia){
   // die(json_encode(array("success" => true), 128));
 
 }else{
+    $isproveedor  = 0; //is inventairo inicial
+    if (strpos($header->codigoproveedor, 'inventario') || strpos($header->codigoproveedor, 'INVENTARIO') ) {
+        $isproveedor = 1;
+    }
+
   $insertCabecera = "insert into guia_sin_oc(codigoproveedor, codacceso, codigopersonal, sucursal, numero_guia, codigoref2, estado, tipodoc) values ($header->codigoproveedor, $header->codigoacceso , $header->codigopersonal, $header->codsucursal, '$header->numeroguia', '$header->codigoreferencia2', $header->estado, '$header->tipodoc')";
   $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
 
@@ -68,12 +73,13 @@ if($header->codigoguia){
 
     $querylastsaldo = "select saldo from kardex_alm where codsucursal = $header->codsucursal and codigoprod = $detalle->codigoprod order by id_kardex_alm desc limit 1";
     $lastSaldo = mysql_query($querylastsaldo, $Ventas) or die(mysql_error());
+    
     if($lastSaldo){
       $lastSaldo = (int) mysql_fetch_assoc($lastSaldo)["saldo"] + $detalle->cantidad;
     }else{
       $lastSaldo = $detalle->cantidad;
     }
-    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento) values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad, $lastSaldo, $header->codsucursal, 'soc', '$header->tipodoc')";
+    $insertkardex = "insert into kardex_alm(codigoprod, codigoguia,numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, isproveedor) values ($detalle->codigoprod, $lastId, '$header->numeroguia', 'compras', $detalle->cantidad, $lastSaldo, $header->codsucursal, 'soc', '$header->tipodoc', $isproveedor)";
     $querykardex = mysql_query($insertkardex, $Ventas) or die(mysql_error());
 
   }

@@ -107,7 +107,7 @@ include("Fragmentos/bloquea_caja.php");
 <div class="form-group">
 <div class="col-md-5">
 <div class="input-group"><span id="sprytextfield1">
-<input type="text" class="form-control tooltips" data-placement="top" data-original-title="Agregar N&uacute;mero de Ruc" placeholder="R.U.C" id="ruc" name="ruc" />
+<input type="text" class="form-control tooltips" data-placement="top" data-original-title="Agregar N&uacute;mero de Ruc" placeholder="R.U.C" id="ruc" name="ruc" maxlength="11" />
 <span class="textfieldRequiredMsg"></span><span class="textfieldMinCharsMsg"></span></span><span class="input-group-addon">
 <i class="icon-credit-card  font-blue-soft"></i>
 </span>
@@ -277,7 +277,7 @@ include("Botones/BotonesAgregar.php");
 <input type="hidden" name="MM_insert" value="Ingresar" />
 </form>
 <script type="text/javascript">
-var sprytextfield1 = new Spry.Widget.ValidationTextField("sprytextfield1", "none", {validateOn:["blur", "change"], minChars:13});
+var sprytextfield1 = new Spry.Widget.ValidationTextField("sprytextfield1", "none", {validateOn:["blur", "change"], minChars:11});
 var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2", "none", {validateOn:["blur", "change"]});
 var sprytextfield4 = new Spry.Widget.ValidationTextField("sprytextfield4", "none", {validateOn:["blur", "change"]});
 var sprytextfield5 = new Spry.Widget.ValidationTextField("sprytextfield5", "email", {validateOn:["blur", "change"]});

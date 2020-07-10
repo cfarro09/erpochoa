@@ -94,10 +94,10 @@ include("Fragmentos/pie.php");
 ?>
 
 <script type="text/javascript">
-    $(document).ready(function (){
+    $(document).ready(function() {
         openmodalplan();
     });
-    
+
     const openmodalplan = async () => {
         const res = await get_data_dynamic("select p.id, p.codigo, p.descripcion, p.padre, p.level, IFNULL(CONCAT(p1.codigo, ' ', p1.descripcion), '') subcuenta1 , IFNULL(CONCAT(p2.codigo, ' ', p2.descripcion), '')  subcuenta2 from plancontable p left join plancontable p1 on p1.id = p.subcuenta1 left join plancontable p2 on p2.id = p.subcuenta2 order by p.codigo asc");
         let parentsresult = res;
@@ -112,12 +112,12 @@ include("Fragmentos/pie.php");
         parents.reverse().filter(ix => ix.padre != null).forEach(ix => {
             const tomove = getSelector(`#plan_${ix.id}`);
             getSelector(`#plan_${ix.id}`).remove()
-            
-            const listpadres =  getSelectorAll(`#plan_${ix.padre} .hijos .padre`);
-            
-            if(listpadres.length == 0) {
+
+            const listpadres = getSelectorAll(`#plan_${ix.padre} .hijos .padre`);
+
+            if (listpadres.length == 0) {
                 getSelector(`#plan_${ix.padre} .hijos`).append(tomove)
-            }else{
+            } else {
                 const listhijos = [];
                 listpadres.forEach(x => {
                     listhijos.push({
@@ -134,7 +134,7 @@ include("Fragmentos/pie.php");
                     var textB = b.codigo;
                     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                 });
-                
+
                 const indexpreview = listhijos.map(ii => ii.id).indexOf(tomove.id)
                 getSelector(`#${listhijos[indexpreview + 1].id}`).before(tomove)
             }
@@ -151,19 +151,19 @@ include("Fragmentos/pie.php");
 
         const res = await get_data_dynamic(`select * from plancontable where id = ${id}`);
         $("#moperation").modal()
-        if(res){
+        if (res) {
             const data = res[0];
             cuenta.value = data.codigo;
             descripcion.value = data.descripcion;
-            if(data.padre){
+            if (data.padre) {
                 $("#padre").val(data.padre)
                 $('#padre').trigger('change')
             }
-            if(data.subcuenta1){
+            if (data.subcuenta1) {
                 $("#subcuenta1").val(data.subcuenta1)
                 $('#subcuenta1').trigger('change')
             }
-            if(data.subcuenta2){
+            if (data.subcuenta2) {
                 $("#subcuenta2").val(data.subcuenta2)
                 $('#subcuenta2').trigger('change')
             }
@@ -187,6 +187,10 @@ include("Fragmentos/pie.php");
         cuenta.value = "";
         descripcion.value = "";
         const res = await get_data_dynamic("select id, level, CONCAT(codigo, ' ', descripcion) as descripcion from plancontable");
+        res.unshift({
+            id: "",
+            descripcion: "Seleccione"
+        });
         cargarselect2("#padre", res, 'id', 'descripcion', ["level"]);
         cargarselect2("#subcuenta1", res, 'id', 'descripcion');
         cargarselect2("#subcuenta2", res, 'id', 'descripcion');
@@ -197,15 +201,15 @@ include("Fragmentos/pie.php");
             header: "",
             detalle: []
         }
-        const padrex = padre.value == "Seleccione" ? "null" : padre.value;
+        const padrex = padre.value == "Seleccione" || padre.value == "" ? "null" : padre.value;
 
-        const levelcurrent = padre.value == "Seleccione" ? 0 : (parseInt(padre.options[padre.selectedIndex].dataset.level) + 1);
+        const levelcurrent = padre.value == "Seleccione" || padre.value == "" ? 0 : (parseInt(padre.options[padre.selectedIndex].dataset.level) + 1);
 
         const subcuentax1 = subcuenta1.value == "Seleccione" ? "null" : subcuenta1.value;
         const subcuentax2 = subcuenta2.value == "Seleccione" ? "null" : subcuenta2.value;
-        if(parseInt(codigocontable.value) == 0){
-            data.header = `insert into plancontable (codigo, descripcion, padre, subcuenta1, subcuenta2, level) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex}, ${subcuentax1}, ${subcuentax2}, ${levelcurrent})`;
-        }else{
+        if (parseInt(codigocontable.value) == 0) {
+            data.header = `insert into plancontable (codigo, descripcion, padre, subcuenta1, subcuenta2, level) values ('${cuenta.value.toUpperCase()}', '${descripcion.value.toUpperCase()}', ${padrex}, ${subcuentax1 || null}, ${subcuentax2 || null}, ${levelcurrent})`;
+        } else {
             data.header = `
                         UPDATE plancontable set 
                             codigo = '${cuenta.value.toUpperCase()}',

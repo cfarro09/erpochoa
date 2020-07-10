@@ -667,8 +667,8 @@ include("Fragmentos/pie.php");
                 sum(Case When d.tipo = 'ingresocaja'  or d.tipo = 'ingreso' Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
-            left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA' and d.tipo not like '%cheque%'
-            where s.estado = 1 
+            left join despose d on d.sucursal = s.cod_sucursal and d.estado <> 'EN ESPERA'
+            where (s.estado = 1 ) 
             group by s.cod_sucursal
         `;
         else
@@ -678,7 +678,7 @@ include("Fragmentos/pie.php");
                 sum(Case When d.tipo = 'ingresocaja' or d.tipo = 'ingreso'  Then d.cantidad Else 0 End) ingreso,
                 sum(Case When d.tipo = 'despose' Then d.cantidad Else 0 End) egreso
             from sucursal s 
-            left join despose d on d.sucursal = s.cod_sucursal and d.tipo not like '%cheque%'
+            left join despose d on d.sucursal = s.cod_sucursal 
             where s.estado = 1 and s.cod_sucursal= ${suc} 
             group by s.cod_sucursal
         `;

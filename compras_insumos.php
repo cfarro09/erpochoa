@@ -47,10 +47,16 @@ $codsucursal = $_SESSION['cod_sucursal'];
 					<div class="form-group">
 						<label for="field-1" class="control-label">Tipo Compra</label>
 						<select id="tipocompra" onchange="changetipo(this)" required class="form-control">
-							<option value="mercaderia">Mercaderia</option>
+							<option value="">Seleccione</option>
 							<option value="insumos">Insumos</option>
 							<option value="servicios">Servicios</option>
 						</select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="field-1" class="control-label">Fecha</label>
+						<input type="text" required name="fechaxxx" autocomplete="off" id="fechaxxx" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
 					</div>
 				</div>
 				<div class="col-md-3">
@@ -71,13 +77,17 @@ $codsucursal = $_SESSION['cod_sucursal'];
 						<input required type="text" class="form-control" id="nrocomprobante">
 					</div>
 				</div>
-				<div class="col-md-3">
+
+
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
 					<div class="form-group">
 						<label for="cuentax" class="control-label">Cuenta</label>
-						<input required type="text" class="form-control" id="cuentax">
+						<select class="form-control" id="cuentax"></select>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-sm-4">
 					<div class="form-group">
 						<label for="proveedorx" class="control-label">Proveedor</label>
 						<select required id="proveedorx" class="form-control"></select>
@@ -89,12 +99,11 @@ $codsucursal = $_SESSION['cod_sucursal'];
 	<div class="row" style="margin-bottom: 10px">
 		<div class="col-sm-12">
 			<label class="" style="font-weight: bold">Seleccione </label>
-			<select id="prouctosaux" class="form-control select2-allow-clear" name="prouctosaux">
-				
+			<select id="prouctosaux" class="form-control select2-allow-clear" onchange="agregarproducto()" name="prouctosaux">
+
 			</select>
 		</div>
 	</div>
-	<button type="button" onclick="agregarproducto()" class="btn btn-primary">Agregar Producto</button>
 	<div class="row" style="margin-top:20px">
 		<div class="col-sm-12">
 			<table class="table table-bordered" style="width: 100%">
@@ -111,7 +120,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
 			</table>
 		</div>
 	</div>
-	
+
 	<div class="row" style="background-color:antiquewhite; font-weight: bold; height: 50px; padding-top:15px" id="header-guia">
 		<div class="col-sm-4">
 			Total: <span id="totalheader"></span>
@@ -140,46 +149,79 @@ include("Fragmentos/pie.php");
 	}
 	const initControls = () => {
 		loadproveedor();
+		loadCuentas();
+	}
+	const loadCuentas = async () => {
+		const rescombo = await get_data_dynamic(`SELECT id, CONCAT(descripcion, ' - ', codigo) as descripcion FROM plancontable`);
+
+		cargarselect2("#cuentax", rescombo, 'id', 'descripcion');
 	}
 	const agregarproducto = () => {
-		detalleFormProducto.innerHTML += `
-			<tr class="divparent">
-				<td width="15%">
-					<input required type="number" class="form-control cantidad" data-type="cantidad" value="1" oninput="calcularimporte(this)">
-				</td>
-				<td width="40%">
-					<input required type="text" class="form-control producto">
-				</td>
-				<td width="15%">
-					<input required type="number" class="form-control precio" data-type="precio" value="0" oninput="calcularimporte(this)">
-				</td>
-				<td width="15%">
-					<input required type="text" class="form-control importe" value="0" disabled>
-				</td>
-				<td width="15%" class="text-center">
-					<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
-				</td>
-			</tr>
-		`;
-	}
-	const changetipo = e => {
-		clearselect2("#prouctosaux")
-		let query = "select i.codigoins, i.nombre_insumo, m.nombre, p.nombre_presentacion, c.nombre_color dd from insumo i inner join marca m on i.codigomarca=m.codigomarca inner join presentacion p on p.codigopresent=i.codigopresent inner join color c on c.codigocolor=i.codigocolor";
-		if(e.value === "mercaderia"){
-			// query = "";
-		}else if(e.value === "mercaderia"){
-			// query = "";
-		}else if(e.value === "servicios"){
-			// query = "";
+		if (!prouctosaux.value) {
+			return;
 		}
-		let res = await get_data_dynamic(query).then(r => r);
-		res = res.map(x => {
-			return {
-				descripcion: `${x.nombre_insumo} ${x.nombre} ${x.nombre_presentacion} ${x.nombre_color}`,
-				id: x.codigoins
-			}
-		});
+		const tipo = prouctosaux.options[prouctosaux.selectedIndex].dataset.tipo;
+		const descripcion = prouctosaux.options[prouctosaux.selectedIndex].textContent;
+		const id = prouctosaux.value;
+		if (document.querySelector(`#id_${id}.${tipo}`)) {
+			alert("El insumo/servicio ya fue agregado.");
+			return;
+		}
+		const newtr = document.createElement("tr");
+		newtr.dataset.tipo = tipo;
+		newtr.dataset.id = id;
+		newtr.id = `id_${id}`;
+		newtr.className = `rowproducto divparent ${tipo}`;
+
+		newtr.innerHTML += `
+			<td width="15%">
+				<input required type="number" class="form-control cantidad" data-type="cantidad" value="1" oninput="calcularimporte(this)">
+			</td>
+			<td width="40%">
+				<input disabled value="${descripcion}" required type="text" class="form-control producto">
+			</td>
+			<td width="15%">
+				<input required type="number" class="form-control precio" data-type="precio" value="0" oninput="calcularimporte(this)">
+			</td>
+			<td width="15%">
+				<input required type="text" class="form-control importe" value="0" disabled>
+			</td>
+			<td width="15%" class="text-center">
+				<button type="button" onclick="eliminarproducto(this)" class="btn red-thunderbird btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+			</td>
+		`;
+		detalleFormProducto.appendChild(newtr);
+	}
+	const changetipo = async e => {
+		let res;
+		clearselect2("#prouctosaux")
+		if (e.value === "insumos") {
+			const query = "select i.codigoins, i.nombre_insumo, m.nombre, p.nombre_presentacion, c.nombre_color dd from insumo i inner join marca m on i.codigomarca=m.codigomarca inner join presentacion p on p.codigopresent=i.codigopresent inner join color c on c.codigocolor=i.codigocolor";
+			res = await get_data_dynamic(query).then(r => r);
+			res = res.map(x => {
+				return {
+					descripcion: `${x.nombre_insumo} ${x.nombre} ${x.nombre_presentacion} ${x.dd}`,
+					id: x.codigoins,
+					tipo: 'insumos'
+				}
+			});
+		} else if (e.value === "servicios") {
+			const query = "SELECT codigoserv as id, nombre_servicio as descripcion FROM servicios_add where estado=0";
+			res = await get_data_dynamic(query).then(r => r);
+			res = res.map(x => {
+				return {
+					descripcion: x.descripcion,
+					id: x.id,
+					tipo: 'servicios'
+				}
+			});
+		}
+		res.unshift({
+			descripcion: "Seleccione",
+			id: ""
+		})
 		cargarselect2("#prouctosaux", res, "id", "descripcion", ["tipo"]);
+		detalleFormProducto.innerHTML = "";
 	}
 	const guardar = async e => {
 		e.preventDefault();
@@ -193,10 +235,10 @@ include("Fragmentos/pie.php");
 		const codigomesconta = `${nowx.getFullYear()}${month}-`;
 		const firstday = `${nowx.getFullYear()}-${nowx.getMonth() + 1}-1`;
 
-		const querymaxcode = `SELECT IFNULL(max(contamesincrement), 0) maxcodigo FROM registro_compras WHERE fecha BETWEEN '${firstday}' and LAST_DAY('${firstday}')`;
-		const result = await get_data_dynamic(querymaxcode);
-		const maxcodigo = result[0].maxcodigo;
-		const codeconcat = `${codigomesconta}${maxcodigo}`
+		// const querymaxcode = `SELECT IFNULL(max(contamesincrement), 0) maxcodigo FROM registro_compras WHERE fecha BETWEEN '${firstday}' and LAST_DAY('${firstday}')`;
+		// const result = await get_data_dynamic(querymaxcode);
+		// const maxcodigo = result[0].maxcodigo;
+		// const codeconcat = `${codigomesconta}${maxcodigo}`
 
 		const rucproveedor = proveedorx.options[proveedorx.selectedIndex].dataset.ruc;
 		const codproveedor = proveedorx.value;
@@ -206,18 +248,22 @@ include("Fragmentos/pie.php");
 		const igvh = igvheader.textContent;
 		const totalh = totalheader.textContent;
 
+		const fecha = fechaxxx;
+		const cuenta = cuentax.value;
+
 		data.header = `
-			insert into registro_compras(tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estadofact, codigosuc, fecha_registro, codigoproveedor, codigomesconta, contamesincrement) values ('${comprobantex.value}', '${rucproveedor}', '${nrocomprobante.value}', ${codacceso}, ${subtotalh}, ${igvh}, ${totalh}, 0, ${sucursal}, NOW(), ${codproveedor}, '${codeconcat}', ${maxcodigo})
+			insert into insumoservicio (tipo_comprobante, rucproveedor, numerocomprobante, codacceso, subtotal, igv, total, estado, codigosuc, fecha_registro, codigoproveedor, tipo, cuenta) values ('${comprobantex.value}', '${rucproveedor}', '${nrocomprobante.value}', ${codacceso}, ${subtotalh}, ${igvh}, ${totalh}, 'REGISTRADO', ${sucursal}, NOW(), ${codproveedor}, '${tipocompra.value}', ${cuenta})
 		`;
 		getSelectorAll("#detalleFormProducto tr").forEach(x => {
 			const cantidad = x.querySelector(".cantidad").value;
-			const producto = x.querySelector(".producto").value;
+			const idproducto = parseInt(x.dataset.id);
+			const tipo = parseInt(x.dataset.tipo);
 			const precio = x.querySelector(".precio").value;
 			const subtotal = precio * cantidad;
 			const total = subtotal * IGV1;
 			const igv = subtotal * IGV;
 			const query = `
-				insert into detalle_compras(codigoprod, cantidad, vcu, vci, vcf, igv, totalcompra, codigocompras, nombreproducto) values (0, ${cantidad}, ${precio}, ${subtotal}, ${subtotal}, ${igv}, ${total}, ###ID###, '${producto}')
+				insert into detalleinsumoservicio(tipo, idproducto, cantidad, vcu, vci, vcf, igv, totalcompra, idinsumoservicio) values ('${tipocompra.value}', ${idproducto}, ${cantidad}, ${precio}, ${subtotal}, ${subtotal}, ${igv}, ${total}, ###ID###)
 			`;
 			data.detalle.push(query)
 		})

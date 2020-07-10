@@ -100,7 +100,7 @@ include("Fragmentos/abrirpopupcentro.php");
         </tr>
       </thead>
     <tbody>
-      <?php do { ?>
+      <?php $i = 1; do { ?>
         <tr>
           <td> <?php echo $i; ?> </td>
           <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigooficina=<?php echo $row_Listado['codigooficina']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $row_Listado['nombre_oficina']; ?> </a>                                                          </td>

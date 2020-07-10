@@ -52,7 +52,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")) {
 }
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Agregar = "SELECT * FROM Color";
+$query_Agregar = "SELECT * FROM color";
 $Agregar = mysql_query($query_Agregar, $Ventas) or die(mysql_error());
 $row_Agregar = mysql_fetch_assoc($Agregar);
 $totalRows_Agregar = mysql_num_rows($Agregar);
