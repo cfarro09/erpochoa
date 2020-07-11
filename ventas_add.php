@@ -669,18 +669,19 @@ include("Fragmentos/pie.php");
 	}
 
 	async function setcombocliente(e) {
+		debugger
 		clearselect2("#cliente")
 		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
-		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0";
+		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0 union SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ', ruc) as cliente  FROM cnatural  WHERE estado = 0 and ruc is not null ";
 		let queryselected = "";
 		if (e.value == "boleta") {
 			queryselected = query
 			codigoprod.closest(".col-sm-12").style.display = "";
-			detalleFormProducto.innerHTML = "";
+			
 		} else if (e.value == "factura") {
 			queryselected = query2
 			codigoprod.closest(".col-sm-12").style.display = "";
-			detalleFormProducto.innerHTML = "";
+			
 		} else {
 			if (e.value == "notacredito") {
 				codigoprod.closest(".col-sm-12").style.display = "";

@@ -206,20 +206,16 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				<div class="col-sm-12">
 
 					<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
-						<option value="" <?php if (!(strcmp("", "compras_add.php"))) {
-												echo "selected=\"selected\"";
-											} ?>>
+						<option value="" <?php if (!(strcmp("", "compras_add.php"))) { echo "selected=\"selected\"";} ?>>
 						</option>
 						<?php
 						do {
 						?>
-							<option value="<?php echo $row_Productos['codigoprod'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?php echo $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) {
-																																																			echo "selected=\"selected\"";
-																																																		} ?>>
-								<?php echo $row_Productos['nombre_producto'] ?> -
-								<?php echo $row_Productos['Marca']; ?> -
-								<?php echo $row_Productos['nombre_color']; ?> -
-								<?php echo $row_Productos['minicodigo']; ?></option>
+							<option data-minicodigo="<?= $row_Productos['minicodigo'] ?>" value="<?php echo $row_Productos['codigoprod'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?php echo $row_Productos['Marca']; ?>" <?php if (!(strcmp($row_Productos['codigoprod'], "compras_add.php"))) { echo "selected=\"selected\"";} ?>>
+								<?= $row_Productos['nombre_producto'] ?> -
+								<?= $row_Productos['Marca']; ?> -
+								<?= $row_Productos['nombre_color']; ?> -
+								<?= $row_Productos['minicodigo']; ?></option>
 						<?php
 						} while ($row_Productos = mysql_fetch_assoc($Productos));
 						$rows = mysql_num_rows($Productos);
@@ -335,7 +331,7 @@ mysql_free_result($Detalle_Compras);
 					<option value="tonelada">tonelada</option>
 					</select>
 					</td>
-					<td class="nombre">${option.dataset.nombre}</td>
+					<td class="nombre">${option.dataset.nombre} - ${option.dataset.minicodigo}</td>
 					<td class="marca">${option.dataset.marca}</td>
 					<td style="width: 100px"><input type="number" oninput="changevalue(this)" required class="precio form-control" value="0" ></td>
 					<td class="importe">0</td>

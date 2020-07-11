@@ -180,7 +180,7 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
 <?php } // Show if recordset not empty?>
 
 <div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document" style="width: 800px">
     <div class="modal-content m-auto">
       <div class="modal-header">
         <h5 class="modal-title" id="moperation-title"></h5>
@@ -197,14 +197,11 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
           DOCUMENTO REF 1 : <span id="mcodref1"></span> <br>
           DOCUMENTO REF2: <span id="mcodref2"></span> <br>
 
-          
-          
-
           <div class="row">
             <div class="col-xs-12 col-md-12">
 
-              <table class="table">
-                <thead>
+              <table class="table" id="tableOrdengordis">
+                <!-- <thead>
                   <th>Nº</th>
                   <th>Cantidad Solicitada</th>
                   <th>U. Medida</th>
@@ -213,7 +210,7 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
 
                 </thead>
                 <tbody id="detalleTableOrden1">
-                </tbody>
+                </tbody> -->
               </table>
             </div>
           </div>
@@ -276,18 +273,62 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
           } else {
             document.querySelector("#manageButtons").style.display = ""
           }
-          document.querySelector("#detalleTableOrden1").innerHTML = ""
-          res.detalle.forEach(r => {
-            i++
-            $("#detalleTableOrden1").append(`
-              <tr>
-                <td>${i}</td>
-                <td>${r.cantidad}</td>
-                <td>${r.unidad_medida ? r.unidad_medida : ""}</td>
-                <td>${r.Producto}</td>
-                <td>${r.pcompra}</td>
-              </tr>
-            `)
+          // document.querySelector("#detalleTableOrden1").innerHTML = ""
+
+          $('#tableOrdengordis').DataTable({
+            ordering: false,
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+            destroy: true,
+            data: res.detalle,
+            columns: [{
+                title: 'C. Solicitada',
+                data: 'cantidad',
+                className: 'dt-body-right'
+              },
+              {
+                title: 'U. Medida',
+                data: 'unidad_medida'
+              },
+              {
+                title: 'Minidicodigo',
+                data: 'minicodigo',
+                visible: res.detalle.some(x => x.minicodigo !== "")
+              },
+              {
+                title: 'Producto',
+                data: 'Producto'
+              },
+              {
+                title: 'Valor Compra',
+                data: 'pcompra',
+              }
+            ],
+            buttons: [{
+                extend: 'print',
+                className: 'btn dark btn-outline'
+              },
+              {
+                extend: 'copy',
+                className: 'btn red btn-outline'
+              },
+              {
+                extend: 'pdf',
+                className: 'btn green btn-outline'
+              },
+              {
+                extend: 'excel',
+                className: 'btn yellow btn-outline '
+              },
+              {
+                extend: 'csv',
+                className: 'btn purple btn-outline '
+              },
+              {
+                extend: 'colvis',
+                className: 'btn dark btn-outline',
+                text: 'Columns'
+              }
+            ],
           });
         });
       $("#mOrdenCompra").modal();

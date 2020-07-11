@@ -254,7 +254,6 @@ include("Fragmentos/menu.php");
             document.querySelector("#manageButtons").style.display = ""
           }
 
-
           $('#tableOrdengordis').DataTable({
             ordering: false,
             dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
@@ -308,9 +307,6 @@ include("Fragmentos/menu.php");
               }
             ],
           });
-
-
-
         });
       $("#mOrdenCompra").modal();
 
