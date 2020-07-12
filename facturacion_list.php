@@ -3,7 +3,12 @@
 
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select g.codigoguia, registro_compras.codigorc, registro_compras.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial from ordencompra_guia g inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor left join registro_compras on registro_compras.codigo_orden_compra = g.codigoguia where g.estado=2 or g.estado=3";
+$query_Listado = "SELECT g.codigoguia,  CONCAT('Tipo Comp ',rc.tipo_comprobante, ' N° Comp ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial 
+from ordencompra_guia g 
+inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp 
+inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor 
+left join registro_compras rc on rc.codigo_orden_compra = g.codigoguia 
+where g.estado = 2 or g.estado = 3";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -24,7 +29,7 @@ $row_Listado1 = mysql_fetch_assoc($Listado1);
 $totalRows_Listado1 = mysql_num_rows($Listado1);
  //Enumerar filas de data tablas
 
-$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, registro_compras.codigorc, registro_compras.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras on registro_compras.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
+$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, CONCAT('Tipo Comp ',rc.tipo_comprobante, ' N° Comp ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras rc on rc.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
 $listaguiasinoc = mysql_query($queryguiasinoc, $Ventas) or die(mysql_error());
 $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
 $totalRows_listaguiasinoc = mysql_num_rows($listaguiasinoc);
@@ -89,7 +94,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<td> <?= $i; ?> </td>
 			<td><a onClick="abre_ventana('Emergentes/<?= $editar?>?codigoprod=<?= $row_Listado['codigoprod']; ?>',<?= $popupAncho?>,<?= $popupAlto?>)"
 					data-toggle="modal">
-					<?= "Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
+					<?= $row_Listado["comprobante"] ." Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
 			</td>
 
 			<td><?= "&#36; ".number_format($row_Listado['subtotal'],2) * $igv; ?> </td>
@@ -99,7 +104,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<td> <?= $row_Listado['razonsocial']; ?></td>
 			<td> <?= $row_Listado['fecha_emision']; ?></td>
 			<?php if($row_Listado['subtotal']): ?>
-			<td><a href="#" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>"
+			<td><a href="#" data-codigoref="<?= $row_Listado['codigoref1'] ?>" data-comprobante="<?= $row_Listado['comprobante'] ?>" data-type="ordencompra" data-codigo="<?= $row_Listado['codigo'] ?>"
 					onclick="visualizar(this)" data-codigorc="<?= $row_Listado['codigorc'] ?>">Procesado</a>
 			</td>
 			<?php else: ?>
@@ -128,8 +133,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				?>
 		<tr style="background-color: <?= $color ?>">
 			<td> <?= $i; ?> </td>
-			<td><a onClick="abre_ventana('Emergentes/<?= $editar?>?codigoprod=<?= $row_listaguiasinoc['codigoprod']; ?>',<?= $popupAncho?>,<?= $popupAlto?>)"
-					data-toggle="modal"> <?= "Numero Guia ". $row_listaguiasinoc['numero_guia']; ?> </a></td>
+			<td> <?= $row_listaguiasinoc["comprobante"] . " N° Guia ". $row_listaguiasinoc['numero_guia']; ?></td>
 			<td><?php  echo "&#36; ".number_format($row_listaguiasinoc['subtotal'],2); ?> </td>
 			<td> <?= "&#36; ".number_format($row_listaguiasinoc['subtotal']/$IGV1,2); ?></td>
 			<td> <?= "&#36; ".number_format(($row_listaguiasinoc['subtotal']-number_format($row_listaguiasinoc['subtotal']/$IGV1,2)),2); ?>
@@ -139,6 +143,7 @@ include("Fragmentos/abrirpopupcentro.php");
 			<?php if($row_listaguiasinoc['subtotal'] != 0): ?>
 			<td>
 				<a href="#" data-type="guia_sin_oc" onclick="visualizar(this)"
+					data-comprobante="<?= $row_listaguiasinoc['comprobante'] ?>"
 					data-codigo="<?= $row_listaguiasinoc['codigo_guia_sin_oc'] ?>"
 					data-codigorc="<?= $row_listaguiasinoc['codigorc'] ?>" class="verOrdenSinOc">Procesado</a>
 			</td>
@@ -257,7 +262,9 @@ include("Fragmentos/abrirpopupcentro.php");
 									PROVEEDOR: <span id="mproveedor1"></span> <BR>
 									RUC : <span id="mruc1"></span><BR>
 									SUCURSAL: <span id="msucursal1"></span> <BR>
+									<span id="viewcomprobante"></span> <br>
 									DOC ALMACEN : <span id="mcodref11"></span> <br>
+									<span id="viewcodigoreferencia"></span> <br>
 									<span id="auxmodref">DOC REF 2:</span>  <span id="mcodref21"></span> <br>
 									GENERADA POR: : <span id="mgeneradapor1"></span> <br>
 
@@ -334,23 +341,23 @@ include("Fragmentos/abrirpopupcentro.php");
 								</div>
 								<table class="table">
 									<thead>
-										<th>Nº</th>
-										<th>Cantidad</th>
-										<th>Producto</th>
-										<th>Marca</th>
-										<th class="costeosinchecked" width=" 120px">Desc x Item</th>
-										<th class="costeosinchecked" width=" 120px">VCU</th>
-										<th class="costeosinchecked" width=" 120px">VCI</th>
-										<th class="costeosinchecked" width="120px">DSCTO</th>
-										<th width="120px">VCF</th>
-										<th class="costeosinchecked" width=" 120px"><?= $nombreigv ?></th>
-										<th class="costeosinchecked" width=" 120px">Total</th>
-										<th width="60px" class="costeochecked" style="display: none">Transporte</th>
-										<th width="60px" class="costeochecked" style="display: none">Estibador</th>
-										<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
-										<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
-										<th width="60px" class="costeochecked" style="display: none">Total</th>
-										<th width="60px" class="costeochecked" style="display: none">VCUF</th>
+										<th class="text-center" >Nº</th>
+										<th class="text-center" >Cantidad</th>
+										<th class="text-center" >Producto</th>
+										<th class="text-center" >Marca</th>
+										<th class="text-center"  class="costeosinchecked" width=" 120px">Desc x Item</th>
+										<th class="text-center"  class="costeosinchecked" width=" 120px">VCU</th>
+										<th class="text-center"  class="costeosinchecked" width=" 120px">VCI</th>
+										<th class="text-center"  class="costeosinchecked" width="120px">DSCTO</th>
+										<th class="text-center"  width="120px">VCF</th>
+										<th class="text-center"  class="costeosinchecked" width=" 120px"><?= $nombreigv ?></th>
+										<th class="text-center"  class="costeosinchecked" width=" 120px">Total</th>
+										<th class="text-center"  width="60px" class="costeochecked" style="display: none">Transporte</th>
+										<th class="text-center"  width="60px" class="costeochecked" style="display: none">Estibador</th>
+										<th class="text-center"  width="60px" class="costeochecked" style="display: none">Nota Debito</th>
+										<th class="text-center"  width="60px" class="costeochecked" style="display: none">Nota Credito</th>
+										<th class="text-center"  width="60px" class="costeochecked" style="display: none">Total</th>
+										<th class="text-center"  width="60px" class="costeochecked" style="display: none">VCUF</th>
 									</thead>
 									<tbody id="detalleFacturar-list">
 									</tbody>
@@ -1130,6 +1137,12 @@ mysql_free_result($Listado);
 		guardarcosteo.style.display = "none"
 		$("#mFacturaCompra").modal();
 		codigorcxx.value = e.dataset.codigorc;
+		if (e.dataset.comprobante)
+		viewcodigoreferencia.textContent = "ORDEN COMPRA " +  e.dataset.codigoref;
+		
+		viewcomprobante.textContent = e.dataset.comprobante.toUpperCase();
+		
+
 		fetch(`getDetalleCompraCosteo.php?codigorc=${e.dataset.codigorc}&type=${e.dataset.type}&codigo=${e.dataset.codigo}`)
 			.then(res => res.json())
 			.catch(error => console.error("error: ", error))

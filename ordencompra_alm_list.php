@@ -98,13 +98,16 @@ FROM ordencompra c
 inner join proveedor p on c.codigoproveedor=p.codigoproveedor 
 inner JOIN sucursal s on s.cod_sucursal=c.sucursal 
 left join ordencompra_guia g on g.codigoordcomp =c.codigoordcomp 
-where c.estado=2 group by codigo order by s.cod_sucursal, fecha_emision desc";
+where c.estado = 2 and  c.sucursal = $codsucursalx
+group by codigo 
+order by s.cod_sucursal, fecha_emision desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
 //________________________________________________________________________________________________________________
 ?>
+
 
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0) { // Show if recordset empty
@@ -178,7 +181,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 		</tbody>
 	</table>
 	<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog" role="document" style="width: 800px;">
 			<div class="modal-content m-auto">
 				<div class="modal-header">
 					<h5 class="modal-title" id="moperation-title"></h5>
@@ -200,6 +203,8 @@ $totalRows_Listado = mysql_num_rows($Listado);
 							VALOR TOTAL: <span id="mvalortotal"></span><BR>
 							CODIGO DE REF 1: <span id="mcodref1"></span> <br>
 							CODIGO REF2: <span id="mcodref2"></span> <br>
+
+							<div id="concatenadoguias" style="white-space: break-spaces; margin-top: 5px"></div>
 
 							<div class="row" style="margin-top:20px">
 								<div class="col-xs-12 col-md-12">
@@ -230,10 +235,13 @@ $totalRows_Listado = mysql_num_rows($Listado);
 									</div>
 									<table class="table">
 										<thead>
+											
 											<th>Nº</th>
 											<th>Cant Sol</th>
 											<th>Unidad Medida</th>
+											<th>Codigo</th>
 											<th>Producto</th>
+											<th>Marca</th>
 											<th id="th-saldo" style="display: none">Saldo</th>
 											<th>Cantidad Recibida</th>
 										</thead>
@@ -335,6 +343,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 
 		document.querySelector("#saveOrdenCompra-alm-list").reset();
 		item.addEventListener("click", (e) => {
+			concatenadoguias.textContent = "";
 			i = 0;
 			document.querySelector("#codigoOrdenCompra").value = e.target.dataset.codigo
 			fetch(`getDetalleOcGuia.php?codigo=${e.target.dataset.codigo}`)
@@ -345,22 +354,20 @@ $totalRows_Listado = mysql_num_rows($Listado);
 					$("#mproveedor").text(res.header.razonsocial)
 
 					proveedormodal.value = e.target.dataset.detalleaux;
-
+					
+					res.header.concatenadoguias = res.header.concatenadoguias ? res.header.concatenadoguias : "No tiene guias previas";
+					
+					concatenadoguias.textContent = ` Guias previas: \n${res.header.concatenadoguias} `
 					$("#mfechaemision").text(res.header.fecha_emision)
 					$("#mvalortotal").text(res.header.montofact)
 					$("#mcodref1").text(res.header.codigoref1)
-
-
 					$("#numero-guia").val("")
 					$("#observacion").val("")
-
-
 					$("#codsucursaluuu").val(res.header.sucursal)
 					$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
 					$("#mgeneradapor").text(res.header.usuario)
 					$("#mruc").text(res.header.ruc)
 					$("#msucursal").text(res.header.nombre_sucursal + " " + (res.header.direccionOrden ? " :" + res.header.direccionOrden : ""))
-
 					$("#codigoguia").val(res.header.codigoguia)
 
 					document.querySelector("#btn-guardarGuia-alm-list").style.display = ""
@@ -399,8 +406,10 @@ $totalRows_Listado = mysql_num_rows($Listado);
 						<tr>
 						<td class="codigo" data-codigo_guiaoc="${r.detalle_cod_oc_guia ? r.detalle_cod_oc_guia : ""}" data-codigo="${r.codigo}">${i}</td>
 						<td  class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
-						<td  >${r.unidad_medida}</td>
+						<td>${r.unidad_medida}</td>
+						<td>${r.minicodigo}</td>
 						<td class="codigoprod" data-codigoprod="${r.codigoprod}">${r.nombre_producto}</td>
+						<td>${r.marca}</td>
 						${tdExtra}
 						<td style="width: 30px">${input}</td>
 						</tr>`)

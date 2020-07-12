@@ -43,7 +43,12 @@ $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
 $result_enc = array();
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
-$query_detalle = "select d.codigoprod, IFNULL(p.minicodigo, '') minicodigo, p.nombre_producto, m.nombre as marca, d.cantidad, d.unidad_medida from detalle_guia_sin_oc d left join producto p on p.codigoprod = d.codigoprod left join  marca m on m.codigomarca = p.codigomarca  where codigo_guia_sin_oc = $codigo";
+$query_detalle = "SELECT d.codigoprod, co.nombre_color AS color , IFNULL(p.minicodigo, '') minicodigo, p.nombre_producto, m.nombre as marca, d.cantidad, d.unidad_medida 
+from detalle_guia_sin_oc d 
+left join producto p on p.codigoprod = d.codigoprod 
+left join  marca m on m.codigomarca = p.codigomarca  
+INNER JOIN color co ON p.codigocolor = co.codigocolor 
+where codigo_guia_sin_oc = $codigo";
 
 //SELECT  ##consulta## WHERE c.codigo = %s", $codigo);
 //SELECT a.codigodetalleproducto, a.codigo, a.codigoprod, (a.cantidad*a.pcompra) AS total, a.cantidad, a.pcompra, a.concatenacion, a.codcomprobante, b.nombre_producto AS Producto, c.nombre AS Marca, d.nombre_presentacion AS Presentacion, e.nombre_color AS Color FROM detalle_compras_oc a INNER JOIN producto b ON a.codigoprod = b.codigoprod INNER JOIN marca c ON b.codigomarca = c.codigomarca INNER JOIN presentacion d ON b.codigopresent = d.codigopresent INNER JOIN color e ON b.codigocolor = e.codigocolor WHERE a.codigo = '$colname_Listado_Productos'  group by a.codigoprod

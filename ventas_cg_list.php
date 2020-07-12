@@ -23,7 +23,11 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 # Cargar lista ventas con guia
-$query = "select v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,cj.razonsocial, cj.ruc from ventas v left join cnatural c on  c.codigoclienten = v.codigoclienten left join  cjuridico cj on cj.codigoclientej = v.codigoclientej where modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
+$query = "SELECT v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as ClienteNatural, c.cedula,cj.razonsocial, cj.ruc 
+from ventas v 
+left join cnatural c on  c.codigoclienten = v.codigoclienten 
+left join  cjuridico cj on cj.codigoclientej = v.codigoclientej 
+where v.sucursal = $codsucursal and modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
 $listado = mysql_query($query, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($listado);
 $totalRows_Listado = mysql_num_rows($listado);
@@ -395,7 +399,7 @@ include("Fragmentos/pie.php");
                         cantidad: item.querySelector(".cantidad").value,
                         canttotal: item.querySelector(".cantidad").dataset.limit,
                         unidad_medida: item.querySelector(".cantidad").dataset.umedida,
-                        nombre_producto: item.querySelector(".descripcion").textContent,
+                        nombre_producto: item.querySelector(".descripcion").textContent.replace(/"|'/gi, ''),
                         pventa: item.querySelector(".pventa").textContent,
                     }
                     h.productos.push(d)

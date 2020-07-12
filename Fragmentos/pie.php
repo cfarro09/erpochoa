@@ -10,7 +10,6 @@
 		$(id).val(null).trigger('change');
 	}
 	const cargarselect2 = (id, arrayres, key, value, data = false, strselect = true) => {
-		
 		getSelector(id).innerHTML = ""
 		arrayres.forEach(xx => {
 			let datastr = "";
@@ -23,6 +22,21 @@
 		});
 		$(id).select2();
 	}
+
+	const cargarselect2withobject = (id, arrayres, key, value, data = false, strselect = true) => {
+		getSelector(id).innerHTML = ""
+		arrayres.forEach(xx => {
+			let datastr = "";
+			if (data) {
+				data.forEach(yy => {
+					datastr += ` data-${yy.dataset}="${xx[yy.key]}"`
+				});
+			}
+			getSelector(id).innerHTML += `<option ${datastr} value="${xx[key]}">${xx[value]}</option>`
+		});
+		$(id).select2();
+	}
+
 	const get_data_dynamic = async (query) => {
 		var formData = new FormData();
 		formData.append("query", query)

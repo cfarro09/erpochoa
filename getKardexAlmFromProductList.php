@@ -41,7 +41,7 @@ $codproducto = $_POST["codproducto"];
 
 mysql_select_db($database_Ventas, $Ventas);
 
-$searchsuc = $codsucursal == "1" ? "in (1, 10)" : " = 1";
+$searchsuc = $codsucursal == "1" ? "in (1, 10)" : " = $codsucursal";
 
 $queryKardex = "SELECT 
 ka.* from kardex_alm ka

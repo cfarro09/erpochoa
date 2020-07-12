@@ -34,22 +34,6 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "
-select pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
-from kardex_alm k
-inner join producto p on p.codigoprod = k.codigoprod
-inner join marca m on m.codigomarca = p.codigomarca
-inner join `color` `c` on(p.codigocolor = c.codigocolor)
-left join `presentacion` `pre` on (pre.codigopresent = p.codigopresent)
-inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
-where k.codsucursal = $codsucursal and saldo > 0
-and k.id_kardex_alm in
-(select max(id_kardex_alm) from kardex_alm where codsucursal = $codsucursal group by codigoprod)";
-
-$Productos = mysql_query($query_Productos, $Ventas) or die(mysql_error());
-$row_Productos = mysql_fetch_assoc($Productos);
-$totalRows_Productos = mysql_num_rows($Productos);
-
 //________________________________________________________________________________________________________________
 $querySucursales = "select * from sucursal where estado = 1 or estado = 999";
 $sucursales = mysql_query($querySucursales, $Ventas) or die(mysql_error());
@@ -174,7 +158,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				<div class="col-md-6">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Sucursal</label>
-						<select name="sucursal" required id="sucursal-oc-new" disabled class="form-control ">
+						<select name="sucursal" onchange="handlerchangesucursal(this)" required id="sucursal-oc-new" class="form-control ">
 							<?php do {  ?>
 								<option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $row_sucursales['cod_sucursal'] ?>">
 									<?php echo $row_sucursales['nombre_sucursal'] ?>
@@ -199,13 +183,13 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					</div>
 				</div>
 
-				<div class="col-md-3">
+				<div class="col-md-3" style="display: none">
 					<div class="form-group">
 						<label for="field-1" class="control-label">Entrega</label>
 						<select required class="form-control" id="modalidadentrega">
-							<option value="Entrega inmediata S/G">Inmediata M/D</option>
+							<option selected value="Entrega inmediata S/G">Inmediata M/D</option>
 							<!-- <option value="Entrega inmediata C/G">Inmediata C/G</option> -->
-							<option value="Entrega almacen C/G">Despacho desde Almacen</option>
+							<option selected value="Entrega almacen C/G">Despacho desde Almacen</option>
 						</select>
 					</div>
 				</div>
@@ -244,27 +228,6 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 		<div class="col-sm-12">
 			<label class="" style="font-weight: bold">Seleccione un producto</label>
 			<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
-				<option value="" <?php if (!(strcmp("", "compras_add.php"))) {
-										echo "selected=\"selected\"";
-									} ?>>
-				</option>
-				<?php
-				do {
-				?>
-					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p3'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
-						<?php echo $row_Productos['nombre_producto'] ?> -
-						<?php echo $row_Productos['Marca']; ?> -
-						<?php echo $row_Productos['nombre_color']; ?> -
-						<?php echo "$/." . $row_Productos['p3']; ?> -
-						(<?= "Stock " . $row_Productos['saldo']; ?>)</option>
-				<?php
-				} while ($row_Productos = mysql_fetch_assoc($Productos));
-				$rows = mysql_num_rows($Productos);
-				if ($rows > 0) {
-					mysql_data_seek($Productos, 0);
-					$row_Productos = mysql_fetch_assoc($Productos);
-				}
-				?>
 			</select>
 		</div>
 	</div>
@@ -311,6 +274,42 @@ include("Fragmentos/pie.php");
 <script type="text/javascript">
 	let htmlcuentaabonado = "";
 
+	let codigosucursalventas = <?= $codsucursal ?>;
+	const codsucursalorigen = <?= $codsucursal ?>;
+
+	const loadproductos = async (codsucursal) => {
+		
+		const queryproductos = `
+            select pre.nombre_presentacion namexx, k.codigoprod, k.saldo stock, p.nombre_producto nombre, CONCAT(p.nombre_producto, ' - ', m.nombre, ' - ###NOMBRECOLOR### - ', pv.precioventa3, ' - Stock ', k.saldo) as descripcion, m.nombre as marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 precioventa, pv.totalunidad preciocompra
+            from kardex_alm k
+            inner join producto p on p.codigoprod = k.codigoprod
+            inner join marca m on m.codigomarca = p.codigomarca
+            inner join color c on(p.codigocolor = c.codigocolor)
+            left join presentacion pre on (pre.codigopresent = p.codigopresent)
+            inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
+            where k.codsucursal = ${codsucursal} and saldo > 0
+            and k.id_kardex_alm in
+            (select max(id_kardex_alm) from kardex_alm where codsucursal = ${codsucursal} group by codigoprod)
+		`;
+		let result = await get_data_dynamic(queryproductos);
+
+		if (result instanceof Array) {
+			result = result.map(x => {
+				return {
+					...x,
+					descripcion: x.descripcion.replace("###NOMBRECOLOR###", x.nombre_color)
+				}
+			})
+		}
+		else
+		{
+			result = []
+		}
+
+		cargarselect2("#codigoprod", result, "codigoprod", "descripcion", ["preciocompra", "precioventa", "stock", "namexx", "nombre", "marca"]);
+	}
+
+
 	const onloadxx = async () => {
 		htmlcuentaabonado = await getcuentaabonados()
 		addPayExtra();
@@ -323,7 +322,7 @@ include("Fragmentos/pie.php");
 		changencomprobantebytype();
 	}
 	$(document).ready(onloadxx());
-	
+
 	async function getcuentaabonados() {
 		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
@@ -478,9 +477,9 @@ include("Fragmentos/pie.php");
 				getSelector("#igv-header").textContent = 0;
 			}
 		}
-		const ff =getSelector("#total-header").textContent ? parseFloat(getSelector("#total-header").textContent) : 0
+		const ff = getSelector("#total-header").textContent ? parseFloat(getSelector("#total-header").textContent) : 0
 		getSelectorAll(".comision").forEach(x => {
-			x.value = ff*0.05
+			x.value = ff * 0.05
 		})
 	}
 
@@ -668,6 +667,11 @@ include("Fragmentos/pie.php");
 		return result;
 	}
 
+	const handlerchangesucursal = (e) => {
+		codigosucursalventas = e.value;
+		loadproductos(e.value);
+	}
+
 	async function setcombocliente(e) {
 		debugger
 		clearselect2("#cliente")
@@ -677,11 +681,11 @@ include("Fragmentos/pie.php");
 		if (e.value == "boleta") {
 			queryselected = query
 			codigoprod.closest(".col-sm-12").style.display = "";
-			
+
 		} else if (e.value == "factura") {
 			queryselected = query2
 			codigoprod.closest(".col-sm-12").style.display = "";
-			
+
 		} else {
 			if (e.value == "notacredito") {
 				codigoprod.closest(".col-sm-12").style.display = "";
@@ -751,11 +755,11 @@ include("Fragmentos/pie.php");
 			modalidadentrega.disabled = true;
 		} else
 			modalidadentrega.disabled = false;
-
+		loadproductos(codigosucursalventas);
 		changencomprobantebytype();
 	}
 	async function changencomprobantebytype() {
-		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
+		const codsucursald = codigosucursalventas;
 		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
 		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
 		codigocomprobante.value = rcodigocomp[0].codcc;
@@ -797,7 +801,7 @@ include("Fragmentos/pie.php");
 				codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
 				estadofact: 1,
-				codsucursal: <?= $_SESSION['cod_sucursal'] ?>,
+				codsucursal: codigosucursalventas,
 				totalc: totalpreciocompra.value,
 				// pagoefectivo: montoefectivo.value ? montoefectivo.value : 0
 			}
@@ -839,7 +843,7 @@ include("Fragmentos/pie.php");
 				totalpagando += pay.montoextra;
 				pagosextras.push(pay)
 			})
-			if(getSelector(".tipopago").value == ""){
+			if (getSelector(".tipopago").value == "") {
 				alert("Debe ingresar un medio de pago");
 				return;
 			}
@@ -864,7 +868,7 @@ include("Fragmentos/pie.php");
 			data.header = `insert into ventas 
 			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
 			values
-			('${h.tipocomprobante}', ${codigocomprobante.value}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
+			('${h.tipocomprobante}', ${codigocomprobante.value}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${codsucursalorigen}, '${modalidadentrega.value}')
 			`
 
 			getSelectorAll(".producto").forEach(item => {
@@ -961,9 +965,9 @@ include("Fragmentos/pie.php");
 							tmpcodigoventas.value = res.id;
 						} else {
 							setTimeout(() => {
-								location.reload();	
+								location.reload();
 							}, 1500);
-							
+
 						}
 					}
 				});

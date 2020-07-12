@@ -81,6 +81,7 @@ include("Fragmentos/pie.php");
 ?>
 
 <script>
+    const sucursalxx = <?= $suc ?>;
     $(function() {
         initTable()
         onloadSucursales()
@@ -88,7 +89,10 @@ include("Fragmentos/pie.php");
     const onloadSucursales = async () => {
         const res = await get_data_dynamic("select nombre_sucursal, cod_sucursal from sucursal where estado = 1");
 
-        cargarselect2("#sucursales", res, "cod_sucursal", "nombre_sucursal")
+        cargarselect2("#sucursales", res, "cod_sucursal", "nombre_sucursal");
+
+        
+        $('#sucursales').val(sucursalxx).trigger('change');
     }
     const getdetail = async (idpro, name) => {
         getSelector("#codproducto").value = idpro
@@ -192,6 +196,7 @@ include("Fragmentos/pie.php");
     });
     
     function getdetailproduct (){
+        maintabledetail.innerHTML = "";
         const codsucursal = $("#sucursales").val()
         const fecha_inicio = $("#fecha_inicio").val() ? $("#fecha_inicio").val() : "1999-09-09";
         const fecha_termino = $("#fecha_termino").val() ? $("#fecha_termino").val() : "2030-03-03";
@@ -223,7 +228,7 @@ include("Fragmentos/pie.php");
                                 tipodocumento: item.isproveedor ? "" : item.tipodocumento,
                                 numero: item.isproveedor ? "" : item.numero,
                                 entrada: item.detalle.toLowerCase().includes("compras", "entra", "inventario") ? item.cantidad : "",
-                                salida: item.detalle.toLowerCase().includes("ventas", "sale") || item.detalle.toLowerCase().includes("despacho") ? item.cantidad : "",
+                                salida: /ventas|sale|despacho/gi.test(item.detalle)? item.cantidad : "",
                                 proveedor: item.isproveedor ? "INVENTARIO" : item.detalleaux,
                                 saldo: item.saldo
                             });

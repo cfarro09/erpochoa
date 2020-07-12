@@ -160,7 +160,7 @@ include("Fragmentos/menu.php");
 ?>
 
 <div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document" style="width: 800px">
     <div class="modal-content m-auto">
       <div class="modal-header">
         <h5 class="modal-title" id="moperation-title"></h5>
@@ -269,10 +269,17 @@ include("Fragmentos/menu.php");
                 data: 'nombre_producto'
               },
               {
+                title: 'Color',
+                data: 'color'
+              },
+              {
+                title: 'Marca',
+                data: 'marca'
+              },
+              {
                 title: 'Minidicodigo',
                 data: 'minicodigo',
                 visible: res.detalle.some(x => x.minicodigo !== "")
-
               },
               {
                 title: 'U. Medida',

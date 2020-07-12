@@ -1003,7 +1003,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				cantidad: item.querySelector(".cantidad").value,
 				canttotal: item.querySelector(".cantidad").value,
 				unidad_medida: item.querySelector(".unidad_medida").textContent.trim(),
-				nombre_producto: item.querySelector(".nombre").textContent,
+				nombre_producto: item.querySelector(".nombre").textContent.replace(/"|'/gi, ''),
 				pventa: item.querySelector(".precio").value,
 			};
 			h1.productos.push(d)

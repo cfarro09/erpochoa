@@ -149,8 +149,9 @@ include("Fragmentos/abrirpopupcentro.php");
           <td> <?php echo $i; ?> </td>
           <td><a onClick="abre_ventana('Emergentes/<?php echo $editar?>?codigoproveedor=<?php echo $rr['codigoproveedor']; ?>',<?php echo $popupAncho?>,<?php echo $popupAlto?>)" data-toggle="modal"> <?php echo $rr['ruc']; ?> </a>                                                          </td>
           <td> <?php echo $rr['razonsocial']; ?></td>
-          <td class="text-right"><?= $cargo ?></td>
           <td class="text-right"><?= $abono ?></td>
+          <td class="text-right"><?= $cargo ?></td>
+          
           
           <td class="text-right"><?= $saldo ?></td>
           <td> <a href="proveedor_comprobante.php?codigoproveedor=<?php echo $rr['ruc']; ?>" class="btn yellow-casablanca tooltips" data-placement="top" data-original-title="Registro Comprobantes"><i class="glyphicon glyphicon-credit-card" ></i></a>

@@ -24,14 +24,12 @@ $suc = $_SESSION['cod_sucursal'];
 
 <table id="maintable" class="display" width="100%"></table>
 
-
-
 <?php
-
 include("Fragmentos/footer.php");
 include("Fragmentos/pie.php");
 $suc = $_SESSION['cod_sucursal'];
 ?>
+
 <style>
     .dt-buttons {
         margin-top: 0 !important;
@@ -78,11 +76,7 @@ $suc = $_SESSION['cod_sucursal'];
 
         $('#maintable').DataTable({
             data: data,
-
             destroy: true,
-
-
-            ordering: false,
             buttons: [{
                     extend: 'print',
                     className: 'btn dark btn-outline'
@@ -135,7 +129,7 @@ $suc = $_SESSION['cod_sucursal'];
                     data: 'Categoria',
                 },
                 {
-                    title: 'minicodigo',
+                    title: 'Codigo',
                     data: 'minicodigo',
                 },
                 {

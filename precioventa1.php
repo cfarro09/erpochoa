@@ -61,9 +61,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				<?php //var_dump($row_Listado); die; ?>
 				<tr>
 					<td ><?= $i ?></td>
-					<td class="fecha"><?php
-					$newDate = date("d/m/Y", strtotime($row_Listado['fecha']));
-					 echo $newDate; ?></td>
+					<td class="fecha"><?= date("d/m/Y", strtotime($row_Listado['fecha'])) ?></td>
 					<td class="tipo_comprobante"><?= $row_Listado['tipo_comprobante'] ?></td>
 					<td class="text-right numerocomprobante" ><?= $row_Listado['numerocomprobante']*1; ?></td>
 					<td class="usuario"><?= $row_Listado['usuario'] ?></td>
@@ -422,12 +420,12 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*IGV}" readonly></td>
 						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*IGV1}" readonly></td>
 
-						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1" data-pc="${parseFloat(ix.totalunidad)*IGV1}" class="form-control porcentajeventa1" ></td>
-						<td><input required data-origin="venta1" class="form-control precioventa1" oninput="changevalue(this)" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
-						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2" data-pc="${parseFloat(ix.totalunidad)*IGV1}" class="form-control porcentajeventa2" ></td>
-						<td><input required data-origin="venta2" class="form-control precioventa2" oninput="changevalue(this)" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
-						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3" data-pc="${parseFloat(ix.totalunidad)*IGV1}" class="form-control porcentajeventa3" ></td>
-						<td><input required data-origin="venta3" class="form-control precioventa3" oninput="changevalue(this)" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1" data-pc="${parseFloat(ix.totalunidad)*IGV1}"  value="${ix.porcpv1}" class="form-control porcentajeventa1" ></td>
+						<td><input required data-origin="venta1" class="form-control precioventa1" oninput="changevalue(this)" value="${ix.precioventa1}"  data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2" data-pc="${parseFloat(ix.totalunidad)*IGV1}" value="${ix.porcpv2}" class="form-control porcentajeventa2" ></td>
+						<td><input required data-origin="venta2" class="form-control precioventa2" oninput="changevalue(this)" value="${ix.precioventa2}" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3" value="${ix.porcpv3}"  data-pc="${parseFloat(ix.totalunidad)*IGV1}" class="form-control porcentajeventa3" ></td>
+						<td><input required data-origin="venta3" value="${ix.precioventa3}" class="form-control precioventa3" oninput="changevalue(this)" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
 						</tr>
 						`
 						$('[data-toggle="tooltip"]').tooltip()
@@ -447,18 +445,20 @@ include("Fragmentos/abrirpopupcentro.php");
 				const origin = e.dataset.origin;
 				const pc = parseFloat(e.dataset.pc);
 				const cantidad = parseInt(e.dataset.cantidad);
-				e.closest("tr").querySelector(`.precio${origin}`).value = (pc*(100 + porcentaje)/100).toFixed(2);
+				debugger
+				e.closest("tr").querySelector(`.precio${origin}`).value = (pc*(100 + porcentaje)/100).toFixed(4);
 			}
 			function changevalue(e){
 				if(e.value < 0){
 					e.value = 0;
 					return
-				}
+				}// ESPERA
 				const valor = parseFloat(e.value)
 				const origin = e.dataset.origin;
 				const pc = parseFloat(e.dataset.pc);
 				const cantidad = parseInt(e.dataset.cantidad);
-				e.closest("tr").querySelector(`.porcentaje${origin}`).value = (valor*100/pc).toFixed(2);
+				debugger
+				e.closest("tr").querySelector(`.porcentaje${origin}`).value = (valor*100/pc).toFixed(4) - 100;
 			}
 			getSelector("#saveOrdenCompra").addEventListener("submit", e => {
 				e.preventDefault();

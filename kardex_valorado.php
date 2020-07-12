@@ -113,19 +113,15 @@ include("Fragmentos/pie.php");
 
 <script>
    
-    $(function() {
-        initTable();
-        
-		getSelector("#form-setKardex").addEventListener("submit", e => {
-			e.preventDefault();
-			const codsucursal = $("#codigosuc").val()
+   const searchdetail = () => {
+	const codsucursal = $("#codigosuc").val()
 			const fecha_inicio = $("#fecha_inicio").val()
 			const fecha_termino = $("#fecha_termino").val()
 			const codproducto = getSelector("#codproducto").value
 			var formData = new FormData();
 			formData.append("codsucursal", codsucursal);
-			formData.append("fecha_inicio", fecha_inicio);
-			formData.append("fecha_termino", fecha_termino);
+			formData.append("fecha_inicio", fecha_inicio ? fecha_inicio : "1999-09-09");
+			formData.append("fecha_termino", fecha_termino ? fecha_termino : "2030-03-03");
 			formData.append("codproducto", codproducto);
 
 			getSelector("#detalleKardexAlmProd").innerHTML = "<tr><td colspan='6'>No hay registros</td></tr>"
@@ -171,13 +167,18 @@ include("Fragmentos/pie.php");
 							</tr>
 							`;
 						}
-						
 					});
-
 				}
 			});
 
-
+   }
+    $(function() {
+        initTable();
+        
+		getSelector("#form-setKardex").addEventListener("submit", e => {
+			e.preventDefault();
+			
+			searchdetail();
 		});
     });
 	const verkardex = e => {
@@ -186,6 +187,7 @@ include("Fragmentos/pie.php");
 			$("#mkardex").modal();
 			$("#fecha_inicio").val("");
 			$("#fecha_termino").val("");
+			searchdetail()
 		}
     const initTable = async () => {
         const query = `

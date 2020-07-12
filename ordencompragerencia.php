@@ -180,7 +180,7 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
 <?php } // Show if recordset not empty?>
 
 <div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog" role="document" style="width: 800px">
+  <div class="modal-dialog" role="document" style="width: 900px">
     <div class="modal-content m-auto">
       <div class="modal-header">
         <h5 class="modal-title" id="moperation-title"></h5>
@@ -290,13 +290,21 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
                 data: 'unidad_medida'
               },
               {
-                title: 'Minidicodigo',
+                title: 'Codigo Fab',
                 data: 'minicodigo',
                 visible: res.detalle.some(x => x.minicodigo !== "")
               },
               {
                 title: 'Producto',
                 data: 'Producto'
+              },
+              {
+                title: 'Marca',
+                data: 'Marca'
+              },
+              {
+                title: 'Color',
+                data: 'Color'
               },
               {
                 title: 'Valor Compra',
