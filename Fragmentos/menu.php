@@ -24,19 +24,7 @@ $nombreigv = mysql_fetch_object($result)->value;
 
 <!-- END HEADER & CONTENT DIVIDER -->
 <!-- BEGIN CONTAINER -->
-<style>
-/* Chrome, Safari, Edge, Opera */
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
 
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-</style>
 
 <div class="page-container">
     <!-- BEGIN SIDEBAR -->
@@ -630,7 +618,13 @@ input[type=number] {
                                                 <span class="selected"></span>
                                             </a>
                                         </li>
-
+                                        <li class="nav-item">
+                                            <a href="guiassucursales.php" class="nav-link font-blue-ebonyclay">
+                                                <i class="glyphicon glyphicon-list-alt font-blue-ebonyclay"></i>
+                                                <span class="title">Guias de Almacen</span>
+                                                <span class="selected"></span>
+                                            </a>
+                                        </li>
                                         <li class="nav-item">
                                             <a href="javascript:;" class="nav-link font-blue-steel">
 

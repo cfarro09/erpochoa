@@ -93,12 +93,15 @@ include("Fragmentos/abrirpopupcentro.php");
 
 
 $codsucursalx =  $_SESSION['cod_sucursal'];
+
+$codsucursalx = $codsucursalx == 1 ? "in (1, 10)" : " = $codsucursalx";
+
 $query_Listado = "SELECT s.cod_sucursal, s.nombre_sucursal, c.codigoordcomp, g.estado as estadoGuia ,c.codigo, codigoref1, montofact as valor_compra, razonsocial, p.ruc, p.codigoproveedor as codigoproveedor, fecha_emision 
 FROM ordencompra c 
 inner join proveedor p on c.codigoproveedor=p.codigoproveedor 
 inner JOIN sucursal s on s.cod_sucursal=c.sucursal 
 left join ordencompra_guia g on g.codigoordcomp =c.codigoordcomp 
-where c.estado = 2 and  c.sucursal = $codsucursalx
+where c.estado = 2 and  c.sucursal $codsucursalx
 group by codigo 
 order by s.cod_sucursal, fecha_emision desc";
 
@@ -391,14 +394,14 @@ $totalRows_Listado = mysql_num_rows($Listado);
 						let tdExtra = "";
 						let validateCant = 0;
 						if (res.header.numeroguia) {
-							tdExtra = `<td class="cant-extra">${parseInt(r.cantidad) - parseInt(r.cant_recibida)}</td>`
-							validateCant = parseInt(r.cantidad) - parseInt(r.cant_recibida)
+							tdExtra = `<td class="cant-extra">${parseFloat(r.cantidad) - parseFloat(r.cant_recibida)}</td>`
+							validateCant = parseFloat(r.cantidad) - parseFloat(r.cant_recibida)
 						} else {
 							validateCant = r.cantidad
 						}
 						let input = "";
 
-						input = `<input required type="number" oninput="validateCantidad(this)" value="	" class="form-control cant-arrived" autocomplete="off"  data-cantidad="${validateCant}">`
+						input = `<input required type="number" step="any" oninput="validateCantidad(this)" value="" class="form-control cant-arrived" autocomplete="off"  data-cantidad="${validateCant}">`
 						if (finaliced) {
 							input = ""
 						}
@@ -424,7 +427,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 			alert("no debe ingresar numeros negativos")
 			e.value = ""
 		} else {
-			if (parseInt(e.dataset.cantidad) < parseInt(e.value)) {
+			if (parseFloat(e.dataset.cantidad) < parseFloat(e.value)) {
 				e.value = ""
 			}
 		}
@@ -445,20 +448,20 @@ $totalRows_Listado = mysql_num_rows($Listado);
 		let estado = 2;
 		if (document.querySelectorAll("#detalleTableOrden-alm-list tr")) {
 			document.querySelectorAll("#detalleTableOrden-alm-list tr").forEach(tr => {
-				const cant_recibidda = parseInt(tr.querySelector(".cant-arrived").value);
-				const cant_solicitada = parseInt(tr.querySelector(".cant_recibida").dataset.cant_recibida)
+				const cant_recibidda = parseFloat(tr.querySelector(".cant-arrived").value);
+				const cant_solicitada = parseFloat(tr.querySelector(".cant_recibida").dataset.cant_recibida)
 
 				let aux = 0;
 				if (tr.querySelector(".cant-extra")) {
-					aux = tr.querySelector(".cant-extra").textContent ? parseInt(tr.querySelector(".cant_recibida").textContent) - parseInt(tr.querySelector(".cant-extra").textContent) : 0;
+					aux = tr.querySelector(".cant-extra").textContent ? parseFloat(tr.querySelector(".cant_recibida").textContent) - parseFloat(tr.querySelector(".cant-extra").textContent) : 0;
 
 				}
 				data.detalle.push({
 					codigo: tr.querySelector(".codigo").dataset.codigo,
 					codigoprod: tr.querySelector(".codigoprod").dataset.codigoprod,
 					cantidad: tr.querySelector(".cant_recibida").dataset.cant_recibida,
-					cantidad_recibida: tr.querySelector(".cant-arrived").value ? parseInt(tr.querySelector(".cant-arrived").value) + aux : aux,
-					saldo: parseInt(tr.querySelector(".cant_recibida").dataset.cant_recibida) - parseInt(tr.querySelector(".cant-arrived").value) + aux,
+					cantidad_recibida: tr.querySelector(".cant-arrived").value ? parseFloat(tr.querySelector(".cant-arrived").value) + aux : aux,
+					saldo: parseFloat(tr.querySelector(".cant_recibida").dataset.cant_recibida) - parseFloat(tr.querySelector(".cant-arrived").value) + aux,
 					codigo_guiaoc: tr.querySelector(".codigo").dataset.codigo_guiaoc
 				})
 			})
@@ -501,12 +504,12 @@ $totalRows_Listado = mysql_num_rows($Listado);
 		let estado = 3;
 		if (document.querySelectorAll("#detalleTableOrden-alm-list tr")) {
 			document.querySelectorAll("#detalleTableOrden-alm-list tr").forEach(tr => {
-				const cant_recibidda = parseInt(tr.querySelector(".cant-arrived").value);
-				const cant_solicitada = parseInt(tr.querySelector(".cant_recibida").dataset.cant_recibida)
+				const cant_recibidda = parseFloat(tr.querySelector(".cant-arrived").value);
+				const cant_solicitada = parseFloat(tr.querySelector(".cant_recibida").dataset.cant_recibida)
 
 				let aux = 0;
 				if (tr.querySelector(".cant-extra")) {
-					aux = tr.querySelector(".cant-extra").textContent ? parseInt(tr.querySelector(".cant_recibida").textContent) - parseInt(tr.querySelector(".cant-extra").textContent) : 0;
+					aux = tr.querySelector(".cant-extra").textContent ? parseFloat(tr.querySelector(".cant_recibida").textContent) - parseFloat(tr.querySelector(".cant-extra").textContent) : 0;
 
 				}
 				if (cant_solicitada != (cant_recibidda + aux)) {
@@ -516,10 +519,10 @@ $totalRows_Listado = mysql_num_rows($Listado);
 					codigo: tr.querySelector(".codigo").dataset.codigo,
 					codigoprod: tr.querySelector(".codigoprod").dataset.codigoprod,
 					cantidad: tr.querySelector(".cant_recibida").dataset.cant_recibida,
-					cantidad_recibida: parseInt(tr.querySelector(".cant-arrived").value) + aux,
-					cantidad_kardex: parseInt(tr.querySelector(".cant-arrived").value),
+					cantidad_recibida: parseFloat(tr.querySelector(".cant-arrived").value) + aux,
+					cantidad_kardex: parseFloat(tr.querySelector(".cant-arrived").value),
 					codigo_guiaoc: tr.querySelector(".codigo").dataset.codigo_guiaoc,
-					saldo: parseInt(tr.querySelector(".cant_recibida").dataset.cant_recibida) - parseInt(tr.querySelector(".cant-arrived").value) + aux
+					saldo: parseFloat(tr.querySelector(".cant_recibida").dataset.cant_recibida) - parseFloat(tr.querySelector(".cant-arrived").value) + aux
 				})
 			})
 		}

@@ -53,17 +53,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
   }
   header(sprintf("Location: %s", $updateGoTo));
 }
-
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT c.codigoordcomp, c.estado ,c.codigo, codigoref1, montofact as valor_compra, razonsocial, p.codigoproveedor as codigoproveedor, fecha_emision FROM ordencompra c inner join proveedor p on c.codigoproveedor=p.codigoproveedor where c.estado=1 or c.estado=2 group by codigo order by fecha_emision desc";
-
-$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row_Listado = mysql_fetch_assoc($Listado);
-$totalRows_Listado = mysql_num_rows($Listado);
- //Enumerar filas de data tablas
-$i = 1;
-
-
 //para asignar precio y cantidad
 $query_Listado1 = "SELECT a.codigoprod, a.nombre_producto from producto a INNER JOIN detalle_compras b ON a.codigoprod = b.codigoprod group by a.codigoprod";
 $Listado1 = mysql_query($query_Listado1, $Ventas) or die(mysql_error());
@@ -91,6 +81,18 @@ include("Fragmentos/cod_gen.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 
+$codsucursal = $_SESSION['cod_sucursal'];
+
+$querysucursal = $codsucursal == 1 ? "" : " and c.sucursal = $codsucursal";
+
+mysql_select_db($database_Ventas, $Ventas);
+$query_Listado = "SELECT c.codigoordcomp, c.estado ,c.codigo, codigoref1, montofact as valor_compra, razonsocial, p.codigoproveedor as codigoproveedor, fecha_emision FROM ordencompra c inner join proveedor p on c.codigoproveedor=p.codigoproveedor where c.estado=1 or c.estado=2 $querysucursal group by codigo order by fecha_emision desc";
+
+$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
+$row_Listado = mysql_fetch_assoc($Listado);
+$totalRows_Listado = mysql_num_rows($Listado);
+ //Enumerar filas de data tablas
+$i = 1;
 
 //________________________________________________________________________________________________________________
 ?>
@@ -121,7 +123,7 @@ include("Fragmentos/menu.php");
     </tr>
   </thead>
   <tbody>
-    <?php do { //echo '<pre>'.var_dump($row_Listado).'</pre>'; die;?>
+    <?php $i = 1; do {  //echo '<pre>'.var_dump($row_Listado).'</pre>'; die;?>
     <?php
       $color = "#FFF";
       $estado = "";

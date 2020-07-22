@@ -336,7 +336,7 @@
                 `)
                 // Se registra la salida en kardex_almacen
                 data.detalle.push(`
-                    INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
+                    INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento, detalleaux)
                     VALUES 
                     (
                         ${d.codigoprod},
@@ -348,7 +348,8 @@
                         '${h.fecha}',
                         ${h.sucursal_origen},
                         '',
-                        'guia'
+                        'guia',
+                        '${sucursal_destino.options[sucursal_destino.selectedIndex].text}'
                     )
                 `)
                     productos.push(d);

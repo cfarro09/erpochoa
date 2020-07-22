@@ -21,12 +21,15 @@ include("Fragmentos/abrirpopupcentro.php");
 $codsucursal = $_SESSION['cod_sucursal'];
 
 $query_Listado = "
-    select v.*, CONCAT(cn.paterno,  ' ', cn.materno, ' ', cn.nombre) as ClienteNatural, cn.cedula,
+    select v.*, a.usuario, s.nombre_sucursal, CONCAT(cn.paterno,  ' ', cn.materno, ' ', cn.nombre) as ClienteNatural, cn.cedula,
     cj.razonsocial, cj.ruc 
     from ventas v 
     left join  cnatural cn on cn.codigoclienten = v.codigoclienten
     left join  cjuridico cj on cj.codigoclientej = v.codigoclientej
-    where v.sucursal = $codsucursal";
+    left join sucursal s on s.cod_sucursal = v.sucursal
+    left join acceso a on a.codacceso = v.codacceso
+    where v.estadoanulacion = 'PENDIENTE'
+    ";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($Listado);
@@ -49,6 +52,8 @@ $i = 1;
             <th>Total Pago</th>
             <th>Tipo Comp.</th>
             <th>Cod. Comp</th>
+            <th>Sucursal</th>
+            <th>Usuario</th>
             <th class="text-center">Acciones</th>
         </tr>
     </thead>
@@ -60,10 +65,12 @@ $i = 1;
             <td><?= $i ?></td>
             <td><?= $row["fecha_emision"] ?></td>
             <td><?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?></td>
-            <td><?= number_format((float)$row["total"], 2, '.', '') ?></td>
+            <td><?= $row["total"] ?></td>
             <td><?= $row["pagoacomulado"] ?></td>
             <td><?= $row["tipocomprobante"] ?></td>
             <td><?= $row["codigocomprobante"] ?></td>
+            <td><?= $row["nombre_sucursal"] ?></td>
+            <td><?= $row["usuario"] ?></td>
             <td class="text-center" style="font-weight: bold">
                 <a href="#" data-tipomodal="detalle" data-fecha='<?= $row["fecha_emision"] ?>' data-cliente='<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>'
                     data-codigocomprobante='<?= $row["codigocomprobante"] ?>'
@@ -71,31 +78,8 @@ $i = 1;
                     data-total='<?= $row["total"] ?>'
                     data-restante='<?= $restante ?>' data-pagoefectivo='<?= $row["pagoefectivo"] ?>'
                     data-modoentrega='<?= $row["modalidadentrega"] ?>'
-                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)">DETALLE</a>
-
-                <a href="#" data-tipomodal="devolucion" data-fecha='<?= $row["fecha_emision"] ?>' data-cliente='<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>'
-                    data-codigocomprobante='<?= $row["codigocomprobante"] ?>'
-                    data-tipocomprobante='<?= $row["tipocomprobante"] ?>' data-total='<?= $row["total"] ?>'
-                    data-restante='<?= $restante ?>' data-pagoefectivo='<?= $row["pagoefectivo"] ?>'
-                    data-modoentrega='<?= $row["modalidadentrega"] ?>'
-                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)" style="margin-left: 10px">DEVOLUCION</a>
-                <?php if ($row["estadoanulacion"] == "PENDIENTE") : ?>
-                    <button 
-                        type="button" 
-                        class="btn btn-primary" 
-                        onclick="cancelaranular(this)"
-                        data-id='<?= $row["codigoventas"] ?>'
-                        data-identificacion='<?= $row["tipocomprobante"] . " " .  $row["codigocomprobante"] ?>'
-                    >CANC. ANULAR</button>
-                <?php elseif(date("Y-m-d") ==  $row["fecha_emision"]) : ?>
-                    <button 
-                        type="button" 
-                        class="btn btn-primary" 
-                        onclick="anular(this)"
-                        data-id='<?= $row["codigoventas"] ?>'
-                        data-identificacion='<?= $row["tipocomprobante"] . " " .  $row["codigocomprobante"] ?>'
-                    >ANULAR</button>
-                <?php endif ?>
+                    data-motivoanulacion='<?= $row["motivoanulacion"] ?>'
+                    data-json='<?= $row["jsonpagos"] ?>' data-id='<?= $row["codigoventas"] ?>' data-nroguia='<?= $row["nroguia"] ?>' data-sucursal='<?= $codsucursal ?>' onclick="pagar(this)">VER</a>
             </td>
                 
         </tr>
@@ -199,6 +183,10 @@ $i = 1;
                                 </table>
                             </div>
                             <div class="divparent col-sm-12" id="">
+                                <label style="font-weight: bold;">MOTIVO ANULACION</label>
+                                <textarea class="form-control" id="motivoanulacion"></textarea>
+                            </div>
+                            <div class="divparent col-sm-12" id="">
                                 <label>Motivo Devolución</label>
                                 <textarea class="form-control" id="motivodevolucion"></textarea>
                             </div>
@@ -208,14 +196,20 @@ $i = 1;
                 <div class="modal-footer">
                     <div class="row">
                         <div class="col-sm-6 col-md-4">
-                            <button type="button" class="btn btn-primary" style="float:left" aria-label="Close" id="btnimprimirfactura"
-                                onClick="imprimir_factura()">Imprimir Factura</button>
+
+                            <button type="button" id="buttonrechazar"  class="btn btn-danger" style="float:left" onClick="cancelaranular()">RECHAZAR</button>
+                            <button type="button" id="buttonaceptar" class="btn btn-primary" style="float:left" onClick="aceptaranulacion()">ACEPTAR</button>
+
+
                             <button type="button" class="btn btn-primary" style="float:left" aria-label="Close" id="btnimprimirguia"
                                 onClick="imprimir_guia()">Imprimir Guia</button>
                         </div>
                         <div class="col-sm-6 col-md-8 mr-auto">
                             <button type="button" id="buttondevolver" class="btn btn-primary" aria-label="Close"
                                 onClick="devolver()">Guardar</button>
+
+                            
+
                             <button type="button" class="modal_close btn btn-danger" data-dismiss="modal"
                                 aria-label="Close">Cerrar</button>
                         </div>
@@ -301,43 +295,54 @@ include("Fragmentos/pie.php");
         }
 
     }
-    const anular = async (e) => {
-        const id = parseInt(e.dataset.id);
-        const identificacion = e.dataset.identificacion;
 
-        var r = confirm(`¿Desea anular la venta ${identificacion}`);
+    const aceptaranulacion = async () => {
+        
+
+        var r = confirm(`¿Desea confirmar la anulación de la venta?`);
         if (r) {
-            let motivo = window.prompt("Motivo de la anulación");
+            const datatotrigger = {
+                header: "",
+                detalle: []
+            }
+            const codigoventa = parseInt(getSelector("#codigoventa").value);
+            const codigocomprobante = parseInt(inputnumerocomprobante.value);
+            
+            const query = `delete from ventas where codigoventas = ${codigoventa}`;
+            datatotrigger.detalle.push(query);
 
-            motivo = motivo.replace(/'|"/gi, "");
+            const kardexproductsalmacen = await get_data_dynamic(`select * from kardex_alm where codigoguia = ${codigoventa} and numero = ${codigocomprobante} and tipo = 'venta'`).then(r => r);
 
-            const query = `update ventas set estadoanulacion = 'PENDIENTE', motivoanulacion = '${motivo}'  where codigoventas = ${id}`
-            const res = await ff_dynamic(query);
-            if (res.succes) {
-                alert("La venta esta pendiente a confirmación");
+            if (kardexproductsalmacen && kardexproductsalmacen.length > 0) {
+                kardexproductsalmacen.forEach(k => {
+                    const query = `
+                        insert into kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux) values 
+                        (${k.codigoprod}, ${k.codigoguia}, ${k.numero}, 'anulacion', ${k.cantidad}, (select saldo from kardex_alm kc where kc.codigoprod = ${k.codigoprod} and kc.codsucursal = ${k.codsucursal} order by kc.id_kardex_alm desc limit 1) + ${k.cantidad}, ${k.codsucursal}, 'anulacion', '${k.tipodocumento}', '${k.detalleaux}')`
+                    datatotrigger.detalle.push(query);
+                });
+            }
+
+            const kardexproductcontable = await get_data_dynamic(`select * from kardex_contable where codigocompras = ${codigoventa} and numero = ${codigocomprobante} and detalle = 'Ventas'`).then(r => r);
+
+            if (kardexproductcontable && kardexproductcontable.length > 0) {
+                kardexproductcontable.forEach(k => {
+                    const query = `
+                        insert into kardex_contable (codigoprod, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor) values 
+                        (${k.codigoprod}, ${k.codigocompras}, ${k.numero}, 'anulacion', ${k.cantidad}, ${k.precio}, (select saldo from kardex_contable kc where kc.codigoprod = ${k.codigoprod} and kc.sucursal = ${k.sucursal} order by kc.id_kardex_contable desc limit 1) + ${k.cantidad}, ${k.sucursal}, ${k.preciototal}, '${k.tipocomprobante}', ${k.codigoproveedor})`
+                    datatotrigger.detalle.push(query);
+                });
+            }
+
+            let res = await ll_dynamic(datatotrigger);
+
+            if (res.success) {
+                alert("La venta se anuló por completo");
                 location.reload()
             }else{
                 alert("Hubo un problema");
             }
         }
     }
-    const cancelaranular = async (e) => {
-        const id = parseInt(e.dataset.id);
-        const identificacion = e.dataset.identificacion;
-
-        var r = confirm(`¿Desea cancelar la anulación de la venta ${identificacion}`);
-        if (r) {
-            const query = `update ventas set estadoanulacion = '' where codigoventas = ${id}`
-            const res = await ff_dynamic(query);
-            if (res.succes) {
-                alert("La venta se canceló.");
-                location.reload()
-            }else{
-                alert("Hubo un problema");
-            }
-        }
-    }
-
     const cancelardevolucion = e => {
         const r = confirm("Esta seguro de cancelar la devolución");
         if (r) {
@@ -378,22 +383,40 @@ include("Fragmentos/pie.php");
         if(tipo == "detalle"){
             buttondevolver.style.display = "none";
             motivodevolucion.closest(".divparent").style.display = "none";
-            btnimprimirfactura.style.display = "";
+            // btnimprimirfactura.style.display = "";
             getSelectorAll(".columndevolucion").forEach(x => x.style.display = "none");
             titulo_modal.textContent = "DETALLE VENTA";
         }else{
             titulo_modal.textContent = "DEVOLUCIÓN PRODUCTOS";
             motivodevolucion.closest(".divparent").style.display = "";
             buttondevolver.style.display = "";
-            btnimprimirfactura.style.display = "none";
+            // btnimprimirfactura.style.display = "none";
             getSelectorAll(".columndevolucion").forEach(x => x.style.display = "");
         }
     }
+
+    const cancelaranular = async (e) => {
+        const id = parseInt(codigoventa.value);
+
+        var r = confirm(`¿Desea rechazar la anulación?`);
+        if (r) {
+            const query = `update ventas set estadoanulacion = '' where codigoventas = ${id}`
+            const res = await ff_dynamic(query);
+            if (res.succes) {
+                alert("La anulación se canceló.");
+                location.reload()
+            }else{
+                alert("Hubo un problema");
+            }
+        }
+    }
+
     async function pagar(e) {
         $("#moperation").modal();
         const tipomodal = e.dataset.tipomodal;
         
         codigoventa.value = e.dataset.id;
+        motivoanulacion.value = e.dataset.motivoanulacion;
         motivodevolucion.value = "";
         detallebody.innerHTML = "";
         modoentrega.value = e.dataset.modoentrega;
@@ -424,10 +447,10 @@ include("Fragmentos/pie.php");
                             }
                         }
                         detallebody.innerHTML += `
-                            <tr>
+                            <tr class="listproducts">
                                 <td>${ix.nombre_producto}</td>
                                 <td>${ix.marca}</td>
-                                <td>${ix.cantidad}</td>
+                                <td class="cantidad" >${ix.cantidad}</td>
                                 <td>${ix.pventa}</td>
                                 <td>${ix.unidad_medida}</td>
                                 <td class="columndevolucion">${devoler}</td>
@@ -502,6 +525,7 @@ include("Fragmentos/pie.php");
 
     async function imprimir_guia()
     {
+        
         if (!nroguia.value) {
             const data = {};
             data.header = '';
@@ -512,8 +536,11 @@ include("Fragmentos/pie.php");
 
             data.detalle.push(`UPDATE ventas SET despachado=1, nroguia=${nguia} WHERE codigoventas=${codigoventa.value}`);
             data.detalle.push("UPDATE propiedades SET value = ("+nguia+"+1) where `key` = 'despacho_guia'");
+            
+            const jjson = JSON.stringify(data).replace(/select/gi, "lieuiwuygyq")
+
             var formData = new FormData();
-            formData.append("json", JSON.stringify(data));
+            formData.append("json", jjson);
 
             await fetch(`setVenta.php`, {
                 method: 'POST',

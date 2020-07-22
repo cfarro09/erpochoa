@@ -386,6 +386,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				codigoguia: 0,
 				codigo: "<?= $_GET['codigo'] ?>",
 				nameproveedor:  $("#proveedor").select2('data')[0].text.trim(),
+				desproveedor: $('#proveedor').select2('data')[0].text.trim(),
 				codigoproveedor: getSelector("#proveedor").value,
 				codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",

@@ -191,12 +191,17 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					</div>
 				</div>
 				<div class="col-md-6">
+					<a class="btn sbold blue " onclick="abre_ventana('Emergentes/cliente_natural_list_add.php',700,570)" data-toggle="modal"> C. Natural <i class="fa fa-plus"></i></a>
+					<a class="btn sbold blue " onclick="abre_ventana('Emergentes/cliente_juridico_list_add.php',700,430)" data-toggle="modal"> C. Juridico <i class="fa fa-plus"></i></a>
+					<a class="btn sbold green " onclick="getclientes()"> Actualizar </a>
+
 					<div class="form-group">
 						<label for="field-1" class="control-label">Cliente</label>
 						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
-
 						</select>
 					</div>
+
+					
 				</div>
 
 				<div class="col-md-3">
@@ -311,8 +316,11 @@ include("Fragmentos/pie.php");
 <script type="text/javascript">
 	let htmlcuentaabonado = "";
 
+	let htmloptionsbancos = "";
+
 	const onloadxx = async () => {
 		htmlcuentaabonado = await getcuentaabonados()
+		htmloptionsbancos = await getbancos()
 		addPayExtra();
 		setcombocliente({
 			value: "factura"
@@ -324,6 +332,18 @@ include("Fragmentos/pie.php");
 	}
 	$(document).ready(onloadxx());
 	
+	async function getbancos() {
+		let htmloptionsbancos = "";
+		const query = 'select nombre_banco from banco where estado = 0';
+		const arraycuentaabonado = await get_data_dynamic(query);
+		arraycuentaabonado.forEach(x => {
+			htmloptionsbancos += `
+				<option value="${x.nombre_banco}">${x.nombre_banco}</option>
+			`;
+		});
+		return htmloptionsbancos;
+	}
+
 	async function getcuentaabonados() {
 		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
@@ -516,26 +536,7 @@ include("Fragmentos/pie.php");
 		<label class="control-label">Banco</label>
 		<select class="form-control bancoextra">
 		<option value="BANCO AZTECA">BANCO AZTECA</option>
-		<option value="BANCO BCP">BANCO BCP</option>
-		<option value="BANCO CENCOSUD">BANCO CENCOSUD</option>
-		<option value="BANCO DE LA NACION">BANCO DE LA NACION</option>
-		<option value="BANCO FALABELLA">BANCO FALABELLA</option>
-		<option value="BANCO GNB PERÚ">BANCO GNB PERÚ</option>
-		<option value="BANCO MI BANCO">BANCO MI BANCO</option>
-		<option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
-		<option value="BANCO RIPLEY">BANCO RIPLEY</option>
-		<option value="BANCO SANTANDER PERU">BANCO SANTANDER PERU</option>
-		<option value="BANCO SCOTIABANK">BANCO SCOTIABANK</option>
-		<option value="CMAC AREQUIPA">CMAC AREQUIPA</option>+
-		<option value="CMAC CUSCO S A">CMAC CUSCO S A</option>
-		<option value="CMAC DEL SANTA">CMAC DEL SANTA</option>
-		<option value="CMAC HUANCAYO">CMAC HUANCAYO</option>
-		<option value="CMAC ICA">CMAC ICA</option>
-		<option value="CMAC LIMA">CMAC LIMA</option>
-		<option value="CMAC MAYNA">CMAC MAYNA</option>
-		<option value="CMAC PAITA">CMAC PAITA</option>
-		<option value="CMAC SULLANA">CMAC SULLANA</option>
-		<option value="CMAC TRUJILLO">CMAC TRUJILLO</option>
+		${htmloptionsbancos}
 		</select>
 		</div>
 		</div>
@@ -667,9 +668,24 @@ include("Fragmentos/pie.php");
 		}
 		return result;
 	}
+	async function getclientes() {
+		let queryselected = "";
+		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
+		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0 union SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ', ruc) as cliente  FROM cnatural  WHERE estado = 0 and ruc is not null ";
 
+		if (tipocomprobante.value == "boleta") {
+			queryselected = query
+			
+		} else if (tipocomprobante.value == "factura") {
+			queryselected = query2
+		} else {
+			queryselected = query + " UNION " + query2;
+		}
+		
+		const res = await get_data_dynamic(queryselected).then(r => r);
+		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
+	}
 	async function setcombocliente(e) {
-		debugger
 		clearselect2("#cliente")
 		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
 		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0 union SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ', ruc) as cliente  FROM cnatural  WHERE estado = 0 and ruc is not null ";
@@ -792,8 +808,8 @@ include("Fragmentos/pie.php");
 				igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
 				total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
 				montofact: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
-				fecha_emision: '<?php echo date("Y-m-d"); ?>',
-				hora_emision: '<?php echo date("h:i:s"); ?>',
+				fecha_emision: new Date(new Date().setHours(10)).toISOString().substring(0, 10),
+				hora_emision: new Date().toTimeString().substring(0, 8),
 				codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
 				estadofact: 1,

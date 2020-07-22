@@ -108,6 +108,9 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					</div>
 				</div>
 				<div class="col-md-6">
+				<a class="btn sbold blue " onclick="abre_ventana('Emergentes/cliente_natural_list_add.php',700,570)" data-toggle="modal"> C. Natural <i class="fa fa-plus"></i></a>
+					<a class="btn sbold blue " onclick="abre_ventana('Emergentes/cliente_juridico_list_add.php',700,430)" data-toggle="modal"> C. Juridico <i class="fa fa-plus"></i></a>
+					<a class="btn sbold green " onclick="getclientes()"> Actualizar </a>
 					<div class="form-group">
 						<label for="field-1" class="control-label">Cliente</label>
 						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
@@ -307,15 +310,14 @@ include("Fragmentos/pie.php");
 
 <script type="text/javascript">
 $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.which; if (code == 13) { e.preventDefault(); return false; } });
-
-
-
-
-
+			
+	let htmloptionsbancos = "";
 	let htmlcuentaabonado = "";
 	let h = {};
+
 	const onloadxx = async () => {
 		htmlcuentaabonado = await getcuentaabonados()
+		htmloptionsbancos = await getbancos()
 		addPayExtra();
 		setcombocliente({
 			value: "xxxxxxxxxxx"
@@ -325,13 +327,43 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 
 		changencomprobantebytype();
 	}
-	async  function changencomprobantebytype(){
+	async function changencomprobantebytype(){
 		const codsucursald = <?= $_SESSION['cod_sucursal'] ?>;
 		const querycodcc = `(select IFNULL(max(v1.codigocomprobante), 0) + 1 as codcc from ventas v1 where v1.tipocomprobante = '${tipocomprobante.value}' and v1.sucursal = ${codsucursald})`
 		const rcodigocomp = await get_data_dynamic(querycodcc).then(r => r);
 		codigocomprobante.value = rcodigocomp[0].codcc;
 	}
 	$(document).ready(onloadxx());
+
+	async function getbancos() {
+		let htmloptionsbancos = "";
+		const query = 'select nombre_banco from banco where estado = 0';
+		const arraycuentaabonado = await get_data_dynamic(query);
+		arraycuentaabonado.forEach(x => {
+			htmloptionsbancos += `
+				<option value="${x.nombre_banco}">${x.nombre_banco}</option>
+			`;
+		});
+		return htmloptionsbancos;
+	}
+	async function getclientes() {
+		let queryselected = "";
+		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
+		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0 union SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ', ruc) as cliente  FROM cnatural  WHERE estado = 0 and ruc is not null ";
+
+		if (tipocomprobante.value == "boleta") {
+			queryselected = query
+			
+		} else if (tipocomprobante.value == "factura") {
+			queryselected = query2
+		} else {
+			queryselected = query + " UNION " + query2;
+		}
+		
+		const res = await get_data_dynamic(queryselected).then(r => r);
+		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
+	}
+
 	async function getcuentaabonados() {
 		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
@@ -402,7 +434,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
 				
-				<td><input type="number" data-type="cantidad" data-typeprod="${option.dataset.namexx}" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad cantformventas tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+				<td><input data-type="cantidad" data-typeprod="${option.dataset.namexx}" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad cantformventas tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
 				
 				<td class="unidad_medida">${option.dataset.namexx}</td>
 
@@ -441,15 +473,15 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 
 	function changevalue(e) {
 		if (e.value < 0 || "" == e.value) {
-			e.value = 0
+			e.value = ""
 		} else {
 			if (e.dataset.type == "cantidad") {
-				if (parseInt(e.dataset.stock) < parseInt(e.value)) {
-					e.value = 0
+				if (parseFloat(e.dataset.stock) < parseFloat(e.value)) {
+					e.value = ""
 				}
 			}
 			const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
-			const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+			const cantidad = parseFloat(e.closest(".producto").querySelector(".cantidad").value);
 
 			const mu = precio * cantidad
 			const res = mu.toFixed(2)
@@ -459,7 +491,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 			let totalpc = 0;
 			getSelectorAll(".producto").forEach(p => {
 				total += parseFloat(p.querySelector(".importe").textContent);
-				totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseInt(p.querySelector(".cantidad").value));
+				totalpc += (parseFloat(p.querySelector(".pcompra").value) * parseFloat(p.querySelector(".cantidad").value));
 			})
 			if (total != 0) {
 				totalpreciocompra.value = (totalpc * IGV1).toFixed(3);
@@ -798,8 +830,8 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
 				total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
 				montofact: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
-				fecha_emision: '<?php echo date("Y-m-d"); ?>',
-				hora_emision: '<?php echo date("h:i:s"); ?>',
+				fecha_emision: new Date(new Date().setHours(10)).toISOString().substring(0, 10),
+				hora_emision: new Date().toTimeString().substring(0, 8),
 				codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
 				estadofact: 1,

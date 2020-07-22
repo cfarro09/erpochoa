@@ -27,7 +27,8 @@ $query = "SELECT v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as Client
 from ventas v 
 left join cnatural c on  c.codigoclienten = v.codigoclienten 
 left join  cjuridico cj on cj.codigoclientej = v.codigoclientej 
-where v.sucursal = $codsucursal and modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
+where  ((sucursaldestino is null and v.sucursal = $codsucursal) or sucursaldestino = $codsucursal) and modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
+
 $listado = mysql_query($query, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($listado);
 $totalRows_Listado = mysql_num_rows($listado);
@@ -75,10 +76,12 @@ if ($totalRows_Listado == 0) : ?>
                     <td><?= $row["tipocomprobante"] ?></td>
                     <td><?= $row["codigocomprobante"] ?></td>
                     <td><?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?></td>
-                    <td><?= $row["total"] ?></td>
+                    <td class="text-right"><?= number_format((float) $row["total"], 2) ?></td>
                     <td><?= $despachado ?></td>
                     <!-- <td style="display: none"><?= $row["pagoacomulado"] ?></td> -->
-                    <td><a href="#" data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" data-modentrega='<?= $row["modalidadentrega"] ?>' data-despachado='<?= $row["despachado"] ?>' data-sucursal='<?= $codsucursal ?>' data-dataguia='<?= $row["dataguia"] ?>' onclick="pagar(this)">Detalle</a></td>
+                    <td><a href="#" 
+                    data-codigoproveedor="<?= $row["ruc"] != null ? $row["ruc"] : $row["cedula"]  ?>"
+                    data-fecha="<?= $row["fecha_emision"] ?>" data-cliente="<?= $row["ClienteNatural"] != null ? $row["ClienteNatural"] : $row["razonsocial"]  ?>" data-codigocomprobante="<?= $row["codigocomprobante"] ?>" data-tipocomprobante="<?= $row["tipocomprobante"] ?>" data-total="<?= $row["total"] ?>" data-restante="<?= $restante ?>" data-pagoefectivo="<?= $row["pagoefectivo"] ?>" data-json='<?= $row["jsonpagos"] ?>' data-id="<?= $row["codigoventas"] ?>" data-modentrega='<?= $row["modalidadentrega"] ?>' data-despachado='<?= $row["despachado"] ?>' data-sucursal='<?= $codsucursal ?>' data-dataguia='<?= $row["dataguia"] ?>' onclick="pagar(this)">Detalle</a></td>
                 </tr>
             <?php
                 $i++;
@@ -278,7 +281,7 @@ include("Fragmentos/pie.php");
         detallebody.innerHTML = "";
         codsucursal.value = e.dataset.sucursal;
         dataguia = e.dataset.dataguia ? JSON.parse(e.dataset.dataguia) : [];
-        await fetch(`getDetalleVenta.php?id=${e.dataset.id}`)
+        await fetch(`getDetalleVenta.php?id=${parseInt(e.dataset.id)}`)
             .then(res => res.json())
             .catch(error => console.error("error: ", error))
             .then(res => {
@@ -306,7 +309,7 @@ include("Fragmentos/pie.php");
 
         inputfecha.value = e.dataset.fecha;
         inputnumerocomprobante.value = e.dataset.codigocomprobante;
-        inputcliente.value = e.dataset.cliente;
+        inputcliente.value = e.dataset.cliente + " - " + e.dataset.codigoproveedor;
         inputtipocomprobante.value = e.dataset.tipocomprobante;
         modentrega.value = e.dataset.modentrega;
 
@@ -408,7 +411,7 @@ include("Fragmentos/pie.php");
 
                     if (d.cantidad != 0) {
                         data.detalle.push(`
-                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
+                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento, detalleaux)
                         VALUES 
                         (
                             ${d.codigoprod},
@@ -420,7 +423,8 @@ include("Fragmentos/pie.php");
                             NOW(),
                             ${h.sucursal},
                             '',
-                            'guia')
+                            'guia',
+                            '${inputcliente.value}')
                         `);
                         debugger
                     }

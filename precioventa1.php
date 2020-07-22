@@ -215,15 +215,15 @@ include("Fragmentos/abrirpopupcentro.php");
 													<th class="costeosinchecked" width=" 120px">VCU</th>
 													<th class="costeosinchecked" width=" 120px">VCI</th>
 													<th class="costeosinchecked" width="120px">DSCTO</th>
-													<th width="120px">VCF</th>
+													<th width="100px">VCF</th>
 													<th class="costeosinchecked" width=" 120px"><?= $nombreigv ?></th>
 													<th class="costeosinchecked" width=" 120px">Total</th>
-													<th width="60px" class="costeochecked" style="display: none">Transporte</th>
-													<th width="60px" class="costeochecked" style="display: none">Estibador</th>
-													<th width="60px" class="costeochecked" style="display: none">Nota Debito</th>
-													<th width="60px" class="costeochecked" style="display: none">Nota Credito</th>
-													<th width="60px" class="costeochecked" style="display: none">Total</th>
-													<th width="60px" class="costeochecked" style="display: none">T. Unidad</th>
+													<th width="100px" class="costeochecked" style="display: none">Transporte</th>
+													<th width="100px" class="costeochecked" style="display: none">Estibador</th>
+													<th width="100px" class="costeochecked" style="display: none">Nota Debito</th>
+													<th width="100px" class="costeochecked" style="display: none">Nota Credito</th>
+													<th width="100px" class="costeochecked" style="display: none">Total</th>
+													<th width="100px" class="costeochecked" style="display: none">T. Unidad</th>
 												</thead>
 												<tbody id="detalleFacturar-list">
 												</tbody>
@@ -368,15 +368,15 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td>${ix.nombre_producto}</td>
 						<td>${ix.marca}</td>
 
-						<td><input type="hidden" class="preciounidad" value="${ix.vcf}"><input readonly required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
-						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*IGV}" readonly></td>
-						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*IGV1}" readonly></td>
-						<td><input required readonly data-cantidad="${ix.cantidad}" value="${ix.porcpv1}" oninput="changeporcentaje(this)" data-origin="venta1" class="form-control porcentajeventa1" ></td>
-						<td><input required class="form-control precioventa1" readonly value="${ix.precioventa1}"></td>
-						<td><input readonly required data-cantidad="${ix.cantidad}" value="${ix.porcpv2}" oninput="changeporcentaje(this)" data-origin="venta2" class="form-control porcentajeventa2" ></td>
-						<td><input required class="form-control precioventa2" value="${ix.precioventa1}" readonly></td>
-						<td><input readonly required data-cantidad="${ix.cantidad}" value="${ix.porcpv3}" oninput="changeporcentaje(this)" data-origin="venta3" class="form-control porcentajeventa3" ></td>
-						<td><input required class="form-control precioventa3" value="${ix.precioventa1}" readonly></td>
+						<td><input type="hidden" class="preciounidad" value="${ix.vcf}"><input readonly required class="form-control text-right preciounidadmas" value="${ix.totalunidad}" readonly></td>
+						<td><input readonly required class="form-control text-right" value="${parseFloat(ix.totalunidad)*IGV}" readonly></td>
+						<td><input readonly required class="form-control text-right" value="${parseFloat(ix.totalunidad)*IGV1}" readonly></td>
+						<td><input required readonly data-cantidad="${ix.cantidad}" value="${ix.porcpv1}" oninput="changeporcentaje(this)" data-origin="venta1" class="form-control text-right porcentajeventa1" ></td>
+						<td><input required class="form-control text-right precioventa1" readonly value="${ix.precioventa1}"></td>
+						<td><input readonly required data-cantidad="${ix.cantidad}" value="${ix.porcpv2}" oninput="changeporcentaje(this)" data-origin="venta2" class="form-control text-right porcentajeventa2" ></td>
+						<td><input required class="form-control text-right precioventa2" value="${ix.precioventa1}" readonly></td>
+						<td><input readonly required data-cantidad="${ix.cantidad}" value="${ix.porcpv3}" oninput="changeporcentaje(this)" data-origin="venta3" class="form-control text-right porcentajeventa3" ></td>
+						<td><input required class="form-control text-right precioventa3" value="${ix.precioventa1}" readonly></td>
 						</tr>
 						`
 						$('[data-toggle="tooltip"]').tooltip()
@@ -416,16 +416,16 @@ include("Fragmentos/abrirpopupcentro.php");
 						<td>${ix.nombre_producto}</td>
 						<td>${ix.nombre}</td>
 
-						<td><input type="hidden" class="preciounidad" value="${ix.vcf}"><input required class="form-control preciounidadmas" value="${ix.totalunidad}" readonly></td>
-						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*IGV}" readonly></td>
-						<td><input readonly required class="form-control" value="${parseFloat(ix.totalunidad)*IGV1}" readonly></td>
+						<td><input type="hidden" class="preciounidad" value="${ix.vcf}"><input required class="form-control text-right preciounidadmas" value="${ix.totalunidad}" readonly></td>
+						<td><input readonly required class="form-control text-right" value="${parseFloat(ix.totalunidad)*IGV}" readonly></td>
+						<td><input readonly required class="form-control text-right" value="${parseFloat(ix.totalunidad)*IGV1}" readonly></td>
 
-						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1" data-pc="${parseFloat(ix.totalunidad)*IGV1}"  value="${ix.porcpv1}" class="form-control porcentajeventa1" ></td>
-						<td><input required data-origin="venta1" class="form-control precioventa1" oninput="changevalue(this)" value="${ix.precioventa1}"  data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
-						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2" data-pc="${parseFloat(ix.totalunidad)*IGV1}" value="${ix.porcpv2}" class="form-control porcentajeventa2" ></td>
-						<td><input required data-origin="venta2" class="form-control precioventa2" oninput="changevalue(this)" value="${ix.precioventa2}" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
-						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3" value="${ix.porcpv3}"  data-pc="${parseFloat(ix.totalunidad)*IGV1}" class="form-control porcentajeventa3" ></td>
-						<td><input required data-origin="venta3" value="${ix.precioventa3}" class="form-control precioventa3" oninput="changevalue(this)" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta1" data-pc="${parseFloat(ix.totalunidad)*IGV1}"  value="${ix.porcpv1}" class="form-control text-right porcentajeventa1" ></td>
+						<td><input required data-origin="venta1" class="form-control text-right precioventa1" oninput="changevalue(this)" value="${ix.precioventa1}"  data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta2" data-pc="${parseFloat(ix.totalunidad)*IGV1}" value="${ix.porcpv2}" class="form-control text-right porcentajeventa2" ></td>
+						<td><input required data-origin="venta2" class="form-control text-right precioventa2" oninput="changevalue(this)" value="${ix.precioventa2}" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
+						<td><input required data-cantidad="${ix.cantidad}" oninput="changeporcentaje(this)" data-origin="venta3" value="${ix.porcpv3}"  data-pc="${parseFloat(ix.totalunidad)*IGV1}" class="form-control text-right porcentajeventa3" ></td>
+						<td><input required data-origin="venta3" value="${ix.precioventa3}" class="form-control text-right precioventa3" oninput="changevalue(this)" data-pc="${parseFloat(ix.totalunidad)*IGV1}"></td>
 						</tr>
 						`
 						$('[data-toggle="tooltip"]').tooltip()

@@ -63,10 +63,6 @@ $totalRows_Listado = mysql_num_rows($Listado);
 //Enumerar filas de data tablas
 $i = 1;
 
-//Enumerar filas de data tablas
-
-
-
 //Titulo e icono de la pagina
 $Icono = "fa fa-building-o";
 $Color = "font-blue";
@@ -116,7 +112,7 @@ include("Fragmentos/menu.php");
       </tr>
     </thead>
     <tbody>
-      <?php do { //echo '<pre>'.var_dump($row_Listado).'</pre>'; die;
+      <?php $i = 1; do { //echo '<pre>'.var_dump($row_Listado).'</pre>'; die;
       ?>
         <?php
         $color = "#FFF";

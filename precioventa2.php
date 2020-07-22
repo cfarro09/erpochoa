@@ -48,7 +48,7 @@ include("Fragmentos/abrirpopupcentro.php");
 		<div class="modal-dialog" role="document" style="width: 1300px">
 			<div class="modal-content m-auto">
 				<div class="modal-header">
-					<h2 class="modal-title" id="moperation-title">Asignar precio venta</h2>
+					<h2 class="modal-title" id="moperation-titlepv">Asignar precio venta</h2>
 				</div>
 				<div class="modal-body">
 					<form id="saveOrdenCompra">
@@ -75,8 +75,8 @@ include("Fragmentos/abrirpopupcentro.php");
 											<tr>
 												<td id="productopv2"></td>
 												<td id="marcapv2"></td>
-												<td id="preciocomprapv2"></td>
-												<td id="precioventapv2"></td>
+												<td class="text-right" id="preciocomprapv2"></td>
+												<td class="text-right" id="precioventapv2"></td>
 												<td >
 													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="1" data-type="porcentaje" id="porcentaje1" class="form-control">
 												</td>
@@ -95,9 +95,8 @@ include("Fragmentos/abrirpopupcentro.php");
 												<td >
 													<input type="number" oninput="inputdynamic(this)"  step="any" data-index="3" data-type="precio" id="precio3" class="form-control">
 												</td>
-												
-
 											</tr>
+
 										</tbody>
 									</table>
 								</div>
@@ -134,7 +133,16 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td align="right"> <?= $row_Listado['precio_compra']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_venta1']; ?></td>
 					<td align="right"> <?= $row_Listado['saldo'];?></td>
-					<td><a href="#" data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" data-marca="<?= $row_Listado['Marca']; ?>" data-codigo_pv="<?= $row_Listado['codigo_pv']; ?>"  data-preciocompra="<?= $row_Listado['precio_compra']; ?>" data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" data-precioventa="<?= $row_Listado['precio_venta1']; ?>" data-codproducto="<?= $row_Listado['codigoprod'] ?>" onClick="asignarprecioventa(this)" >Asignar</a></td>
+					<td><a href="#" 
+						data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" 
+						data-minicodigo="<?= $row_Listado['minicodigo'] ?>" 
+						data-marca="<?= $row_Listado['Marca']; ?>" 
+						data-codigo_pv="<?= $row_Listado['codigo_pv']; ?>" 
+						data-preciocompra="<?= $row_Listado['precio_compra']; ?>" 
+						data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" 
+						data-precioventa="<?= $row_Listado['precio_venta1']; ?>" 
+						data-codproducto="<?= $row_Listado['codigoprod'] ?>" 
+						onClick="asignarprecioventa(this)" >Asignar</a></td>
 				</tr>
 				<?php $i++;} while ($row_Listado = mysql_fetch_assoc($Listado)); ?>
 			</tbody>
@@ -149,16 +157,60 @@ include("Fragmentos/abrirpopupcentro.php");
 	mysql_free_result($Listado);
 	?>
 	<script type="text/javascript">
-		function asignarprecioventa(e){
+		async function asignarprecioventa(e){
 			$("#mSetPrecioVenta").modal();
 			btn_save_precioventa1.style.display = ""
-			preciocomprapv2.textContent = e.dataset.preciocompra
-			precioventapv2.textContent = e.dataset.precioventa
+			preciocomprapv2.textContent = parseFloat(e.dataset.preciocompra).toFixed(2)
+			precioventapv2.textContent = parseFloat(e.dataset.precioventa).toFixed(2)
 			codigo_pv.value = e.dataset.codigo_pv
 			marcapv2.textContent = e.dataset.marca
 			productopv2.textContent = e.dataset.nombreproducto
 			codproducto.textContent = e.dataset.codproducto
 			codigodetalleproducto.textContent = e.dataset.codigodetalleproducto
+
+			getSelector("#moperation-titlepv").textContent = `Asignar precio venta ${e.dataset.minicodigo}`;
+
+			var query = `select rc.tipo_comprobante, rc.numerocomprobante, rc.fecha, pv.vcf, pv.totalunidad, pv.porcpv1, pv.porcpv2, pv.porcpv3, pv.precioventa1, pv.precioventa2, pv.precioventa3 
+			from precio_venta pv
+			inner join registro_compras rc on rc.codigorc = pv.codigocompras
+			where codigoprod = ${e.dataset.codproducto} limit 3`;
+
+			const res = await get_data_dynamic(query).then(r => r);
+			getSelectorAll(".rowtoremove").forEach(x => x.remove());
+			if (res instanceof Array) {
+				let htmlhelp = '';
+				res.forEach(i => {
+					htmlhelp += `
+					<tr class="rowtoremove">
+						<td>${i.fecha.substring(0, 10) + " " + i.tipo_comprobante + " " + i.numerocomprobante}</td>
+						<td></td>
+						<td class="text-right">${parseFloat(i.totalunidad).toFixed(2)}</td>
+						<td class="text-right">${parseFloat(i.vcf).toFixed(2)}</td>
+						<td >
+							<input type="number" value="${parseFloat(i.porcpv1).toFixed(2)}" step="any" disabled class="form-control text-right">
+						</td>
+						<td >
+							<input type="number" value="${parseFloat(i.precioventa1).toFixed(2)}" step="any" disabled class="form-control text-right">
+						</td>
+						<td >
+							<input type="number" value="${parseFloat(i.porcpv2).toFixed(2)}" step="any" disabled class="form-control text-right">
+						</td>
+						<td >
+							<input type="number" value="${parseFloat(i.precioventa2).toFixed(2)}" step="any" disabled class="form-control text-right">
+						</td>
+						<td >
+							<input type="number" value="${parseFloat(i.porcpv3).toFixed(2)}" step="any" disabled class="form-control text-right">
+						</td>
+						<td >
+							<input type="number" value="${parseFloat(i.precioventa3).toFixed(2)}" step="any" disabled class="form-control text-right">
+						</td>
+					</tr>
+
+					`;
+
+				});
+				detalleComprax.innerHTML += htmlhelp;
+			}
 		}
 		function inputdynamic(e){
 			if(e.value < 0){

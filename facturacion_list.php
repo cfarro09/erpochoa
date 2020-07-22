@@ -3,12 +3,13 @@
 
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT g.codigoguia,  CONCAT('Tipo Comp ',rc.tipo_comprobante, ' N° Comp ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial 
+$query_Listado = "SELECT g.codigoguia,  CONCAT('Tipo Comp ',rc.tipo_comprobante, ' ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial 
 from ordencompra_guia g 
 inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp 
 inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor 
 left join registro_compras rc on rc.codigo_orden_compra = g.codigoguia 
-where g.estado = 2 or g.estado = 3";
+where g.estado = 2 or g.estado = 3
+order by g.fecha desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -29,7 +30,8 @@ $row_Listado1 = mysql_fetch_assoc($Listado1);
 $totalRows_Listado1 = mysql_num_rows($Listado1);
  //Enumerar filas de data tablas
 
-$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, CONCAT('Tipo Comp ',rc.tipo_comprobante, ' N° Comp ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras rc on rc.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2";
+$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, CONCAT('Tipo Comp ',rc.tipo_comprobante, ' ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras rc on rc.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2
+order by c.fecha desc";
 $listaguiasinoc = mysql_query($queryguiasinoc, $Ventas) or die(mysql_error());
 $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
 $totalRows_listaguiasinoc = mysql_num_rows($listaguiasinoc);
@@ -260,13 +262,13 @@ include("Fragmentos/abrirpopupcentro.php");
 										VALOR TOTAL: : <span id="mvalortotal1"></span><BR>
 									</div>
 									PROVEEDOR: <span id="mproveedor1"></span> <BR>
-									RUC : <span id="mruc1"></span><BR>
+									RUC: <span id="mruc1"></span><BR>
 									SUCURSAL: <span id="msucursal1"></span> <BR>
-									<span id="viewcomprobante"></span> <br>
-									DOC ALMACEN : <span id="mcodref11"></span> <br>
 									<span id="viewcodigoreferencia"></span> <br>
+									GUIA: <span id="mcodref11"></span> <br>
+									<span id="viewcomprobante"></span> <br>
 									<span id="auxmodref">DOC REF 2:</span>  <span id="mcodref21"></span> <br>
-									GENERADA POR: : <span id="mgeneradapor1"></span> <br>
+									GENERADA POR: <span id="mgeneradapor1"></span> <br>
 
 								</b>
 								<input type="hidden" id="codigoproveedor">
@@ -298,6 +300,8 @@ include("Fragmentos/abrirpopupcentro.php");
 														<option value="factura">Factura</option>
 														<option value="boleta">Boleta</option>
 														<option value="recibo">Recibo</option>
+														<option value="recibo">Nota Debito</option>
+														<option value="recibo">Nota Credito</option>
 														<option value="otros">Otros</option>
 													</select>
 												</div>
@@ -605,7 +609,7 @@ include("Fragmentos/abrirpopupcentro.php");
 	</div>
 </div>
 <div class="modal fade" id="mProrrateo" role="dialog" data-backdrop="static" data-keyboard="false">
-	<div class="modal-dialog" role="document" style="width: 700px">
+	<div class="modal-dialog" role="document" style="width: 900px">
 		<div class="modal-content m-auto">
 			<div class="modal-header">
 				<h2 class="modal-title" id="title_extra">PRORRATEO POR PESO</h2>
@@ -677,8 +681,8 @@ include("Fragmentos/abrirpopupcentro.php");
 								</div>
 
 								<div class="col-sm-3">
-									<label class="control-label" for="preciopro">Precio</label>
-									<input class="form-control" oninput="changepeso(this)" type="number" name=""
+									<label class="control-label" for="preciopro">Valor Compra</label>
+									<input class="form-control" step="any" oninput="changepeso(this)" type="number" name=""
 										id="preciopro">
 								</div>
 							</div>
@@ -691,8 +695,8 @@ include("Fragmentos/abrirpopupcentro.php");
 									<th>Producto</th>
 									<th>Marca</th>
 									<th id="varTypeExtra" width="120px">Peso</th>
-									<th width="60px">Imp Ind</th>
-									<th width="60px">Importe</th>
+									<th width="100px">Imp Ind</th>
+									<th width="100px">Importe</th>
 								</thead>
 								<tbody id="detalleProrrateo">
 								</tbody>
@@ -899,6 +903,8 @@ mysql_free_result($Listado);
 		}
 	})
 	function setExtra(e) {
+		preciopro.value = "";
+		nrocomprobantepro.value = "";
 		let nro = 0;
 		if (e.dataset.type == "prorrateo") {
 			typetransporte = "porpeso";
@@ -913,8 +919,8 @@ mysql_free_result($Listado);
 					<td class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
 					<td class="nombre_producto" >${r.nombre_producto}</td>
 					<td class="marca" >${r.marca}</td>
-					<td><input type="number" required class="form-control pesoitempro" oninput="changepeso(this)"></td>
-					<td><input readonly type="number" class="form-control importeindividualpro"></td>
+					<td><input type="number" required step="any" class="form-control pesoitempro" oninput="changepeso(this)"></td>
+					<td><input readonly type="number"  class="form-control importeindividualpro"></td>
 					<td><input readonly data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
 					</tr>`)
 			});
@@ -947,23 +953,37 @@ mysql_free_result($Listado);
 		}
 		let proccesspeso = true;
 		if ($("#preciopro").val()) {
-			let suma = 0;
+			// let suma = 0;
+			// let sumacantidad = 0;
+
 			getSelectorAll(".pesoitempro").forEach(i => {
-				suma += parseFloat(i.value)
+				// suma += parseFloat(i.value)
 				if (i.value == 0 || i.value == "") {
 					proccesspeso = false;
 				}
 			});
+			// getSelectorAll(".cant_recibida").forEach(i => {
+			// 	sumacantidad += parseFloat(i.textContent)
+			// });
 			if (proccesspeso) {
-				let tc = getSelector(`#tipocambiopro`).value ? parseFloat(getSelector(`#tipocambiopro`).value) : 1;
 
-				const unit = $("#preciopro").val() * tc / suma;
+				let totalx = 0;
+				getSelectorAll("#detalleProrrateo tr").forEach(tr => {
+					const peso = tr.querySelector(".pesoitempro").value;
+					const cantidad = tr.querySelector(".cant_recibida").textContent;
+					totalx += peso*cantidad;
+				});
+
+				const unit = $("#preciopro").val() / totalx;
+
 				getSelectorAll(".pesoitempro").forEach(i => {
-					debugger
 					const cantidad = parseInt(i.closest("tr").querySelector(".cant_recibida").textContent)
+					const peso = parseInt(i.closest("tr").querySelector(".pesoitempro").value)
 
-					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (unit * i.value / cantidad).toFixed(4)
-					i.parentElement.parentElement.querySelector(".importetotalpro").value = (unit * i.value).toFixed(4)
+					const totalimporte = unit * cantidad * peso;
+					
+					i.parentElement.parentElement.querySelector(".importeindividualpro").value = (totalimporte / cantidad).toFixed(4)
+					i.parentElement.parentElement.querySelector(".importetotalpro").value = totalimporte.toFixed(4)
 				});
 
 			} else {
@@ -1696,7 +1716,7 @@ mysql_free_result($Listado);
 		})
 		getSelector(".sumavcf").value = sumavcf.toFixed(2)
 		getSelector(".sumaigvrow").value = sumaigvrow.toFixed(2)
-		getSelector(".sumavalorcompra2").value = sumavalorcompra2.toFixed(4)
+		getSelector(".sumavalorcompra2").value = sumavalorcompra2.toFixed(2)
 		if (tipocambio) {
 			getSelector(".sumavcfdolar").value = (sumavcf * parseFloat(tipocambio.value)).toFixed(2)
 			getSelector(".sumaigvrowdolar").value = (sumaigvrow * parseFloat(tipocambio.value)).toFixed(2)

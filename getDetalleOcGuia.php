@@ -36,7 +36,13 @@ if (isset($_GET['codigo'])) {
 }
 mysql_select_db($database_Ventas, $Ventas);
 
-$query_Factura_enc = "SELECT (select GROUP_CONCAT(CONCAT('Fecha; ', ka1.fecha, ' Guia: ', ka1.numero) SEPARATOR '\n') from kardex_alm ka1 where ka1.codigoguia = g.codigoguia and ka1.tipo = 'oc') concatenadoguias, c.codigoordcomp, c.direccion as direccionOrden, g.estado as estadoguia, s.nombre_sucursal, g.codigoguia,g.numeroguia, g.observacion ,c.codigo, c.subtotal, c.igv, c.montofact, c.fecha_emision, c.codigoproveedor, c.codigo, c.codigoref1, c.codigoref2, pe.nombre as nombrep, c.fecha_emision, pe.paterno as paternop, pe.materno as maternop, p.celular, p.ciudad, p.direccion, p.email, p.pais, p.paginaweb, p.telefono, p.ruc, p.razonsocial, a.usuario, c.sucursal FROM ordencompra c inner join acceso a on a.codacceso=c.codacceso inner join personal pe on pe.codigopersonal=c.codigopersonal inner join proveedor p on p.codigoproveedor=c.codigoproveedor left join ordencompra_guia g on g.codigoordcomp = c.codigoordcomp left join sucursal s on s.cod_sucursal = c.sucursal WHERE c.codigo = '$codigo'";
+$query_Factura_enc = "SELECT (select GROUP_CONCAT(DISTINCT CONCAT('Fecha; ', ka1.fecha, ' Guia: ', ka1.numero) SEPARATOR '\n') from kardex_alm ka1 where ka1.codigoguia = g.codigoguia and ka1.tipo = 'oc') concatenadoguias, c.codigoordcomp, c.direccion as direccionOrden, g.estado as estadoguia, s.nombre_sucursal, g.codigoguia,g.numeroguia, g.observacion ,c.codigo, c.subtotal, c.igv, c.montofact, c.fecha_emision, c.codigoproveedor, c.codigo, c.codigoref1, c.codigoref2, pe.nombre as nombrep, c.fecha_emision, pe.paterno as paternop, pe.materno as maternop, p.celular, p.ciudad, p.direccion, p.email, p.pais, p.paginaweb, p.telefono, p.ruc, p.razonsocial, a.usuario, c.sucursal 
+FROM ordencompra c 
+inner join acceso a on a.codacceso=c.codacceso 
+inner join personal pe on pe.codigopersonal=c.codigopersonal 
+inner join proveedor p on p.codigoproveedor=c.codigoproveedor 
+left join ordencompra_guia g on g.codigoordcomp = c.codigoordcomp 
+left join sucursal s on s.cod_sucursal = c.sucursal WHERE c.codigo = '$codigo'";
 
 
 $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());

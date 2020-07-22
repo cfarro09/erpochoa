@@ -71,9 +71,12 @@
 			alert("hubo un problema")
 		}
 	};
-	const ll_dynamic = async (json) => {
+	const ll_dynamic = async (data) => {
+		const jjson = JSON.stringify(data).replace(/select/gi, "lieuiwuygyq").replace(/delete/gi, "dsjndasjdas")
+		
 		var formData = new FormData();
-		formData.append("json", JSON.stringify(json))
+		formData.append("json", jjson);
+
 		const response = await fetch("setVenta.php", {
 			method: 'POST',
 			body: formData,

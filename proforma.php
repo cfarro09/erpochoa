@@ -33,7 +33,7 @@
 
     # Cargar Productos
     $query_Productos = "
-    select pv.codigoprod, pro.nombre_producto, m.nombre as Marca, c.nombre_color, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad from producto pro
+    select pv.codigoprod, pro.minicodigo, pro.nombre_producto, m.nombre as Marca, c.nombre_color, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad from producto pro
     inner join marca m on m.codigomarca = pro.codigomarca
     inner join color c on pro.codigocolor = c.codigocolor
     inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = pro.codigoprod);";
@@ -127,10 +127,11 @@
                     data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>"
                     data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
                     data-marca="<?= $row_Productos['Marca']; ?>">
-                    <?php echo $row_Productos['nombre_producto'] ?> -
-                    <?php echo $row_Productos['Marca']; ?> -
-                    <?php echo $row_Productos['nombre_color']; ?> -
-                    <?php echo "$/." . $row_Productos['p2']; ?></option>
+                    <?= $row_Productos['nombre_producto'] ?> -
+                    <?= $row_Productos['minicodigo'] ?> -
+                    <?= $row_Productos['Marca']; ?> -
+                    <?= $row_Productos['nombre_color']; ?> -
+                    <?= "$/." . $row_Productos['p2']; ?></option>
                     <?php
                 } while ($row_Productos = mysql_fetch_assoc($Productos));
                 $rows = mysql_num_rows($Productos);

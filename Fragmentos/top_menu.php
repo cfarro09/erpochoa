@@ -29,32 +29,32 @@ $restrict->Execute();
 //End Restrict Access To Page
 
 if (!function_exists("GetSQLValueString")) {
-function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-{
-  $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
+    function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
+    {
+        $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+        $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
 
-  switch ($theType) {
-    case "text":
-      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-      break;    
-    case "long":
-    case "int":
-      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
-      break;
-    case "double":
-      $theValue = ($theValue != "") ? "'" . doubleval($theValue) . "'" : "NULL";
-      break;
-    case "date":
-      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-      break;
-    case "defined":
-      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-      break;
-  }
-  return $theValue;
-}
+        switch ($theType) {
+            case "text":
+                $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+                break;
+            case "long":
+            case "int":
+                $theValue = ($theValue != "") ? intval($theValue) : "NULL";
+                break;
+            case "double":
+                $theValue = ($theValue != "") ? "'" . doubleval($theValue) . "'" : "NULL";
+                break;
+            case "date":
+                $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+                break;
+            case "defined":
+                $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+                break;
+        }
+        return $theValue;
+    }
 }
 
 mysql_select_db($database_Ventas, $Ventas);
@@ -79,11 +79,45 @@ $tNGs->executeTransactions();
 $rscustom = $tNGs->getRecordset("custom");
 $row_rscustom = mysql_fetch_assoc($rscustom);
 $totalRows_rscustom = mysql_num_rows($rscustom);
-?><head>
+?>
+
+<head>
 
 </head>
+
 <body>
-<body class="page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-md">
+    <div class="modal fade" id="mchangepassword" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content m-auto">
+                <div class="modal-header">
+                    <h2 class="modal-title" style="display: inline-block; margin-right: 10px">Cambiar Contraseña</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Contraseña Actual</label>
+                                    <input type="password" id="passwordcurrent" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Contraseña Actual</label>
+                                    <input type="password" id="passwordnew" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="tirggerchangepassword()">Cambiar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <body class="page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-md">
         <!-- BEGIN HEADER -->
         <div class="page-header navbar navbar-fixed-top">
             <!-- BEGIN HEADER INNER -->
@@ -91,37 +125,37 @@ $totalRows_rscustom = mysql_num_rows($rscustom);
                 <!-- BEGIN LOGO -->
                 <div class="page-logo">
                     <a href="principal01.php">
-                        <img src="img/<?php echo $row_Conf_Sis['logo']; ?>" alt="logo" width="150" height="50" class="logo-default" />                         </a>
-<div class="menu-toggler sidebar-toggler">
+                        <img src="img/<?php echo $row_Conf_Sis['logo']; ?>" alt="logo" width="150" height="50" class="logo-default" /> </a>
+                    <div class="menu-toggler sidebar-toggler">
                         <!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
                     </div>
                 </div>
-<!-- END LOGO -->
+                <!-- END LOGO -->
 
-                
+
                 <div class="page-actions">
                     <div class="btn-group">
                         <a class="btn green-jungle btn-sm dropdown-toggle" href="javascript:location.reload()">
                             <span class="hidden-sm hidden-xs">
-							<?php
-$dias = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","S�bado");
-$meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-echo $dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y') ;
-//Salida: Viernes 24 de Febrero del 2012
+                                <?php
+                                $dias = array("Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "S�bado");
+                                $meses = array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
+                                echo $dias[date('w')] . " " . date('d') . " de " . $meses[date('n') - 1] . " del " . date('Y');
+                                //Salida: Viernes 24 de Febrero del 2012
 
-?></span>
+                                ?></span>
                             <i class="fa fa-calendar"></i>
                         </a>
-                        
+
                     </div>
                 </div>
                 <div class="page-actions">
                     <div class="btn-group">
-                       <a class="btn green btn-sm dropdown-toggle" href="javascript:location.reload()">
+                        <a class="btn green btn-sm dropdown-toggle" href="javascript:location.reload()">
                             <span class="hidden-sm hidden-xs" id="time-menu"></span>
                             <i class="fa fa-clock-o"></i>
                         </a>
-                        
+
                     </div>
                 </div>
                 <!-- END PAGE ACTIONS -->
@@ -153,10 +187,10 @@ echo $dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y'
                                     <span class="badge badge-success"> 7 </span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                
+
                                     <li class="external">
                                         <h3>
-                                            
+
 
 
                                             <span class="bold">12 pending</span> notifications</h3>
@@ -440,47 +474,76 @@ echo $dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y'
                             <!-- END TODO DROPDOWN -->
                             <!-- BEGIN USER LOGIN DROPDOWN -->
                             <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-<li class="dropdown dropdown-user dropdown-dark">
+                            <li class="dropdown dropdown-user dropdown-dark">
                                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                                     <span class="username username-hide-on-mobile"> <?php echo $_SESSION['kt_login_user']; ?> </span>
                                     <!-- DOC: Do not remove below empty space(&nbsp;) as its purposely used -->
                                     <img alt="" class="img-circle" src="img/Personal/avatar.png" /> </a>
-                              <ul class="dropdown-menu dropdown-menu-default">
+                                <ul class="dropdown-menu dropdown-menu-default">
                                     <li>
-                                        <a href="perfil.php">
+                                        <a href="#" onclick="changepassword()">
                                             <i class="icon-user"></i> Mi Perfil </a>
                                     </li>
-                                    
-                                    
-                                    
                                     <li class="divider"> </li>
                                     <li>
                                         <a href="bloqueo.php">
                                             <i class="icon-lock"></i> Bloquear Sesi�n </a>
                                     </li>
                                     <li>
-                                      <?php
-	echo $tNGs->getErrorMsg();
-?>
-                                    
+                                        <?php
+                                        echo $tNGs->getErrorMsg();
+                                        ?>
+
                                         <a href="cerrarsesion.php">
-                                            <i class="icon-key"></i> Cerrar Sesi�n </a>                                    </li>
+                                            <i class="icon-key"></i> Cerrar Sesi�n </a> </li>
                                 </ul>
-</li>
+                            </li>
                             <!-- END USER LOGIN DROPDOWN -->
-</body>
-                        </ul>
-                    </div>
-                    <!-- END TOP NAVIGATION MENU -->
-                </div>
-                <!-- END PAGE TOP -->
-            </div>
-            <!-- END HEADER INNER -->
-        </div>
-        <!-- END HEADER -->
-        <?php
-mysql_free_result($Configuracion);
-?>
-<script>
-                    document.querySelector("#time-menu").textContent = new Date().toLocaleTimeString()
-                </script>
+
+
+    </body>
+    </ul>
+    </div>
+    <!-- END TOP NAVIGATION MENU -->
+    </div>
+    <!-- END PAGE TOP -->
+    </div>
+    <!-- END HEADER INNER -->
+    </div>
+    <!-- END HEADER -->
+    <?php
+    mysql_free_result($Configuracion);
+    ?>
+    <script>
+        function changepassword() {
+            $("#mchangepassword").modal("show");
+            passwordcurrent.value = "";
+            passwordnew.value = "";
+        }
+
+        function tirggerchangepassword() {
+            if (passwordcurrent.value === "" || passwordnew.value === "")
+                return;
+            var formData = new FormData();
+            formData.append("passwordcurrent", passwordcurrent.value);
+            formData.append("passwordnew", passwordnew.value);
+            formData.append("codacceso", <?= $_SESSION['kt_login_id'] ?>);
+
+            fetch(`changepassword.php`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .catch(error => console.error("error: ", error))
+                .then(res => {
+                    if (res.success) {
+                        alert("Clave cambiada!");
+                        $("#mchangepassword").modal("hide");
+                    }else if(res && !res.success && res.msg) {
+                        alert(res.msg);
+                    }
+                });
+
+        }
+        document.querySelector("#time-menu").textContent = new Date().toLocaleTimeString()
+    </script>

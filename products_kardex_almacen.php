@@ -117,8 +117,8 @@ include("Fragmentos/pie.php");
         const query = `
         select 
             p.codigoprod, p.minicodigo, p.codigo2, p.codigo3 ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
-             (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) as xentregar,
-             sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' Then k5.cantidad Else 0 End) entradas,
+             Case when IFNULL(kc.saldo, 0) = 0 then 0 else (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) end as xentregar,
+             sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' or k5.detalle like '%anulacion%' Then k5.cantidad Else 0 End) entradas,
              sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' or k5.detalle like '%despacho%' Then k5.cantidad Else 0 End) salidas
         from producto p 
         left join marca m on m.codigomarca = p.codigomarca
@@ -221,13 +221,14 @@ include("Fragmentos/pie.php");
                     const listdata = [];
                     let i = 0;
                     res.forEach(item => {
+                        item.isproveedor = item.isproveedor ? parseInt(item.isproveedor) : 0;
                         if (item.cantidad != "0") {
                             listdata.push({
                                 fecha: new Date(item.fecha).toLocaleDateString(),
                                 detalle: item.isproveedor ? "INVENTARIO" : item.detalle, //isproveedor is isinventario
-                                tipodocumento: item.isproveedor ? "" : item.tipodocumento,
+                                tipodocumento: (item.isproveedor ? "" : item.tipodocumento) + (item.detalle == "anulacion" ? " - anulada" : ""),
                                 numero: item.isproveedor ? "" : item.numero,
-                                entrada: item.detalle.toLowerCase().includes("compras", "entra", "inventario") ? item.cantidad : "",
+                                entrada: /compra|entra|inventario|anulacion/gi.test(item.detalle) ? item.cantidad : "",
                                 salida: /ventas|sale|despacho/gi.test(item.detalle)? item.cantidad : "",
                                 proveedor: item.isproveedor ? "INVENTARIO" : item.detalleaux,
                                 saldo: item.saldo

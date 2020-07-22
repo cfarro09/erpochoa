@@ -66,7 +66,7 @@ $totalRows_Detalle_Compras = mysql_num_rows($Detalle_Compras);
 $validastock = $row_Detalle_Compras['cantidad'];
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Clientes = "SELECT codigoproveedor as codigoclienten, CONCAT(razonsocial, ' ', ruc) as ClienteNatural FROM proveedor  WHERE estado = 0 order by razonsocial";
+$query_Clientes = "SELECT codigoproveedor as codigoclienten, CONCAT(razonsocial, ' ', ruc) as ClienteNatural FROM proveedor  WHERE estado = 0 and razonsocial not like  '%inventario%' order by razonsocial";
 $Clientes = mysql_query($query_Clientes, $Ventas) or die(mysql_error());
 $row_Clientes = mysql_fetch_assoc($Clientes);
 $totalRows_Clientes = mysql_num_rows($Clientes);

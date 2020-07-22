@@ -160,8 +160,8 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						<label for="field-1" class="control-label">Sucursal</label>
 						<select name="sucursal" onchange="handlerchangesucursal(this)" required id="sucursal-oc-new" class="form-control ">
 							<?php do {  ?>
-								<option <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'selected' : '' ?> value="<?php echo $row_sucursales['cod_sucursal'] ?>">
-									<?php echo $row_sucursales['nombre_sucursal'] ?>
+								<option  <?= $row_sucursales['cod_sucursal'] == $_SESSION['cod_sucursal'] ? 'disabled' : '' ?> value="<?= $row_sucursales['cod_sucursal'] ?>">
+									<?= $row_sucursales['nombre_sucursal'] ?>
 								</option>
 							<?php
 							} while ($row_sucursales = mysql_fetch_assoc($sucursales));
@@ -175,6 +175,9 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					</div>
 				</div>
 				<div class="col-md-6">
+					<a class="btn sbold blue " onclick="abre_ventana('Emergentes/cliente_natural_list_add.php',700,570)" data-toggle="modal"> C. Natural <i class="fa fa-plus"></i></a>
+					<a class="btn sbold blue " onclick="abre_ventana('Emergentes/cliente_juridico_list_add.php',700,430)" data-toggle="modal"> C. Juridico <i class="fa fa-plus"></i></a>
+					<a class="btn sbold green " onclick="getclientes()"> Actualizar </a>
 					<div class="form-group">
 						<label for="field-1" class="control-label">Cliente</label>
 						<select name="cliente" required id="cliente" required class="form-control select2 tooltips" id="single" data-placement="top" data-original-title="Seleccionar cliente">
@@ -273,6 +276,7 @@ include("Fragmentos/pie.php");
 
 <script type="text/javascript">
 	let htmlcuentaabonado = "";
+	let htmloptionsbancos = "";
 
 	let codigosucursalventas = <?= $codsucursal ?>;
 	const codsucursalorigen = <?= $codsucursal ?>;
@@ -312,6 +316,7 @@ include("Fragmentos/pie.php");
 
 	const onloadxx = async () => {
 		htmlcuentaabonado = await getcuentaabonados()
+		htmloptionsbancos = await getbancos()
 		addPayExtra();
 		setcombocliente({
 			value: "factura"
@@ -323,6 +328,20 @@ include("Fragmentos/pie.php");
 	}
 	$(document).ready(onloadxx());
 
+
+	async function getbancos() {
+		let htmloptionsbancos = "";
+		const query = 'select nombre_banco from banco where estado = 0';
+		const arraycuentaabonado = await get_data_dynamic(query);
+		arraycuentaabonado.forEach(x => {
+			htmloptionsbancos += `
+				<option value="${x.nombre_banco}">${x.nombre_banco}</option>
+			`;
+		});
+		return htmloptionsbancos;
+	}
+
+
 	async function getcuentaabonados() {
 		let htmlcuentaabonado1 = "";
 		const query = 'SELECT c.id_cuenta, concat(b.nombre_banco, " - ", c.tipo, " - CTA ", c.numero_cuenta, " - ", c.moneda) as description FROM `cuenta` c inner JOIN banco b on c.idcodigobanco=b.codigobanco';
@@ -333,6 +352,23 @@ include("Fragmentos/pie.php");
 			`;
 		});
 		return htmlcuentaabonado1;
+	}
+	async function getclientes() {
+		let queryselected = "";
+		const query = "SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ',cedula) as cliente  FROM cnatural  WHERE estado = 0";
+		const query2 = "SELECT 'juridico' as tipo,  codigoclientej as codigo, razonsocial as cliente  FROM cjuridico  WHERE estado = 0 union SELECT 'natural' as tipo, codigoclienten as codigo, CONCAT(paterno,  ' ', materno, ' ', nombre, ' ', ruc) as cliente  FROM cnatural  WHERE estado = 0 and ruc is not null ";
+
+		if (tipocomprobante.value == "boleta") {
+			queryselected = query
+			
+		} else if (tipocomprobante.value == "factura") {
+			queryselected = query2
+		} else {
+			queryselected = query + " UNION " + query2;
+		}
+		
+		const res = await get_data_dynamic(queryselected).then(r => r);
+		cargarselect2("#cliente", res, "codigo", "cliente", ["tipo"]);
 	}
 
 	function changemodopago(e) {
@@ -436,7 +472,7 @@ include("Fragmentos/pie.php");
 	}
 
 	function changevalue(e) {
-		if (e.value < 0 || "" == e.value) {
+		if (e.value < 0) {
 			e.value = ""
 		} else {
 			if (e.dataset.type == "cantidad") {
@@ -796,8 +832,8 @@ include("Fragmentos/pie.php");
 				igv: getSelector("#igv-header").textContent ? getSelector("#igv-header").textContent : 0,
 				total: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
 				montofact: getSelector("#total-header").textContent ? getSelector("#total-header").textContent : 0,
-				fecha_emision: '<?php echo date("Y-m-d"); ?>',
-				hora_emision: '<?php echo date("h:i:s"); ?>',
+				fecha_emision: new Date(new Date().setHours(10)).toISOString().substring(0, 10),
+				hora_emision: new Date().toTimeString().substring(0, 8),
 				codigoacceso: "<?= $_SESSION['kt_login_id']; ?>",
 				codigopersonal: "<?php echo $_SESSION['kt_codigopersonal']; ?>",
 				estadofact: 1,
@@ -866,9 +902,9 @@ include("Fragmentos/pie.php");
 			const proveedor_detalleaux = $('#cliente').select2('data')[0].text;
 
 			data.header = `insert into ventas 
-			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega)
+			(tipocomprobante, codigocomprobante, codigoclienten, codigoclientej, subtotal, igv, total, fecha_emision, hora_emision, codacceso, codigopersonal, cambio, montofact, estadofact, totalc, pagoefectivo, jsonpagos, porpagar, pagoacomulado, sucursal, modalidadentrega, sucursaldestino)
 			values
-			('${h.tipocomprobante}', ${codigocomprobante.value}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${codsucursalorigen}, '${modalidadentrega.value}')
+			('${h.tipocomprobante}', ${codigocomprobante.value}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${codsucursalorigen}, '${modalidadentrega.value}', ${codigosucursalventas})
 			`
 
 			getSelectorAll(".producto").forEach(item => {

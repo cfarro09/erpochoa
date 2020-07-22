@@ -45,7 +45,17 @@ while($res = mysql_fetch_assoc($Factura)){
 }
 //$row_Factura = mysql_fetch_assoc($Factura);
 //$totalRows_Factura = mysql_num_rows($Factura);
+function utf8ize($d) {
+  if (is_array($d)) {
+      foreach ($d as $k => $v) {
+          $d[$k] = utf8ize($v);
+      }
+  } else if (is_string ($d)) {
+      return utf8_encode($d);
+  }
+  return $d;
+}
 
-die(json_encode($result, 128));
+die(json_encode(utf8ize($result)));
 
 ?>

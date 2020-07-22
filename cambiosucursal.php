@@ -231,7 +231,7 @@ include("Fragmentos/pie.php");
             `)
             // Se registra la entrada en kardex_almacen
             data.detalle.push(`
-                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento)
+                        INSERT INTO kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, fecha, codsucursal, tipo, tipodocumento, detalleaux)
                         VALUES 
                         (
                             ${codigoprod},
@@ -243,7 +243,8 @@ include("Fragmentos/pie.php");
                             '${new Date(new Date().setHours(10)).toISOString().substring(0,10)}',
                             ${idsucursaldestino.value},
                             '',
-                            'guia'
+                            'guia',
+                            '${sucursalorigen.value}'
                         )
                     `)
         })
@@ -253,7 +254,7 @@ include("Fragmentos/pie.php");
                 personaldestino = ${personss}
             where id = ${idcambiox.value}
         `)
-        const jjson = JSON.stringify(data).replace(/select/g, "lieuiwuygyq")
+        const jjson = JSON.stringify(data).replace(/select/gi, "lieuiwuygyq")
         var formData = new FormData();
         formData.append("json", jjson);
 
