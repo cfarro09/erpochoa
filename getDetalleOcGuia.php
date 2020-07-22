@@ -49,7 +49,15 @@ $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
 $result_enc = array();
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
-$query_Factura = "SELECT dgoc.cant_recibida, dgoc.codigo_guiaoc as detalle_cod_oc_guia, m.nombre as marca, pr.minicodigo, pr.nombre_producto, oc.codigoordcomp , doc.codigoprod, doc.cantidad, doc.pcompra, doc.igv, doc.totalcompras, doc.unidad_medida from detalle_compras_oc doc left join ordencompra oc on oc.codigo = doc.codigo left join ordencompra_guia ocg on ocg.codigoordcomp = oc.codigoordcomp left join detalle_guia_oc dgoc on dgoc.codigo = ocg.codigoguia and dgoc.codigoprod = doc.codigoprod left join producto pr on pr.codigoprod = doc.codigoprod left join marca m on m.codigomarca =  pr.codigomarca where doc.codigo = '$codigo'";
+$query_Factura = "SELECT dgoc.cant_recibida, dgoc.codigo_guiaoc as detalle_cod_oc_guia, m.nombre as marca, pr.minicodigo, pr.nombre_producto, oc.codigoordcomp , doc.codigoprod, doc.cantidad, doc.pcompra, doc.igv, doc.totalcompras, pres.nombre_presentacion unidad_medida 
+from detalle_compras_oc doc 
+left join ordencompra oc on oc.codigo = doc.codigo 
+left join ordencompra_guia ocg on ocg.codigoordcomp = oc.codigoordcomp 
+left join detalle_guia_oc dgoc on dgoc.codigo = ocg.codigoguia and dgoc.codigoprod = doc.codigoprod 
+left join producto pr on pr.codigoprod = doc.codigoprod 
+left join presentacion pres on pr.codigopresent = pres.codigopresent
+left join marca m on m.codigomarca =  pr.codigomarca 
+where doc.codigo = '$codigo'";
 
 //ESE ES EL DETALLE Q MUESTRA, COMO LO UNES AL DETALLE DE LA GUIA
 

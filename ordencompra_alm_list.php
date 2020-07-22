@@ -184,7 +184,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 		</tbody>
 	</table>
 	<div class="modal fade" id="mOrdenCompra" role="dialog" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog" role="document" style="width: 800px;">
+		<div class="modal-dialog" role="document" style="width: 900px;">
 			<div class="modal-content m-auto">
 				<div class="modal-header">
 					<h5 class="modal-title" id="moperation-title"></h5>
@@ -246,7 +246,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 											<th>Producto</th>
 											<th>Marca</th>
 											<th id="th-saldo" style="display: none">Saldo</th>
-											<th>Cantidad Recibida</th>
+											<th width="150px" id="cantidadrecibidax">Cantidad Recibida</th>
 										</thead>
 										<tbody id="detalleTableOrden-alm-list">
 										</tbody>
@@ -388,13 +388,18 @@ $totalRows_Listado = mysql_num_rows($Listado);
 						document.querySelector("#btn-finalice-alm-list").style.display = ""
 						document.querySelector("#th-saldo").style.display = "none"
 					}
+					if (finaliced) {
+						cantidadrecibidax.style.display = "none";
+					} else {
+						cantidadrecibidax.style.display = "";
+					}
 					document.querySelector("#detalleTableOrden-alm-list").innerHTML = ""
 					res.detalle.forEach(r => {
 						i++
 						let tdExtra = "";
 						let validateCant = 0;
 						if (res.header.numeroguia) {
-							tdExtra = `<td class="cant-extra">${parseFloat(r.cantidad) - parseFloat(r.cant_recibida)}</td>`
+							tdExtra = `<td class="cant-extra text-right">${(parseFloat(r.cantidad) - parseFloat(r.cant_recibida)).toFixed(2)}</td>`
 							validateCant = parseFloat(r.cantidad) - parseFloat(r.cant_recibida)
 						} else {
 							validateCant = r.cantidad
@@ -414,7 +419,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 						<td class="codigoprod" data-codigoprod="${r.codigoprod}">${r.nombre_producto}</td>
 						<td>${r.marca}</td>
 						${tdExtra}
-						<td style="width: 30px">${input}</td>
+						<td style="width: 30px; ${finaliced ? "display: none" : ""}">${input}</td>
 						</tr>`)
 					});
 				});
@@ -441,7 +446,9 @@ $totalRows_Listado = mysql_num_rows($Listado);
 				estado: 2,
 				observacion: $("#observacion").val(),
 				codigoguia: $("#codigoguia").val(),
-				codsucursal: parseInt($("#codsucursaluuu").val())
+				codsucursal: parseInt($("#codsucursaluuu").val()),
+				tipodocalmacen: $("#tipodocalmacen").val(),
+				detalleaux: proveedormodal.value
 			},
 			detalle: []
 		}
@@ -460,6 +467,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 					codigo: tr.querySelector(".codigo").dataset.codigo,
 					codigoprod: tr.querySelector(".codigoprod").dataset.codigoprod,
 					cantidad: tr.querySelector(".cant_recibida").dataset.cant_recibida,
+					cantidad_kardex: parseFloat(tr.querySelector(".cant-arrived").value),
 					cantidad_recibida: tr.querySelector(".cant-arrived").value ? parseFloat(tr.querySelector(".cant-arrived").value) + aux : aux,
 					saldo: parseFloat(tr.querySelector(".cant_recibida").dataset.cant_recibida) - parseFloat(tr.querySelector(".cant-arrived").value) + aux,
 					codigo_guiaoc: tr.querySelector(".codigo").dataset.codigo_guiaoc
