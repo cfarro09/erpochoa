@@ -31,7 +31,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
         background: url('../resources/details_close.png') no-repeat center center;
     }
 </style>
-<div class="row">
+<div class="row" style="margin-bottom: 6rem;">
     <div class="col-md-4">
         <div class="form-group">
             <label for="field-1" class="control-label">Fecha Inicio</label>
@@ -48,7 +48,7 @@ $codsucursal = $_SESSION['cod_sucursal'];
         <button type="button" onclick="initTable()" class="btn btn-primary" style="margin-top: 10px; padding: 10px 40px">Buscar</button>
     </div>
 </div>
-<table id="maintable" class="display" width="100%"></table>
+<table id="maintable"  class="display" width="100%"></table>
 
 <div class="modal fade" id="moperation" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document" style="width: 900px">
@@ -121,7 +121,9 @@ include("Fragmentos/pie.php");
             FROM registro_compras r
             LEFT JOIN sucursal s on s.cod_sucursal = r.codigosuc 
             LEFT JOIN proveedor p on p.ruc = r.rucproveedor
-            WHERE r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
+            WHERE 
+                p.razonsocial not like  '%inventario%' and
+                 r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
         `;
         let data = await get_data_dynamic(query);
 
@@ -152,6 +154,33 @@ include("Fragmentos/pie.php");
         $('#maintable').DataTable({
             data: data,
             destroy: true,
+            dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+            buttons: [{
+                    extend: 'print',
+                    className: 'btn dark btn-outline'
+                },
+                {
+                    extend: 'copy',
+                    className: 'btn red btn-outline'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn green btn-outline'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn yellow btn-outline '
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn purple btn-outline '
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn dark btn-outline',
+                    text: 'Columns'
+                }
+            ],
             columns: [{
                     title: 'T/D',
                     data: 'tipo'

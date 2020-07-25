@@ -26,11 +26,12 @@
 
     # Cargar Productos
     $query_Productos = "
-    select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+    select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad, p.minicodigo, pre.nombre_presentacion
     from kardex_contable k
     inner join producto p on p.codigoprod = k.codigoprod
     inner join marca m on m.codigomarca = p.codigomarca
     inner join `color` `c` on(p.codigocolor = c.codigocolor)
+    left join presentacion pre on pre.codigopresent = p.codigopresent
     inner join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod = k.codigoprod)
     where k.sucursal = $sucursal_actual and saldo > 0
     and k.id_kardex_contable in
@@ -99,15 +100,18 @@
                     <?php
                     do {
                         ?>
-                        <option value="<?php echo $row_Productos['codigoprod'] ?>"
+                        <option value="<?= $row_Productos['codigoprod'] ?>"
                             data-preciocompra="<?= $row_Productos['totalunidad'] ?>"
-                            data-precioventa="<?= $row_Productos['p2'] ?>" data-stock="<?= $row_Productos['saldo'] ?>"
+                            data-precioventa="<?= $row_Productos['p2'] ?>" 
+                            data-stock="<?= $row_Productos['saldo'] ?>"
                             data-nombre="<?php echo $row_Productos['nombre_producto'] ?>"
+                            data-presentacion="<?php echo $row_Productos['nombre_presentacion'] ?>"
                             data-marca="<?= $row_Productos['Marca']; ?>">
-                            <?php echo $row_Productos['nombre_producto'] ?> -
-                            <?php echo $row_Productos['Marca']; ?> -
-                            <?php echo $row_Productos['nombre_color']; ?> -
-                            <?php echo "$/." . $row_Productos['p2']; ?> -
+                            <?= $row_Productos['nombre_producto'] ?> -
+                            <?= $row_Productos['minicodigo'] ?> -
+                            <?= $row_Productos['Marca']; ?> -
+                            <?= $row_Productos['nombre_color']; ?> -
+                            <?= "$/." . $row_Productos['p2']; ?> -
                             (<?= "Stock " . $row_Productos['saldo']; ?>)</option>
                             <?php
                         } while ($row_Productos = mysql_fetch_assoc($Productos));
@@ -125,7 +129,7 @@
                 <thead>
                     <th>Nº</th>
                     <th>Cantidad</th>
-                    <th>U. Medida</th>
+                    <th style="width: 50px">U. Medida</th>
                     <th>Producto</th>
                     <th>Marca</th>
                     <th>Precio Venta</th>
@@ -178,15 +182,15 @@
 
         function changevalue(e) {
             if (e.value < 0 || "" == e.value) {
-                e.value = 0
+                e.value = ""
             } else {
                 if (e.dataset.type == "cantidad") {
                     if (parseInt(e.dataset.stock) < parseInt(e.value)) {
-                        e.value = 0
+                        e.value = ""
                     }
                 }
-                const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
-                const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
+                // const precio = parseFloat(e.closest(".producto").querySelector(".precio").value);
+                // const cantidad = parseInt(e.closest(".producto").querySelector(".cantidad").value);
             }
         }
 
@@ -220,7 +224,7 @@
             numero_guia.value = resguia[0].value
 
             var formData = new FormData();
-            var query = "select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad "+
+            var query = "select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad, p.minicodigo "+
                         "from kardex_contable k "+
                         "inner join producto p on p.codigoprod = k.codigoprod "+
                         "inner join marca m on m.codigomarca = p.codigomarca "+
@@ -241,7 +245,7 @@
                                     "data-nombre='"+row[2]+"' "+
                                     "data-stock='"+row[1]+"' "+
                                     "data-marca='"+row[3]+"' > "+
-                                    row[2]+" - "+row[3]+" - "+row[4]+" - $/."+row[6]+" - (Stock "+row[1]+")"+
+                                    row[2]  + " - " + row[9] + " - "+row[3]+" - "+row[4]+" - $/."+row[6]+" - (Stock "+row[1]+")"+
                                  "</option>"
                     $('#producto').append(option);
                 });
@@ -259,13 +263,9 @@
                         <input type="hidden" class="pcompra" value="${option.dataset.preciocompra}">
                         <td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
                         <td class="indexproducto">${cantrows}</td>
-                        <td><input type="number" data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+                        <td><input data-type="cantidad" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
                         <td>
-                        <select class="form-control unidad_medida" name="unidad_medida" required>
-                        <option value="unidad">unidad</option>
-                        <option value="kilo">kilo</option>
-                        <option value="tonelada">tonelada</option>
-                        </select>
+                        <input disabled class="form-control unidad_medida" value="${option.dataset.presentacion}">
                         </td>
                         <td class="nombre">${option.dataset.nombre}</td>
                         <td class="marca">${option.dataset.marca}</td>
@@ -354,12 +354,12 @@
                 `)
                     productos.push(d);
                 })
-                h.productos = JSON.stringify(productos);
+                h.productos = JSON.stringify(productos).replace(/'/gi, "");
                 data.header = `
                 insert into guiasucursal (sucursalorigen, personalorigen, sucursaldestino, nroguia, estado, productos) `+
                 `values ('${h.sucursal_origen}', ${h.personal_origen}, '${h.sucursal_destino}','${h.nro_guia}', 'PENDIENTE','${h.productos}')`;
 
-                data.detalle.push("UPDATE propiedades SET value = (" + h.nro_guia + "+1) where `key` = 'despacho_guia_"+h.sucursal_origen+"'");
+                // data.detalle.push("UPDATE propiedades SET value = (" + h.nro_guia + "+1) where `key` = 'despacho_guia_"+h.sucursal_origen+"'");
 
 
                 // Se registra la salida kardex_contable

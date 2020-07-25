@@ -54,15 +54,6 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "Eliminar_Registro")
   header(sprintf("Location: %s", $updateGoTo));
 }
 
-mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT c.codigo_guia_sin_oc, s.nombre_sucursal,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor  left join sucursal s on s.cod_sucursal = c.sucursal";
-
-$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
-$row_Listado = mysql_fetch_assoc($Listado);
-$totalRows_Listado = mysql_num_rows($Listado);
-//Enumerar filas de data tablas
-$i = 1;
-
 //Titulo e icono de la pagina
 $Icono = "fa fa-building-o";
 $Color = "font-blue";
@@ -81,7 +72,16 @@ include("Fragmentos/cod_gen.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 
+$codsucursal = $_SESSION['cod_sucursal'];
 
+mysql_select_db($database_Ventas, $Ventas);
+$query_Listado = "SELECT c.codigo_guia_sin_oc, s.nombre_sucursal,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor  left join sucursal s on s.cod_sucursal = c.sucursal where c.sucursal = $codsucursal";
+
+$Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
+$row_Listado = mysql_fetch_assoc($Listado);
+$totalRows_Listado = mysql_num_rows($Listado);
+//Enumerar filas de data tablas
+$i = 1;
 //________________________________________________________________________________________________________________
 ?>
 

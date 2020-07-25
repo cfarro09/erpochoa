@@ -239,8 +239,8 @@ include("Fragmentos/pie.php");
                     $('#maintabledetail').DataTable({
                         data: listdata,
                         ordering: false,
-                        dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
                         destroy: true,
+                        dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
                         buttons: [{
                                 extend: 'print',
                                 className: 'btn dark btn-outline'

@@ -2,7 +2,14 @@
 <?php
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select c.codigorc, 0 as totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerocomprobante,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal  from registro_compras c left join sucursal s on s.cod_sucursal = c.codigosuc left join proveedor p on p.codigoproveedor = c.codigoproveedor inner join acceso a on a.codacceso=c.codacceso order by c.fecha desc";
+$query_Listado = "SELECT c.codigorc, 0 as totalv, c.tipomoneda, c.tipo_comprobante, p.razonsocial, c.fecha,c.numerocomprobante,a.usuario, c.subtotal, c.total, c.estadofact, s.nombre_sucursal, 
+
+(select GROUP_CONCAT(CONCAT(p.nombre_producto, ' - ', IFNULL(p.minicodigo, '')) SEPARATOR ', ') from detalle_compras dc inner join producto p on p.codigoprod = dc.codigoprod where dc.codigocompras = c.codigorc) as productos
+from registro_compras c 
+left join sucursal s on s.cod_sucursal = c.codigosuc 
+left join proveedor p on p.codigoproveedor = c.codigoproveedor 
+inner join acceso a on a.codacceso=c.codacceso 
+order by c.fecha desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -49,6 +56,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th class="text-center">TIPO COMPR </th>
 				<th class="none">Generada </th>
 				<th class="none">N. Reg. </th>
+				<th class="none">Productos </th>
 				<th class="text-center">PROVEEDOR</th>
 				<th class="text-center">Pr. COMPRA</th>
 				
@@ -63,9 +71,10 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td ><?= $i ?></td>
 					<td class="fecha"><?= date("d/m/Y", strtotime($row_Listado['fecha'])) ?></td>
 					<td class="tipo_comprobante"><?= $row_Listado['tipo_comprobante'] ?></td>
-					<td class="text-right numerocomprobante" ><?= $row_Listado['numerocomprobante']*1; ?></td>
+					<td class="text-right numerocomprobante" ><?= $row_Listado['numerocomprobante']; ?></td>
 					<td class="usuario"><?= $row_Listado['usuario'] ?></td>
 					<td class="codigorc"><?= $row_Listado['codigorc'] ?></td>
+					<td><?= $row_Listado['productos'] ?></td>
 					<td class="razonsocial"><?= $row_Listado['razonsocial'] ?></td>
 					<td class="text-right total" > <?= $row_Listado['total'] ?></td>
 					

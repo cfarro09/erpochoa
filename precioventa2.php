@@ -7,7 +7,11 @@ $row_sucursales = mysql_fetch_assoc($sucursales);
 $totalRows_sucursales = mysql_num_rows($sucursales);
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "select p.codigo_pv, a.codigoprod AS codigoprod,a.nombre_producto AS nombre_producto,b.nombre AS Marca,c.nombre AS Categoria,k.saldo AS stock,k.precio AS precio_compra,p.precioventa1 AS precio_venta1,p.precioventa1 AS precio_venta2,p.precioventa3 AS precio_venta3,p.porcpv1 AS porc1,p.porcpv2 AS porc2,p.porcpv3 AS porc3,a.minicodigo AS minicodigo,k.saldo AS saldo from ((((producto a join marca b on((a.codigomarca = b.codigomarca))) join categoria c on((a.codigocat = c.codigocat))) join kardex_contable k on((k.codigoprod = a.codigoprod))) join precio_venta p on((p.codigoprod = k.codigoprod))) where (a.estado = 0) group by a.codigoprod order by k.fecha desc";
+$query_Listado = "SELECT d.codigodetalleproducto, d.cantidad, d.codigoprod, p.minicodigo, p.nombre_producto, m.nombre as marca, d.vcf, d.totalunidad, d.vcu precio_compra, d.totalunidad, d.vcf, IFNULL(pv.porcpv1, '') as porcpv1, IFNULL(pv.porcpv2, '') as porcpv2, IFNULL(pv.porcpv3, '') as porcpv3, IFNULL(pv.precioventa1, '') as precio_venta1, IFNULL(pv.precioventa2, '') as precio_venta2, IFNULL(pv.precioventa3, '') as precio_venta3
+from producto p 
+inner join detalle_compras d on d.codigodetalleproducto = (select max(d1.codigodetalleproducto) from detalle_compras d1 where d1.codigoprod = p.codigoprod) 
+left join marca m on m.codigomarca = p.codigomarca 
+left join precio_venta pv on pv.codigo_pv = (select max(pv2.codigo_pv) from precio_venta pv2 where pv2.codigoprod =  d.codigoprod) group by d.codigoprod";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -58,6 +62,8 @@ include("Fragmentos/abrirpopupcentro.php");
 									<input type="hidden" id="codproducto">
 									<input type="hidden" id="codigodetalleproducto">
 									<input type="hidden" id="codigo_pv">
+									<input type="hidden" id="inputvcf">
+									<input type="hidden" id="inputtotalunidad">
 									<table class="table">
 										<thead>
 											<th>Producto</th>
@@ -119,7 +125,6 @@ include("Fragmentos/abrirpopupcentro.php");
 				<th class="text-center">MARCA </th>
 				<th class="text-center">P COMPRA</th>
 				<th class="text-center">P VENTA</th>
-				<th class="text-center">TOTAL PROD</th>
 				<th class="text-center">ACCION </th>
 			</tr>
 		</thead>
@@ -129,14 +134,15 @@ include("Fragmentos/abrirpopupcentro.php");
 					<td> <?php echo $i; ?> </td>
 					<td class="text-right"> <?php echo $row_Listado['codigoprod']*1; ?>                                                           </td>
 					<td> <?php echo $row_Listado['nombre_producto']; ?></td>
-					<td align="center"> <?= $row_Listado['Marca']; ?></td>
+					<td align="center"> <?= $row_Listado['marca']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_compra']; ?></td>
 					<td align="right"> <?= $row_Listado['precio_venta1']; ?></td>
-					<td align="right"> <?= $row_Listado['saldo'];?></td>
 					<td><a href="#" 
 						data-nombreproducto="<?= $row_Listado['nombre_producto'] ?>" 
 						data-minicodigo="<?= $row_Listado['minicodigo'] ?>" 
-						data-marca="<?= $row_Listado['Marca']; ?>" 
+						data-marca="<?= $row_Listado['marca']; ?>" 
+						data-vcf="<?= $row_Listado['vcf']; ?>" 
+						data-totalunidad="<?= $row_Listado['totalunidad']; ?>" 
 						data-codigo_pv="<?= $row_Listado['codigo_pv']; ?>" 
 						data-preciocompra="<?= $row_Listado['precio_compra']; ?>" 
 						data-codigodetalleproducto="<?= $row_Listado['codigodetalleproducto']; ?>" 
@@ -161,12 +167,15 @@ include("Fragmentos/abrirpopupcentro.php");
 			$("#mSetPrecioVenta").modal();
 			btn_save_precioventa1.style.display = ""
 			preciocomprapv2.textContent = parseFloat(e.dataset.preciocompra).toFixed(2)
-			precioventapv2.textContent = parseFloat(e.dataset.precioventa).toFixed(2)
+			precioventapv2.textContent = e.dataset.precioventa ? parseFloat(e.dataset.precioventa).toFixed(2) : ""
 			codigo_pv.value = e.dataset.codigo_pv
 			marcapv2.textContent = e.dataset.marca
 			productopv2.textContent = e.dataset.nombreproducto
 			codproducto.textContent = e.dataset.codproducto
 			codigodetalleproducto.textContent = e.dataset.codigodetalleproducto
+			
+			inputvcf.value = e.dataset.vcf
+			inputtotalunidad.value = e.dataset.totalunidad
 
 			getSelector("#moperation-titlepv").textContent = `Asignar precio venta ${e.dataset.minicodigo}`;
 
@@ -232,16 +241,31 @@ include("Fragmentos/abrirpopupcentro.php");
 		
 		const guardar = e => {
 			e.preventDefault();
-
 			const idpv = parseInt(codigo_pv.value);
 
 			const codacceso = <?= $_SESSION['kt_login_id'] ?>;
 			const detalle = [];
+
 			detalle.push(
-				`update precio_venta
-					set porcpv1 = ${porcentaje1.value}, porcpv2 = ${porcentaje2.value}, porcpv3= ${porcentaje3.value}, precioventa1 = ${precio1.value}, precioventa2 = ${precio2.value}, precioventa3 = ${precio3.value}
-				where codigo_pv = ${idpv}`
+				`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3, codigocompras)
+				values
+				(
+				${codacceso},
+				1,
+				${codigodetalleproducto.textContent},
+				${codproducto.textContent},
+				${inputvcf.value},
+				${inputtotalunidad.value},
+				${porcentaje1.value},
+				${precio1.value},
+				${porcentaje2.value},
+				${precio2.value},
+				${porcentaje3.value},
+				${precio3.value},
+				0
+				);`
 			)
+
 			var formData = new FormData();
 				formData.append("exearray", JSON.stringify(detalle))
 

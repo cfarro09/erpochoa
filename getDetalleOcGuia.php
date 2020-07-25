@@ -36,12 +36,12 @@ if (isset($_GET['codigo'])) {
 }
 mysql_select_db($database_Ventas, $Ventas);
 
-$query_Factura_enc = "SELECT (select GROUP_CONCAT(DISTINCT CONCAT('Fecha; ', ka1.fecha, ' Guia: ', ka1.numero) SEPARATOR '\n') from kardex_alm ka1 where ka1.codigoguia = g.codigoguia and ka1.tipo = 'oc') concatenadoguias, c.codigoordcomp, c.direccion as direccionOrden, g.estado as estadoguia, s.nombre_sucursal, g.codigoguia,g.numeroguia, g.observacion ,c.codigo, c.subtotal, c.igv, c.montofact, c.fecha_emision, c.codigoproveedor, c.codigo, c.codigoref1, c.codigoref2, pe.nombre as nombrep, c.fecha_emision, pe.paterno as paternop, pe.materno as maternop, p.celular, p.ciudad, p.direccion, p.email, p.pais, p.paginaweb, p.telefono, p.ruc, p.razonsocial, a.usuario, c.sucursal 
+$query_Factura_enc = "SELECT (select GROUP_CONCAT(DISTINCT CONCAT('Fecha; ', g1.fecha, ' Guia: ', g1.numeroguia) SEPARATOR '\n') from ordencompra_guia g1 where g1.codigoordcomp = c.codigoordcomp ) concatenadoguias, c.codigoordcomp, c.direccion as direccionOrden, g.estado as estadoguia, s.nombre_sucursal, g.codigoguia,g.numeroguia, g.observacion ,c.codigo, c.subtotal, c.igv, c.montofact, c.fecha_emision, c.codigoproveedor, c.codigo, c.codigoref1, c.codigoref2, pe.nombre as nombrep, c.fecha_emision, pe.paterno as paternop, pe.materno as maternop, p.celular, p.ciudad, p.direccion, p.email, p.pais, p.paginaweb, p.telefono, p.ruc, p.razonsocial, a.usuario, c.sucursal 
 FROM ordencompra c 
 inner join acceso a on a.codacceso=c.codacceso 
 inner join personal pe on pe.codigopersonal=c.codigopersonal 
 inner join proveedor p on p.codigoproveedor=c.codigoproveedor 
-left join ordencompra_guia g on g.codigoordcomp = c.codigoordcomp 
+left join ordencompra_guia g on g.codigoguia = (select max(ocg1.codigoguia) from ordencompra_guia ocg1 where ocg1.codigoordcomp = c.codigoordcomp )
 left join sucursal s on s.cod_sucursal = c.sucursal WHERE c.codigo = '$codigo'";
 
 
@@ -49,10 +49,10 @@ $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
 $result_enc = array();
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
-$query_Factura = "SELECT dgoc.cant_recibida, dgoc.codigo_guiaoc as detalle_cod_oc_guia, m.nombre as marca, pr.minicodigo, pr.nombre_producto, oc.codigoordcomp , doc.codigoprod, doc.cantidad, doc.pcompra, doc.igv, doc.totalcompras, pres.nombre_presentacion unidad_medida 
+$query_Factura = "SELECT dgoc.cant_recibida, dgoc.codigo_guiaoc as detalle_cod_oc_guia, m.nombre as marca, IFNULL(pr.minicodigo, '') minicodigo, pr.nombre_producto, oc.codigoordcomp , doc.codigoprod, doc.cantidad, doc.pcompra, doc.igv, doc.totalcompras, pres.nombre_presentacion unidad_medida 
 from detalle_compras_oc doc 
 left join ordencompra oc on oc.codigo = doc.codigo 
-left join ordencompra_guia ocg on ocg.codigoordcomp = oc.codigoordcomp 
+left join ordencompra_guia ocg on ocg.codigoguia = (select max(ocg1.codigoguia) from ordencompra_guia ocg1 where ocg1.codigoordcomp = oc.codigoordcomp )
 left join detalle_guia_oc dgoc on dgoc.codigo = ocg.codigoguia and dgoc.codigoprod = doc.codigoprod 
 left join producto pr on pr.codigoprod = doc.codigoprod 
 left join presentacion pres on pr.codigopresent = pres.codigopresent

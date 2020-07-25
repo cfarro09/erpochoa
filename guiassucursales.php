@@ -185,11 +185,13 @@ $suc = $_SESSION['cod_sucursal'];
             ]
         });
     }
-
     const initTable = async () => {
         const query = `
-        select id, gs.estado, fechainicio, fechallegada, productos, s1.nombre_sucursal sucursalorigen, s2.nombre_sucursal sucursaldestino, nroguia from guiasucursal gs inner join sucursal s1 on s1.cod_sucursal = gs.sucursalorigen inner join sucursal s2 on s2.cod_sucursal = gs.sucursaldestino
-
+        select id, gs.estado, fechainicio, fechallegada, productos, s1.nombre_sucursal sucursalorigen, s2.nombre_sucursal sucursaldestino, nroguia 
+        from guiasucursal gs 
+        inner join sucursal s1 on s1.cod_sucursal = gs.sucursalorigen 
+        inner join sucursal s2 on s2.cod_sucursal = gs.sucursaldestino
+        where gs.sucursalorigen = ${codsucursal} or gs.sucursaldestino = ${codsucursal}
         `;
 
         let data = await get_data_dynamic(query);

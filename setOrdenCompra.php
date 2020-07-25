@@ -40,7 +40,7 @@ $detalleArray = json_decode($json)->detalle;
 
 mysql_select_db($database_Ventas, $Ventas);
 
-if($header->codigoguia){
+if(false){
   $update1 = "update ordencompra_guia set estado = $header->estado where codigoguia = $header->codigoguia";
     $queryC = mysql_query($update1, $Ventas) or die(mysql_error());
   
@@ -56,7 +56,13 @@ if($header->codigoguia){
 
 }else{
    $insertCabecera = "insert into ordencompra_guia(codigoordcomp, codigoacceso, numeroguia, estado, observacion, tipodocalmacen) values ($header->codigoordcomp, $header->codigoacceso , '$header->numeroguia', $header->estado, '$header->observacion', '$header->tipodocalmacen')";
+
    $queryHeader = mysql_query($insertCabecera, $Ventas) or die(mysql_error());
+
+   if ($header->estado == "3" || $header->estado == "2") {
+    $query1 = "UPDATE ordencompra_guia set estado = $header->estado where codigoordcomp = $header->codigoordcomp";
+    mysql_query($query1, $Ventas) or die(mysql_error());
+   }
 
   $lastId = mysql_query("SELECT LAST_INSERT_ID()", $Ventas) or die(mysql_error());
   $lastId = (int) mysql_fetch_assoc($lastId)["LAST_INSERT_ID()"];

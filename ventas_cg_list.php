@@ -27,7 +27,7 @@ $query = "SELECT v.*, CONCAT(c.paterno, ' ', c.materno, ' ', c.nombre) as Client
 from ventas v 
 left join cnatural c on  c.codigoclienten = v.codigoclienten 
 left join  cjuridico cj on cj.codigoclientej = v.codigoclientej 
-where  ((sucursaldestino is null and v.sucursal = $codsucursal) or sucursaldestino = $codsucursal) and modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G'";
+where  ((v.sucursaldestino is null and v.sucursal = $codsucursal) or sucursaldestino = $codsucursal) and (modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G')";
 
 $listado = mysql_query($query, $Ventas) or die(mysql_error());
 $row = mysql_fetch_assoc($listado);

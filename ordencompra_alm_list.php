@@ -100,10 +100,10 @@ $query_Listado = "SELECT s.cod_sucursal, s.nombre_sucursal, c.codigoordcomp, g.e
 FROM ordencompra c 
 inner join proveedor p on c.codigoproveedor=p.codigoproveedor 
 inner JOIN sucursal s on s.cod_sucursal=c.sucursal 
-left join ordencompra_guia g on g.codigoordcomp =c.codigoordcomp 
+left join ordencompra_guia g on g.codigoguia = (select max(ocg1.codigoguia) from ordencompra_guia ocg1 where ocg1.codigoordcomp = c.codigoordcomp ) 
 where c.estado = 2 and  c.sucursal $codsucursalx
 group by codigo 
-order by s.cod_sucursal, fecha_emision desc";
+order by s.cod_sucursal, c.codigoordcomp desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
@@ -495,6 +495,7 @@ $totalRows_Listado = mysql_num_rows($Listado);
 	})
 	document.querySelector("#saveOrdenCompra-alm-list").addEventListener("submit", (e) => {
 		e.preventDefault();
+		debugger
 		const data = {
 			header: {
 				tipodocalmacen: $("#tipodocalmacen").val(),

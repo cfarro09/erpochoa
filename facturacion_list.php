@@ -111,7 +111,9 @@ include("Fragmentos/abrirpopupcentro.php");
 			</td>
 			<?php else: ?>
 			<td><a href="#" class="aux_compras" data-type="ordencompra"
-					data-codigo="<?= $row_Listado['codigo'] ?>">Pendiente</a></td>
+					data-codigo="<?= $row_Listado['codigo'] ?>"
+					data-codigoguia="<?= $row_Listado['codigoguia'] ?>"
+				>Pendiente</a></td>
 			<?php endif ?>
 			<td>
 				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
@@ -347,6 +349,8 @@ include("Fragmentos/abrirpopupcentro.php");
 									<thead>
 										<th class="text-center" >Nº</th>
 										<th class="text-center" >Cantidad</th>
+										<th class="text-center" >Minicodigo</th>
+										<th class="text-center" >Color</th>
 										<th class="text-center" >Producto</th>
 										<th class="text-center" >Marca</th>
 										<th class="text-center"  class="costeosinchecked" width=" 120px">Desc x Item</th>
@@ -1527,7 +1531,7 @@ mysql_free_result($Listado);
 
 
 			if (item.dataset.type == "ordencompra") {
-				url = `getDetalleOrdenCompraGuia.php?codigo=${e.target.dataset.codigo}`;
+				url = `getDetalleOrdenCompraGuia.php?codigo=${e.target.dataset.codigo}&codigoguia=${e.target.dataset.codigoguia}`;
 			}
 			else {
 				url = `getDetalleGuiaSinOc.php?codigo=${e.target.dataset.codigo}`
@@ -1570,6 +1574,8 @@ mysql_free_result($Listado);
 						<tr>
 						<td data-codigo="${r.codigoprod}" class="codigoprod">${i}</td>
 						<td class="cantidad">${r.cantidad}</td>
+						<td class="cantidad">${r.minicodigo}</td>
+						<td class="cantidad">${r.nombre_color}</td>
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
 						<td class="costeosinchecked"><input type="text" autocomplete="off" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>

@@ -34,9 +34,18 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 if (isset($_GET['codigo'])) {
   $codigo = $_GET['codigo'];
 }
+if (isset($_GET['codigoguia'])) {
+  $codigoguia = $_GET['codigoguia'];
+}
+
 mysql_select_db($database_Ventas, $Ventas);
 
-$query_Factura_enc = "SELECT c.codigoordcomp, c.direccion as direccionOrden, g.estado as estadoguia, s.nombre_sucursal,g.codigoguia,g.numeroguia as numero_guia, g.observacion ,c.codigo, c.subtotal, c.igv, c.montofact, c.fecha_emision, c.codigoproveedor, c.codigo, c.codigoref1, c.codigoref2, pe.nombre as nombrep, c.fecha_emision, pe.paterno as paternop, pe.materno as maternop, p.celular, p.ciudad, p.direccion, p.email, p.pais, p.paginaweb, p.telefono, p.ruc, p.razonsocial, a.usuario, c.sucursal FROM ordencompra c inner join acceso a on a.codacceso=c.codacceso inner join personal pe on pe.codigopersonal=c.codigopersonal inner join proveedor p on p.codigoproveedor=c.codigoproveedor left join ordencompra_guia g on g.codigoordcomp = c.codigoordcomp left join sucursal s on s.cod_sucursal = c.sucursal WHERE c.codigo = '$codigo'";
+$query_Factura_enc = "SELECT c.codigoordcomp, c.direccion as direccionOrden, g.estado as estadoguia, s.nombre_sucursal,g.codigoguia,g.numeroguia as numero_guia, g.observacion ,c.codigo, c.subtotal, c.igv, c.montofact, c.fecha_emision, c.codigoproveedor, c.codigo, c.codigoref1, c.codigoref2, pe.nombre as nombrep, c.fecha_emision, pe.paterno as paternop, pe.materno as maternop, p.celular, p.ciudad, p.direccion, p.email, p.pais, p.paginaweb, p.telefono, p.ruc, p.razonsocial, a.usuario, c.sucursal FROM ordencompra c 
+inner join acceso a on a.codacceso=c.codacceso 
+inner join personal pe on pe.codigopersonal=c.codigopersonal 
+inner join proveedor p on p.codigoproveedor=c.codigoproveedor 
+left join ordencompra_guia g on g.codigoguia = $codigoguia 
+left join sucursal s on s.cod_sucursal = c.sucursal WHERE c.codigo = '$codigo'";
 
 
 $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
@@ -44,7 +53,15 @@ $result_enc = array();
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
 
-$query_Factura = "select d.codigo,doc.pcompra ,m.nombre as marca,pr.codigoprod, d.codigo_guiaoc,oc.codigo,d.cantidad,pr.nombre_producto, d.cant_recibida from detalle_guia_oc d inner join ordencompra_guia og on og.codigoguia = d.codigo inner join ordencompra oc on oc.codigoordcomp = og.codigoordcomp left join producto pr on pr.codigoprod = d.codigoprod left join marca m on m.codigomarca = pr.codigomarca left join detalle_compras_oc doc on doc.codigoprod = d.codigoprod and doc.codigo = oc.codigo where oc.codigo ='$codigo' ";
+$query_Factura = "SELECT IFNULL(pr.minicodigo, '') minicodigo, co.nombre_color, d.codigo,doc.pcompra ,m.nombre as marca,pr.codigoprod, d.codigo_guiaoc,oc.codigo, (select k.cantidad from kardex_alm k where k.codigoguia = $codigoguia and k.tipo = 'oc' and k.numero = og.numeroguia) cantidad ,pr.nombre_producto, d.cant_recibida 
+from detalle_guia_oc d 
+inner join ordencompra_guia og on og.codigoguia = d.codigo 
+inner join ordencompra oc on oc.codigoordcomp = og.codigoordcomp 
+left join producto pr on pr.codigoprod = d.codigoprod 
+left join color co on co.codigocolor = pr.codigocolor
+left join marca m on m.codigomarca = pr.codigomarca 
+left join detalle_compras_oc doc on doc.codigoprod = d.codigoprod and doc.codigo = oc.codigo 
+where oc.codigo ='$codigo' and d.codigo = $codigoguia";
 
 //ESE ES EL DETALLE Q MUESTRA, COMO LO UNES AL DETALLE DE LA GUIA
 
