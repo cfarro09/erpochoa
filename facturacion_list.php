@@ -1523,7 +1523,8 @@ mysql_free_result($Listado);
 			getSelector(".div_transporte").style.display = ""
 			
 			viewcomprobante.style.display  = "none"
-			viewcodigoreferencia.style.display  = "none"
+
+			
 
 			actualizarextras.style.display = "none"
 			descuento.removeAttribute("disabled")
@@ -1584,6 +1585,14 @@ mysql_free_result($Listado);
 						auxmodref.style.display = "none";
 						mcodref21.style.display = "none";
 					}
+					if (res.header.codigoref1) {
+						viewcodigoreferencia.style.display = ""
+						viewcodigoreferencia.textContent = "ORDEN COMPRA " +  res.header.codigoref1;
+					}else {
+						viewcodigoreferencia.style.display  = "none"
+					}
+					
+			
 
 					$("#mgeneradapor1").text(res.header.usuario)
 					$("#mruc1").text(res.header.ruc)
