@@ -3,19 +3,19 @@
 
 
 mysql_select_db($database_Ventas, $Ventas);
-$query_Listado = "SELECT g.codigoguia,  CONCAT('Tipo Comp ',rc.tipo_comprobante, ' ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, o.fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial 
+$query_Listado = "SELECT g.codigoguia,  CONCAT('Tipo Comp ',rc.tipo_comprobante, ' ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,  g.codigoordcomp, o.codigoref1,g.codigoacceso, g.numeroguia, g.estado as estadoGuia, g.fecha, o.codigo,o.codigoordcomp,o.codigoproveedor, CONCAT(o.fecha_emision, ' ', o.hora_emision) fecha_emision, o.estadofact, o.sucursal, p.ruc, p.razonsocial 
 from ordencompra_guia g 
 inner JOIN ordencompra o on g.codigoordcomp=o.codigoordcomp 
 inner JOIN proveedor p on p.codigoproveedor=o.codigoproveedor 
 left join registro_compras rc on rc.codigo_orden_compra = g.codigoguia 
-where g.estado = 2 or g.estado = 3
+where (g.estado = 2 or g.estado = 3)
 order by g.fecha desc";
 
 $Listado = mysql_query($query_Listado, $Ventas) or die(mysql_error());
 $row_Listado = mysql_fetch_assoc($Listado);
 $totalRows_Listado = mysql_num_rows($Listado);
  //Enumerar filas de data tablas
-$i = 1;
+
 
 mysql_select_db($database_Ventas, $Ventas);
 $query_Clientes = "SELECT codigoproveedor as codigoclienten, razonsocial, ruc FROM proveedor  WHERE estado = 0 order by razonsocial";
@@ -30,7 +30,13 @@ $row_Listado1 = mysql_fetch_assoc($Listado1);
 $totalRows_Listado1 = mysql_num_rows($Listado1);
  //Enumerar filas de data tablas
 
-$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, CONCAT('Tipo Comp ',rc.tipo_comprobante, ' ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha FROM guia_sin_oc c inner join proveedor p on c.codigoproveedor=p.codigoproveedor left join sucursal s on s.cod_sucursal = c.sucursal left join acceso a on a.codacceso = c.codacceso left join registro_compras rc on rc.codigo_guia_sin_oc = c.codigo_guia_sin_oc where c.estado = 2
+$queryguiasinoc = "SELECT c.codigo_guia_sin_oc, CONCAT('Tipo Comp ',rc.tipo_comprobante, ' ',rc.numerocomprobante) as comprobante, rc.codigorc, rc.subtotal,a.usuario,p.ruc, s.nombre_sucursal, c.codigoref2,c.estado, c.numero_guia, p.razonsocial, p.codigoproveedor as codigoproveedor, c.fecha 
+FROM guia_sin_oc c 
+inner join proveedor p on c.codigoproveedor=p.codigoproveedor 
+left join sucursal s on s.cod_sucursal = c.sucursal 
+left join acceso a on a.codacceso = c.codacceso 
+left join registro_compras rc on rc.codigo_guia_sin_oc = c.codigo_guia_sin_oc 
+where (c.estado = 2) 
 order by c.fecha desc";
 $listaguiasinoc = mysql_query($queryguiasinoc, $Ventas) or die(mysql_error());
 $row_listaguiasinoc = mysql_fetch_assoc($listaguiasinoc);
@@ -55,6 +61,7 @@ include("Fragmentos/head.php");
 include("Fragmentos/top_menu.php");
 include("Fragmentos/menu.php");
 include("Fragmentos/abrirpopupcentro.php");
+$i = 1;
 //________________________________________________________________________________________________________________
 ?>
 
@@ -99,9 +106,9 @@ include("Fragmentos/abrirpopupcentro.php");
 					<?= $row_Listado["comprobante"] ." Doc. Referencia ". $row_Listado['codigoref1']." - N° Guia ".$row_Listado['numeroguia']  ?> </a>
 			</td>
 
-			<td><?= "&#36; ".number_format($row_Listado['subtotal'],2) * $igv; ?> </td>
-			<td> <?= "&#36; ".number_format($row_Listado['subtotal'],2); ?></td>
-			<td> <?= "&#36; ".number_format($row_Listado['subtotal'],2) * $igv; ?>
+			<td><?= "&#36; " . number_format($row_Listado['subtotal'], 2) * $IGV1; ?> </td>
+			<td> <?= "&#36; " . number_format($row_Listado['subtotal'], 2); ?></td>
+			<td> <?= "&#36; " . number_format($row_Listado['subtotal'], 2) * ($IGV1 - 1); ?>
 			</td>
 			<td> <?= $row_Listado['razonsocial']; ?></td>
 			<td> <?= $row_Listado['fecha_emision']; ?></td>
@@ -195,14 +202,14 @@ include("Fragmentos/abrirpopupcentro.php");
 									<div class="col-md-6">
 										<div class="form-group">
 											<label for="field-1" class="control-label">Numero Guia</label>
-											<input type="text" readonly class="form-control" name="numero-guia"
+											<input type="text" disabled class="form-control" name="numero-guia"
 												id="numero-guia">
 										</div>
 									</div>
 									<div class="col-md-6">
 										<div class="form-group">
 											<label for="field-1" class="control-label">Observacion</label>
-											<input type="text" readonly class="form-control" name="observacion"
+											<input type="text" disabled class="form-control" name="observacion"
 												id="observacion">
 										</div>
 									</div>
@@ -349,10 +356,10 @@ include("Fragmentos/abrirpopupcentro.php");
 									<thead>
 										<th class="text-center" >Nº</th>
 										<th class="text-center" >Cantidad</th>
-										<th class="text-center" >Minicodigo</th>
-										<th class="text-center" >Color</th>
+										<th class="text-center" >Codigo</th>
 										<th class="text-center" >Producto</th>
 										<th class="text-center" >Marca</th>
+										<th class="text-center" >Color</th>
 										<th class="text-center"  class="costeosinchecked" width=" 120px">Desc x Item</th>
 										<th class="text-center"  class="costeosinchecked" width=" 120px">VCU</th>
 										<th class="text-center"  class="costeosinchecked" width=" 120px">VCI</th>
@@ -375,13 +382,10 @@ include("Fragmentos/abrirpopupcentro.php");
 						</div>
 					</div>
 					<div class="modal-footer">
-						<label for="showcosteo">Mostrar costeo</label>
-						<input type="checkbox" onclick="checkcosteo(this)" id="showcosteo">
 
-						<button class="btn btn-success" id="actualizarextras" type="button"
-							onclick="funactualizarextras()">Actualizar</button>
+						<button class="btn btn-success" id="actualizarextras" type="button" onclick="funactualizarextras()" style="display: none">Actualizar</button>
 
-						<button class="btn btn-success" id="showopcionesextras" type="button"
+						<button class="btn btn-success" id="showopcionesextras" style="display: none;" type="button"
 							onclick="showopciones()">Opciones</button>
 						<button type="submit" id="guardarcosteo" class="btn btn-success">Guardar</button>
 						<button type="button" data-dismiss="modal" aria-label="Close"
@@ -477,7 +481,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<div class="col-sm-3">
 							<label class="control-label" for="precio_estibador">Valor de Compra</label>
 							<input class="form-control" data-tipocambio="tipocambioestibador"
-								data-type="estibador_costeo" oninput="changeprecioestibador(this)" readonly
+								data-type="estibador_costeo" oninput="changeprecioestibador(this)" disabled
 								type="number" name="" id="precio_estibador">
 						</div>
 					</div>
@@ -539,7 +543,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<div class="col-sm-3">
 							<label class="control-label" for="precio_notadebito">Precio</label>
 							<input class="form-control" data-type="notadebito" oninput="changeprecioestibador(this)"
-								readonly type="number" data-tipocambio="tipocambionotadebito" id="precio_notadebito">
+								disabled type="number" data-tipocambio="tipocambionotadebito" id="precio_notadebito">
 						</div>
 					</div>
 				</div>
@@ -600,7 +604,7 @@ include("Fragmentos/abrirpopupcentro.php");
 						<div class="col-sm-3">
 							<label class="control-label" for="precio_notacredito">Precio</label>
 							<input class="form-control" data-tipocambio="tipocambionotacredito" data-type="notacredito"
-								oninput="changeprecioestibador(this)" readonly type="number" name=""
+								oninput="changeprecioestibador(this)" disabled type="number" name=""
 								id="precio_notacredito">
 						</div>
 					</div>
@@ -924,8 +928,8 @@ mysql_free_result($Listado);
 					<td class="nombre_producto" >${r.nombre_producto}</td>
 					<td class="marca" >${r.marca}</td>
 					<td><input type="number" required step="any" class="form-control pesoitempro" oninput="changepeso(this)"></td>
-					<td><input readonly type="number"  class="form-control importeindividualpro"></td>
-					<td><input readonly data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
+					<td><input disabled type="number"  class="form-control importeindividualpro"></td>
+					<td><input disabled data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
 					</tr>`)
 			});
 		} else {
@@ -941,9 +945,9 @@ mysql_free_result($Listado);
 					<td class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
 					<td class="nombre_producto" >${r.nombre_producto}</td>
 					<td class="marca" >${r.marca}</td>
-					<td><input type="number" readonly required class="form-control pesoitempro" oninput="changepeso(this)" value="${getSelector("#vcf_" + nro).value}"></td>
-					<td><input readonly type="number" class="form-control importeindividualpro"></td>
-					<td><input readonly data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
+					<td><input type="number" disabled required class="form-control pesoitempro" oninput="changepeso(this)" value="${getSelector("#vcf_" + nro).value}"></td>
+					<td><input disabled type="number" class="form-control importeindividualpro"></td>
+					<td><input disabled data-indexdetalle="${nro}" type="number" class="form-control importetotalpro"></td>
 					</tr>`)
 			});
 		}
@@ -1153,16 +1157,21 @@ mysql_free_result($Listado);
 			});
 	}
 	function visualizar(e) {
-		descuento.setAttribute("readonly", true)
-		facturafechaemision.setAttribute("readonly", true)
-		tipocomprobantefactura.setAttribute("readonly", true)
-		nrocomprobante.setAttribute("readonly", true)
-		moneda.setAttribute("readonly", true)
+		viewcomprobante.style.display  = ""
+
+		descuento.setAttribute("disabled", true)
+		facturafechaemision.setAttribute("disabled", true)
+		tipocomprobantefactura.setAttribute("disabled", true)
+		nrocomprobante.setAttribute("disabled", true)
+		moneda.disabled = true;
 		guardarcosteo.style.display = "none"
 		$("#mFacturaCompra").modal();
 		codigorcxx.value = e.dataset.codigorc;
-		if (e.dataset.comprobante)
-		viewcodigoreferencia.textContent = "ORDEN COMPRA " +  e.dataset.codigoref;
+		if (e.dataset.codigoref) {
+			viewcodigoreferencia.style.display = ""
+			viewcodigoreferencia.textContent = "ORDEN COMPRA " +  e.dataset.codigoref;
+		} else
+			viewcodigoreferencia.style.display = "none"
 		
 		viewcomprobante.textContent = e.dataset.comprobante.toUpperCase();
 		
@@ -1172,10 +1181,21 @@ mysql_free_result($Listado);
 			.catch(error => console.error("error: ", error))
 			.then(res => {
 				if (res && res.header) {
+					tipocambio.disabled = true;
+					if(res.header.tipomoneda === "dolares"){
+						container_cambio.style.display = "";
+						tipocambio.value = res.header.valorcambio;
+					}
+					else{
+						container_cambio.style.display = "none";
+						tipocambio.value = "";
+					}
+
+
 					arrayDetalle = res;
 					btn_prorrateo.disabled = false
 					btn_participacion.disabled = false
-					getSelectorAll(".divxx").forEach(e => e.style.display = "none")
+					// getSelectorAll(".divxx").forEach(e => e.style.display = "none")
 					const countestibador = parseInt(res.header.countestibador)
 					const countransporte = parseInt(res.header.counttransporte)
 					const countnotadebito = parseInt(res.header.countnotadebito)
@@ -1184,19 +1204,18 @@ mysql_free_result($Listado);
 						showopcionesextras.style.display = "none";
 						actualizarextras.style.display = "none";
 					} else {
-						showopcionesextras.style.display = "";
-						actualizarextras.style.display = "";
+						showopcionesextras.style.display = "none";
 						if (!countransporte) getSelector(".div_transporte").style.display = ""
 						if (!countestibador) {
-							precio_estibador.removeAttribute("readonly")
+							precio_estibador.removeAttribute("disabled")
 							getSelector(".div_estibador").style.display = ""
 						}
 						if (!countnotacredito) {
-							precio_notacredito.removeAttribute("readonly")
+							precio_notacredito.removeAttribute("disabled")
 							getSelector(".div_notacredito").style.display = ""
 						}
 						if (!countnotadebito) {
-							precio_notadebito.removeAttribute("readonly")
+							precio_notadebito.removeAttribute("disabled")
 							getSelector(".div_notadebito").style.display = ""
 						}
 
@@ -1246,25 +1265,27 @@ mysql_free_result($Listado);
 						<tr>
 						<td data-codigo="${r.codigoprod}" class="codigoprod">${i}</td>
 						<td class="cantidad">${r.cantidad}</td>
+						<td class="cantidad">${r.minicodigo}</td>
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
-						<td class="costeosinchecked"><input readonly type="text" oninput="changedescuento(this)" value="${r.descxitem}" class="form-control descuento solonumeros focusandclean"></td>
-						<td class="costeosinchecked"><input readonly id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.vcu}" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
+						<td class="cantidad">${r.nombre_color}</td>
+						<td class="costeosinchecked"><input disabled type="text" oninput="changedescuento(this)" value="${r.descxitem}" class="form-control descuento solonumeros focusandclean text-right"></td>
+						<td class="costeosinchecked"><input disabled id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="${r.vcu}" required type="text" class="solonumeros focusandclean precio-compra form-control text-right"></td>
 
-						<td class="costeosinchecked"><input readonly step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.vci}" required type="text" class="solonumeros focusandclean importe form-control"></td>
+						<td class="costeosinchecked"><input disabled step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" value="${r.vci}" required type="text" class="solonumeros focusandclean importe form-control text-right"></td>
 
-						<td class="costeosinchecked"><input readonly type="text" value=${r.descmonto} readonly class="form-control descuentocantidad"></td>
-						<td><input readonly type="text" readonly class="form-control vcf" id="vcf_${i}" value="${r.vcf}"></td>
+						<td class="costeosinchecked"><input disabled type="text" value=${r.descmonto} disabled class="form-control text-right descuentocantidad"></td>
+						<td><input disabled type="text" disabled class="form-control text-right vcf" id="vcf_${i}" value="${r.vcf}"></td>
 
-						<td class="costeosinchecked"><input readonly type="text" readonly class="form-control igvrow" value="${r.igv}"></td>
-						<td class="costeosinchecked"><input readonly type="text" readonly value="${r.totalcompra}" class="form-control valorcompra2"></td>
+						<td class="costeosinchecked"><input disabled type="text" disabled class="form-control text-right igvrow" value="${r.igv}"></td>
+						<td class="costeosinchecked"><input disabled type="text" disabled value="${r.totalcompra}" class="form-control text-right valorcompra2"></td>
 
-						<td style="display: none" class="costeochecked"><input readonly value="${r.preciotransporte}" id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
-						<td style="display: none" class="costeochecked"><input readonly value="${r.precioestibador}" class="form-control estibador_costeo" readonly></td>
-						<td style="display: none" class="costeochecked"><input readonly value="${r.notadebito}" class="form-control notadebito" readonly></td>
-						<td style="display: none" class="costeochecked"><input readonly value="${r.precionotacredito}" class="form-control notacredito" readonly></td>
-						<td style="display: none" class="costeochecked"><input readonly value="${r.totalconadicionales}" class="form-control total_costeo" readonly></td>
-						<td style="display: none" class="costeochecked"><input readonly value="${r.totalunidad}" class="form-control totalunidadcosteo" readonly></td>
+						<td style="display: none" class="costeochecked"><input disabled value="${r.preciotransporte}" id="detalleFactura_${i}" class="form-control text-right transporte_costeo" disabled></td>
+						<td style="display: none" class="costeochecked"><input disabled value="${r.precioestibador}" class="form-control text-right estibador_costeo" disabled></td>
+						<td style="display: none" class="costeochecked"><input disabled value="${r.notadebito}" class="form-control text-right notadebito" disabled></td>
+						<td style="display: none" class="costeochecked"><input disabled value="${r.precionotacredito}" class="form-control text-right notacredito" disabled></td>
+						<td style="display: none" class="costeochecked"><input disabled value="${r.totalconadicionales}" class="form-control text-right total_costeo" disabled></td>
+						<td style="display: none" class="costeochecked"><input disabled value="${r.totalunidad}" class="form-control text-right totalunidadcosteo" disabled></td>
 						</tr>`);
 					});
 					$("#detalleFacturar-list").append(`
@@ -1273,24 +1294,28 @@ mysql_free_result($Listado);
 					<td></td>
 					<td></td>
 					<td></td>
+					<td></td>
+					<td></td>
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td id="titlesoles" class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
-					<td><input type="text" readonly class="form-control sumavcf"></td>
-					<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrow"></td>
-					<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2"></td>
+					<td><input type="text" disabled class="form-control text-right sumavcf"></td>
+					<td class="costeosinchecked"><input type="text" disabled class=" form-control text-right sumaigvrow"></td>
+					<td class="costeosinchecked"><input type="text" disabled class="form-control text-right sumavalorcompra2"></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control sumatransporte" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumatransporte" disabled></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control sumaestibador_costeo" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebito" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotacredito" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeo" readonly></td>
-					<td style="display: none" class="dddd"><input class="form-control sumatotalunidadcosteo" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumaestibador_costeo" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumanotadebito" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumanotacredito" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumatotal_costeo" disabled></td>
+					<td style="display: none" class="dddd"><input class="form-control text-right sumatotalunidadcosteo" disabled></td>
 					</tr>`);
 					$("#detalleFacturar-list").append(`
 					<tr id="rowfacturadolar">
+					<td></td>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -1299,16 +1324,16 @@ mysql_free_result($Listado);
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td id="titledolar" class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
-					<td><input type="text" readonly class="form-control sumavcfdolar"></td>
-					<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrowdolar"></td>
-					<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2dolar"></td>
+					<td><input type="text" disabled class="form-control sumavcfdolar"></td>
+					<td class="costeosinchecked"><input type="text" disabled class=" form-control sumaigvrowdolar"></td>
+					<td class="costeosinchecked"><input type="text" disabled class="form-control sumavalorcompra2dolar"></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control transporte_costeo" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control transporte_costeo" disabled></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control sumaestibador_costeodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebitodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotacreditodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control sumaestibador_costeodolar" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebitodolar" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control sumanotacreditodolar" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" disabled></td>
 
 					</tr>`);
 					rowfacturadolar.style.display = "none";
@@ -1377,7 +1402,7 @@ mysql_free_result($Listado);
 						<td  class="cant_recibida" data-cant_recibida="${r.cantidad}">${r.cantidad}</td>
 						<td class="codigoprod" data-codigoprod="${r.codigoprod}">${r.nombre_producto}</td>
 						${tdExtra}
-						<td style="width: 30px"><input required type="number" oninput="validateCantidad(this)" class="form-control cant-arrived" autocomplete="off" value="${r.cant_recibida}" data-cantidad="${validateCant}" readonly></td>
+						<td style="width: 30px"><input required type="number" oninput="validateCantidad(this)" class="form-control cant-arrived" autocomplete="off" value="${r.cant_recibida}" data-cantidad="${validateCant}" disabled></td>
 						</tr>`)
 					});
 				});
@@ -1491,17 +1516,22 @@ mysql_free_result($Listado);
 	})
 	document.querySelectorAll(".aux_compras").forEach(item => {
 		item.addEventListener("click", e => {
+			tipocambio.disabled = false;
 			getSelector(".div_estibador").style.display = ""
 			getSelector(".div_notacredito").style.display = ""
 			getSelector(".div_notadebito").style.display = ""
 			getSelector(".div_transporte").style.display = ""
+			
+			viewcomprobante.style.display  = "none"
+			viewcodigoreferencia.style.display  = "none"
 
 			actualizarextras.style.display = "none"
-			descuento.removeAttribute("readonly")
-			facturafechaemision.removeAttribute("readonly")
-			tipocomprobantefactura.removeAttribute("readonly")
-			nrocomprobante.removeAttribute("readonly")
-			moneda.removeAttribute("readonly")
+			descuento.removeAttribute("disabled")
+			facturafechaemision.removeAttribute("disabled")
+			tipocomprobantefactura.removeAttribute("disabled")
+			nrocomprobante.removeAttribute("disabled")
+			// moneda.removeAttribute("disabled")
+			moneda.disabled = false
 
 			facturafechaemision.value = ""
 			descuento.value = ""
@@ -1509,7 +1539,7 @@ mysql_free_result($Listado);
 			moneda.value = "soles"
 			nrocomprobante.value = ""
 
-			showopcionesextras.style.display = ""
+			showopcionesextras.style.display = "none"
 			guardarcosteo.style.display = ""
 
 			subtotalGLOBAL = 0;
@@ -1574,27 +1604,27 @@ mysql_free_result($Listado);
 						<tr>
 						<td data-codigo="${r.codigoprod}" class="codigoprod">${i}</td>
 						<td class="cantidad">${r.cantidad}</td>
-						<td class="cantidad">${r.minicodigo}</td>
-						<td class="cantidad">${r.nombre_color}</td>
+						<td class="">${r.minicodigo}</td>
 						<td>${r.nombre_producto}</td>
 						<td >${r.marca}</td>
-						<td class="costeosinchecked"><input type="text" autocomplete="off" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean"></td>
-						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="0.00" required type="text" class="solonumeros focusandclean precio-compra form-control"></td>
+						<td class="">${r.nombre_color}</td>
+						<td class="costeosinchecked"><input type="text" autocomplete="off" oninput="changedescuento(this)" value="0" class="form-control descuento solonumeros focusandclean text-right"></td>
+						<td class="costeosinchecked"><input autocomplete="off" id="preciocompra${i}" data-toggle="tooltip"  step="any" data-placement="bottom" title="0" oninput="changepreciocompra(this)" value="0.00" required type="text" class="solonumeros focusandclean precio-compra form-control text-right"></td>
 
-						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="0.00" required type="text" class="solonumeros focusandclean importe form-control"></td>
+						<td class="costeosinchecked"><input step="any" data-toggle="tooltip" data-placement="bottom" title="0" oninput="changeimporte(this)" autocomplete="off" value="0.00" required type="text" class="solonumeros focusandclean importe form-control text-right"></td>
 
-						<td class="costeosinchecked"><input type="text" readonly class="form-control descuentocantidad"></td>
-						<td><input type="text" readonly class="form-control vcf" id="vcf_${i}"></td>
+						<td class="costeosinchecked"><input type="text" disabled class="form-control text-right descuentocantidad"></td>
+						<td><input type="text" disabled class="form-control text-right vcf" id="vcf_${i}"></td>
 
-						<td class="costeosinchecked"><input type="text" readonly class="form-control igvrow"></td>
-						<td class="costeosinchecked"><input type="text" readonly class="form-control valorcompra2"></td>
+						<td class="costeosinchecked"><input type="text" disabled class="form-control text-right igvrow"></td>
+						<td class="costeosinchecked"><input type="text" disabled class="form-control text-right valorcompra2"></td>
 
-						<td style="display: none" class="costeochecked"><input id="detalleFactura_${i}" class="form-control transporte_costeo" readonly></td>
-						<td style="display: none" class="costeochecked"><input class="form-control estibador_costeo" readonly></td>
-						<td style="display: none" class="costeochecked"><input class="form-control notadebito" readonly></td>
-						<td style="display: none" class="costeochecked"><input class="form-control notacredito" readonly></td>
-						<td style="display: none" class="costeochecked"><input class="form-control total_costeo" readonly></td>
-						<td style="display: none" class="costeochecked"><input class="form-control totalunidadcosteo" readonly></td>
+						<td style="display: none" class="costeochecked"><input id="detalleFactura_${i}" class="form-control text-right transporte_costeo" disabled></td>
+						<td style="display: none" class="costeochecked"><input class="form-control text-right estibador_costeo" disabled></td>
+						<td style="display: none" class="costeochecked"><input class="form-control text-right notadebito" disabled></td>
+						<td style="display: none" class="costeochecked"><input class="form-control text-right notacredito" disabled></td>
+						<td style="display: none" class="costeochecked"><input class="form-control text-right total_costeo" disabled></td>
+						<td style="display: none" class="costeochecked"><input class="form-control text-right totalunidadcosteo" disabled></td>
 						</tr>`);
 					});
 					$("#detalleFacturar-list").append(`
@@ -1603,24 +1633,28 @@ mysql_free_result($Listado);
 					<td></td>
 					<td></td>
 					<td></td>
+					<td></td>
+					<td></td>
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td id="titlesoles" class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL S/</td>
-					<td><input type="text" readonly class="form-control sumavcf"></td>
-					<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrow"></td>
-					<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2"></td>
+					<td><input type="text" disabled class="form-control text-right sumavcf"></td>
+					<td class="costeosinchecked"><input type="text" disabled class=" form-control text-right sumaigvrow"></td>
+					<td class="costeosinchecked"><input type="text" disabled class="form-control text-right sumavalorcompra2"></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control sumatransporte" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumatransporte" disabled></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control sumaestibador_costeo" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebito" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotacredito" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeo" readonly></td>
-					<td style="display: none" class="dddd"><input class="form-control sumatotalunidadcosteo" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumaestibador_costeo" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumanotadebito" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumanotacredito" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumatotal_costeo" disabled></td>
+					<td style="display: none" class="dddd"><input class="form-control text-right sumatotalunidadcosteo" disabled></td>
 					</tr>`);
 					$("#detalleFacturar-list").append(`
 					<tr id="rowfacturadolar">
+					<td></td>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -1629,16 +1663,16 @@ mysql_free_result($Listado);
 					<td class="costeosinchecked"></td>
 					<td class="costeosinchecked"></td>
 					<td id="titledolar" class="costeosinchecked" style="text-align: right; font-weight: bold;">TOTAL $</td>
-					<td><input type="text" readonly class="form-control sumavcfdolar"></td>
-					<td class="costeosinchecked"><input type="text" readonly class=" form-control sumaigvrowdolar"></td>
-					<td class="costeosinchecked"><input type="text" readonly class="form-control sumavalorcompra2dolar"></td>
+					<td><input type="text" disabled class="form-control text-right sumavcfdolar"></td>
+					<td class="costeosinchecked"><input type="text" disabled class=" form-control text-right sumaigvrowdolar"></td>
+					<td class="costeosinchecked"><input type="text" disabled class="form-control text-right sumavalorcompra2dolar"></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control transporte_costeo" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right transporte_costeo" disabled></td>
 
-					<td style="display: none" class="costeochecked"><input class="form-control sumaestibador_costeodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotadebitodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumanotacreditodolar" readonly></td>
-					<td style="display: none" class="costeochecked"><input class="form-control sumatotal_costeodolar" readonly></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumaestibador_costeodolar" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumanotadebitodolar" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumanotacreditodolar" disabled></td>
+					<td style="display: none" class="costeochecked"><input class="form-control text-right sumatotal_costeodolar" disabled></td>
 
 					</tr>`);
 					rowfacturadolar.style.display = "none"
@@ -1771,9 +1805,9 @@ mysql_free_result($Listado);
 		if (allpreciocompra) {
 			btn_prorrateo.disabled = false
 			btn_participacion.disabled = false
-			precio_estibador.removeAttribute('readonly');
-			precio_notadebito.removeAttribute("readonly")
-			precio_notacredito.removeAttribute("readonly")
+			precio_estibador.removeAttribute('disabled');
+			precio_notadebito.removeAttribute("disabled")
+			precio_notacredito.removeAttribute("disabled")
 			let total = 0;
 			getSelectorAll(".precio-compra").forEach(i => {
 				total += parseFloat(i.value)
@@ -1786,9 +1820,9 @@ mysql_free_result($Listado);
 		} else {
 			btn_prorrateo.disabled = true
 			btn_participacion.disabled = true
-			precio_estibador.setAttribute("readonly", true)
-			precio_notadebito.setAttribute("readonly", true)
-			precio_notacredito.setAttribute("readonly", true)
+			precio_estibador.setAttribute("disabled", true)
+			precio_notadebito.setAttribute("disabled", true)
+			precio_notacredito.setAttribute("disabled", true)
 		}
 	}
 	function changepreciocompra(e, aux = true) {
@@ -1829,8 +1863,13 @@ mysql_free_result($Listado);
 
 		tr.querySelector(".total_costeo").value = calcularcosteobyfile(tr)
 	}
+	let onlyclick = true;
 	document.querySelector("#saveFacturar").addEventListener("submit", e => {
 		e.preventDefault();
+		if (!onlyclick)
+			return
+		if (onlyclick)
+			onlyclick = false;
 		if (getSelector("#moneda").value == "dolares" && getSelector("#tipocambio").value == "" && getSelector("#tipocambio").value != "0") {
 			alert("debe agregar el tipo de cambio!!")
 			return;

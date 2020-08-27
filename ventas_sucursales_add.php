@@ -284,7 +284,7 @@ include("Fragmentos/pie.php");
 	const loadproductos = async (codsucursal) => {
 		
 		const queryproductos = `
-            select pre.nombre_presentacion namexx, k.codigoprod, k.saldo stock, p.nombre_producto nombre, CONCAT(p.nombre_producto, ' - ', m.nombre, ' - ###NOMBRECOLOR### - ', pv.precioventa3, ' - Stock ', k.saldo) as descripcion, m.nombre as marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 precioventa, pv.totalunidad preciocompra
+            select pre.nombre_presentacion namexx, pv.initial, k.codigoprod, k.saldo stock, p.nombre_producto nombre, CONCAT(p.nombre_producto, ' - ', m.nombre, ' - ###NOMBRECOLOR### - ', pv.precioventa3, ' - Stock ', k.saldo) as descripcion, m.nombre as marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 precioventa, pv.totalunidad preciocompra
             from kardex_alm k
             inner join producto p on p.codigoprod = k.codigoprod
             inner join marca m on m.codigomarca = p.codigomarca
@@ -310,7 +310,7 @@ include("Fragmentos/pie.php");
 			result = []
 		}
 
-		cargarselect2("#codigoprod", result, "codigoprod", "descripcion", ["preciocompra", "precioventa", "stock", "namexx", "nombre", "marca"]);
+		cargarselect2("#codigoprod", result, "codigoprod", "descripcion", ["preciocompra", "precioventa", "stock", "namexx", "nombre", "marca", "initial"]);
 	}
 
 
@@ -422,7 +422,8 @@ include("Fragmentos/pie.php");
 
 		} else {
 			const option = this.options[this.selectedIndex]
-
+			
+			const initial = option.dataset.initial === "0";
 
 			const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
 			$("#detalleFormProducto").append(`
@@ -435,7 +436,7 @@ include("Fragmentos/pie.php");
 				
 				<td class="unidad_medida">${option.dataset.namexx}</td>
 
-				<td class="nombre">${option.dataset.nombre}</td>
+				<td class="nombre" style="color: ${initial ? 'red' : 'black'}">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
 				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
 				<td class="importe">0</td>

@@ -34,8 +34,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "
-select pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+$query_Productos = "SELECT pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color, pv.initial, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
 from kardex_alm k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
@@ -249,19 +248,31 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 		<div class="col-sm-12">
 			<label class="" style="font-weight: bold">Seleccione un producto</label>
 			<select id="codigoprod" class="form-control select2-allow-clear" name="codigoprod">
-				<option value="" <?php if (!(strcmp("", "compras_add.php"))) {
-										echo "selected=\"selected\"";
-									} ?>>
+				<option value="" 
+					<?php if (!(strcmp("", "compras_add.php"))) { echo "selected=\"selected\""; } ?>>
 				</option>
 				<?php
 				do {
 				?>
-					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p3'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
-						<?php echo $row_Productos['nombre_producto'] ?> -
-						<?php echo $row_Productos['Marca']; ?> -
-						<?php echo $row_Productos['nombre_color']; ?> -
-						<?php echo "$/." . $row_Productos['p3']; ?> -
-						(<?= "Stock " . $row_Productos['saldo']; ?>)</option>
+					<option 
+						value="<?= $row_Productos['codigoprod'] ?>" 
+						data-initial="<?= $row_Productos['initial'] ?>"
+						data-preciocompra="<?= $row_Productos['totalunidad'] ?>"
+						data-precioventa="<?= $row_Productos['p3'] ?>"
+
+						data-higherpcompra="<?= $row_Productos['totalunidad']*1.18 > $row_Productos['p3'] ? "true" : "false" ?>"
+
+						data-stock="<?= $row_Productos['saldo'] ?>"
+						data-namexx="<?= $row_Productos['nombre_presentacion'] ?>"
+						data-nombre="<?= $row_Productos['nombre_producto'] ?>" 
+						data-marca="<?= $row_Productos['Marca']; ?>"
+					>
+						<?= $row_Productos['nombre_producto'] ?> -
+						<?= $row_Productos['Marca']; ?> -
+						<?= $row_Productos['nombre_color']; ?> -
+						<?= "$/." . $row_Productos['p3']; ?> -
+						(<?= "Stock " . $row_Productos['saldo']; ?>)
+					</option>
 				<?php
 				} while ($row_Productos = mysql_fetch_assoc($Productos));
 				$rows = mysql_num_rows($Productos);
@@ -407,7 +418,8 @@ include("Fragmentos/pie.php");
 
 		} else {
 			const option = this.options[this.selectedIndex]
-
+			const initial = option.dataset.initial === "0" || option.dataset.higherpcompra === "true";
+			;
 
 			const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
 			$("#detalleFormProducto").append(`
@@ -420,7 +432,7 @@ include("Fragmentos/pie.php");
 				
 				<td class="unidad_medida">${option.dataset.namexx}</td>
 
-				<td class="nombre">${option.dataset.nombre}</td>
+				<td class="nombre" style="color: ${initial ? 'red' : 'black'}">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
 				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
 				<td class="importe">0</td>

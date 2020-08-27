@@ -34,8 +34,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "
-select pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+$query_Productos = "SELECT pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color, pv.initial, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
 from kardex_alm k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
@@ -170,7 +169,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				<?php
 				do {
 				?>
-					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p3'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
+					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-initial="<?= $row_Productos['initial'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p3'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
 						<?php echo $row_Productos['nombre_producto'] ?> -
 						<?php echo $row_Productos['Marca']; ?> -
 						<?php echo $row_Productos['nombre_color']; ?> -
@@ -230,6 +229,12 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col-sm-12">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label for="nroguiaxx" class="control-label">N° Guia</label>
+										<input required type="text" class="form-control" id="nroguiaxx">
+									</div>
+								</div>
 								<div class="col-md-3">
 									<div class="form-group">
 										<label for="puntollegada" class="control-label">Punto de Llegada</label>
@@ -427,6 +432,9 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 
 		} else {
 			const option = this.options[this.selectedIndex]
+
+			const initial = option.dataset.initial === "0";
+
 			const cantrows = document.querySelectorAll("#detalleFormProducto tr").length + 1
 			$("#detalleFormProducto").append(`
 				<tr class="producto">
@@ -438,7 +446,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				
 				<td class="unidad_medida">${option.dataset.namexx}</td>
 
-				<td class="nombre">${option.dataset.nombre}</td>
+				<td class="nombre" style="color: ${initial ? 'red' : 'black'}">${option.dataset.nombre}</td>
 				<td class="marca">${option.dataset.marca}</td>
 				<td style="width: 100px"><input type="text" oninput="changevalue(this)" required value="${option.dataset.precioventa}" class="precio tooltips form-control" data-placement="top" data-original-title="P. Compra: ${option.dataset.preciocompra}"></td>
 				<td class="importe">0</td>
@@ -1007,14 +1015,14 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 
 		const idguia = uuidv4();
 
-		var query = "select value from propiedades where `key` = 'despacho_guia_" + h.codsucursal + "'";
-		const resguia = await get_data_dynamic(query).then(r => r);
+		// var query = "select value from propiedades where `key` = 'despacho_guia_" + h.codsucursal + "'";
+		// const resguia = await get_data_dynamic(query).then(r => r);
 		const h1 = {
 			id: idguia,
 			fecha: h.fecha_emision,
 			sucursal: h.codsucursal,
 			codventa: tmpcodigoventas.value,
-			nguia: resguia[0].value,
+			nguia: nroguiaxx.value,
 			puntollegada: puntollegada.value,
 			quienrecibe: quienrecibe.value,
 			quienrecoge: quienrecoge.value,
@@ -1045,11 +1053,11 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 		data.header = `
                 UPDATE ventas SET 
                     despachado = ${isdespachado}, 
-                    nroguia = ${h1.nguia},
+                    nroguia = '${h1.nguia}',
                     dataguia = '${JSON.stringify(dataguia)}'
                 WHERE codigoventas=${h1.codventa}`;
 
-		data.detalle.push("UPDATE propiedades SET value = (" + (parseInt(h1.nguia) +1) + ") where `key` = 'despacho_guia_" + h.codsucursal + "'");
+		// data.detalle.push("UPDATE propiedades SET value = (" + (parseInt(h1.nguia) +1) + ") where `key` = 'despacho_guia_" + h.codsucursal + "'");
 
 		const jjson = JSON.stringify(data).replace(/select/g, "lieuiwuygyq")
 		var formData = new FormData();

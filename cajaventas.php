@@ -144,7 +144,8 @@ $suc = $_SESSION['cod_sucursal'];
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="submit" id="guardardespose" class="btn btn-primary">Guardar</button>
+                    <button type="button" id="imprimirdespose" onclick="imprimirdesposeX()" class="btn btn-primary">Imprimir</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -226,7 +227,8 @@ $suc = $_SESSION['cod_sucursal'];
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="submit" id="guardardesposeingreso" class="btn btn-primary">Guardar</button>
+                    <button type="button" id="imprimirdesposeingreso" onclick="imprimirdespose()" class="btn btn-primary">Imprimir</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -278,6 +280,7 @@ include("Fragmentos/pie.php");
     motivo.onchange = changeMotivo;
 
     const dispose = async () => {
+        limpiardespisexx();
         formdispose.reset()
         fecha.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10)
         await validateSalary();
@@ -287,6 +290,10 @@ include("Fragmentos/pie.php");
         personal.value = 0
         cuentabancaria.closest(".divparent").style.display = "none"
         inputfechasueldo.closest(".divparent").style.display = "none"
+
+        guardardespose.style.display = "";
+        imprimirdespose.style.display = "none";
+
         $("#mdespose").modal()
         $('#personal').val(idpersonal).trigger('change');
     }
@@ -306,14 +313,20 @@ include("Fragmentos/pie.php");
         }
     }
     const disposeingreso = async () => {
+        limpiardespise();
         formdisposeingreso.reset()
         fechaingreso.value = new Date(new Date().setHours(10)).toISOString().substring(0, 10);
         let nrecibo = await get_data_dynamic("select `value` from propiedades where `key` = 'ningresos'");
         nreciboxingreso.value = nrecibo[0].value
         typedespose.value = "ningresos";
 
-        personalingreso.value = 0
-        $("#mdesposeingreso").modal()
+        personalingreso.value = 0;
+
+        guardardesposeingreso.style.display = "";
+        imprimirdesposeingreso.style.display = "none";
+
+        $("#mdesposeingreso").modal();
+        
         $('#clienteingreso').val("").trigger('change');
         $('#personalingreso').val(idpersonal).trigger('change');
     }
@@ -494,6 +507,7 @@ include("Fragmentos/pie.php");
 
                 return {
                     ...x,
+                    iddespose: x.id,
                     total: x.tipo == "ingreso" ? x.despose : 0,
                     despose: x.tipo == "ingreso" ? 0 : x.despose,
                     motivo: x.motivo == "" || x.motivo == " - " ?   x.por.substring(0, 30) : x.motivo,
@@ -502,8 +516,10 @@ include("Fragmentos/pie.php");
             })
 
             qwer = [...datatotble, ...des];
+
+            qwer.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+
             let saldo = 0;
-            
 
             qwer = qwer.map(x => {
                 const despose = x.despose ? parseFloat(x.despose) : 0
@@ -511,6 +527,7 @@ include("Fragmentos/pie.php");
                 saldo = saldo + total - despose
                 x.saldo = saldo.toFixed(2)
                 x.nrorecibo = x.nrorecibo || "";
+                x.iddespose = x.iddespose || 0;
                 return x
             })
             qwer = qwer.reverse();
@@ -522,6 +539,7 @@ include("Fragmentos/pie.php");
                     saldo += parseFloat(x.total)
                     qwer.push({
                         ...x,
+                        iddespose: x.iddespose,
                         motivo: `${x.motivo} ${x.estado}`,
                         despose: 0,
                         saldo: saldo.toFixed(2),
@@ -531,6 +549,7 @@ include("Fragmentos/pie.php");
                     saldo -= parseFloat(x.total)
                     qwer.push({
                         ...x,
+                        iddespose: x.iddespose,
                         total: 0,
                         despose: x.total,
                         nrorecibo: "RE - " + x.nrorecibo,
@@ -540,6 +559,7 @@ include("Fragmentos/pie.php");
             })
             qwer = qwer.reverse();
         }
+        
 
         $('#ventastable').DataTable({
             data: qwer,
@@ -603,24 +623,168 @@ include("Fragmentos/pie.php");
                     title: 'acciones',
 
                     render: function(data, type, row) {
+                        let aux11 = "";
                         if ((row.motivo.includes('EN ESPERA') || (row.motivo.includes('ENVIADO')) && msucursal.value == 11)) {
-                            return `
+                            aux11 = `
                                 <div class="">
                                     <button class="btn btn-success" onclick="setStatusIngresos(${row.id},'ACEPTADO', ${row.fromdespose})">Aceptar</button>
                                     <button class="btn btn-danger" onclick="setStatusIngresos(${row.id},'RECHAZADO', ${row.fromdespose})">Rechazar</button>
                                 </div>
                                 `
                         } else {
-                            return ""
+                            aux11 = ""
+                        }
+                        
+                        if (row.iddespose) {
+                            aux11 += `<a href="#" data-iddespose="${row.iddespose}" onclick="verdespose(this)">Ver</a>`;
                         }
 
+                        return aux11;
                     }
                 }
             ]
         });
-
-
     }
+
+    const limpiardespise = () => {
+        nreciboxingreso.value = "";
+        fechaingreso.value = "";
+        cantidadxxingreso.disabled = false;
+        cantidadxxingreso.value = "";
+        byfromingreso.disabled = false;
+        byfromingreso.value = "";
+        
+        clienteingreso.disabled = false;
+        personalingreso.disabled = false;
+    }
+    
+    const limpiardespisexx = () => {
+        cantidadxx.disabled = false;
+        cantidadxx.value = "";
+        byfrom.disabled = false;
+        byfrom.value = "";
+        motivo.disabled = false;
+        motivo.value = "";
+        personal.disabled = false;
+        personal.value = "";
+    }
+
+    const imprimirdespose = () => {
+        const printnreciboxingreso = nreciboxingreso.value;
+        const printfechaingreso = fechaingreso.value;
+        const printcantidadxxingreso = cantidadxxingreso.value;
+        const printbyfromingreso = byfromingreso.value;
+
+        var copyprrr = document.querySelector('#formdisposeingreso .modal-content');
+        
+        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+        mywindow.document.write('<html><head><title>Imprimir</title>');
+
+        mywindow.document.write('</head><body >');
+
+        mywindow.document.write(copyprrr.innerHTML);
+        mywindow.document.write('</body></html>');
+
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10*/
+
+        mywindow.document.querySelector("#nreciboxingreso").value = printnreciboxingreso;
+        mywindow.document.querySelector("#fechaingreso").value = printfechaingreso;
+        mywindow.document.querySelector("#cantidadxxingreso").value = printcantidadxxingreso;
+        mywindow.document.querySelector("#byfromingreso").value = printbyfromingreso;
+        
+        mywindow.document.querySelector("#clienteingreso").remove()
+        mywindow.document.querySelector("#personalingreso").remove()
+        mywindow.print();
+    }
+    const imprimirdesposeX = () => {
+        
+        const printnrecibox = nrecibox.value;
+        const printfecha = fecha.value;
+        const printcantidadxx = cantidadxx.value;
+        const printmotivo = motivo.value;
+        const printbyfrom = byfrom.value;
+
+        var copyprrr = document.querySelector('#formdispose .modal-content');
+        
+        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+        mywindow.document.write('<html><head><title>Imprimir</title>');
+
+        mywindow.document.write('</head><body >');
+
+        mywindow.document.write(copyprrr.innerHTML);
+        mywindow.document.write('</body></html>');
+
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10*/
+
+
+        mywindow.document.querySelector("#nrecibox").value = printnrecibox;
+        mywindow.document.querySelector("#fecha").value = printfecha;
+        mywindow.document.querySelector("#cantidadxx").value = printcantidadxx;
+        mywindow.document.querySelector("#motivo").value = printmotivo;
+        mywindow.document.querySelector("#byfrom").value = printbyfrom;
+        
+        mywindow.print();
+    }
+
+    const verdespose = async (e) => {
+        const id = e.dataset.iddespose;
+
+        const query = `
+            select ds.* from despose ds
+            where ds.id = ${id}
+            `;
+        let data = await get_data_dynamic(query);
+        data = data[0];
+
+        if (data.tipo === "ingreso" || data.tipo === "ingresocaja") {
+
+            guardardesposeingreso.style.display = "none";
+            imprimirdesposeingreso.style.display = "";
+
+            nreciboxingreso.disabled = true;
+            fechaingreso.disabled = true;
+            cantidadxxingreso.disabled = true;
+            byfromingreso.disabled = true;
+            
+            clienteingreso.disabled = true;
+            personalingreso.disabled = true;
+
+            nreciboxingreso.value = data.nrorecibo;
+            fechaingreso.value = data.fecha;
+            cantidadxxingreso.value = data.cantidad;
+            byfromingreso.value = data.por;            
+            $('#clienteingreso').val(data.codigocliente).trigger('change');
+            $('#personalingreso').val(data.personal).trigger('change');
+
+            $("#mdesposeingreso").modal();
+        } else if (data.tipo === "despose") { 
+
+            guardardespose.style.display = "none";
+            imprimirdespose.style.display = "";
+
+            inputfechasueldo.closest(".divparent").style.display = "none"
+            cantidadxx.disabled = true;
+            byfrom.disabled = true;
+            motivo.disabled = true;
+            personal.disabled = true;
+
+            nrecibox.value = data.nrorecibo;
+            fecha.value = data.fecha;
+            cantidadxx.value = data.cantidad;
+            byfrom.value = data.por; 
+            $('#personal').val(data.personal).trigger('change');
+            motivo.value = data.motivo;
+            
+            cuentabancaria.closest(".divparent").style.display = "none";
+
+            $("#mdespose").modal()
+        }
+    }
+
     const proccessIngresosEfectivo = async id => {
         const query = `
             SELECT 

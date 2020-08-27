@@ -21,6 +21,19 @@ include("Fragmentos/abrirpopupcentro.php");
 $suc = $_SESSION['cod_sucursal'];
 
 ?>
+    <form id="searchform">
+<div style="display: inline-flex">
+        <select required style="width: 200px;" class="form-control" id="searchby">
+            <option value="descinclude">Nombre Incluye</option>
+            <option value="minicodigo">Codigo</option>
+        </select>
+        <input required style="width: 500px; margin-left: 20px" class="form-control" id="tosearch" >
+
+        <button style="margin-left: 20px" class="btn btn-success" type="submit">Buscar</button>
+    </div>
+</form>
+
+<div id="anunciooo" style="margin-top: 20px; font-weight: bold;"></div>
 
 <table id="maintable" class="display" width="100%"></table>
 
@@ -83,9 +96,11 @@ include("Fragmentos/pie.php");
 <script>
     const sucursalxx = <?= $suc ?>;
     $(function() {
-        initTable()
+        // initTable();
         onloadSucursales()
     });
+    searchform.addEventListener("submit", initTable);
+
     const onloadSucursales = async () => {
         const res = await get_data_dynamic("select nombre_sucursal, cod_sucursal from sucursal where estado = 1");
 
@@ -113,19 +128,31 @@ include("Fragmentos/pie.php");
         getdetailproduct();
     }
 
-    const initTable = async () => {
+    async function initTable(e){
+        e.preventDefault();
+        anunciooo.textContent = "BUSCANDO, ESPERE...";
+        let where = "";
+
+        if (searchby.value === "descstart") {
+            where = ` where p.nombre_producto like '%${tosearch.value}' `;
+        } else if (searchby.value === "descinclude") {
+            where = ` where p.nombre_producto like '%${tosearch.value}%' `;
+        } else if (searchby.value === "minicodigo") {
+            where = ` where p.minicodigo like '%${tosearch.value}%' or p.codigo2 like '%${tosearch.value}%' or p.codigo3 like '%${tosearch.value}%'`;
+        }
+
         const query = `
         select 
-            p.codigoprod, p.minicodigo, p.codigo2, p.codigo3 ,p.nombre_producto, m.nombre marca, IF(k.saldo IS NULL or k.saldo = '', '0', k.saldo) as saldo,
+            p.codigoprod, p.minicodigo, p.codigo2, p.codigo3 ,p.nombre_producto, m.nombre marca, k.saldo,
              Case when IFNULL(kc.saldo, 0) = 0 then 0 else (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) end as xentregar,
              sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' or k5.detalle like '%anulacion%' Then k5.cantidad Else 0 End) entradas,
              sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' or k5.detalle like '%despacho%' Then k5.cantidad Else 0 End) salidas
         from producto p 
         left join marca m on m.codigomarca = p.codigomarca
-        left join kardex_alm k5 on k5.codigoprod = p.codigoprod and k5.codsucursal = <?= $suc ?>
-        left join kardex_alm k on k.id_kardex_alm = (SELECT MAX(k2.id_kardex_alm) from  kardex_alm k2 where k2.codigoprod = p.codigoprod and k2.codsucursal = <?= $suc ?>)
-        left join kardex_contable kc on kc.id_kardex_contable = (SELECT MAX(kc2.id_kardex_contable) from kardex_contable kc2 where kc2.codigoprod = p.codigoprod and kc2.sucursal = <?= $suc ?>)
-
+        left join kardex_alm k5 on k5.codigoprod = p.codigoprod and k5.codsucursal = 1
+        left join kardex_alm k on k.id_kardex_alm = (SELECT MAX(k2.id_kardex_alm) from  kardex_alm k2 where k2.codigoprod = p.codigoprod and k2.codsucursal = 1)
+        left join kardex_contable kc on kc.id_kardex_contable = (SELECT MAX(kc2.id_kardex_contable) from kardex_contable kc2 where kc2.codigoprod = p.codigoprod and kc2.sucursal = 1)
+        ${where}
         group by p.codigoprod
         `;
 
@@ -139,16 +166,16 @@ include("Fragmentos/pie.php");
                     data: 'codigoprod'
                 },
                 {
+                    title: 'Codigo Fab',
+                    data: 'minicodigo',
+                },
+                {
                     title: 'nombre_producto',
                     data: 'nombre_producto'
                 },
                 {
                     title: 'marca',
                     data: 'marca'
-                },
-                {
-                    title: 'minicodigo',
-                    data: 'minicodigo',
                 },
                 {
                     title: 'codigo2',
@@ -171,7 +198,10 @@ include("Fragmentos/pie.php");
                 {
                     title: 'saldo',
                     data: 'saldo',
-                    className: 'dt-body-right'
+                    className: 'dt-body-right',
+                    render: function(data, type, row) {
+                        return row.saldo ? row.saldo : "0.00"
+                    }
                 },
                 {
                     title: 'xentregar',
@@ -188,6 +218,8 @@ include("Fragmentos/pie.php");
                 }
             ]
         });
+
+        anunciooo.textContent = "";
     }
 
     getSelector("#form-setKardex").addEventListener("submit", e => {

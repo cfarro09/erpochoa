@@ -66,16 +66,19 @@ include("Fragmentos/pie.php");
         let query = "";
         if(tipo.value == "kardexalmacen"){
             query = `
-            select k.codigoprod, k.saldo, p.nombre_producto from kardex_alm k
-            inner join producto p on p.codigoprod = k.codigoprod
+            select k.codigoprod, k.saldo, p.minicodigo as codigofab, p.nombre_producto, m.nombre as marca, pr.nombre_presentacion as presentacion1, c.nombre_color as color from kardex_alm k
+            inner join producto p on p.codigoprod = k.codigoprod inner join marca m on m.codigomarca=p.codigomarca
+            inner join presentacion pr on pr.codigopresent=p.codigopresent inner join color c on c.codigocolor=p.codigocolor
             where k.codsucursal = ${codsucursal} and k.saldo > 0
             and k.id_kardex_alm in
             (select max(id_kardex_alm) from kardex_alm where codsucursal = ${codsucursal} group by codigoprod)
             `;
         }else{
             query = `
-            select k.codigoprod, k.saldo, p.nombre_producto from kardex_contable k
+            select k.codigoprod, k.saldo, p.minicodigo as codigofab, p.nombre_producto, m.nombre as marca, pr.nombre_presentacion as presentacion1, c.nombre_color as color from kardex_contable k
             inner join producto p on p.codigoprod = k.codigoprod
+            inner join marca m on m.codigomarca=p.codigomarca
+            inner join presentacion pr on pr.codigopresent=p.codigopresent inner join color c on c.codigocolor=p.codigocolor
             where k.sucursal = ${codsucursal} and k.saldo > 0
             and k.id_kardex_contable in
             (select max(id_kardex_contable) from kardex_contable where sucursal = ${codsucursal} group by codigoprod)
@@ -113,9 +116,26 @@ include("Fragmentos/pie.php");
                     text: 'Columns'
                 }
             ],
-            columns: [{
+            columns: [
+                {
+                    title: 'CODIGO_FAB',
+                    data: 'codigofab'
+                },
+                {
                     title: 'PRODUCTO',
                     data: 'nombre_producto'
+                },
+                {
+                    title: 'MARCA',
+                    data: 'marca'
+                },
+                {
+                    title: 'COLOR',
+                    data: 'color'
+                },
+                {
+                    title: 'U. M.',
+                    data: 'presentacion1'
                 },
                 {
                     title: 'SALDO',

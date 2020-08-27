@@ -34,6 +34,11 @@ $suc = $_SESSION['cod_sucursal'];
                 <h5 class="modal-title" id="moperation-title">Detalle Traslado</h5>
             </div>
             <div class="modal-body">
+                <input type="hidden" id="sucdestino">
+                <input type="hidden" id="sucorigen">
+                <input type="hidden" id="listproductos">
+                <input type="hidden" id="inputnroguia">
+                <input type="hidden" id="guiasucursalid">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
@@ -61,7 +66,7 @@ $suc = $_SESSION['cod_sucursal'];
                             <input type="text" readonly class="form-control" name="personalorigen" id="personalorigen">
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="row">
                     <div class="col-md-4">
@@ -87,6 +92,7 @@ $suc = $_SESSION['cod_sucursal'];
 
                 <table id="detalletabla" class="display" width="100%"></table>
                 <div class="text-right">
+                    <button type="button" class="btn btn-primary" id="buttonanular" onclick="anular()">Anular</button>
                     <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Cerrar</button>
                 </div>
             </div>
@@ -117,33 +123,42 @@ $suc = $_SESSION['cod_sucursal'];
         $("#mdetalle").modal();
 
         const query = `
-        select id, ac1.usuario personalorigen, ac2.usuario personaldestino, gs.estado, fechainicio, fechallegada, productos, s1.nombre_sucursal sucursalorigen, s2.nombre_sucursal sucursaldestino, nroguia 
-        from guiasucursal gs 
-        left join acceso ac1 on ac1.codigopersonal = gs.personalorigen
-        left join acceso ac2 on ac2.codigopersonal = gs.personaldestino
-        inner join sucursal s1 on s1.cod_sucursal = gs.sucursalorigen 
-        inner join sucursal s2 on s2.cod_sucursal = gs.sucursaldestino 
-        where gs.id = ${e.dataset.id}
+            select id, ac1.usuario personalorigen, ac2.usuario personaldestino, gs.estado, fechainicio, fechallegada, productos,  gs.sucursalorigen sucorigen, gs.sucursaldestino sucdestino, s1.nombre_sucursal sucursalorigen, s2.nombre_sucursal sucursaldestino, nroguia 
+            from guiasucursal gs 
+            left join acceso ac1 on ac1.codigopersonal = gs.personalorigen
+            left join acceso ac2 on ac2.codigopersonal = gs.personaldestino
+            inner join sucursal s1 on s1.cod_sucursal = gs.sucursalorigen 
+            inner join sucursal s2 on s2.cod_sucursal = gs.sucursaldestino 
+            where gs.id = ${e.dataset.id}
         `;
-        
+
         let trasladosucursal = await get_data_dynamic(query);
         const row = trasladosucursal[0];
 
+        sucdestino.value = row.sucdestino;
+        sucorigen.value = row.sucorigen;
+        debugger
+        if (row.estado === "PENDIENTE" && codsucursal === row.sucorigen ) {
+            buttonanular.style.display = "";
+        } else {
+            buttonanular.style.display = "none";
+        }
+        guiasucursalid.value = e.dataset.id;
         estadotraslado.value = row.estado;
-
+        inputnroguia.value = row.nroguia;
         sucursalorigen.value = row.sucursalorigen;
         sucursaldestino.value = row.sucursaldestino;
         fechasalida.value = row.fechainicio;
         personalorigen.value = row.personalorigen;
-        if (row.estado === "COMPLETO" ){
+        if (row.estado === "COMPLETO") {
             fechallegada.value = row.fechallegada;
             personaldestino.value = row.personaldestino;
-        }else{
+        } else {
             fechallegada.value = "";
             personaldestino.value = "";
         }
+        listproductos.value = e.dataset.productos;
 
-        debugger
         $('#detalletabla').DataTable({
             data: JSON.parse(e.dataset.productos),
             destroy: true,
@@ -185,7 +200,44 @@ $suc = $_SESSION['cod_sucursal'];
             ]
         });
     }
+    const anular = async () => {
+        const confirr = confirm("¿Desea anular la guia?");
+        if (confirr) {
+            const sucodcorigen = sucorigen.value;
+            const id = guiasucursalid.value
+            const arrayproduct = JSON.parse(listproductos.value);
+
+            const datatotrigger = {
+                header: `delete from guiasucursal where id = ${id}`,
+                detalle: []
+            }
+
+            arrayproduct.forEach(p => {
+                const querykalm = `
+                    insert into kardex_alm (codigoprod, codigoguia, numero, detalle, cantidad, saldo, codsucursal, tipo, tipodocumento, detalleaux) values 
+                    (${p.codigoprod}, ${inputnroguia.value}, ${inputnroguia.value}, 'anulacion', ${p.cantidad}, (select saldo from kardex_alm kc where kc.codigoprod = ${p.codigoprod} and kc.codsucursal = ${sucodcorigen} order by kc.id_kardex_alm desc limit 1) + ${p.cantidad}, ${sucodcorigen}, 'anulacion', 'guia', '${sucursaldestino.value}')`;
+                datatotrigger.detalle.push(querykalm);
+
+                const querykcont = `
+                        insert into kardex_contable (codigoprod, codigocompras, numero, detalle, cantidad, precio, saldo, sucursal, preciototal, tipocomprobante, codigoproveedor) values 
+                        (${p.codigoprod}, 0, ${inputnroguia.value}, 'anulacion', ${p.cantidad}, 0, (select saldo from kardex_contable kc where kc.codigoprod = ${p.codigoprod} and kc.sucursal = ${sucodcorigen} order by kc.id_kardex_contable desc limit 1) + ${p.cantidad}, ${sucodcorigen}, 0, 'guia', 0)`
+                    datatotrigger.detalle.push(querykcont);
+            });
+
+            
+            let res = await ll_dynamic(datatotrigger);
+
+            if (res.success) {
+                alert("La guia se anuló correctamente.");
+                location.reload()
+            }else{
+                alert("Hubo un problema");
+            }
+        }
+    }
+
     const initTable = async () => {
+        
         const query = `
         select id, gs.estado, fechainicio, fechallegada, productos, s1.nombre_sucursal sucursalorigen, s2.nombre_sucursal sucursaldestino, nroguia 
         from guiasucursal gs 

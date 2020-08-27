@@ -165,16 +165,16 @@ include("Fragmentos/pie.php");
                 <tr class="productos">
                     <td>${ii.nombreproducto}</td>
                     <td>${ii.cantidad}</td>
-                    <td><input type="number" required class="form-control cantidad" min="0" data-limit="${ii.cantidad}" data-codigoprod="${ii.codigoprod}" oninput="limitnumber(this)" value="${ii.cantidad}"></td>
+                    <td><input type="number" disabled required class="form-control cantidad" min="0" data-limit="${ii.cantidad}" data-codigoprod="${ii.codigoprod}" oninput="limitnumber(this)" value="${ii.cantidad}"></td>
                 </tr>
             `
         })
         if (estado == "PENDIENTE") {
             btnguarddd.style.display = "";
-            getSelectorAll(".productos .cantidad").forEach(ii => ii.disabled = false)
+            // getSelectorAll(".productos .cantidad").forEach(ii => ii.disabled = false)
         } else {
             btnguarddd.style.display = "none";
-            getSelectorAll(".productos .cantidad").forEach(ii => ii.disabled = true)
+            // getSelectorAll(".productos .cantidad").forEach(ii => ii.disabled = true)
         }
         $("#moperation").modal()
     }

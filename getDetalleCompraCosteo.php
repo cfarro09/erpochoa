@@ -76,7 +76,12 @@ $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
 $result_enc = array();
 
-$query_detalle = "select m.nombre as marca, p.nombre_producto, m.nombre, d.* from detalle_compras d left join producto p on p.codigoprod = d.codigoprod left join marca m on m.codigomarca = p.codigomarca where d.codigocompras = $codigorc";
+$query_detalle = "SELECT IFNULL(p.minicodigo, '') minicodigo, co.nombre_color, m.nombre as marca, p.nombre_producto, m.nombre, d.* 
+from detalle_compras d 
+left join producto p on p.codigoprod = d.codigoprod 
+left join color co on co.codigocolor = p.codigocolor
+left join marca m on m.codigomarca = p.codigomarca 
+where d.codigocompras = $codigorc";
 
 $detalle = mysql_query($query_detalle, $Ventas) or die(mysql_error());
 $result = array();

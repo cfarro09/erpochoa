@@ -53,7 +53,13 @@ $result_enc = array();
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
 
-$query_Factura = "SELECT IFNULL(pr.minicodigo, '') minicodigo, co.nombre_color, d.codigo,doc.pcompra ,m.nombre as marca,pr.codigoprod, d.codigo_guiaoc,oc.codigo, (select k.cantidad from kardex_alm k where k.codigoguia = $codigoguia and k.tipo = 'oc' and k.numero = og.numeroguia) cantidad ,pr.nombre_producto, d.cant_recibida 
+$query_detalle = "SELECT IFNULL(pr.minicodigo, '') minicodigo, co.nombre_color, d.codigo,doc.pcompra ,m.nombre as marca,pr.codigoprod, d.codigo_guiaoc,oc.codigo, (
+  select k.cantidad from kardex_alm k 
+  where 
+    k.codigoguia = $codigoguia and 
+    k.tipo = 'oc' and 
+    k.codigoprod = pr.codigoprod and
+    k.numero = og.numeroguia) cantidad ,pr.nombre_producto, d.cant_recibida 
 from detalle_guia_oc d 
 inner join ordencompra_guia og on og.codigoguia = d.codigo 
 inner join ordencompra oc on oc.codigoordcomp = og.codigoordcomp 
@@ -68,9 +74,9 @@ where oc.codigo ='$codigo' and d.codigo = $codigoguia";
 //SELECT  ##consulta## WHERE c.codigo = %s", $codigo);
 //SELECT a.codigodetalleproducto, a.codigo, a.codigoprod, (a.cantidad*a.pcompra) AS total, a.cantidad, a.pcompra, a.concatenacion, a.codcomprobante, b.nombre_producto AS Producto, c.nombre AS Marca, d.nombre_presentacion AS Presentacion, e.nombre_color AS Color FROM detalle_compras_oc a INNER JOIN producto b ON a.codigoprod = b.codigoprod INNER JOIN marca c ON b.codigomarca = c.codigomarca INNER JOIN presentacion d ON b.codigopresent = d.codigopresent INNER JOIN color e ON b.codigocolor = e.codigocolor WHERE a.codigo = '$colname_Listado_Productos'  group by a.codigoprod
 
-$Factura = mysql_query($query_Factura, $Ventas) or die(mysql_error());
+$detalle = mysql_query($query_detalle, $Ventas) or die(mysql_error());
 $result = array();
-while($res = mysql_fetch_assoc($Factura)){
+while($res = mysql_fetch_assoc($detalle)){
 	array_push($result, $res);
 }
 $res = array(

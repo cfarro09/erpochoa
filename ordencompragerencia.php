@@ -110,7 +110,7 @@ $i = 1;
   <thead>
     <tr>
       <th class="text-center"> N&deg; </th>
-      <th class="text-center"> CODIGO REF1</th>
+      <th class="text-center"> DOC. REF. 1</th>
       
       <th class="text-center"> PROVEEDOR</th>
       <th class="text-center"> FECHA </th>
@@ -189,16 +189,17 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
       </div>
       <div class="modal-body">
         <input type="hidden" id="codigoOrdenCompra">
-        <div class="container-fluid"><p align="right">
-          GENERADA POR: <span id="mgeneradapor"></span><br>
-          FECHA DE EMISION: <span id="mfechaemision"></span><br>
-          SUCURSAL : <span id="msucursal"></span></p>
-          RUC : <span id="mruc"></span><br>
-          PROVEEDOR: <span id="mproveedor"></span> <BR>
-          VALOR TOTAL: <span id="mvalortotal"></span><BR>
-          DOCUMENTO REF 1 : <span id="mcodref1"></span> <br>
-          DOCUMENTO REF2: <span id="mcodref2"></span> <br>
-
+        <div class="container-fluid">
+        <pre>
+        <p align="right">GENERADA POR:            <span id="mgeneradapor"></span>
+          FECHA DE EMISI&OacuteN:            <span id="mfechaemision"></span>
+          SUCURSAL :   <span id="msucursal"></span></p>
+  RUC             : <span id="mruc"></span>
+  PROVEEDOR       : <span id="mproveedor"></span>
+  VALOR TOTAL     : <span id="mvalortotal"></span>
+  DOCUMENTO REF. 1: <span id="mcodref1"></span>
+  DOCUMENTO REF. 2: <span id="mcodref2"></span>
+      </pre>
           <div class="row">
             <div class="col-xs-12 col-md-12">
 
@@ -264,9 +265,9 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
           $("#mproveedor").text(res.header.razonsocial)
           $("#mfechaemision").text(res.header.fecha_emision)
           $("#mvalortotal").text(res.header.montofact)
-          $("#mcodref1").text(res.header.codigoref1)
-          $("#mcodref2").text(res.header.codigoref2)
-          $("#mgeneradapor").text(res.header.usuario)
+          $("#mcodref1").text(res.header.codigoref1.toUpperCase())
+          $("#mcodref2").text(res.header.codigoref2.toUpperCase())
+          $("#mgeneradapor").text(res.header.usuario.toUpperCase())
           $("#mruc").text(res.header.ruc)
           $("#msucursal").text(res.header.nombre_sucursal + " " + (res.header.direccionOrden ? " :"+ res.header.direccionOrden : ""))
 
@@ -287,12 +288,9 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
                 data: 'cantidad',
                 className: 'dt-body-right'
               },
+              
               {
-                title: 'U. Medida',
-                data: 'unidad_medida'
-              },
-              {
-                title: 'Codigo Fab',
+                title: 'C&oacutedigo Fab',
                 data: 'minicodigo',
                 visible: res.detalle.some(x => x.minicodigo !== "")
               },
@@ -301,16 +299,22 @@ $newDate = date("d/m/Y", strtotime($row_Listado['fecha_emision']));
                 data: 'Producto'
               },
               {
-                title: 'Marca',
-                data: 'Marca'
-              },
-              {
                 title: 'Color',
                 data: 'Color'
               },
               {
+                title: 'Marca',
+                data: 'Marca'
+              },
+              
+              {
+                title: 'U. M',
+                data: 'Presentacion'
+              },
+              {
                 title: 'Valor Compra',
                 data: 'pcompra',
+                className: 'dt-body-right'
               }
             ],
             buttons: [{

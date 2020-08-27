@@ -58,7 +58,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")) {
-  $insertSQL = sprintf("INSERT INTO cnatural (cedula, nombre, paterno, materno, ciudad, celular, telefono, direccion, email, sexo, obs, fecha_registro) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+  $insertSQL = sprintf("INSERT INTO cnatural (cedula, nombre, paterno, materno, ciudad, celular, telefono, direccion, email, sexo, obs, fecha_registro, ruc) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                        GetSQLValueString($_POST['cedula'], "text"),
                        GetSQLValueString(strtoupper($_POST['nombre']), "text"),
                        GetSQLValueString(strtoupper($_POST['paterno']), "text"),
@@ -70,7 +70,8 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "Ingresar")) {
                        GetSQLValueString($_POST['email'], "text"),
                        GetSQLValueString($_POST['sexo'], "text"),
 					   GetSQLValueString($_POST['obs'], "text"),
-                       GetSQLValueString($_POST['fecha_registro'], "date"));
+                       GetSQLValueString($_POST['fecha_registro'], "date"),
+                       GetSQLValueString($_POST['ruc'], "text"));
 
   mysql_select_db($database_Ventas, $Ventas);
   $Result1 = mysql_query($insertSQL, $Ventas) or die(mysql_error());
@@ -109,6 +110,19 @@ include("Fragmentos/bloquea_caja.php");
 <div class="input-group"><span id="sprytextfield1">
 <input type="text" class="form-control tooltips"  data-placement="top" data-original-title="Agregar N&uacute;mero de DNI" placeholder="DNI" id="cedula" name="cedula" maxlength="8" />
 <span class="textfieldRequiredMsg"></span><span class="textfieldMinCharsMsg"></span></span><span class="input-group-addon">
+<i class="icon-credit-card  font-blue-soft"></i>
+</span>
+</div>
+</div>
+</div>
+
+</td>
+<td>
+<div class="form-group">
+<div class="col-md-5">
+<div class="input-group"><span id="sprytextfield10">
+<input type="text" class="form-control tooltips"  data-placement="top" data-original-title="Agregar N&uacute;mero de RUC" placeholder="RUC" id="ruc" name="ruc" maxlength="11" />
+<span class="textfieldMinCharsMsg"></span></span><span class="input-group-addon">
 <i class="icon-credit-card  font-blue-soft"></i>
 </span>
 </div>
@@ -284,6 +298,7 @@ include("Botones/BotonesAgregar.php");
 ?>
 <script type="text/javascript">
 var sprytextfield1 = new Spry.Widget.ValidationTextField("sprytextfield1", "none", {validateOn:["blur", "change"], minChars:8});
+var sprytextfield10 = new Spry.Widget.ValidationTextField("sprytextfield10", "none", {validateOn:["blur", "change"], minChars:11});
 var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2", "none", {validateOn:["blur", "change"]});
 var sprytextfield3 = new Spry.Widget.ValidationTextField("sprytextfield3", "none", {validateOn:["blur", "change"]});
 var sprytextfield4 = new Spry.Widget.ValidationTextField("sprytextfield4", "none", {validateOn:["blur", "change"]});

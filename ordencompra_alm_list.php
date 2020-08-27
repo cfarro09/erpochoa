@@ -127,10 +127,9 @@ $totalRows_Listado = mysql_num_rows($Listado);
 			<tr>
 				<th> N&deg; </th>
 				<th> DOC REF1</th>
-				<th> M. TOTAL</th>
+				
 				<th class="none"> COMPRA </th>
-				<th class="none">SUBTOTAL</th>
-				<th class="none"> IVA </th>
+				
 				<th> PROVEEDOR </th>
 				<th> FECHA </th>
 				<th> VER </th>
@@ -162,12 +161,8 @@ $totalRows_Listado = mysql_num_rows($Listado);
 				<tr style="background-color: <?= $color ?>">
 					<td> <?php echo $i; ?> </td>
 					<td><a href="#" data-estado="<?= $estado ?>" data-codigo="<?= $row_Listado['codigo'] ?>" class="verOrden"> <?= $row_Listado['codigoref1']; ?> </a></td>
-					<td> <?php
-							$preciocompra = $row_Listado['valor_compra'];
-							echo number_format($row_Listado['valor_compra'], 2); ?></td>
+					
 					<td><?php echo "&#36; " . number_format($row_Listado['valor_compra'], 2); ?> </td>
-					<td> <?php echo "&#36; " . number_format($row_Listado['valor_compra'] / $IGV1, 2); ?></td>
-					<td> <?php echo "&#36; " . number_format(($row_Listado['valor_compra'] - number_format($row_Listado['valor_compra'] / $IGV1, 2)), 2); ?></td>
 					<td> <?php echo $row_Listado['razonsocial']; ?></td>
 					<td> <?php echo $row_Listado['fecha_emision']; ?></td>
 					
@@ -197,15 +192,15 @@ $totalRows_Listado = mysql_num_rows($Listado);
 						<input type="hidden" id="codsucursaluuu">
 						<input type="hidden" id="codigoguia" value="">
 						<div class="container-fluid">
-							<p align="right">
-								GENERADA POR: <span id="mgeneradapor"></span> <br>
-								FECHA DE EMISION: <span id="mfechaemision"></span> <br>
-								SUCURSAL: <span id="msucursal"></span> </p>
-							RUC: <span id="mruc"></span><br>
-							PROVEEDOR: <span id="mproveedor"></span> <BR>
-							VALOR TOTAL: <span id="mvalortotal"></span><BR>
-							CODIGO DE REF 1: <span id="mcodref1"></span> <br>
-							CODIGO REF2: <span id="mcodref2"></span> <br>
+						<pre>	<p align="right">
+	GENERADA POR: <span id="mgeneradapor"></span>
+	FECHA DE EMISION: <span id="mfechaemision"></span>
+	SUCURSAL: <span id="msucursal"></span> </p>
+RUC: <span id="mruc"></span>
+PROVEEDOR: <span id="mproveedor"></span>
+VALOR TOTAL: <span id="mvalortotal"></span>
+CODIGO DE REF 1: <span id="mcodref1"></span>
+CODIGO REF2: <span id="mcodref2"></span></pre>
 
 							<div id="concatenadoguias" style="white-space: break-spaces; margin-top: 5px"></div>
 
@@ -363,12 +358,12 @@ $totalRows_Listado = mysql_num_rows($Listado);
 					concatenadoguias.textContent = ` Guias previas: \n${res.header.concatenadoguias} `
 					$("#mfechaemision").text(res.header.fecha_emision)
 					$("#mvalortotal").text(res.header.montofact)
-					$("#mcodref1").text(res.header.codigoref1)
+					$("#mcodref1").text(res.header.codigoref1.toUpperCase())
 					$("#numero-guia").val("")
 					$("#observacion").val("")
 					$("#codsucursaluuu").val(res.header.sucursal)
 					$("#mcodref2").text(res.header.codigoref2 ? res.header.codigoref2 : "No tiene")
-					$("#mgeneradapor").text(res.header.usuario)
+					$("#mgeneradapor").text(res.header.usuario.toUpperCase())
 					$("#mruc").text(res.header.ruc)
 					$("#msucursal").text(res.header.nombre_sucursal + " " + (res.header.direccionOrden ? " :" + res.header.direccionOrden : ""))
 					$("#codigoguia").val(res.header.codigoguia)
@@ -493,7 +488,11 @@ $totalRows_Listado = mysql_num_rows($Listado);
 			});
 
 	})
+	let onlyclick = true;
 	document.querySelector("#saveOrdenCompra-alm-list").addEventListener("submit", (e) => {
+		if (!onlyclick)
+			return
+		onlyclick = false;
 		e.preventDefault();
 		debugger
 		const data = {

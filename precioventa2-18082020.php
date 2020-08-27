@@ -144,7 +144,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 				
 				?>
-				<tr <?= !$row_Listado['initial'] || $pcompra > $row_Listado['precio_venta1'] ? "style='background-color: red'" : ""?>>
+				<tr <?= !$row_Listado['initial'] || $pcompra > $row_Listado['precio_venta1'] ? "style='background-color: #E57373'" : ""?>>
 					<?php $pcompra = number_format($pcompra, 2); ?>
 					<td> <?php echo $i; ?> </td>
 					<td class="text-right"> <?php echo $row_Listado['minicodigo']; ?>                                                           </td>
@@ -275,16 +275,24 @@ include("Fragmentos/abrirpopupcentro.php");
 			const detalle = [];
 
 			detalle.push(
-				`
-				update precio_venta set
-					porcpv1 =  ${porcentaje1.value},
-					precioventa1 =  ${precio1.value},
-					porcpv2 =  ${porcentaje2.value},
-					precioventa2 =  ${precio2.value},
-					porcpv3 =  ${porcentaje3.value},
-					precioventa3 =  ${precio3.value},
-					initial = true
-				where codigo_pv = ${idpv}`
+				`insert into precio_venta (codacceso, tipo_asignar_venta, codigodetalleproducto, codigoprod, vcf, totalunidad, porcpv1, precioventa1, porcpv2, precioventa2, porcpv3, precioventa3, codigocompras, initial)
+				values
+				(
+				${codacceso},
+				1,
+				${codigodetalleproducto.textContent},
+				${codproducto.textContent},
+				${preciocomprapv2.textContent},
+				${vcutotal.textContent},
+				${porcentaje1.value},
+				${precio1.value},
+				${porcentaje2.value},
+				${precio2.value},
+				${porcentaje3.value},
+				${precio3.value},
+				0,
+				true
+				);`
 			)
 
 			var formData = new FormData();

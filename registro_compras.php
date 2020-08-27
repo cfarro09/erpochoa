@@ -117,13 +117,37 @@ include("Fragmentos/pie.php");
     });
     const initTable = async () => {
         const query = `
-            SELECT date(r.fecha_registro) as fecha_registro, CONCAT(r.tipo_comprobante,'-', r.numerocomprobante) as documento, r.tipo_comprobante, s.nombre_sucursal as sucursal, r.rucproveedor, p.razonsocial, subtotal, total, igv, r.codigomesconta
+            SELECT 'Articulos Varios' detalle, r.rucproveedor, p.razonsocial, date(r.fecha_registro) as fecha_registro, CONCAT(r.tipo_comprobante,'-', r.numerocomprobante) as documento, r.tipo_comprobante, s.nombre_sucursal as sucursal, subtotal, total, igv, r.codigomesconta
             FROM registro_compras r
             LEFT JOIN sucursal s on s.cod_sucursal = r.codigosuc 
             LEFT JOIN proveedor p on p.ruc = r.rucproveedor
             WHERE 
                 p.razonsocial not like  '%inventario%' and
                  r.fecha_registro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
+            UNION
+            select 'Estibador' detalle,  p.ruc rucproveedor, p.razonsocial, date(ec.fecharegistro) as fecha_registro, CONCAT(ec.tipocomprobante, ' - ', ec.numerocomprobante) documento, ec.tipocomprobante, s.nombre_sucursal as sucursal, ec.precioestibador_soles subtotal, ec.precioestibador_soles*1.18 total,  ec.precioestibador_soles*0.18 igv, '' codigomesconta from estibador_compra ec  
+                LEFT JOIN proveedor p on p.ruc = ec.rucestibador
+                left join registro_compras rc on rc.codigorc = ec.codigocompras
+                LEFT JOIN sucursal s on s.cod_sucursal = rc.codigosuc 
+                where ec.fecharegistro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
+			UNION 
+			select concat('Transporte - ', tc.tipo_transporte) detalle, p.ruc rucproveedor, p.razonsocial, date(tc.fecharegistro) as fecha_registro, CONCAT(tc.tipocomprobante, ' - ', tc.numerocomprobante) documento, tc.tipocomprobante, s.nombre_sucursal as sucursal, tc.preciotransp_soles subtotal, tc.preciotransp_soles*1.18 total,  tc.preciotransp_soles*0.18 igv, '' codigomesconta from transporte_compra tc 
+                LEFT JOIN proveedor p on p.ruc = tc.ructransporte
+                left join registro_compras rc on rc.codigorc = tc.codigocompras
+                LEFT JOIN sucursal s on s.cod_sucursal = rc.codigosuc 
+                where tc.fecharegistro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
+			UNION
+			select  'Nota Debito' detalle, p.ruc rucproveedor, p.razonsocial, date(nd.fecharegistro) as fecha_registro, CONCAT(nd.tipocomprobante, ' - ', nd.numerocomprobante) documento, nd.tipocomprobante, s.nombre_sucursal as sucursal, nd.preciond_soles subtotal, nd.preciond_soles*1.18 total,  nd.preciond_soles*0.18 igv, '' codigomesconta from notadebito_compra nd 
+                LEFT JOIN proveedor p on p.ruc = nd.rucnd
+                left join registro_compras rc on rc.codigorc = nd.codigocompras
+                LEFT JOIN sucursal s on s.cod_sucursal = rc.codigosuc 
+                where nd.fecharegistro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
+			UNION
+			select 'Nota Credito' detalle, p.ruc rucproveedor, p.razonsocial, date(nc.fecharegistro) as fecha_registro, CONCAT(nc.tipocomprobante, ' - ', nc.numerocomprobante) documento, nc.tipocomprobante, s.nombre_sucursal as sucursal, nc.precionc_soles subtotal, nc.precionc_soles*1.18 total,  nc.precionc_soles*0.18 igv, '' codigomesconta from notacredito_compra nc	
+                LEFT JOIN proveedor p on p.ruc = nc.rucnotacredito
+                left join registro_compras rc on rc.codigorc = nc.codigocompras
+                LEFT JOIN sucursal s on s.cod_sucursal = rc.codigosuc 
+                where nc.fecharegistro BETWEEN '${fecha_inicio.value}' and '${fecha_fin.value}'
         `;
         let data = await get_data_dynamic(query);
 
@@ -145,10 +169,18 @@ include("Fragmentos/pie.php");
                     tipox = 14
                     break;
             }
-            return {
-                ...x,
-                ["codigomesconta"]: (x.codigomesconta ? (x.codigomesconta.split("-").length > 1 ? x.codigomesconta.split("-")[1] : "") : ""),
-                ["tipo"]: tipox
+            if (x.detalle === "Articulos Varios") { 
+                return {
+                    ...x,
+                    ["codigomesconta"]: (x.codigomesconta ? (x.codigomesconta.split("-").length > 1 ? x.codigomesconta.split("-")[1] : "") : ""),
+                    ["tipo"]: tipox
+                }
+            } else {
+                return {
+                    ...x,
+                    ["codigomesconta"]: "",
+                    ["tipo"]: tipox
+                }
             }
         })
         $('#maintable').DataTable({
@@ -207,7 +239,7 @@ include("Fragmentos/pie.php");
                 },
                 {
                     title: 'ARTICULO',
-                    defaultContent: "Articulos Varios"
+                    data: 'detalle'
                 },
                 {
                     title: 'VALOR COMPRA',

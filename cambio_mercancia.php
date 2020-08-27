@@ -149,10 +149,10 @@
 ?>
     <script>
         $(function() {
-            var query = "select value from propiedades where `key` = 'despacho_guia_"+sucursal_origen.value+"'";
-            get_data_dynamic(query).then(resguia => {
-                numero_guia.value = resguia[0].value
-            });
+            // var query = "select value from propiedades where `key` = 'despacho_guia_"+sucursal_origen.value+"'";
+            // get_data_dynamic(query).then(resguia => {
+            //     numero_guia.value = resguia[0].value
+            // });
         });
         
         // Inicializando elementos
@@ -219,9 +219,9 @@
             cambiar_sucursal(actual);
             limpiar_productos();
 
-            var query = "select value from propiedades where `key` = 'despacho_guia_"+actual+"'";
-            const resguia = await get_data_dynamic(query).then(r => r);
-            numero_guia.value = resguia[0].value
+            // var query = "select value from propiedades where `key` = 'despacho_guia_"+actual+"'";
+            // const resguia = await get_data_dynamic(query).then(r => r);
+            // numero_guia.value = resguia[0].value
 
             var formData = new FormData();
             var query = "select k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad, p.minicodigo "+

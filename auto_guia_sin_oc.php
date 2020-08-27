@@ -110,7 +110,7 @@ $i = 1;
     <thead>
       <tr>
         <th> N&deg; </th>
-        <th> Nro guia</th>
+        <th> NRO GUIA</th>
         <th> PROVEEDOR </th>
         <th> FECHA </th>
         <th> SUCURSAL </th>
@@ -141,13 +141,15 @@ $i = 1;
         ?>
         <tr style="background-color: <?= $color; ?>">
           <td><?php echo $i; ?> </td>
-          <td><?= $row_Listado['numero_guia'] ?> </td>
+          <td><?= strtoupper($row_Listado['numero_guia']); ?> </td>
 
           <td> <?php echo $row_Listado['razonsocial']; ?></td>
           <td> <?php echo $row_Listado['fecha']; ?></td>
           <td> <?php echo $row_Listado['nombre_sucursal']; ?></td>
           <td>
-            <a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante" href="Imprimir/orden_compra.php?codigocompras=<?php echo $row_Listado['codigo']; ?>&codigo=<?php echo $row_Listado['codigoref1']; ?>" target="new"><i class="glyphicon glyphicon-credit-card"></i></a>
+            <a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"
+          href="Imprimir/sinorden_compra.php?codigocompras=<?php echo $row_Listado['codigo_guia_sin_oc']; ?>&codigo=<?php echo $row_Listado['numero_guia']; ?>&codigop=<?php echo $row_Listado['codigoproveedor']; ?>"
+          target="new"><i class="glyphicon glyphicon-print"></i></a>
           </td>
           <td><a href="#" data-estado="<?= $row_Listado['estado'] ?>" data-codigo="<?= $row_Listado['codigo_guia_sin_oc'] ?>" class="verOrden">Ver</a></td>
           <td><?= $estado ?></td>
@@ -172,15 +174,13 @@ $i = 1;
       <div class="modal-body">
         <input type="hidden" id="codigoOrdenCompra">
         <div class="container-fluid">
-
-          PROVEEDOR: <span id="mproveedor"></span> <BR>
-          FECHA DE EMISION: : <span id="mfechaemision"></span> <br>
-          NUMERO GUIA : <span id="numeroguia"></span> <br>
-          CODIGO REF2: : <span id="mcodref2"></span> <br>
-          GENERADA POR: : <span id="mgeneradapor"></span> <br>
-          RUC : <span id="mruc"></span><br>
-          SUCURSAL : <span id="msucursal"></span>
-
+        <pre>PROVEEDOR       : <span id="mproveedor"></span>
+RUC             : <span id="mruc"></span>
+FECHA DE EMISION: <span id="mfechaemision"></span>
+NUMERO GUIA     : <span id="numeroguia"></span>
+CODIGO REF.     : <span id="mcodref2"></span>
+GENERADA POR    : <span id="mgeneradapor"></span>
+SUCURSAL        : <span id="msucursal"></span></pre>
           <div class="row" style="margin-top: 7rem;">
             <div class="col-xs-12 col-md-12">
 
@@ -247,11 +247,11 @@ $i = 1;
         .catch(error => console.error("error: ", error))
         .then(res => {
           $("#mproveedor").text(res.header.razonsocial)
-          $("#mfechaemision").text(res.header.fecha)
-          $("#numeroguia").text(res.header.numero_guia)
-          $("#mcodref2").text(res.header.codigoref2)
-          $("#mgeneradapor").text(res.header.usuario)
           $("#mruc").text(res.header.ruc)
+          $("#mfechaemision").text(res.header.fecha)
+          $("#numeroguia").text(res.header.numero_guia.toUpperCase())
+          $("#mcodref2").text(res.header.codigoref2)
+          $("#mgeneradapor").text(res.header.usuario.toUpperCase())
           $("#msucursal").text(res.header.nombre_sucursal + " " + (res.header.direccionOrden ? " :" + res.header.direccionOrden : ""))
 
           $('#tableOrdengordis').DataTable({
@@ -266,15 +266,22 @@ $i = 1;
                     className: 'dt-body-right'
                 },
                 {
-                    title: 'Producto',
-                    data: 'nombre_producto'
-                },
-                {
-                    title: 'Minidicodigo',
-                    data: 'minicodigo',
-                    visible: res.detalle.some(x => x.minicodigo !== "")
-
-                },
+                title: 'Minidicodigo',
+                data: 'minicodigo',
+                visible: res.detalle.some(x => x.minicodigo !== "")
+              },
+              {
+                title: 'Producto',
+                data: 'nombre_producto'
+              },
+              {
+                title: 'Color',
+                data: 'color'
+              },
+              {
+                title: 'Marca',
+                data: 'marca'
+              },
                 {
                     title: 'U. Medida',
                     data: 'unidad_medida',

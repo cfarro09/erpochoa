@@ -48,6 +48,7 @@ ka.* from kardex_alm ka
 where 
   ka.codigoprod = $codproducto and 
   ka.codsucursal  $searchsuc and 
+  ka.cantidad <> 0 and
   ka.fecha BETWEEN '$fecha_inicio' AND '$fecha_termino'";
 
 $Factura = mysql_query($queryKardex, $Ventas) or die(mysql_error());
