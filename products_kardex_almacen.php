@@ -149,9 +149,9 @@ include("Fragmentos/pie.php");
              sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' or k5.detalle like '%despacho%' Then k5.cantidad Else 0 End) salidas
         from producto p 
         left join marca m on m.codigomarca = p.codigomarca
-        left join kardex_alm k5 on k5.codigoprod = p.codigoprod and k5.codsucursal = 1
-        left join kardex_alm k on k.id_kardex_alm = (SELECT MAX(k2.id_kardex_alm) from  kardex_alm k2 where k2.codigoprod = p.codigoprod and k2.codsucursal = 1)
-        left join kardex_contable kc on kc.id_kardex_contable = (SELECT MAX(kc2.id_kardex_contable) from kardex_contable kc2 where kc2.codigoprod = p.codigoprod and kc2.sucursal = 1)
+        left join kardex_alm k5 on k5.codigoprod = p.codigoprod and k5.codsucursal = <?= $suc ?>
+        left join kardex_alm k on k.id_kardex_alm = (SELECT MAX(k2.id_kardex_alm) from  kardex_alm k2 where k2.codigoprod = p.codigoprod and k2.codsucursal = <?= $suc ?>)
+        left join kardex_contable kc on kc.id_kardex_contable = (SELECT MAX(kc2.id_kardex_contable) from kardex_contable kc2 where kc2.codigoprod = p.codigoprod and kc2.sucursal = <?= $suc ?>)
         ${where}
         group by p.codigoprod
         `;
