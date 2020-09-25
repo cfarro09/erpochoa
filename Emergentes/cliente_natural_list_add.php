@@ -102,7 +102,7 @@ include("Fragmentos/bloquea_caja.php");
 <tr>
 <td colspan="2">
   
-  <table width="40%" border="0">
+  <table border="0">
   <tr>
 <td>
 <div class="form-group">

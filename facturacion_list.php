@@ -120,7 +120,7 @@ $i = 1;
 			<td><a href="#" class="aux_compras" data-type="ordencompra"
 					data-codigo="<?= $row_Listado['codigo'] ?>"
 					data-codigoguia="<?= $row_Listado['codigoguia'] ?>"
-				>Pendiente</a></td>
+				>Pendiente - <?= $row_Listado['codigoguia'] ?></a></td>
 			<?php endif ?>
 			<td>
 				<a class="btn yellow-crusta tooltips" data-placement="top" data-original-title="Imprimir Comprobante"

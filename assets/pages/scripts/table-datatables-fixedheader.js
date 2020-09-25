@@ -25,7 +25,7 @@ var TableDatatablesFixedHeader = function () {
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
                 "lengthMenu": "_MENU_ entries",
-                "search": "Buscar:",
+                "search": "Search:",
                 "zeroRecords": "No matching records found"
             },
 
@@ -83,7 +83,7 @@ var TableDatatablesFixedHeader = function () {
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
                 "lengthMenu": "_MENU_ entries",
-                "search": "Buscar:",
+                "search": "Search:",
                 "zeroRecords": "No matching records found"
             },
 

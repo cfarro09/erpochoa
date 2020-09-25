@@ -43,7 +43,7 @@ $Factura_enc = mysql_query($query_Factura_enc, $Ventas) or die(mysql_error());
 $result_enc = array();
 $row_encabezado = mysql_fetch_assoc($Factura_enc);
 
-$query_detalle = "SELECT co.nombre_color, d.codigoprod, co.nombre_color AS color , IFNULL(p.minicodigo, '') minicodigo, p.nombre_producto, m.nombre as marca, d.cantidad, d.unidad_medida 
+$query_detalle = "SELECT d.codigoprod, co.nombre_color AS color , IFNULL(p.minicodigo, '') minicodigo, p.nombre_producto, m.nombre as marca, d.cantidad, d.unidad_medida 
 from detalle_guia_sin_oc d 
 left join producto p on p.codigoprod = d.codigoprod 
 left join  marca m on m.codigomarca = p.codigomarca  

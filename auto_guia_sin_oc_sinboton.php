@@ -268,7 +268,7 @@ $i = 1;
                 className: 'dt-body-right'
               },
               {
-                title: 'Minidicodigo',
+                title: 'Codigo Fab',
                 data: 'minicodigo',
                 visible: res.detalle.some(x => x.minicodigo !== "")
               },

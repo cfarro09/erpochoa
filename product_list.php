@@ -105,15 +105,19 @@ $suc = $_SESSION['cod_sucursal'];
             ],
             dom: "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
             columns: [{
-                    title: 'codigoprod',
+                    title: 'Código',
                     data: 'codigoprod'
                 },
                 {
-                    title: 'nombre_producto',
+                    title: 'Cod_Fabr',
+                    data: 'minicodigo',
+                },
+                {
+                    title: 'Producto',
                     data: 'nombre_producto'
                 },
                 {
-                    title: 'marca',
+                    title: 'Marca',
                     data: 'marca'
                 },
                 {
@@ -121,24 +125,21 @@ $suc = $_SESSION['cod_sucursal'];
                     data: 'Color'
                 },
                 {
-                    title: 'Presentacion',
+                    title: 'U/M.',
                     data: 'Presentacion'
                 },
                 {
-                    title: 'Categoria',
+                    title: 'Categoría',
                     data: 'Categoria',
                 },
+                
                 {
-                    title: 'Codigo',
-                    data: 'minicodigo',
-                },
-                {
-                    title: 'codigo2',
+                    title: 'Código2',
                     data: 'codigo2',
                     visible: false
                 },
                 {
-                    title: 'codigo3',
+                    title: 'Código3',
                     data: 'codigo3',
                     visible: false
                 },

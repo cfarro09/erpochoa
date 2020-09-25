@@ -16,7 +16,7 @@ var TableDatatablesScroller = function () {
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
                 "lengthMenu": "_MENU_ entries",
-                "search": "Buscar:",
+                "search": "Search:",
                 "zeroRecords": "No matching records found"
             },
 
@@ -75,7 +75,7 @@ var TableDatatablesScroller = function () {
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered from _MAX_ total entries)",
                 "lengthMenu": "_MENU_ entries",
-                "search": "Buscar:",
+                "search": "Search:",
                 "zeroRecords": "Loading..."
             },
 
@@ -135,7 +135,7 @@ var TableDatatablesScroller = function () {
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
                 "lengthMenu": "_MENU_ entries",
-                "search": "Buscar:",
+                "search": "Search:",
                 "zeroRecords": "No matching records found"
             },
 
@@ -197,7 +197,7 @@ var TableDatatablesScroller = function () {
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
                 "lengthMenu": "_MENU_ entries",
-                "search": "Buscar:",
+                "search": "Search:",
                 "zeroRecords": "No matching records found"
             },
 

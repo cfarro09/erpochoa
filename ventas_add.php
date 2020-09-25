@@ -34,7 +34,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "SELECT pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color, pv.initial, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+$query_Productos = "SELECT pre.nombre_presentacion, k.codigoprod, p.minicodigo, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color, pv.initial, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
 from kardex_alm k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
@@ -270,6 +270,7 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 						<?= $row_Productos['nombre_producto'] ?> -
 						<?= $row_Productos['Marca']; ?> -
 						<?= $row_Productos['nombre_color']; ?> -
+						<?= $row_Productos['minicodigo']; ?> -
 						<?= "$/." . $row_Productos['p3']; ?> -
 						(<?= "Stock " . $row_Productos['saldo']; ?>)
 					</option>
@@ -456,8 +457,7 @@ include("Fragmentos/pie.php");
 			return
 		}
 		if (ll != "Backspace") {
-			const regex = e.target.dataset.typeprod == "KG" ? /^[0-9]*\.?[0-9]*$/ : /^\d+$/
-			debugger
+			const regex = /KG|M2/.test(e.target.dataset.typeprod) ? /^[0-9]*\.?[0-9]*$/ : /^\d+$/
 			if (!e.key.match(regex)) {
 				e.preventDefault();
 				return

@@ -71,7 +71,7 @@ if (isset($_GET['codigo'])) {
 	$colname_Detalle_Compras = $_GET['codigo'];
 }
 mysql_select_db($database_Ventas, $Ventas);
-$query_Detalle_Compras = sprintf("SELECT a.codigodetalleproducto, a.codigo, a.codigoprod, a.cantidad,b.nombre_producto AS Producto,c.nombre AS Marca, ps.precio_venta, e.nombre_color, sum(a.cantidad*ps.precio_compra) as Importe,ps.stock, a.pcompra FROM detalle_compras_oc a  INNER JOIN producto b ON a.codigoprod =b.codigoprod INNER JOIN marca c ON b.codigomarca = c.codigomarca INNER JOIN color e ON b.codigocolor = e.codigocolor INNER JOIN producto_stock ps ON ps.codigoprod=b.codigoprod WHERE a.codigo = %s GROUP BY a.codigoprod desc ", GetSQLValueString($colname_Detalle_Compras, "text"));
+$query_Detalle_Compras = sprintf("SELECT a.codigodetalleproducto, a.codigo, a.codigoprod, a.cantidad,b.nombre_producto AS Producto,c.nombre AS Marca, e.nombre_color, a.cantidad as Importe, a.pcompra FROM detalle_compras_oc a  INNER JOIN producto b ON a.codigoprod =b.codigoprod INNER JOIN marca c ON b.codigomarca = c.codigomarca INNER JOIN color e ON b.codigocolor = e.codigocolor WHERE a.codigo = %s GROUP BY a.codigoprod desc ", GetSQLValueString($colname_Detalle_Compras, "text"));
 $Detalle_Compras = mysql_query($query_Detalle_Compras, $Ventas) or die(mysql_error());
 $row_Detalle_Compras = mysql_fetch_assoc($Detalle_Compras);
 $totalRows_Detalle_Compras = mysql_num_rows($Detalle_Compras);

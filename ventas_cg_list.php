@@ -432,6 +432,15 @@ $codsucursal = $_SESSION['cod_sucursal'];
                 alert(error);
                 return;
             }
+            const query1 = `select 1 from ventas where nroguia = '${nroguia.value}'`;
+            const query2 = `select 1 from guiasucursal where nroguia = '${nroguia.value}'`;
+
+            let datares = await get_data_dynamic(query1);
+            let datares2 = await get_data_dynamic(query2);
+            if (datares.length > 0 || datares2.length > 0) {
+                alert("Ese n° de guia ya fue registrada.");
+                return;
+            }
             btnimprimir.disabled = true;
             
             if ((despachado.value == 2 || despachado.value == 0) && modentrega != "Entrega inmediata C/G") {

@@ -228,7 +228,7 @@ $suc = $_SESSION['cod_sucursal'];
                 </div>
                 <div class="modal-footer">
                     <button type="submit" id="guardardesposeingreso" class="btn btn-primary">Guardar</button>
-                    <button type="button" id="imprimirdesposeingreso" onclick="imprimirdespose()" class="btn btn-primary">Imprimir</button>
+                    <button type="button" id="imprimirdesposeingreso" onclick="imprimirdesposeii()" class="btn btn-primary">Imprimir</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -330,10 +330,16 @@ include("Fragmentos/pie.php");
         $('#clienteingreso').val("").trigger('change');
         $('#personalingreso').val(idpersonal).trigger('change');
     }
-
+    let clickguardardespseingreso = false;
     const guardardespseingreso = async e => {
-
         e.preventDefault();
+
+        if (!clickguardardespseingreso) {
+            clickguardardespseingreso = true;
+        } else{
+            return;
+        }
+
         if (personalingreso.value) {
 
             let nrecibo = parseInt(nreciboxingreso.value) + 1;
@@ -348,6 +354,7 @@ include("Fragmentos/pie.php");
             values
                 ('${nreciboxingreso.value}', ${cantidadxxingreso.value}, '${fechaingreso.value}', '${byfromingreso.value}', ${personalingreso.value}, ${msucursal.value}, 'ingreso', ${clienteingreso.value}, '${tipo}')`
             let res = await ff_dynamic(query);
+            clickguardardespseingreso = false;
             alert("DATOS GUARDADOS CORRECTAMENTE");
             $("#mdesposeingreso").modal("hide")
             await initTable()
@@ -356,8 +363,16 @@ include("Fragmentos/pie.php");
             alert("debe seleccionar personal")
         }
     }
+    let clickguardardespse = false;
     const guardardespse = async e => {
         e.preventDefault();
+
+        if (!clickguardardespse) {
+            clickguardardespse = true;
+        } else{
+            return;
+        }
+
         // ll_dynamic
         const dataxx = {
             header: "",
@@ -398,6 +413,7 @@ include("Fragmentos/pie.php");
 
             let res = await ll_dynamic(dataxx);
             alert("DATOS GUARDADOS CORRECTAMENTE");
+            clickguardardespse = false;
 
             await initTable()
             await getdetail(msucursal.value, namesucursal.value)
@@ -669,7 +685,7 @@ include("Fragmentos/pie.php");
         personal.value = "";
     }
 
-    const imprimirdespose = () => {
+    const imprimirdesposeii = () => {
         const printnreciboxingreso = nreciboxingreso.value;
         const printfechaingreso = fechaingreso.value;
         const printcantidadxxingreso = cantidadxxingreso.value;

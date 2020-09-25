@@ -55,9 +55,6 @@ if(isset($type)){
   $headerx = array();
 }
 
-
-
-
 $query_Factura_enc = "
 select r.*,  
 count(t.codigocompras) as counttransporte,

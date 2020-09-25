@@ -512,6 +512,7 @@ include("Fragmentos/pie.php");
 
             data.detalle.push(`UPDATE ventas SET despachado=1, nroguia=${nguia} WHERE codigoventas=${codigoventa.value}`);
             data.detalle.push("UPDATE propiedades SET value = ("+nguia+"+1) where `key` = 'despacho_guia'");
+            console.log(data);
             var formData = new FormData();
             formData.append("json", JSON.stringify(data));
 

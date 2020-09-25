@@ -282,8 +282,8 @@
             }
           });
 
-        
-        getSelector("#form-cambio-mercancia").addEventListener("submit", e => {
+        let haveclick = false;
+        getSelector("#form-cambio-mercancia").addEventListener("submit", async e => {
             e.preventDefault();
             /* Declaracion de variables */
             const data = {};
@@ -294,6 +294,23 @@
             if (!res['success']) {
                 alert(res['msj']);
             } else {
+
+                const query1 = `select 1 from guiasucursal where nroguia = '${$('#numero_guia').val()}'`;
+                const query2 = `select 1 from ventas where nroguia = '${numero_guia.value}'`;
+
+                let datares = await get_data_dynamic(query1);
+                let datares2 = await get_data_dynamic(query2);
+                if (datares.length > 0 || datares2.length > 0) {
+                    alert("Ese n° de guia ya fue registrada.");
+                    return;
+                }
+
+                if (!haveclick) {
+                    haveclick = true;
+                } else {
+                    return;
+                }
+
                 const h = {
                     fecha: '<?php echo date("Y-m-d"); ?>',
                     sucursal_origen: $('#sucursal_origen').val(),
@@ -375,6 +392,7 @@
                 .then(res => res.json())
                 .catch(error => console.error("error: ", error))
                 .then(res => {
+                    haveclick = false;
                     if (res.success) {
                         alert("registro completo!")
                         // getSelector("#form-cambio-mercancia").reset();
@@ -382,7 +400,6 @@
                         location.reload()
                     }
                 });
-                console.log(data);
             }
         });
                 

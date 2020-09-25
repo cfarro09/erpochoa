@@ -284,7 +284,7 @@ include("Fragmentos/pie.php");
 	const loadproductos = async (codsucursal) => {
 		
 		const queryproductos = `
-            select pre.nombre_presentacion namexx, pv.initial, k.codigoprod, k.saldo stock, p.nombre_producto nombre, CONCAT(p.nombre_producto, ' - ', m.nombre, ' - ###NOMBRECOLOR### - ', pv.precioventa3, ' - Stock ', k.saldo) as descripcion, m.nombre as marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 precioventa, pv.totalunidad preciocompra
+            select pre.nombre_presentacion namexx, p.minicodigo, pv.initial, k.codigoprod, k.saldo stock, p.nombre_producto nombre, CONCAT(p.nombre_producto, ' - ', m.nombre, ' - ###NOMBRECOLOR### - ', pv.precioventa3, ' - Stock ', k.saldo) as descripcion, m.nombre as marca, c.nombre_color,  pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 precioventa, pv.totalunidad preciocompra
             from kardex_alm k
             inner join producto p on p.codigoprod = k.codigoprod
             inner join marca m on m.codigomarca = p.codigomarca
@@ -301,7 +301,7 @@ include("Fragmentos/pie.php");
 			result = result.map(x => {
 				return {
 					...x,
-					descripcion: x.descripcion.replace("###NOMBRECOLOR###", x.nombre_color)
+					descripcion: x.descripcion.replace("###NOMBRECOLOR###", `${x.nombre_color} - ${x.minicodigo ? x.minicodigo : ''}`)
 				}
 			})
 		}

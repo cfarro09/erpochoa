@@ -241,7 +241,7 @@ include("Fragmentos/bloquea_caja.php");
 <div class="form-group">
 <div class="col-md-5">
 <div class="input-group"><span id="sprytextfield8">
-<input type="text" class="form-control tooltips" data-placement="top" data-original-title="Agregar N&uacute;mero de Celular" placeholder="Celular" id="celular" name="celular" maxlength="14" />
+<input type="text" class="form-control tooltips" data-placement="top" data-original-title="Agregar N&uacute;mero de Celular" placeholder="Celular" id="celular" name="celular" maxlength="13" />
 <span class="textfieldRequiredMsg"></span><span class="textfieldMinCharsMsg"></span></span><span class="input-group-addon">
 <i class="glyphicon glyphicon-phone font-blue-soft"></i>
 </span></div>

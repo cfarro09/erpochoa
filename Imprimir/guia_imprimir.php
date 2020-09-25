@@ -54,14 +54,12 @@ $headerventa = mysql_fetch_assoc($resultquery);
 
 $guias = json_decode($headerventa["dataguia"]);
 
-
 for ($i=0; $i < count($guias); $i++) { 
   if($guias[$i]->id == $idguia){
     $guiatoshow = $guias[$i];
     break;
   }
 }
-
 $guiatoshow->productos[0]->igv = $headerventa["igv"];
 $guiatoshow->productos[0]->total = $headerventa["total"];
 $guiatoshow->productos[0]->subtotal = $headerventa["subtotal"];

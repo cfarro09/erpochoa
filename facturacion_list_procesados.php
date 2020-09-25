@@ -65,7 +65,7 @@ include("Fragmentos/abrirpopupcentro.php");
 $i = 1;
 ?>
 
-<h2 align="center"><strong>Costeo</strong></h2>
+<h2 align="center"><strong>HOJA DE COSTO DE MERCADERIA</strong></h2>
 
 <!--  ----------------------------------------------------------------------------------------------------------------------------------->
 <?php if ($totalRows_Listado == 0 && $totalRows_listaguiasinoc == 0) { // Show if recordset empty 
@@ -259,7 +259,7 @@ $i = 1;
 		<div class="modal-dialog" role="document" style="width: 1300px">
 			<div class="modal-content m-auto">
 				<div class="modal-header">
-					<h2 class="modal-title" id="">Registro de Compras / Por Recibir </h2>
+					<h2 class="modal-title" id="">HOJA DE COSTO - COMPRA DE MERCADERIA </h2>
 				</div>
 				<div class="modal-body">
 
@@ -909,7 +909,7 @@ mysql_free_result($Listado);
 					datatotrigger.detalle.push(`
 						update detalle_compras set 
 							vcu = (vcu + ${imponn}),
-							gastoextras = (gastoextras + ${impott})
+							gastoextras = (IFNULL(gastoextras, 0) + ${impott})
 						where codigodetalleproducto = ${coddetprod}`);
 				}
 
@@ -1473,14 +1473,15 @@ mysql_free_result($Listado);
 										>Asignar/Compras</a>
 									`;
 							} else {
+								const ddaux = row.comprobante.trim().split(" ");
 								return `
 									<a 
 										href="#"
 										data-codigorc="${codigorc}"
 										data-id="${row.id}"
 										
-										data-tipocomprobante="${row.tipocomprobante}"
-										data-numerocomprobante="${row.numerocomprobante}"
+										data-tipocomprobante="${ddaux[0]}"
+										data-numerocomprobante="${ddaux[1]}"
 										data-ruc="${row.ruc}"
 										data-moneda="${row.moneda}"
 										data-soles="${row.soles}"
@@ -1678,8 +1679,7 @@ mysql_free_result($Listado);
 							<td></td>
 							<td></td>
 							<td></td>
-							<td></td>
-							<td>TOTAL</td>
+							<td class="text-right">TOTAL</td>
 
 							<td class=""><input class="text-right form-control" disabled value="${totalvci.toFixed(2)}"></td>
 							<td class=""><input class="text-right form-control" disabled value="${totalgastos.toFixed(2)}"></td>

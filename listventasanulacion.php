@@ -525,7 +525,6 @@ include("Fragmentos/pie.php");
 
     async function imprimir_guia()
     {
-        
         if (!nroguia.value) {
             const data = {};
             data.header = '';

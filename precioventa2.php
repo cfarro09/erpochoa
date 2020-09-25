@@ -144,7 +144,7 @@ include("Fragmentos/abrirpopupcentro.php");
 				}
 				
 				?>
-				<tr <?= !$row_Listado['initial'] || $pcompra > $row_Listado['precio_venta1'] ? "style='background-color: red'" : ""?>>
+				<tr <?= !$row_Listado['initial'] || $pcompra > $row_Listado['precio_venta1'] ? "style='background-color: #cc3333'" : ""?>>
 					<?php $pcompra = number_format($pcompra, 2); ?>
 					<td> <?php echo $i; ?> </td>
 					<td class="text-right"> <?php echo $row_Listado['minicodigo']; ?>                                                           </td>

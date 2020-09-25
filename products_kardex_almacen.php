@@ -21,13 +21,13 @@ include("Fragmentos/abrirpopupcentro.php");
 $suc = $_SESSION['cod_sucursal'];
 
 ?>
-    <form id="searchform">
-<div style="display: inline-flex">
+<form id="searchform">
+    <div style="display: inline-flex">
         <select required style="width: 200px;" class="form-control" id="searchby">
             <option value="descinclude">Nombre Incluye</option>
             <option value="minicodigo">Codigo</option>
         </select>
-        <input required style="width: 500px; margin-left: 20px" class="form-control" id="tosearch" >
+        <input required style="width: 500px; margin-left: 20px" class="form-control" id="tosearch">
 
         <button style="margin-left: 20px" class="btn btn-success" type="submit">Buscar</button>
     </div>
@@ -36,6 +36,36 @@ $suc = $_SESSION['cod_sucursal'];
 <div id="anunciooo" style="margin-top: 20px; font-weight: bold;"></div>
 
 <table id="maintable" class="display" width="100%"></table>
+
+<div class="modal" id="modalxentregar" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titlexentregar"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbodyxentregar">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Comporbante</th>
+                            <th scope="col">Cliente</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablepagosdd">
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="mkardex" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document" style="width: 900px">
@@ -63,7 +93,7 @@ $suc = $_SESSION['cod_sucursal'];
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="field-1" class="control-label">Fecha Inicio</label>
-                                            <input type="text"  name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
+                                            <input type="text" name="fecha_inicio" autocomplete="off" id="fecha_inicio" class="form-control form-control-inline input-medium date-picker tooltips" data-date-format="yyyy-mm-dd" data-placement="top" required />
                                         </div>
                                     </div>
                                     <div class="col-md-6" style="margin-bottom: 7rem">
@@ -106,7 +136,7 @@ include("Fragmentos/pie.php");
 
         cargarselect2("#sucursales", res, "cod_sucursal", "nombre_sucursal");
 
-        
+
         $('#sucursales').val(sucursalxx).trigger('change');
     }
     const getdetail = async (idpro, name) => {
@@ -127,8 +157,9 @@ include("Fragmentos/pie.php");
         });
         getdetailproduct();
     }
-
-    async function initTable(e){
+    let xentregarpp = {};
+    async function initTable(e) {
+        xentregarpp = {}
         e.preventDefault();
         anunciooo.textContent = "BUSCANDO, ESPERE...";
         let where = "";
@@ -144,59 +175,96 @@ include("Fragmentos/pie.php");
         const query = `
         select 
             p.codigoprod, p.minicodigo, p.codigo2, p.codigo3 ,p.nombre_producto, m.nombre marca, k.saldo,
-             Case when IFNULL(kc.saldo, 0) = 0 then 0 else (IFNULL(k.saldo, 0) - IFNULL(kc.saldo, 0)) end as xentregar,
              sum(Case When k5.detalle like '%compras%' or k5.detalle like '%entra%' or k5.detalle like '%anulacion%' Then k5.cantidad Else 0 End) entradas,
              sum(Case When k5.detalle like '%venta%' or k5.detalle like '%sale%' or k5.detalle like '%despacho%' Then k5.cantidad Else 0 End) salidas
         from producto p 
         left join marca m on m.codigomarca = p.codigomarca
         left join kardex_alm k5 on k5.codigoprod = p.codigoprod and k5.codsucursal = <?= $suc ?>
         left join kardex_alm k on k.id_kardex_alm = (SELECT MAX(k2.id_kardex_alm) from  kardex_alm k2 where k2.codigoprod = p.codigoprod and k2.codsucursal = <?= $suc ?>)
-        left join kardex_contable kc on kc.id_kardex_contable = (SELECT MAX(kc2.id_kardex_contable) from kardex_contable kc2 where kc2.codigoprod = p.codigoprod and kc2.sucursal = <?= $suc ?>)
         ${where}
         group by p.codigoprod
         `;
 
         let data = await get_data_dynamic(query);
 
+        data = await Promise.all(data.map(async x1 => {
+            const codigoproductoofi = parseInt(x1.codigoprod);
+            let cantt = 0;
+            const queryrr = `
+            select v.dataguia, dv.cantidad, v.codigocomprobante, v.tipocomprobante, 
+            case when v.codigoclientej is null then (select concat(c.cedula, ' ', c.nombre, ' ', c.paterno) from cnatural c where c.codigoclienten=v.codigoclienten) else (select concat(j.ruc, ' ', j.razonsocial) from cjuridico j where j.codigoclientej = v.codigoclientej) end
+            as clienttt
+            from detalle_ventas dv 
+            inner join ventas v on v.codigoventas = dv.codigoventa 
+            where 
+                sucursal = <?= $suc ?> and 
+                dv.codigoprod = ${codigoproductoofi} and 
+                (v.dataguia like '%"codigoprod":"${codigoproductoofi}"%' or modalidadentrega = 'Entrega almacen C/G' or modalidadentrega = 'Entrega inmediata C/G');`;
+
+            let dataventas = await get_data_dynamic(queryrr);
+
+            let tooltip = "";
+            if (dataventas && dataventas.length > 0) {
+                dataventas.forEach(x => {
+                    cantt += parseFloat(x.cantidad);
+                    let cantidadactual = parseFloat(x.cantidad);
+                    if (x.dataguia) {
+                        const dataguiaarr = JSON.parse(x.dataguia);
+                        dataguiaarr.forEach(cc => {
+                            if (cc.productos) {
+                                const pp = cc.productos.find(y1 => y1.codigoprod == codigoproductoofi)
+                                cantt -= parseFloat(pp.cantidad);
+                                cantidadactual -= parseFloat(pp.cantidad);
+                            }
+                        })
+                    }
+                    if (cantidadactual > 0)
+                        tooltip += `${cantidadactual}###${x.tipocomprobante} ${x.codigocomprobante}###${x.clienttt}#$#`;
+                })
+            }
+            xentregarpp[codigoproductoofi] = tooltip;
+            return {
+                ...x1,
+                xentregar: cantt,
+                tooltip
+            }
+        }))
+
         $('#maintable').DataTable({
             data: data,
             destroy: true,
             columns: [{
-                    title: 'codigoprod',
-                    data: 'codigoprod'
-                },
-                {
-                    title: 'Codigo Fab',
+                    title: 'Cod Fab',
                     data: 'minicodigo',
                 },
                 {
-                    title: 'nombre_producto',
+                    title: 'Nombre Producto',
                     data: 'nombre_producto'
                 },
                 {
-                    title: 'marca',
+                    title: 'Marca',
                     data: 'marca'
                 },
                 {
-                    title: 'codigo2',
+                    title: 'Codigo 2',
                     data: 'codigo2',
                     visible: false
                 },
                 {
-                    title: 'codigo3',
+                    title: 'Codigo 3',
                     data: 'codigo3',
                     visible: false
                 },
                 {
-                    title: 'entradas',
+                    title: 'Entradas',
                     data: 'entradas'
                 },
                 {
-                    title: 'salidas',
+                    title: 'Salidas',
                     data: 'salidas'
                 },
                 {
-                    title: 'saldo',
+                    title: 'Saldo',
                     data: 'saldo',
                     className: 'dt-body-right',
                     render: function(data, type, row) {
@@ -204,9 +272,16 @@ include("Fragmentos/pie.php");
                     }
                 },
                 {
-                    title: 'xentregar',
-                    data: 'xentregar',
-                    className: 'dt-body-right'
+                    title: 'Por Entregar',
+                    className: 'dt-body-right',
+                    render: function(data, type, row) {
+                        if (row.xentregar && row.xentregar !== "0"){
+                            return `<a href="#" onclick="onclickxx(${parseInt(row.codigoprod)})" class="tooltips" data-placement="top" data-original-title="${row.tooltip}">${row.xentregar}</a>`
+                        } else {
+                            return `${row.xentregar}`
+                        }
+
+                    }
                 },
                 {
                     title: 'acciones',
@@ -218,21 +293,38 @@ include("Fragmentos/pie.php");
                 }
             ]
         });
-
+        $('[data-toggle="tooltip"]').tooltip()
+        $('.tooltips').tooltip();
         anunciooo.textContent = "";
+    }
+
+    const onclickxx = (codigprod) => {
+
+        $("#modalxentregar").modal();
+        let htmlrow = "";
+        xentregarpp[codigprod].split("#$#").forEach((x) => {
+            if (x) {
+                htmlrow += "<tr>";
+                x.split("###").forEach((o, index) => {
+                    htmlrow += `<td class="${index === 0 ? 'text-right': ''}">${o}</td>`;
+                });
+                htmlrow += "</tr>";
+            }
+        });
+        tablepagosdd.innerHTML = htmlrow;
     }
 
     getSelector("#form-setKardex").addEventListener("submit", e => {
         e.preventDefault();
         getdetailproduct();
     });
-    
-    function getdetailproduct (){
+
+    function getdetailproduct() {
         maintabledetail.innerHTML = "";
         const codsucursal = $("#sucursales").val()
         const fecha_inicio = $("#fecha_inicio").val() ? $("#fecha_inicio").val() : "1999-09-09";
         const fecha_termino = $("#fecha_termino").val() ? $("#fecha_termino").val() : "2030-03-03";
-        
+
         const codproducto = getSelector("#codproducto").value
         var formData = new FormData();
         formData.append("codsucursal", codsucursal);
@@ -256,18 +348,29 @@ include("Fragmentos/pie.php");
                         item.isproveedor = item.isproveedor ? parseInt(item.isproveedor) : 0;
                         if (item.cantidad != "0") {
                             listdata.push({
-                                fecha: new Date(item.fecha).toLocaleDateString(),
+                                fecha: new Date(item.fecha),
                                 detalle: item.isproveedor ? "INVENTARIO" : item.detalle, //isproveedor is isinventario
                                 tipodocumento: (item.isproveedor ? "" : item.tipodocumento) + (item.detalle == "anulacion" ? " - anulada" : ""),
                                 numero: item.isproveedor ? "" : item.numero,
                                 entrada: /compra|entra|inventario|anulacion/gi.test(item.detalle) ? item.cantidad : "",
-                                salida: /ventas|sale|despacho/gi.test(item.detalle)? item.cantidad : "",
+                                salida: /ventas|sale|despacho/gi.test(item.detalle) ? item.cantidad : "",
                                 proveedor: item.isproveedor ? "INVENTARIO" : item.detalleaux,
                                 saldo: item.saldo
                             });
                         }
-
                     });
+
+
+                    listdata.sort(function(a, b) {
+                        if (a.fecha > b.fecha) {
+                            return -1;
+                        }
+                        if (b.fecha < a.fecha) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
                     $('#maintabledetail').DataTable({
                         data: listdata,
                         ordering: false,
@@ -299,10 +402,11 @@ include("Fragmentos/pie.php");
                                 text: 'Columns'
                             }
                         ],
-                        columns: [
-                            {
+                        columns: [{
                                 title: 'Fecha',
-                                data: 'fecha',
+                                render: function(data, type, row) {
+                                    return row.fecha.toLocaleDateString();
+                                }
                             },
                             {
                                 title: 'Detalle',
@@ -342,6 +446,6 @@ include("Fragmentos/pie.php");
             });
 
 
-    
+
     }
 </script>

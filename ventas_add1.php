@@ -34,7 +34,7 @@ include("Fragmentos/abrirpopupcentro.php");
 
 $codsucursal = $_SESSION['cod_sucursal'];
 
-$query_Productos = "SELECT pre.nombre_presentacion, k.codigoprod, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color, pv.initial, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
+$query_Productos = "SELECT pre.nombre_presentacion, k.codigoprod, p.minicodigo, k.saldo, p.nombre_producto, m.nombre as Marca, c.nombre_color, pv.initial, pv.precioventa1 as p1, pv.precioventa2 as p2, pv.precioventa3 as p3, pv.totalunidad
 from kardex_alm k
 inner join producto p on p.codigoprod = k.codigoprod
 inner join marca m on m.codigomarca = p.codigomarca
@@ -170,10 +170,11 @@ $totalRows_sucursales = mysql_num_rows($sucursales);
 				do {
 				?>
 					<option value="<?php echo $row_Productos['codigoprod'] ?>" data-initial="<?= $row_Productos['initial'] ?>" data-preciocompra="<?= $row_Productos['totalunidad'] ?>" data-precioventa="<?= $row_Productos['p3'] ?>" data-stock="<?= $row_Productos['saldo'] ?>" data-namexx="<?php echo $row_Productos['nombre_presentacion'] ?>" data-nombre="<?php echo $row_Productos['nombre_producto'] ?>" data-marca="<?= $row_Productos['Marca']; ?>">
-						<?php echo $row_Productos['nombre_producto'] ?> -
-						<?php echo $row_Productos['Marca']; ?> -
-						<?php echo $row_Productos['nombre_color']; ?> -
-						<?php echo "$/." . $row_Productos['p3']; ?> -
+						<?= $row_Productos['nombre_producto'] ?> -
+						<?= $row_Productos['Marca']; ?> -
+						<?= $row_Productos['nombre_color']; ?> -
+						<?= $row_Productos['minicodigo']; ?> -
+						<?= "$/." . $row_Productos['p3']; ?> -
 						(<?= "Stock " . $row_Productos['saldo']; ?>)</option>
 				<?php
 				} while ($row_Productos = mysql_fetch_assoc($Productos));
@@ -442,7 +443,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				<td data-codigo="${this.value}" class="codigopro codigo_${this.value}" style="display: none">${this.value}</td>
 				<td class="indexproducto">${cantrows}</td>
 				
-				<td><input data-type="cantidad" data-typeprod="${option.dataset.namexx}" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad cantformventas tooltips form-control" value="0" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
+				<td><input data-type="cantidad" data-typeprod="${option.dataset.namexx}" data-stock="${option.dataset.stock}" oninput="changevalue(this)" required class="cantidad cantformventas tooltips form-control" value="" style="width: 80px" data-placement="top" data-original-title="Stock: ${option.dataset.stock}"></td>
 				
 				<td class="unidad_medida">${option.dataset.namexx}</td>
 
@@ -807,7 +808,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 		}
 		changencomprobantebytype();
 	}
-
+	let haveclick = false;
 	getSelector("#form-generate-venta").addEventListener("submit", async (e) => {
 		e.preventDefault();
 		if (getSelectorAll(".producto").length < 1) {
@@ -910,7 +911,11 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 			values
 			('${h.tipocomprobante}', ${ccff}, ${h.codigoclienten}, ${h.codigoclientej} , ${h.subtotal}, ${h.igv}, ${h.total}, '${h.fecha_emision}', '${h.hora_emision}', ${h.codigoacceso}, ${h.codigopersonal}, 1, ${h.montofact}, ${h.estadofact}, ${h.totalc}, 0, '${JSON.stringify(pagosextras)}', ${porpagar}, ${pagoacomulado} , ${h.codsucursal}, '${modalidadentrega.value}')
 			`
-
+			if (!haveclick) {
+				haveclick = true;
+			} else {
+				return;
+			}
 			getSelectorAll(".producto").forEach(item => {
 				const d = {
 					codigoprod: item.querySelector(".codigopro").dataset.codigo,
@@ -993,6 +998,7 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 				.catch(error => console.error("error: ", error))
 				.then(res => {
 					if (res.success) {
+						haveclick = false;
 						alert("registro completo!")
 						if (modalidadentrega.value == "Entrega inmediata C/G") {
 							$("#mguia").modal()
@@ -1017,6 +1023,15 @@ $(document).on("keypress", 'form', function (e) { var code = e.keyCode || e.whic
 
 		// var query = "select value from propiedades where `key` = 'despacho_guia_" + h.codsucursal + "'";
 		// const resguia = await get_data_dynamic(query).then(r => r);
+		const query1 = `select 1 from ventas where nroguia = '${nroguiaxx.value}'`;
+		const query2 = `select 1 from guiasucursal where nroguia = '${nroguiaxx.value}'`;
+
+		let datares = await get_data_dynamic(query1);
+		let datares2 = await get_data_dynamic(query2);
+		if (datares.length > 0 || datares2.length > 0) {
+			alert("Ese n° de guia ya fue registrada.");
+			return;
+		}
 		const h1 = {
 			id: idguia,
 			fecha: h.fecha_emision,

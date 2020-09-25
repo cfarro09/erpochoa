@@ -41,15 +41,17 @@ $codproducto = $_POST["codproducto"];
 
 mysql_select_db($database_Ventas, $Ventas);
 
-$searchsuc = $codsucursal == "1" ? "in (1, 10)" : " = $codsucursal";
+// $searchsuc = $codsucursal == "1" ? "in (1, 10)" : " = $codsucursal";
 
 $queryKardex = "SELECT 
 ka.* from kardex_alm ka
 where 
   ka.codigoprod = $codproducto and 
-  ka.codsucursal  $searchsuc and 
+  ka.codsucursal  = $codsucursal and 
   ka.cantidad <> 0 and
-  ka.fecha BETWEEN '$fecha_inicio' AND '$fecha_termino'";
+  ka.fecha BETWEEN '$fecha_inicio' AND '$fecha_termino' 
+order by ka.id_kardex_alm desc
+";
 
 $Factura = mysql_query($queryKardex, $Ventas) or die(mysql_error());
 $result = array();

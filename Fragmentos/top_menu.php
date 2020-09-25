@@ -101,7 +101,7 @@ $totalRows_rscustom = mysql_num_rows($rscustom);
                                     <input type="password" id="passwordcurrent" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label">Contraseña Actual</label>
+                                    <label class="control-label">Contraseña Nueva</label>
                                     <input type="password" id="passwordnew" class="form-control">
                                 </div>
                             </div>

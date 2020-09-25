@@ -29,7 +29,7 @@
   $tNG_login_config["activation_field"] = "";
   $tNG_login_config["password_encrypt"] = "true";
   $tNG_login_config["autologin_expires"] = "30";
-  $tNG_login_config["redirect_failed"] = "erpochoa/index.php";
+  $tNG_login_config["redirect_failed"] = "index.php";
   $tNG_login_config["redirect_success"] = "principal01.php?init=1";
   $tNG_login_config["login_page"] = "index.php";
   $tNG_login_config["max_tries"] = "";
